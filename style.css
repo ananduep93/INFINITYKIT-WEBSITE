@@ -343,6 +343,60 @@ body {
     color: white;
 }
 
+.tool-card-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.tool-actions {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tool-card:hover .tool-actions {
+    opacity: 1;
+}
+
+.tool-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.tool-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.2);
+}
+
+.favorite-btn {
+    color: #ffc107;
+}
+
+.favorite-btn.unfavorited {
+    color: #999;
+}
+
+.pin-btn {
+    color: #ff6b6b;
+}
+
+.pin-btn.unpinned {
+    color: #999;
+}
+
 .tool-icon {
     font-size: 2.5rem;
     margin-bottom: 10px;

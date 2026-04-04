@@ -1,5 +1,13 @@
 // Folders with Tools Data
-const folders = [
+const baseFolders = [
+    {
+        id: 'favorites',
+        name: '⭐ Favorites',
+        icon: '⭐',
+        emoji: '⭐',
+        tools: [],
+        isFavorites: true
+    },
     {
         id: 'daily-essentials',
         name: 'Daily Essentials',
@@ -54,7 +62,7 @@ const folders = [
         name: 'Math Tools',
         icon: '📊',
         emoji: '📊',
-        tools: ['discountcalc', 'percentagecalc', 'primenumber', 'palindrome', 'factorial', 'fibonacci']
+        tools: ['discountcalc', 'percentagecalc', 'primenumber', 'palindrome', 'factorial', 'fibonacci', 'lcmhcf', 'trianglechecker', 'distancecalc', 'equationsolver']
     },
     {
         id: 'time-tools',
@@ -90,8 +98,78 @@ const folders = [
         icon: '✍️',
         emoji: '✍️',
         tools: ['wordcounter', 'textreverse', 'caseconverter', 'removeduplicates']
+    },
+    {
+        id: 'brain-tools',
+        name: 'Brain Tools',
+        icon: '🧠',
+        emoji: '🧠',
+        tools: ['sudokugenerator', 'numberguessgame', 'memorygrid', 'patternfinder']
+    },
+    {
+        id: 'data-tools',
+        name: 'Data Tools',
+        icon: '📊',
+        emoji: '📊',
+        tools: ['graphmaker', 'averagecalculator', 'numbersorter', 'csvviewer']
+    },
+    {
+        id: 'search-tools',
+        name: 'Search Tools',
+        icon: '🔍',
+        emoji: '🔍',
+        tools: ['texthighlighter', 'keywordcounter', 'autocompletertool']
+    },
+    {
+        id: 'format-tools',
+        name: 'Format Tools',
+        icon: '🧾',
+        emoji: '🧾',
+        tools: ['removelinebreaks', 'addlinenumbers', 'textaligner', 'paragraphsplitter']
+    },
+    {
+        id: 'storage-tools',
+        name: 'Storage Tools',
+        icon: '💾',
+        emoji: '💾',
+        tools: ['localnotessaver', 'localpasswordsaver', 'clipboardhistory']
+    },
+    {
+        id: 'decision-tools',
+        name: 'Decision Tools',
+        icon: '🎯',
+        emoji: '🎯',
+        tools: ['spinwheel', 'yesnogerator', 'choicecomparator']
+    },
+    {
+        id: 'planner-tools',
+        name: 'Planner Tools',
+        icon: '📅',
+        emoji: '📅',
+        tools: ['calendarviewer', 'dailyplanner', 'reminderalert']
+    },
+    {
+        id: 'web-tools',
+        name: 'Web Tools',
+        icon: '🌐',
+        emoji: '🌐',
+        tools: ['urlencoder', 'urlextractor', 'metatagviewer']
     }
 ];
+
+// Dynamic folders array (will be updated with favorites/pinned)
+let folders = [];
+
+// Update folders with favorites and pinned items
+function updateFolders() {
+    folders = JSON.parse(JSON.stringify(baseFolders));
+    
+    // Update favorites folder with currently favorited tools
+    const favFolder = folders.find(f => f.isFavorites);
+    if (favFolder) {
+        favFolder.tools = appSettings.favorites;
+    }
+}
 
 // Tools Data
 const tools = [
@@ -327,6 +405,201 @@ const tools = [
         name: 'Remove Duplicate Words',
         icon: '🧹',
         description: 'Remove repeated words'
+    },
+    // Brain Tools
+    {
+        id: 'sudokugenerator',
+        name: 'Sudoku Generator',
+        icon: '🧩',
+        description: 'Generate Sudoku puzzles'
+    },
+    {
+        id: 'numberguessgame',
+        name: 'Number Guess Game',
+        icon: '🔢',
+        description: 'Guess the random number'
+    },
+    {
+        id: 'memorygrid',
+        name: 'Memory Grid Game',
+        icon: '🧠',
+        description: 'Match memory pairs'
+    },
+    {
+        id: 'patternfinder',
+        name: 'Pattern Finder',
+        icon: '🔍',
+        description: 'Find repeating patterns'
+    },
+    // Data Tools
+    {
+        id: 'graphmaker',
+        name: 'Graph Maker',
+        icon: '📊',
+        description: 'Create bar graphs'
+    },
+    {
+        id: 'averagecalculator',
+        name: 'Average Calculator',
+        icon: '📉',
+        description: 'Calculate average & sum'
+    },
+    {
+        id: 'numbersorter',
+        name: 'Number Sorter',
+        icon: '🔢',
+        description: 'Sort numbers'
+    },
+    {
+        id: 'csvviewer',
+        name: 'CSV Viewer',
+        icon: '📋',
+        description: 'View CSV files as table'
+    },
+    // Search Tools
+    {
+        id: 'texthighlighter',
+        name: 'Text Highlighter',
+        icon: '🔍',
+        description: 'Highlight matching text'
+    },
+    {
+        id: 'keywordcounter',
+        name: 'Keyword Counter',
+        icon: '📂',
+        description: 'Count word occurrences'
+    },
+    {
+        id: 'autocompletertool',
+        name: 'Autocomplete Tool',
+        icon: '🔠',
+        description: 'Smart word suggestions'
+    },
+    // Format Tools
+    {
+        id: 'removelinebreaks',
+        name: 'Remove Line Breaks',
+        icon: '🧹',
+        description: 'Convert to single line'
+    },
+    {
+        id: 'addlinenumbers',
+        name: 'Add Line Numbers',
+        icon: '🔄',
+        description: 'Number each line'
+    },
+    {
+        id: 'textaligner',
+        name: 'Text Aligner',
+        icon: '📏',
+        description: 'Align text formatting'
+    },
+    {
+        id: 'paragraphsplitter',
+        name: 'Paragraph Splitter',
+        icon: '🧱',
+        description: 'Split into paragraphs'
+    },
+    // Math Tools (additions)
+    {
+        id: 'lcmhcf',
+        name: 'LCM / HCF Calculator',
+        icon: '📐',
+        description: 'Find LCM and HCF'
+    },
+    {
+        id: 'trianglechecker',
+        name: 'Triangle Type Checker',
+        icon: '🔺',
+        description: 'Check triangle type'
+    },
+    {
+        id: 'distancecalc',
+        name: 'Distance Calculator',
+        icon: '📏',
+        description: 'Calculate distances'
+    },
+    {
+        id: 'equationsolver',
+        name: 'Equation Solver',
+        icon: '🧮',
+        description: 'Solve basic equations'
+    },
+    // Storage Tools
+    {
+        id: 'localnotessaver',
+        name: 'Local Notes Saver',
+        icon: '📝',
+        description: 'Save notes locally'
+    },
+    {
+        id: 'localpasswordsaver',
+        name: 'Local Password Saver',
+        icon: '🔐',
+        description: 'Store passwords locally'
+    },
+    {
+        id: 'clipboardhistory',
+        name: 'Clipboard History',
+        icon: '📋',
+        description: 'Save clipboard items'
+    },
+    // Decision Tools
+    {
+        id: 'spinwheel',
+        name: 'Spin Wheel',
+        icon: '🎡',
+        description: 'Spin to select option'
+    },
+    {
+        id: 'yesnogerator',
+        name: 'Yes / No Generator',
+        icon: '🤔',
+        description: 'Random yes or no'
+    },
+    {
+        id: 'choicecomparator',
+        name: 'Choice Comparator',
+        icon: '📊',
+        description: 'Compare options'
+    },
+    // Planner Tools
+    {
+        id: 'calendarviewer',
+        name: 'Calendar Viewer',
+        icon: '📅',
+        description: 'View calendar'
+    },
+    {
+        id: 'dailyplanner',
+        name: 'Daily Planner',
+        icon: '📝',
+        description: 'Plan your day'
+    },
+    {
+        id: 'reminderalert',
+        name: 'Reminder Alert',
+        icon: '⏰',
+        description: 'Set reminders'
+    },
+    // Web Tools
+    {
+        id: 'urlencoder',
+        name: 'URL Encoder / Decoder',
+        icon: '🔗',
+        description: 'Encode/decode URLs'
+    },
+    {
+        id: 'urlextractor',
+        name: 'URL Parameter Extractor',
+        icon: '🌍',
+        description: 'Extract URL params'
+    },
+    {
+        id: 'metatagviewer',
+        name: 'Meta Tag Viewer',
+        icon: '📄',
+        description: 'View meta tags'
     }
 ];
 
@@ -356,6 +629,7 @@ let recentSearchesList = JSON.parse(localStorage.getItem('recentSearches')) || [
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     applySettings();
+    updateFolders();
     renderFolders();
     setupEventListeners();
 });
@@ -407,14 +681,31 @@ function renderToolsInFolder(folder) {
             card.style.cursor = 'not-allowed';
         }
         
+        const isFavorited = appSettings.favorites.includes(tool.id);
+        const isPinned = appSettings.pinnedTools?.includes(tool.id);
+        
         card.innerHTML = `
-            <div class="tool-icon">${tool.icon}</div>
+            <div class="tool-card-header">
+                <div class="tool-icon">${tool.icon}</div>
+                <div class="tool-actions">
+                    <button class="tool-btn favorite-btn" onclick="toggleFavorite('${tool.id}', event)" title="Add to favorites">
+                        ${isFavorited ? '⭐' : '☆'}
+                    </button>
+                    <button class="tool-btn pin-btn" onclick="togglePin('${tool.id}', event)" title="Pin to top">
+                        ${isPinned ? '📌' : '📍'}
+                    </button>
+                </div>
+            </div>
             <div class="tool-name">${tool.name}</div>
             ${tool.comingSoon ? '<div style="font-size: 0.8rem; margin-top: 5px; color: #999;">Coming Soon</div>' : ''}
         `;
         
         if (!tool.comingSoon) {
-            card.addEventListener('click', () => openTool(tool.id, tool.name, tool.icon));
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', (e) => {
+                if (e.target.className.includes('tool-btn')) return;
+                openTool(tool.id, tool.name, tool.icon);
+            });
         }
         toolsGrid.appendChild(card);
     });
@@ -439,16 +730,12 @@ function setupEventListeners() {
     });
 
     searchBar.addEventListener('input', (e) => {
-        const query = e.target.value.trim().toLowerCase();
-
+        const query = e.target.value.trim();
         if (query === '') {
             showRecentSearches();
-            return;
+        } else {
+            performSearch(query);
         }
-
-        // Smart search through folders and tools
-        const results = smartSearch(query);
-        displaySearchResults(results);
     });
 
     // Close search results when clicking outside
@@ -467,123 +754,6 @@ function setupEventListeners() {
 }
 
 // Smart search function
-function smartSearch(query) {
-    const results = {
-        folders: [],
-        tools: []
-    };
-
-    // Search folders
-    folders.forEach(folder => {
-        if (folder.name.toLowerCase().includes(query)) {
-            results.folders.push({
-                type: 'folder',
-                id: folder.id,
-                name: folder.name,
-                emoji: folder.emoji,
-                data: folder
-            });
-        }
-    });
-
-    // Search tools
-    tools.forEach(tool => {
-        if (tool.name.toLowerCase().includes(query) || 
-            tool.description.toLowerCase().includes(query)) {
-            
-            // Find which folder this tool belongs to
-            let belongsToFolder = null;
-            for (let folder of folders) {
-                if (folder.tools.includes(tool.id)) {
-                    belongsToFolder = folder;
-                    break;
-                }
-            }
-
-            results.tools.push({
-                type: 'tool',
-                id: tool.id,
-                name: tool.name,
-                icon: tool.icon,
-                description: tool.description,
-                folder: belongsToFolder,
-                comingSoon: tool.comingSoon,
-                data: tool
-            });
-        }
-    });
-
-    return results;
-}
-
-// Display search results
-function displaySearchResults(results) {
-    searchResultsList.innerHTML = '';
-    noResults.style.display = 'none';
-    recentSearches.innerHTML = '';
-
-    const hasResults = results.folders.length > 0 || results.tools.length > 0;
-
-    if (!hasResults) {
-        noResults.style.display = 'block';
-        searchResults.style.display = 'block';
-        return;
-    }
-
-    // Display folders
-    results.folders.forEach(result => {
-        const item = document.createElement('div');
-        item.className = 'search-result-item';
-        item.innerHTML = `
-            <div class="search-result-icon">${result.emoji}</div>
-            <div class="search-result-content">
-                <div class="search-result-name">${result.name}</div>
-                <div class="search-result-type">📁 Folder</div>
-            </div>
-        `;
-        item.addEventListener('click', () => {
-            addToRecentSearches(result.name);
-            openFolder(result.data);
-            searchResults.style.display = 'none';
-            searchBar.value = '';
-        });
-        searchResultsList.appendChild(item);
-    });
-
-    // Display tools
-    results.tools.forEach(result => {
-        const item = document.createElement('div');
-        item.className = 'search-result-item';
-        const opacityStyle = result.comingSoon ? 'opacity: 0.6;' : '';
-        item.style.cssText = opacityStyle;
-        
-        item.innerHTML = `
-            <div class="search-result-icon">${result.icon}</div>
-            <div class="search-result-content">
-                <div class="search-result-name">${result.name}</div>
-                <div class="search-result-type">${result.comingSoon ? '🔒 Coming Soon' : 'Tool'}</div>
-                ${result.folder ? `<div class="search-result-folder">${result.folder.emoji} ${result.folder.name}</div>` : ''}
-            </div>
-        `;
-        
-        if (!result.comingSoon) {
-            item.style.cursor = 'pointer';
-            item.addEventListener('click', () => {
-                addToRecentSearches(result.name);
-                openTool(result.id, result.name, result.icon);
-                searchResults.style.display = 'none';
-                searchBar.value = '';
-            });
-        } else {
-            item.style.cursor = 'not-allowed';
-        }
-        
-        searchResultsList.appendChild(item);
-    });
-
-    searchResults.style.display = 'block';
-}
-
 // Show recent searches
 function showRecentSearches() {
     recentSearches.innerHTML = '';
@@ -633,6 +803,9 @@ function addToRecentSearches(search) {
 function openTool(toolId, toolName, toolIcon) {
     toolTitle.textContent = `${toolIcon} ${toolName}`;
     toolContent.innerHTML = '';
+    
+    // Track tool usage
+    trackToolUsage(toolId);
 
     switch(toolId) {
         case 'calculator':
@@ -733,6 +906,108 @@ function openTool(toolId, toolName, toolIcon) {
             break;
         case 'removeduplicates':
             loadRemoveDuplicates();
+            break;
+        // Brain Tools
+        case 'sudokugenerator':
+            loadSudokuGenerator();
+            break;
+        case 'numberguessgame':
+            loadNumberGuessGame();
+            break;
+        case 'memorygrid':
+            loadMemoryGrid();
+            break;
+        case 'patternfinder':
+            loadPatternFinder();
+            break;
+        // Data Tools
+        case 'graphmaker':
+            loadGraphMaker();
+            break;
+        case 'averagecalculator':
+            loadAverageCalculator();
+            break;
+        case 'numbersorter':
+            loadNumberSorter();
+            break;
+        case 'csvviewer':
+            loadCSVViewer();
+            break;
+        // Search Tools
+        case 'texthighlighter':
+            loadTextHighlighter();
+            break;
+        case 'keywordcounter':
+            loadKeywordCounter();
+            break;
+        case 'autocompletertool':
+            loadAutocompleteTool();
+            break;
+        // Format Tools
+        case 'removelinebreaks':
+            loadRemoveLineBreaks();
+            break;
+        case 'addlinenumbers':
+            loadAddLineNumbers();
+            break;
+        case 'textaligner':
+            loadTextAligner();
+            break;
+        case 'paragraphsplitter':
+            loadParagraphSplitter();
+            break;
+        // Math Tools
+        case 'lcmhcf':
+            loadLCMHCF();
+            break;
+        case 'trianglechecker':
+            loadTriangleChecker();
+            break;
+        case 'distancecalc':
+            loadDistanceCalculator();
+            break;
+        case 'equationsolver':
+            loadEquationSolver();
+            break;
+        // Storage Tools
+        case 'localnotessaver':
+            loadLocalNotesSaver();
+            break;
+        case 'localpasswordsaver':
+            loadLocalPasswordSaver();
+            break;
+        case 'clipboardhistory':
+            loadClipboardHistory();
+            break;
+        // Decision Tools
+        case 'spinwheel':
+            loadSpinWheel();
+            break;
+        case 'yesnogerator':
+            loadYesNoGenerator();
+            break;
+        case 'choicecomparator':
+            loadChoiceComparator();
+            break;
+        // Planner Tools
+        case 'calendarviewer':
+            loadCalendarViewer();
+            break;
+        case 'dailyplanner':
+            loadDailyPlanner();
+            break;
+        case 'reminderalert':
+            loadReminderAlert();
+            break;
+        // Web Tools
+        case 'urlencoder':
+            loadURLEncoder();
+            break;
+        case 'urlextractor':
+            loadURLExtractor();
+            break;
+        case 'metatagviewer':
+            loadMetaTagViewer();
             break;
     }
 
@@ -3182,7 +3457,8 @@ let appSettings = {
     animationsEnabled: true,
     favorites: [],
     recentTools: [],
-    usageStats: {}
+    usageStats: {},
+    pinnedTools: []
 };
 
 function loadSettings() {
@@ -3391,15 +3667,178 @@ function resetAllSettings() {
                 animationsEnabled: true,
                 favorites: [],
                 recentTools: [],
-                usageStats: {}
+                usageStats: {},
+                pinnedTools: []
             };
             localStorage.removeItem('infinityKitSettings');
             saveSettings();
             loadSettings();
             applySettings();
+            updateFolders();
+            renderFolders();
             showToast('✓ All settings reset to default', 'success');
         }
     }
+}
+
+// ========== SMART FEATURES SYSTEM ==========
+
+// Toggle favorite for a tool
+function toggleFavorite(toolId, event) {
+    event.stopPropagation();
+    
+    const index = appSettings.favorites.indexOf(toolId);
+    if (index > -1) {
+        appSettings.favorites.splice(index, 1);
+        showToast('✓ Removed from favorites', 'success');
+    } else {
+        appSettings.favorites.push(toolId);
+        showToast('⭐ Added to favorites', 'success');
+    }
+    
+    saveSettings();
+    updateFolders();
+    renderFolders();
+    
+    // If we're in a folder, re-render tools
+    if (currentFolder) {
+        const updatedFolder = folders.find(f => f.id === currentFolder.id);
+        if (updatedFolder) {
+            currentFolder = updatedFolder;
+            renderToolsInFolder(currentFolder);
+            backButtonContainer.style.display = 'flex';
+        }
+    }
+}
+
+// Toggle pin for a tool
+function togglePin(toolId, event) {
+    event.stopPropagation();
+    
+    if (!appSettings.pinnedTools) {
+        appSettings.pinnedTools = [];
+    }
+    
+    const index = appSettings.pinnedTools.indexOf(toolId);
+    if (index > -1) {
+        appSettings.pinnedTools.splice(index, 1);
+        showToast('📍 Unpinned', 'success');
+    } else {
+        appSettings.pinnedTools.push(toolId);
+        showToast('📌 Pinned to top', 'success');
+    }
+    
+    saveSettings();
+    
+    // Re-render tools if in a folder
+    if (currentFolder) {
+        const updatedFolder = folders.find(f => f.id === currentFolder.id);
+        if (updatedFolder) {
+            // Sort to show pinned first
+            const pinned = updatedFolder.tools.filter(t => appSettings.pinnedTools?.includes(t));
+            const unpinned = updatedFolder.tools.filter(t => !appSettings.pinnedTools?.includes(t));
+            updatedFolder.tools = [...pinned, ...unpinned];
+            currentFolder = updatedFolder;
+            renderToolsInFolder(currentFolder);
+        }
+    }
+}
+
+// Get most used tools (for dashboard/stats)
+function getMostUsedTools(limit = 5) {
+    const toolsWithUsage = Object.entries(appSettings.usageStats || {})
+        .map(([toolId, count]) => ({
+            toolId,
+            count,
+            tool: tools.find(t => t.id === toolId)
+        }))
+        .filter(item => item.tool)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, limit);
+    
+    return toolsWithUsage;
+}
+
+// Enhanced search with live results
+function performSearch(query) {
+    if (!query || query.trim() === '') {
+        searchResults.style.display = 'none';
+        return;
+    }
+    
+    const q = query.toLowerCase();
+    const results = [];
+    
+    // Search in tool names and descriptions
+    tools.forEach(tool => {
+        if (tool.name.toLowerCase().includes(q) || 
+            (tool.description && tool.description.toLowerCase().includes(q))) {
+            results.push({ type: 'tool', item: tool });
+        }
+    });
+    
+    // Search in folder names
+    folders.forEach(folder => {
+        if (folder.name.toLowerCase().includes(q)) {
+            results.push({ type: 'folder', item: folder });
+        }
+    });
+    
+    displaySearchResults(results, q);
+}
+
+function displaySearchResults(results, query) {
+    searchResultsList.innerHTML = '';
+    
+    if (results.length === 0) {
+        noResults.style.display = 'block';
+        searchResultsList.style.display = 'none';
+        searchResults.style.display = 'block';
+        return;
+    }
+    
+    noResults.style.display = 'none';
+    searchResultsList.style.display = 'block';
+    searchResults.style.display = 'block';
+    
+    results.forEach(result => {
+        const item = result.item;
+        const div = document.createElement('div');
+        
+        if (result.type === 'tool') {
+            div.className = 'search-result-item';
+            div.innerHTML = `<span>${item.icon} ${item.name}</span>`;
+            div.onclick = () => {
+                openTool(item.id, item.name, item.icon);
+                searchResults.style.display = 'none';
+                addRecentSearch(item.name);
+            };
+        } else {
+            div.className = 'search-result-item';
+            div.innerHTML = `<span>${item.emoji} ${item.name} (Folder)</span>`;
+            div.onclick = () => {
+                openFolder(item);
+                searchResults.style.display = 'none';
+                addRecentSearch(item.name);
+            };
+        }
+        
+        searchResultsList.appendChild(div);
+    });
+}
+
+// Enhanced openTool to track usage
+function trackToolUsage(toolId) {
+    if (!appSettings.usageStats) {
+        appSettings.usageStats = {};
+    }
+    
+    if (!appSettings.usageStats[toolId]) {
+        appSettings.usageStats[toolId] = 0;
+    }
+    appSettings.usageStats[toolId]++;
+    
+    saveSettings();
 }
 
 // ========== ROTATE PDF ==========
@@ -3515,6 +3954,1332 @@ function downloadFile(data, filename) {
 
 function showProgress(message, percent) {
     showToast(`${message} ${percent}%`, 'info');
+}
+
+// ==================== NEW TOOLS - BRAIN TOOLS ====================
+function loadSudokuGenerator() {
+    let html = `
+        <div class="tool-form">
+            <h3>🧩 Sudoku Generator</h3>
+            <button onclick="generateSudoku()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Generate Puzzle</button>
+            <div id="sudokuGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    generateSudoku();
+}
+
+function generateSudoku() {
+    const grid = document.getElementById('sudokuGrid');
+    grid.innerHTML = '';
+    const puzzle = Array(9).fill().map(() => Array(9).fill(0));
+    
+    // Fill diagonal matrices with random numbers
+    for (let i = 0; i < 9; i += 3) {
+        const nums = [...Array(9).keys()].sort(() => Math.random() - 0.5).slice(0, 9);
+        for (let j = 0; j < 3; j++) {
+            for (let k = 0; k < 3; k++) {
+                puzzle[i+j][i+k] = nums[j*3+k];
+            }
+        }
+    }
+    
+    // Display puzzle
+    for (let i = 0; i < 9; i++) {
+        const box = document.createElement('div');
+        box.style.cssText = 'border: 2px solid #667eea; padding: 15px; border-radius: 8px; background: white; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;';
+        for (let j = 0; j < 9; j++) {
+            const cell = document.createElement('div');
+            const value = puzzle[Math.floor(i/3)*3 + Math.floor(j%3/3)*3 + i%3][j];
+            cell.textContent = value > 0 ? value : '';
+            cell.style.cssText = 'width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; background: #f5f7fa;';
+            box.appendChild(cell);
+        }
+        grid.appendChild(box);
+    }
+    showToast('✓ Puzzle generated!', 'success');
+}
+
+function loadNumberGuessGame() {
+    const number = Math.floor(Math.random() * 100) + 1;
+    window.guessNumber = number;
+    let html = `
+        <div class="tool-form">
+            <h3>🔢 Number Guess Game</h3>
+            <div class="form-group">
+                <label>Guess a number (1-100)</label>
+                <input type="number" id="guessInput" min="1" max="100" placeholder="Enter your guess..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <button onclick="checkGuess()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Check Guess</button>
+            <div id="guessResult" style="padding: 15px; background: white; border-radius: 8px; font-size: 1.1rem; text-align: center; color: #667eea; font-weight: bold;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function checkGuess() {
+    const guess = parseInt(document.getElementById('guessInput').value);
+    const result = document.getElementById('guessResult');
+    if (isNaN(guess)) {
+        result.textContent = '⚠️ Please enter a valid number';
+        return;
+    }
+    if (guess === window.guessNumber) {
+        result.textContent = '🎉 You got it! That\'s the number!';
+        result.style.color = '#28a745';
+    } else if (guess < window.guessNumber) {
+        result.textContent = '📈 Too low, go higher!';
+    } else {
+        result.textContent = '📉 Too high, go lower!';
+    }
+}
+
+function loadMemoryGrid() {
+    const cards = Array(12).fill().map((_, i) => ({id: i, value: Math.floor(i/2), flipped: false})).sort(() => Math.random() - 0.5);
+    window.memoryCards = cards;
+    window.matched = 0;
+    window.firstCard = null;
+    
+    let html = `
+        <div class="tool-form">
+            <h3>🧠 Memory Grid Game</h3>
+            <div id="memoryGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+            <div style="text-align: center; font-size: 1.1rem; font-weight: bold;">Matched: <span id="matchCount">0</span>/6</div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    renderMemoryGrid();
+}
+
+function renderMemoryGrid() {
+    const grid = document.getElementById('memoryGrid');
+    grid.innerHTML = '';
+    window.memoryCards.forEach((card, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = card.flipped ? card.value + 1 : '?';
+        btn.style.cssText = `padding: 20px; font-size: 1.2rem; font-weight: bold; border: 2px solid #667eea; border-radius: 8px; cursor: pointer; background: ${card.flipped ? '#e8f0fe' : '#667eea'}; color: ${card.flipped ? '#667eea' : 'white'};`;
+        btn.onclick = () => flipMemoryCard(idx);
+        grid.appendChild(btn);
+    });
+}
+
+function flipMemoryCard(idx) {
+    if (window.memoryCards[idx].flipped || window.firstCard === idx) return;
+    window.memoryCards[idx].flipped = true;
+    
+    if (window.firstCard === null) {
+        window.firstCard = idx;
+        renderMemoryGrid();
+    } else {
+        if (window.memoryCards[idx].value === window.memoryCards[window.firstCard].value) {
+            window.matched++;
+            document.getElementById('matchCount').textContent = window.matched;
+            if (window.matched === 6) showToast('🎉 You won!', 'success');
+            window.firstCard = null;
+            renderMemoryGrid();
+        } else {
+            setTimeout(() => {
+                window.memoryCards[idx].flipped = false;
+                window.memoryCards[window.firstCard].flipped = false;
+                window.firstCard = null;
+                renderMemoryGrid();
+            }, 1000);
+        }
+    }
+}
+
+function loadPatternFinder() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔍 Pattern Finder</h3>
+            <div class="form-group">
+                <label>Enter numbers or text</label>
+                <input type="text" id="patternInput" placeholder="e.g., 1,2,2,3,3,3,4,4,4,4" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <button onclick="findPatterns()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Find Patterns</button>
+            <div id="patternResult" style="padding: 15px; background: white; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function findPatterns() {
+    const input = document.getElementById('patternInput').value;
+    const items = input.split(',').map(s => s.trim());
+    const patterns = {};
+    
+    items.forEach(item => {
+        patterns[item] = (patterns[item] || 0) + 1;
+    });
+    
+    let result = 'Patterns Found:\n';
+    Object.entries(patterns).sort((a, b) => b[1] - a[1]).forEach(([item, count]) => {
+        result += `"${item}" appears ${count} time${count > 1 ? 's' : ''}\n`;
+    });
+    
+    document.getElementById('patternResult').textContent = result;
+    showToast('✓ Patterns found!', 'success');
+}
+
+// ==================== NEW TOOLS - DATA TOOLS ====================
+function loadGraphMaker() {
+    let html = `
+        <div class="tool-form">
+            <h3>📊 Graph Maker</h3>
+            <div class="form-group">
+                <label>Enter numbers (comma-separated)</label>
+                <input type="text" id="graphInput" placeholder="e.g., 10,20,30,40,50" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <button onclick="generateGraph()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Generate Graph</button>
+            <canvas id="graphCanvas" style="width: 100%; border: 1px solid #ddd; border-radius: 8px;"></canvas>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function generateGraph() {
+    const input = document.getElementById('graphInput').value;
+    const numbers = input.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    
+    if (numbers.length === 0) {
+        showToast('⚠️ Please enter valid numbers', 'error');
+        return;
+    }
+    
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 400;
+    canvas.height = 300;
+    
+    const maxNum = Math.max(...numbers);
+    const barWidth = canvas.width / numbers.length;
+    const scale = (canvas.height - 40) / maxNum;
+    
+    ctx.fillStyle = '#f5f7fa';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    numbers.forEach((num, i) => {
+        const barHeight = num * scale;
+        const x = i * barWidth + 10;
+        const y = canvas.height - barHeight - 30;
+        
+        ctx.fillStyle = '#667eea';
+        ctx.fillRect(x, y, barWidth - 20, barHeight);
+        ctx.fillStyle = '#333';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(num, x + barWidth/2 - 10, canvas.height - 10);
+    });
+    
+    showToast('✓ Graph generated!', 'success');
+}
+
+function loadAverageCalculator() {
+    let html = `
+        <div class="tool-form">
+            <h3>📉 Average Calculator</h3>
+            <div class="form-group">
+                <label>Enter numbers (comma-separated)</label>
+                <input type="text" id="avgInput" placeholder="e.g., 10,20,30,40,50" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <button onclick="calculateAverage()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Calculate</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                    <div style="color: #666; margin-bottom: 5px;">Average</div>
+                    <div id="avgResult" style="font-size: 1.5rem; font-weight: bold; color: #667eea;">-</div>
+                </div>
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                    <div style="color: #666; margin-bottom: 5px;">Sum</div>
+                    <div id="sumResult" style="font-size: 1.5rem; font-weight: bold; color: #764ba2;">-</div>
+                </div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function calculateAverage() {
+    const input = document.getElementById('avgInput').value;
+    const numbers = input.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    
+    if (numbers.length === 0) {
+        showToast('⚠️ Please enter valid numbers', 'error');
+        return;
+    }
+    
+    const sum = numbers.reduce((a, b) => a + b, 0);
+    const avg = sum / numbers.length;
+    
+    document.getElementById('avgResult').textContent = avg.toFixed(2);
+    document.getElementById('sumResult').textContent = sum.toFixed(2);
+    showToast('✓ Calculated!', 'success');
+}
+
+function loadNumberSorter() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔢 Number Sorter</h3>
+            <div class="form-group">
+                <label>Enter numbers (comma-separated)</label>
+                <input type="text" id="sortInput" placeholder="e.g., 50,10,30,20,40" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <button onclick="sortAscending()" style="padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Sort Ascending ⬆️</button>
+                <button onclick="sortDescending()" style="padding: 12px; background: #764ba2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Sort Descending ⬇️</button>
+            </div>
+            <div style="padding: 15px; background: white; border-radius: 8px;">
+                <div style="color: #666; margin-bottom: 8px;">Result</div>
+                <div id="sortResult" style="font-size: 1.1rem; font-weight: bold; color: #667eea;">-</div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function sortAscending() {
+    const input = document.getElementById('sortInput').value;
+    const numbers = input.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    numbers.sort((a, b) => a - b);
+    document.getElementById('sortResult').textContent = numbers.join(', ');
+    showToast('✓ Sorted ascending!', 'success');
+}
+
+function sortDescending() {
+    const input = document.getElementById('sortInput').value;
+    const numbers = input.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    numbers.sort((a, b) => b - a);
+    document.getElementById('sortResult').textContent = numbers.join(', ');
+    showToast('✓ Sorted descending!', 'success');
+}
+
+function loadCSVViewer() {
+    let html = `
+        <div class="tool-form">
+            <h3>📋 CSV Viewer</h3>
+            <div class="form-group">
+                <label>Paste CSV or select file</label>
+                <textarea id="csvInput" placeholder="Paste CSV data or upload..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; resize: vertical; min-height: 100px;"></textarea>
+            </div>
+            <input type="file" id="csvFile" accept=".csv" style="width: 100%; margin-bottom: 10px;">
+            <button onclick="viewCSV()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">View as Table</button>
+            <div id="csvTable" style="overflow-x: auto; background: white; border-radius: 8px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    document.getElementById('csvFile').onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('csvInput').value = ev.target.result;
+        };
+        reader.readAsText(e.target.files[0]);
+    };
+}
+
+function viewCSV() {
+    const csv = document.getElementById('csvInput').value;
+    const rows = csv.split('\\n').filter(r => r.trim());
+    const table = document.createElement('table');
+    table.style.cssText = 'width: 100%; border-collapse: collapse;';
+    
+    rows.forEach((row, i) => {
+        const tr = document.createElement('tr');
+        const cells = row.split(',');
+        cells.forEach(cell => {
+            const tag = i === 0 ? 'th' : 'td';
+            const td = document.createElement(tag);
+            td.textContent = cell.trim();
+            td.style.cssText = 'padding: 12px; border: 1px solid #ddd; text-align: left;' + (i === 0 ? 'background: #667eea; color: white; font-weight: bold;' : '');
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+    
+    document.getElementById('csvTable').innerHTML = '';
+    document.getElementById('csvTable').appendChild(table);
+    showToast('✓ CSV loaded!', 'success');
+}
+
+// ==================== NEW TOOLS - SEARCH TOOLS ====================
+function loadTextHighlighter() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔍 Text Highlighter</h3>
+            <div class="form-group">
+                <label>Enter keyword to highlight</label>
+                <input type="text" id="highlightKeyword" placeholder="e.g., hello" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            </div>
+            <div class="form-group">
+                <label>Enter text</label>
+                <textarea id="highlightText" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="highlightText()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Highlight</button>
+            <div id="highlightResult" style="padding: 15px; background: white; border-radius: 8px; line-height: 1.8;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function highlightText() {
+    const keyword = document.getElementById('highlightKeyword').value;
+    const text = document.getElementById('highlightText').value;
+    
+    if (!keyword) {
+        showToast('⚠️ Enter a keyword', 'error');
+        return;
+    }
+    
+    const regex = new RegExp(`(${keyword})`, 'gi');
+    const highlighted = text.replace(regex, '<mark style="background-color: yellow; padding: 2px;"><strong>$1</strong></mark>');
+    
+    document.getElementById('highlightResult').innerHTML = highlighted;
+    showToast('✓ Text highlighted!', 'success');
+}
+
+function loadKeywordCounter() {
+    let html = `
+        <div class="tool-form">
+            <h3>📂 Keyword Counter</h3>
+            <div class="form-group">
+                <label>Enter keyword</label>
+                <input type="text" id="countKeyword" placeholder="e.g., the" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            </div>
+            <div class="form-group">
+                <label>Enter text</label>
+                <textarea id="countText" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="countKeyword()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Count</button>
+            <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                <div style="color: #666; margin-bottom: 8px;">Count Result</div>
+                <div id="countResult" style="font-size: 2rem; font-weight: bold; color: #667eea;">-</div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function countKeyword() {
+    const keyword = document.getElementById('countKeyword').value;
+    const text = document.getElementById('countText').value;
+    
+    if (!keyword) {
+        showToast('⚠️ Enter a keyword', 'error');
+        return;
+    }
+    
+    const regex = new RegExp(keyword, 'gi');
+    const matches = text.match(regex) || [];
+    
+    document.getElementById('countResult').textContent = matches.length;
+    showToast('✓ Counted!', 'success');
+}
+
+function loadAutocompletertool() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔠 Autocomplete Tool</h3>
+            <div class="form-group">
+                <label>Type to get suggestions</label>
+                <input type="text" id="autocompleteInput" placeholder="Start typing..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;" oninput="showAutocompleteSuggestions()">
+            </div>
+            <div style="padding: 15px; background: white; border-radius: 8px;">
+                <div style="color: #666; margin-bottom: 8px;">Suggestions</div>
+                <div id="autocompleteSuggestions" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"></div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    window.autocompleteWords = ['apple', 'application', 'about', 'above', 'absolute', 'button', 'batch', 'brother', 'background', 'broken', 'computer', 'catalog', 'category', 'captain', 'certain', 'database', 'data', 'delayed', 'define', 'depend', 'elephant', 'electric', 'enhance', 'example', 'energy', 'father', 'factor', 'feature', 'filter', 'forward'];
+}
+
+function showAutocompleteSuggestions() {
+    const input = document.getElementById('autocompleteInput').value.toLowerCase();
+    const suggestions = window.autocompleteWords.filter(w => w.startsWith(input) && input.length > 0).slice(0, 8);
+    
+    const container = document.getElementById('autocompleteSuggestions');
+    container.innerHTML = '';
+    suggestions.forEach(word => {
+        const btn = document.createElement('button');
+        btn.textContent = word;
+        btn.style.cssText = 'padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;';
+        btn.onclick = () => {
+            document.getElementById('autocompleteInput').value = word;
+            container.innerHTML = '';
+        };
+        container.appendChild(btn);
+    });
+}
+
+// ==================== NEW TOOLS - FORMAT TOOLS ====================
+function loadRemoveLineBreaks() {
+    let html = `
+        <div class="tool-form">
+            <h3>🧹 Remove Line Breaks</h3>
+            <div class="form-group">
+                <label>Enter text with line breaks</label>
+                <textarea id="linebreakInput" placeholder="Enter multiline text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="removeLineBreaks()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Convert to Single Line</button>
+            <div style="padding: 15px; background: white; border-radius: 8px;">
+                <textarea id="linebreakOutput" readonly style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 80px; background: #f5f7fa;"></textarea>
+                <button onclick="copyLinebreakText()" style="width: 100%; margin-top: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">📋 Copy Result</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function removeLineBreaks() {
+    const input = document.getElementById('linebreakInput').value;
+    const output = input.replace(/\\n/g, ' ').replace(/\\r/g, '').replace(/\\s+/g, ' ');
+    document.getElementById('linebreakOutput').value = output;
+    showToast('✓ Line breaks removed!', 'success');
+}
+
+function copyLinebreakText() {
+    const text = document.getElementById('linebreakOutput').value;
+    navigator.clipboard.writeText(text).then(() => showToast('✓ Copied!', 'success'));
+}
+
+function loadAddLineNumbers() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔄 Add Line Numbers</h3>
+            <div class="form-group">
+                <label>Enter text</label>
+                <textarea id="linenumberInput" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="addLineNumbers()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Add Numbers</button>
+            <div style="padding: 15px; background: white; border-radius: 8px;">
+                <textarea id="linenumberOutput" readonly style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; font-family: monospace; resize: vertical; min-height: 120px; background: #f5f7fa;"></textarea>
+                <button onclick="copyLinenumberText()" style="width: 100%; margin-top: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">📋 Copy Result</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function addLineNumbers() {
+    const input = document.getElementById('linenumberInput').value;
+    const lines = input.split('\\n');
+    const numbered = lines.map((line, i) => `${(i+1).toString().padStart(3, ' ')}. ${line}`).join('\\n');
+    document.getElementById('linenumberOutput').value = numbered;
+    showToast('✓ Line numbers added!', 'success');
+}
+
+function copyLinenumberText() {
+    const text = document.getElementById('linenumberOutput').value;
+    navigator.clipboard.writeText(text).then(() => showToast('✓ Copied!', 'success'));
+}
+
+function loadTextAligner() {
+    let html = `
+        <div class="tool-form">
+            <h3>📏 Text Aligner</h3>
+            <div class="form-group">
+                <label>Enter text</label>
+                <textarea id="alignInput" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                <button onclick="alignText('left')" style="padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Align Left ⬅️</button>
+                <button onclick="alignText('center')" style="padding: 12px; background: #764ba2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Center ⏺️</button>
+                <button onclick="alignText('right')" style="padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Align Right ➡️</button>
+            </div>
+            <div id="alignResult" style="padding: 15px; background: white; border-radius: 8px; min-height: 100px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function alignText(alignment) {
+    const input = document.getElementById('alignInput').value;
+    const lines = input.split('\\n');
+    const result = document.getElementById('alignResult');
+    result.style.textAlign = alignment;
+    result.textContent = input.split('\\n').join('\\n');
+    showToast(`✓ Text aligned ${alignment}!`, 'success');
+}
+
+function loadParagraphSplitter() {
+    let html = `
+        <div class="tool-form">
+            <h3>🧱 Paragraph Splitter</h3>
+            <div class="form-group">
+                <label>Enter text (separate paragraphs with . . .)</label>
+                <textarea id="paragraphInput" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="splitParagraphs()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Split Paragraphs</button>
+            <div id="paragraphResult" style="padding: 15px; background: white; border-radius: 8px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function splitParagraphs() {
+    const input = document.getElementById('paragraphInput').value;
+    const paragraphs = input.split('...').map(p => p.trim()).filter(p => p);
+    
+    const result = document.getElementById('paragraphResult');
+    result.innerHTML = paragraphs.map((p, i) => `<div style="margin-bottom: 15px; padding: 12px; background: #f5f7fa; border-radius: 6px; border-left: 4px solid #667eea;"><strong>¶ ${i+1}:</strong><br>${p}</div>`).join('');
+    showToast('✓ Paragraphs split!', 'success');
+}
+
+// ==================== NEW TOOLS - MATH TOOLS ====================
+function loadLCMHCF() {
+    let html = `
+        <div class="tool-form">
+            <h3>📐 LCM / HCF Calculator</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label>Number 1</label>
+                    <input type="number" id="lcmNum1" placeholder="Enter number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Number 2</label>
+                    <input type="number" id="lcmNum2" placeholder="Enter number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+            <button onclick="calculateLCMHCF()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Calculate</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                    <div style="color: #666; margin-bottom: 5px;">LCM</div>
+                    <div id="lcmResult" style="font-size: 1.5rem; font-weight: bold; color: #667eea;">-</div>
+                </div>
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                    <div style="color: #666; margin-bottom: 5px;">HCF (GCD)</div>
+                    <div id="hcfResult" style="font-size: 1.5rem; font-weight: bold; color: #764ba2;">-</div>
+                </div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function calculateLCMHCF() {
+    const a = parseInt(document.getElementById('lcmNum1').value);
+    const b = parseInt(document.getElementById('lcmNum2').value);
+    
+    if (isNaN(a) || isNaN(b)) {
+        showToast('⚠️ Enter valid numbers', 'error');
+        return;
+    }
+    
+    const gcd = (x, y) => y === 0 ? x : gcd(y, x % y);
+    const lcm = (x, y) => (x * y) / gcd(x, y);
+    
+    document.getElementById('hcfResult').textContent = gcd(a, b);
+    document.getElementById('lcmResult').textContent = lcm(a, b);
+    showToast('✓ Calculated!', 'success');
+}
+
+function loadTriangleChecker() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔺 Triangle Type Checker</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label>Side A</label>
+                    <input type="number" id="triangleA" placeholder="Side A" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Side B</label>
+                    <input type="number" id="triangleB" placeholder="Side B" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Side C</label>
+                    <input type="number" id="triangleC" placeholder="Side C" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+            <button onclick="checkTriangleType()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Check Type</button>
+            <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                <div id="triangleResult" style="font-size: 1.2rem; font-weight: bold; color: #667eea;">-</div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function checkTriangleType() {
+    const a = parseFloat(document.getElementById('triangleA').value);
+    const b = parseFloat(document.getElementById('triangleB').value);
+    const c = parseFloat(document.getElementById('triangleC').value);
+    
+    if (isNaN(a) || isNaN(b) || isNaN(c)) {
+        showToast('⚠️ Enter valid sides', 'error');
+        return;
+    }
+    
+    if (a + b <= c || b + c <= a || c + a <= b) {
+        document.getElementById('triangleResult').textContent = '❌ Not a valid triangle';
+        return;
+    }
+    
+    let type = '';
+    if (a === b && b === c) type = '🟣 Equilateral (all sides equal)';
+    else if (a === b || b === c || c === a) type = '🟠 Isosceles (two sides equal)';
+    else type = '🟡 Scalene (all sides different)';
+    
+    document.getElementById('triangleResult').textContent = type;
+    showToast('✓ Checked!', 'success');
+}
+
+function loadDistanceCalculator() {
+    let html = `
+        <div class="tool-form">
+            <h3>📏 Distance Calculator</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <div style="margin-bottom: 8px; font-weight: bold;">Point 1 (x1, y1)</div>
+                    <input type="number" id="dist_x1" placeholder="x1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px;">
+                    <input type="number" id="dist_y1" placeholder="y1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <div style="margin-bottom: 8px; font-weight: bold;">Point 2 (x2, y2)</div>
+                    <input type="number" id="dist_x2" placeholder="x2" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px;">
+                    <input type="number" id="dist_y2" placeholder="y2" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+            <button onclick="calculateDistance()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Calculate Distance</button>
+            <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                <div style="color: #666; margin-bottom: 5px;">Distance</div>
+                <div id="distanceResult" style="font-size: 1.5rem; font-weight: bold; color: #667eea;">-</div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function calculateDistance() {
+    const x1 = parseFloat(document.getElementById('dist_x1').value);
+    const y1 = parseFloat(document.getElementById('dist_y1').value);
+    const x2 = parseFloat(document.getElementById('dist_x2').value);
+    const y2 = parseFloat(document.getElementById('dist_y2').value);
+    
+    if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
+        showToast('⚠️ Enter valid coordinates', 'error');
+        return;
+    }
+    
+    const distance = Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+    document.getElementById('distanceResult').textContent = distance.toFixed(2);
+    showToast('✓ Calculated!', 'success');
+}
+
+function loadEquationSolver() {
+    let html = `
+        <div class="tool-form">
+            <h3>🧮 Equation Solver (ax + b = 0)</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label>Coefficient a</label>
+                    <input type="number" id="equationA" placeholder="Enter a" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Coefficient b</label>
+                    <input type="number" id="equationB" placeholder="Enter b" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+            <button onclick="solveEquation()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Solve</button>
+            <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                <div style="color: #666; margin-bottom: 5px;">Solution (x)</div>
+                <div id="equationResult" style="font-size: 1.5rem; font-weight: bold; color: #667eea;">-</div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function solveEquation() {
+    const a = parseFloat(document.getElementById('equationA').value);
+    const b = parseFloat(document.getElementById('equationB').value);
+    
+    if (isNaN(a) || isNaN(b)) {
+        showToast('⚠️ Enter valid numbers', 'error');
+        return;
+    }
+    
+    if (a === 0) {
+        document.getElementById('equationResult').textContent = b === 0 ? 'Infinite solutions' : 'No solution';
+        return;
+    }
+    
+    const x = -b / a;
+    document.getElementById('equationResult').textContent = x.toFixed(2);
+    showToast('✓ Solved!', 'success');
+}
+
+// ==================== NEW TOOLS - STORAGE TOOLS ====================
+function loadLocalNotesSaver() {
+    const notes = JSON.parse(localStorage.getItem('infinityNotes')) || [];
+    let html = `
+        <div class="tool-form">
+            <h3>📝 Local Notes Saver</h3>
+            <div class="form-group">
+                <input type="text" id="noteTitle" placeholder="Note title..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+                <textarea id="noteContent" placeholder="Write your note..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="saveNote()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Save Note</button>
+            <div id="notesList" style="display: grid; gap: 10px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    renderNotes();
+}
+
+function saveNote() {
+    const title = document.getElementById('noteTitle').value;
+    const content = document.getElementById('noteContent').value;
+    
+    if (!title || !content) {
+        showToast('⚠️ Enter title and content', 'error');
+        return;
+    }
+    
+    const notes = JSON.parse(localStorage.getItem('infinityNotes')) || [];
+    notes.push({id: Date.now(), title, content});
+    localStorage.setItem('infinityNotes', JSON.stringify(notes));
+    
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteContent').value = '';
+    renderNotes();
+    showToast('✓ Note saved!', 'success');
+}
+
+function renderNotes() {
+    const notes = JSON.parse(localStorage.getItem('infinityNotes')) || [];
+    const list = document.getElementById('notesList');
+    list.innerHTML = notes.map(note => `
+        <div style="padding: 12px; background: #f5f7fa; border-left: 4px solid #667eea; border-radius: 6px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">${note.title}</div>
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">${note.content.substring(0, 50)}...</div>
+            <button onclick="deleteNote(${note.id})" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">Delete</button>
+        </div>
+    `).join('');
+}
+
+function deleteNote(id) {
+    const notes = JSON.parse(localStorage.getItem('infinityNotes')) || [];
+    const filtered = notes.filter(n => n.id !== id);
+    localStorage.setItem('infinityNotes', JSON.stringify(filtered));
+    renderNotes();
+    showToast('✓ Note deleted!', 'success');
+}
+
+function loadLocalPasswordSaver() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔐 Local Password Saver (Demo - Not Encrypted)</h3>
+            <div class="form-group" style="background: #fff3cd; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">⚠️ WARNING: For demo only. Use real password managers for security.</div>
+            <input type="text" id="passTitle" placeholder="Service/Site name..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            <input type="text" id="passUsername" placeholder="Username..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            <input type="password" id="passPassword" placeholder="Password..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            <button onclick="savePassword()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Save Password</button>
+            <div id="passwordsList" style="display: grid; gap: 10px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    renderPasswords();
+}
+
+function savePassword() {
+    const title = document.getElementById('passTitle').value;
+    const username = document.getElementById('passUsername').value;
+    const password = document.getElementById('passPassword').value;
+    
+    if (!title || !username || !password) {
+        showToast('⚠️ Fill all fields', 'error');
+        return;
+    }
+    
+    const passwords = JSON.parse(localStorage.getItem('infinityPasswords')) || [];
+    passwords.push({id: Date.now(), title, username, password});
+    localStorage.setItem('infinityPasswords', JSON.stringify(passwords));
+    
+    document.getElementById('passTitle').value = '';
+    document.getElementById('passUsername').value = '';
+    document.getElementById('passPassword').value = '';
+    renderPasswords();
+    showToast('✓ Password saved!', 'success');
+}
+
+function renderPasswords() {
+    const passwords = JSON.parse(localStorage.getItem('infinityPasswords')) || [];
+    const list = document.getElementById('passwordsList');
+    list.innerHTML = passwords.map(pass => `
+        <div style="padding: 12px; background: #f5f7fa; border-left: 4px solid #dc3545; border-radius: 6px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">${pass.title}</div>
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">👤 ${pass.username}</div>
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">🔑 ${'*'.repeat(pass.password.length)}</div>
+            <button onclick="deletePassword(${pass.id})" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">Delete</button>
+        </div>
+    `).join('');
+}
+
+function deletePassword(id) {
+    const passwords = JSON.parse(localStorage.getItem('infinityPasswords')) || [];
+    const filtered = passwords.filter(p => p.id !== id);
+    localStorage.setItem('infinityPasswords', JSON.stringify(filtered));
+    renderPasswords();
+    showToast('✓ Password deleted!', 'success');
+}
+
+function loadClipboardHistory() {
+    let html = `
+        <div class="tool-form">
+            <h3>📋 Clipboard History (Session)</h3>
+            <div class="form-group">
+                <label>Copy text, then paste items from history</label>
+                <textarea id="clipboardInput" placeholder="Paste something..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 80px;"></textarea>
+            </div>
+            <button onclick="addToClipboardHistory()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Save to History</button>
+            <div style="margin-bottom: 15px;">
+                <div style="font-weight: bold; margin-bottom: 8px;">History</div>
+                <div id="clipboardHistory" style="display: grid; gap: 8px;"></div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    window.clipboardItems = [];
+    renderClipboardHistory();
+}
+
+function addToClipboardHistory() {
+    const text = document.getElementById('clipboardInput').value;
+    if (!text) return;
+    
+    window.clipboardItems.unshift({id: Date.now(), text});
+    if (window.clipboardItems.length > 10) window.clipboardItems.pop();
+    renderClipboardHistory();
+    showToast('✓ Added to history!', 'success');
+}
+
+function renderClipboardHistory() {
+    const history = document.getElementById('clipboardHistory');
+    history.innerHTML = window.clipboardItems.map(item => `
+        <div style="padding: 10px; background: #f5f7fa; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.9rem; color: #666;">${item.text.substring(0, 30)}...</span>
+            <button onclick="copyClipboardItem('${item.text.replace(/'/g, "\\'")}')" style="padding: 6px 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">Copy</button>
+        </div>
+    `).join('');
+}
+
+function copyClipboardItem(text) {
+    navigator.clipboard.writeText(text).then(() => showToast('✓ Copied!', 'success'));
+}
+
+// ==================== NEW TOOLS - DECISION TOOLS ====================
+function loadSpinWheel() {
+    let html = `
+        <div class="tool-form">
+            <h3>🎡 Spin Wheel</h3>
+            <div class="form-group">
+                <label>Enter options (comma-separated)</label>
+                <input type="text" id="wheelOptions" placeholder="e.g., Option1, Option2, Option3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            </div>
+            <button onclick="prepareWheel()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Prepare Wheel</button>
+            <canvas id="wheelCanvas" style="width: 100%; max-width: 400px; height: 400px; border: 2px solid #667eea; border-radius: 8px; margin: 20px auto; display: block;"></canvas>
+            <button onclick="spinTheWheel()" id="spinBtn" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">🎡 SPIN!</button>
+            <div id="wheelResult" style="text-align: center; font-size: 1.2rem; font-weight: bold; color: #667eea;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function prepareWheel() {
+    const input = document.getElementById('wheelOptions').value;
+    const options = input.split(',').map(o => o.trim()).filter(o => o);
+    window.wheelOptions = options;
+    window.wheelRotation = 0;
+    drawWheel();
+    showToast('✓ Wheel ready to spin!', 'success');
+}
+
+function drawWheel() {
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const radius = canvas.width / 2 - 5;
+    const options = window.wheelOptions;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(radius + 5, radius + 5);
+    ctx.rotate(window.wheelRotation);
+    
+    const sliceAngle = (Math.PI * 2) / options.length;
+    const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#fee140', '#30b0ff'];
+    
+    options.forEach((option, i) => {
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, i * sliceAngle, (i + 1) * sliceAngle);
+        ctx.lineTo(0, 0);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+        
+        ctx.save();
+        ctx.rotate(i * sliceAngle + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText(option, radius - 30, 0);
+        ctx.restore();
+    });
+    
+    ctx.translate(-radius - 5, -radius - 5);
+}
+
+function spinTheWheel() {
+    if (window.wheelOptions.length === 0) {
+        showToast('⚠️ Prepare wheel first!', 'error');
+        return;
+    }
+    
+    document.getElementById('spinBtn').disabled = true;
+    const spins = Math.floor(Math.random() * 5) + 5;
+    const totalRotation = spins * Math.PI * 2 + Math.random() * Math.PI * 2;
+    window.wheelRotation = totalRotation;
+    
+    const segmentAngle = Math.PI * 2 / window.wheelOptions.length;
+    const selectedIndex = Math.floor((totalRotation % (Math.PI * 2)) / segmentAngle) % window.wheelOptions.length;
+    
+    drawWheel();
+    setTimeout(() => {
+        document.getElementById('wheelResult').textContent = '🎯 Selected: ' + window.wheelOptions[selectedIndex];
+        document.getElementById('spinBtn').disabled = false;
+        showToast('✓ Result selected!', 'success');
+    }, 500);
+}
+
+function loadYesNoGenerator() {
+    let html = `
+        <div class="tool-form">
+            <h3>🤔 Yes / No Generator</h3>
+            <div class="form-group">
+                <label>Ask a question</label>
+                <input type="text" id="yesnoQuestion" placeholder="Ask your question..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <button onclick="generateYesNo()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 20px;">Get Answer</button>
+            <div style="padding: 30px; background: white; border-radius: 8px; text-align: center;">
+                <div style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Magic Ball Says...</div>
+                <div id="yesnoResult" style="font-size: 2rem; font-weight: bold; color: #667eea; min-height: 40px;"></div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function generateYesNo() {
+    const responses = ['Yes ✓', 'No ✗', 'Maybe 🤷', 'Absolutely!', 'Definitely not', 'Ask again later', 'Signs point to yes', 'Don\'t count on it'];
+    const answer = responses[Math.floor(Math.random() * responses.length)];
+    document.getElementById('yesnoResult').textContent = answer;
+    showToast('✓ Magic ball answered!', 'success');
+}
+
+function loadChoiceComparator() {
+    let html = `
+        <div class="tool-form">
+            <h3>📊 Choice Comparator</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label>Choice A - Pros (one per line)</label>
+                    <textarea id="choiceAPros" placeholder="Pro 1&#10;Pro 2&#10;Pro 3..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; resize: vertical; min-height: 100px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Choice A - Cons</label>
+                    <textarea id="choiceACons" placeholder="Con 1&#10;Con 2&#10;Con 3..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; resize: vertical; min-height: 100px;"></textarea>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label>Choice B - Pros</label>
+                    <textarea id="choiceBPros" placeholder="Pro 1&#10;Pro 2&#10;Pro 3..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; resize: vertical; min-height: 100px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Choice B - Cons</label>
+                    <textarea id="choiceBCons" placeholder="Con 1&#10;Con 2&#10;Con 3..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; resize: vertical; min-height: 100px;"></textarea>
+                </div>
+            </div>
+            <button onclick="compareChoices()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Compare</button>
+            <div id="comparisonResult" style="padding: 15px; background: white; border-radius: 8px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function compareChoices() {
+    const aProCount = document.getElementById('choiceAPros').value.split('\\n').filter(l => l.trim()).length;
+    const aConCount = document.getElementById('choiceACons').value.split('\\n').filter(l => l.trim()).length;
+    const bProCount = document.getElementById('choiceBPros').value.split('\\n').filter(l => l.trim()).length;
+    const bConCount = document.getElementById('choiceBCons').value.split('\\n').filter(l => l.trim()).length;
+    
+    const aScore = aProCount - (aConCount * 0.7);
+    const bScore = bProCount - (bConCount * 0.7);
+    
+    let result = `<div style="text-align: center;">
+        <div style="margin-bottom: 20px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">Choice A Score</div>
+            <div style="font-size: 1.5rem; color: #667eea; font-weight: bold;">${aScore.toFixed(1)}</div>
+        </div>
+        <div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Choice B Score</div>
+            <div style="font-size: 1.5rem; color: #764ba2; font-weight: bold;">${bScore.toFixed(1)}</div>
+        </div>
+        <div style="margin-top: 20px; padding: 15px; background: #f5f7fa; border-radius: 6px;">
+            <div style="font-weight: bold;">Recommendation</div>
+            <div style="font-size: 1.2rem; margin-top: 8px;">${aScore > bScore ? '✓ Choice A looks better!' : bScore > aScore ? '✓ Choice B looks better!' : '⚖️ Both are equally good!'}</div>
+        </div>
+    </div>`;
+    
+    document.getElementById('comparisonResult').innerHTML = result;
+    showToast('✓ Comparison complete!', 'success');
+}
+
+// ==================== NEW TOOLS - PLANNER TOOLS ====================
+function loadCalendarViewer() {
+    let html = `
+        <div class="tool-form">
+            <h3>📅 Calendar Viewer</h3>
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <select id="calendarMonth" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    ${Array(12).fill().map((_, i) => `<option value="${i}">${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i]}</option>`).join('')}
+                </select>
+                <select id="calendarYear" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    ${Array(5).fill().map((_, i) => {const y = new Date().getFullYear() - 2 + i; return `<option value="${y}" ${y === new Date().getFullYear() ? 'selected' : ''}>${y}</option>`}).join('')}
+                </select>
+            </div>
+            <button onclick="showCalendar()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Show Calendar</button>
+            <div id="calendarDisplay" style="background: white; padding: 20px; border-radius: 8px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    showCalendar();
+}
+
+function showCalendar() {
+    const month = parseInt(document.getElementById('calendarMonth').value);
+    const year = parseInt(document.getElementById('calendarYear').value);
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    let calendar = `<div style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem;">${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][month]} ${year}</div>`;
+    calendar += '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;">';
+    
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+        calendar += `<div style="font-weight: bold; padding: 8px; background: #667eea; color: white; border-radius: 4px;">${day}</div>`;
+    });
+    
+    for (let i = 0; i < firstDay; i++) {
+        calendar += '<div></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
+        calendar += `<div style="padding: 10px; background: ${isToday ? '#ffc107' : '#f5f7fa'}; border-radius: 4px; font-weight: ${isToday ? 'bold' : 'normal'};">${day}</div>`;
+    }
+    
+    calendar += '</div>';
+    document.getElementById('calendarDisplay').innerHTML = calendar;
+}
+
+function loadDailyPlanner() {
+    let html = `
+        <div class="tool-form">
+            <h3>📝 Daily Planner</h3>
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="plannerTask" placeholder="Add a task..." style="padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                <button onclick="addPlannerTask()" style="padding: 12px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; white-space: nowrap;">Add Task</button>
+            </div>
+            <div id="plannerTasks" style="display: grid; gap: 10px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    window.plannerTasks = [];
+    renderPlannerTasks();
+}
+
+function addPlannerTask() {
+    const task = document.getElementById('plannerTask').value.trim();
+    if (!task) return;
+    
+    window.plannerTasks.unshift({id: Date.now(), text: task, done: false});
+    document.getElementById('plannerTask').value = '';
+    renderPlannerTasks();
+    showToast('✓ Task added!', 'success');
+}
+
+function renderPlannerTasks() {
+    const container = document.getElementById('plannerTasks');
+    container.innerHTML = window.plannerTasks.map(task => `
+        <div style="padding: 12px; background: ${task.done ? '#d4edda' : '#f5f7fa'}; border-left: 4px solid ${task.done ? '#28a745' : '#667eea'}; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${task.id})" style="margin-right: 10px;">
+                <span style="text-decoration: ${task.done ? 'line-through' : 'none'}; color: ${task.done ? '#999' : '#333'};">${task.text}</span>
+            </div>
+            <button onclick="deletePlannerTask(${task.id})" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">Delete</button>
+        </div>
+    `).join('');
+}
+
+function toggleTask(id) {
+    window.plannerTasks.find(t => t.id === id).done = !window.plannerTasks.find(t => t.id === id).done;
+    renderPlannerTasks();
+}
+
+function deletePlannerTask(id) {
+    window.plannerTasks = window.plannerTasks.filter(t => t.id !== id);
+    renderPlannerTasks();
+    showToast('✓ Task deleted!', 'success');
+}
+
+function loadReminderAlert() {
+    let html = `
+        <div class="tool-form">
+            <h3>⏰ Reminder Alert</h3>
+            <div class="form-group">
+                <label>Reminder text</label>
+                <input type="text" id="reminderText" placeholder="What to remind you about..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+            </div>
+            <div class="form-group">
+                <label>Minutes until reminder</label>
+                <input type="number" id="reminderTime" min="1" max="1440" value="5" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <button onclick="setReminder()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Set Reminder</button>
+            <div id="reminderStatus" style="padding: 15px; background: white; border-radius: 8px; text-align: center; color: #667eea; font-weight: bold;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function setReminder() {
+    const text = document.getElementById('reminderText').value;
+    const minutes = parseInt(document.getElementById('reminderTime').value);
+    
+    if (!text || isNaN(minutes)) {
+        showToast('⚠️ Fill all fields', 'error');
+        return;
+    }
+    
+    const ms = minutes * 60 * 1000;
+    setTimeout(() => {
+        alert(`⏰ REMINDER: ${text}`);
+        showToast(`⏰ Reminder: ${text}`, 'success');
+    }, ms);
+    
+    document.getElementById('reminderStatus').textContent = `✓ Reminder set for ${minutes} minute${minutes > 1 ? 's' : ''}!`;
+    showToast(`✓ Reminder set!`, 'success');
+}
+
+// ==================== NEW TOOLS - WEB TOOLS ====================
+function loadURLEncoder() {
+    let html = `
+        <div class="tool-form">
+            <h3>🔗 URL Encoder / Decoder</h3>
+            <div class="form-group">
+                <label>Enter text or URL</label>
+                <textarea id="urlInput" placeholder="Enter text to encode or encoded URL to decode..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 100px;"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <button onclick="encodeURL()" style="padding: 12px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Encode 🔒</button>
+                <button onclick="decodeURL()" style="padding: 12px; background: #764ba2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Decode 🔓</button>
+            </div>
+            <div style="padding: 15px; background: white; border-radius: 8px;">
+                <textarea id="urlOutput" readonly style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: monospace; resize: vertical; min-height: 100px; background: #f5f7fa;"></textarea>
+                <button onclick="copyURLResult()" style="width: 100%; margin-top: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">📋 Copy Result</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function encodeURL() {
+    const input = document.getElementById('urlInput').value;
+    const encoded = encodeURIComponent(input);
+    document.getElementById('urlOutput').value = encoded;
+    showToast('✓ Encoded!', 'success');
+}
+
+function decodeURL() {
+    const input = document.getElementById('urlInput').value;
+    try {
+        const decoded = decodeURIComponent(input);
+        document.getElementById('urlOutput').value = decoded;
+        showToast('✓ Decoded!', 'success');
+    } catch (e) {
+        showToast('⚠️ Invalid encoded text', 'error');
+    }
+}
+
+function copyURLResult() {
+    const text = document.getElementById('urlOutput').value;
+    navigator.clipboard.writeText(text).then(() => showToast('✓ Copied!', 'success'));
+}
+
+function loadURLExtractor() {
+    let html = `
+        <div class="tool-form">
+            <h3>🌍 URL Parameter Extractor</h3>
+            <div class="form-group">
+                <label>Paste URL</label>
+                <textarea id="urlToParse" placeholder="e.g., https://example.com?name=John&age=30" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 100px;"></textarea>
+            </div>
+            <button onclick="extractURLParams()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Extract Parameters</button>
+            <div id="paramsResult" style="padding: 15px; background: white; border-radius: 8px; white-space: pre-wrap; word-break: break-all; font-family: monospace; font-size: 0.9rem;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function extractURLParams() {
+    const url = document.getElementById('urlToParse').value;
+    try {
+        const urlObj = new URL(url);
+        const params = Object.fromEntries(urlObj.searchParams);
+        let result = 'Parameters:\\n\\n';
+        Object.entries(params).forEach(([key, value]) => {
+            result += `${key}: ${value}\\n`;
+        });
+        document.getElementById('paramsResult').textContent = result || 'No parameters found';
+        showToast('✓ Parameters extracted!', 'success');
+    } catch (e) {
+        showToast('⚠️ Invalid URL', 'error');
+    }
+}
+
+function loadMetaTagViewer() {
+    let html = `
+        <div class="tool-form">
+            <h3>📄 Meta Tag Viewer</h3>
+            <div class="form-group">
+                <label>Paste URL or HTML</label>
+                <textarea id="metaInput" placeholder="Paste HTML source or URL..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; resize: vertical; min-height: 120px;"></textarea>
+            </div>
+            <button onclick="extractMetaTags()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Extract Meta Tags</button>
+            <div id="metaResult" style="padding: 15px; background: white; border-radius: 8px;"></div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function extractMetaTags() {
+    const input = document.getElementById('metaInput').value;
+    const regexes = {
+        'Title': /<title>([^<]*)<\/title>/i,
+        'Description': /<meta\\s+name="description"\\s+content="([^"]*)">/i,
+        'Keywords': /<meta\\s+name="keywords"\\s+content="([^"]*)">/i,
+        'Author': /<meta\\s+name="author"\\s+content="([^"]*)">/i,
+        'Viewport': /<meta\\s+name="viewport"\\s+content="([^"]*)">/i
+    };
+    
+    let result = '<div>';
+    Object.entries(regexes).forEach(([name, regex]) => {
+        const match = input.match(regex);
+        const value = match ? match[1] : 'Not found';
+        result += `<div style="margin-bottom: 12px; padding: 12px; background: #f5f7fa; border-radius: 6px;">
+            <div style="font-weight: bold; color: #667eea; margin-bottom: 4px;">${name}</div>
+            <div style="color: #666; word-break: break-all;">${value}</div>
+        </div>`;
+    });
+    result += '</div>';
+    
+    document.getElementById('metaResult').innerHTML = result;
+    showToast('✓ Meta tags extracted!', 'success');
 }
 
 // ==================== UTILITY FUNCTIONS ====================
