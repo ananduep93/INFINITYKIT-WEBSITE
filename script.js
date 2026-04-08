@@ -23,13 +23,6 @@ const baseFolders = [
         tools: ['unitconverter', 'passwordgen', 'passwordsaver', 'passwordstrength', 'randomnamepicker']
     },
     {
-        id: 'smart-tools',
-        name: 'Smart Tools',
-        icon: '🤖',
-        emoji: '🤖',
-        tools: ['aiplanner', 'doubtsolver', 'skillbuilder']
-    },
-    {
         id: 'pdf-tools',
         name: 'PDF Tools',
         icon: '📄',
@@ -79,13 +72,6 @@ const baseFolders = [
         tools: ['texttospeech']
     },
     {
-        id: 'writing-tools',
-        name: 'Writing Tools',
-        icon: '✍️',
-        emoji: '✍️',
-        tools: ['wordcounter', 'textreverse', 'caseconverter', 'removeduplicates']
-    },
-    {
         id: 'brain-tools',
         name: 'Brain Tools',
         icon: '🧠',
@@ -132,7 +118,7 @@ function updateFolders() {
     // Update favorites folder with currently favorited tools
     const favFolder = folders.find(f => f.isFavorites);
     if (favFolder) {
-        favFolder.tools = Array.isArray(appSettings.favorites) ? [...appSettings.favorites] : [];
+        favFolder.tools = appSettings.favorites;
     }
 }
 
@@ -339,31 +325,6 @@ const tools = [
         icon: '🧹',
         description: 'Remove repeated words'
     },
-    // Brain Tools
-    {
-        id: 'sudokugenerator',
-        name: 'Sudoku Generator',
-        icon: '🧩',
-        description: 'Generate Sudoku puzzles'
-    },
-    {
-        id: 'numberguessgame',
-        name: 'Number Guess Game',
-        icon: '🔢',
-        description: 'Guess the random number'
-    },
-    {
-        id: 'memorygrid',
-        name: 'Memory Grid Game',
-        icon: '🧠',
-        description: 'Match memory pairs'
-    },
-    {
-        id: 'patternfinder',
-        name: 'Pattern Finder',
-        icon: '🔍',
-        description: 'Find repeating patterns'
-    },
     // Data Tools
     {
         id: 'graphmaker',
@@ -493,13 +454,7 @@ const recentSearches = document.getElementById('recentSearches');
 // App State
 let calcDisplay = '';
 let currentFolder = null;
-let recentSearchesList = [];
-try {
-    const savedRecentSearches = JSON.parse(localStorage.getItem('recentSearches'));
-    recentSearchesList = Array.isArray(savedRecentSearches) ? savedRecentSearches : [];
-} catch (e) {
-    recentSearchesList = [];
-}
+let recentSearchesList = JSON.parse(localStorage.getItem('recentSearches')) || [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -517,8 +472,7 @@ function renderFolders() {
     folders.forEach(folder => {
         const card = document.createElement('div');
         card.className = 'folder-card';
-        const folderTools = Array.isArray(folder.tools) ? folder.tools : [];
-        const toolCount = folderTools.length;
+        const toolCount = folder.tools.length;
         card.innerHTML = `
             <div class="folder-icon">${folder.emoji}</div>
             <div class="folder-name">${folder.name}</div>
@@ -546,9 +500,8 @@ function openFolder(folder) {
 // Render tools in a folder
 function renderToolsInFolder(folder) {
     toolsGrid.innerHTML = '';
-    const folderTools = Array.isArray(folder.tools) ? folder.tools : [];
     
-    folderTools.forEach(toolId => {
+    folder.tools.forEach(toolId => {
         const tool = tools.find(t => t.id === toolId);
         if (!tool) return;
 
@@ -681,6 +634,9 @@ function addToRecentSearches(search) {
 function openTool(toolId, toolName, toolIcon) {
     toolTitle.textContent = `${toolIcon} ${toolName}`;
     toolContent.innerHTML = '';
+    
+    // Track tool usage
+    trackToolUsage(toolId);
 
     switch(toolId) {
         case 'calculator':
@@ -772,19 +728,6 @@ function openTool(toolId, toolName, toolIcon) {
             break;
         case 'removeduplicates':
             loadRemoveDuplicates();
-            break;
-        // Brain Tools
-        case 'sudokugenerator':
-            loadSudokuGenerator();
-            break;
-        case 'numberguessgame':
-            loadNumberGuessGame();
-            break;
-        case 'memorygrid':
-            loadMemoryGrid();
-            break;
-        case 'patternfinder':
-            loadPatternFinder();
             break;
         // Data Tools
         case 'graphmaker':
@@ -1406,7 +1349,7 @@ function loadPasswordSaver() {
                 <div class="password-item">
                     <div class="password-item-header">
                         <span class="password-app-name">${escapeHtml(pwd.appName)}</span>
-                        <button class="password-toggle" onclick="toggleSavedPasswordVisibility(${index}, event)">Show</button>
+                        <button class="password-toggle" onclick="togglePasswordVisibility(${index})">Show</button>
                     </div>
                     <div class="password-text" id="pwd${index}" style="display: none;">
                         ${escapeHtml(pwd.password)}
@@ -1425,10 +1368,9 @@ function loadPasswordSaver() {
     toolContent.innerHTML = html;
 }
 
-function toggleSavedPasswordVisibility(index, event) {
+function togglePasswordVisibility(index) {
     const element = document.getElementById(`pwd${index}`);
-    const button = event?.target;
-    if (!element || !button) return;
+    const button = event.target;
     
     if (element.style.display === 'none') {
         element.style.display = 'block';
@@ -1661,7 +1603,7 @@ function pad(num) {
 // Helper: Create drag-drop file upload area
 function createFileUploadArea(acceptTypes, maxFiles = 1, helpText = '') {
     return `
-        <div class="pdf-upload-area" ondrop="handleBasicPDFDrop(event)" ondragover="event.preventDefault()" ondragleave="event.target.classList.remove('drag-active')" ondragenter="event.target.classList.add('drag-active')">
+        <div class="pdf-upload-area" ondrop="handlePDFDrop(event)" ondragover="event.preventDefault()" ondragleave="event.target.classList.remove('drag-active')" ondragenter="event.target.classList.add('drag-active')">
             <div class="pdf-upload-content">
                 <div class="pdf-upload-icon">📁</div>
                 <div class="pdf-upload-text">
@@ -1677,7 +1619,7 @@ function createFileUploadArea(acceptTypes, maxFiles = 1, helpText = '') {
 }
 
 // Drag drop handler
-function handleBasicPDFDrop(event) {
+function handlePDFDrop(event) {
     event.preventDefault();
     event.target.classList.remove('drag-active');
     
@@ -1713,7 +1655,7 @@ function showFilePreview(files) {
 }
 
 // Progress indicator
-function buildProgressMarkup(message, progress = 0) {
+function showProgress(message, progress = 0) {
     return `
         <div class="pdf-progress">
             <div class="progress-message">${message}</div>
@@ -3157,56 +3099,26 @@ function copyDuplicateText() {
 }
 
 // ========== SETTINGS SYSTEM ==========
-function getDefaultSettings() {
-    return {
-        theme: 'light',
-        fontSize: 'medium',
-        cardSize: 'normal',
-        animationsEnabled: true,
-        favorites: [],
-        recentTools: [],
-        usageStats: {},
-        pinnedTools: []
-    };
-}
-
-function normalizeSettings(rawSettings) {
-    const merged = {
-        ...getDefaultSettings(),
-        ...(rawSettings && typeof rawSettings === 'object' ? rawSettings : {})
-    };
-
-    if (!['light', 'dark'].includes(merged.theme)) merged.theme = 'light';
-    if (!['small', 'medium', 'large'].includes(merged.fontSize)) merged.fontSize = 'medium';
-    if (!['compact', 'normal'].includes(merged.cardSize)) merged.cardSize = 'normal';
-
-    merged.animationsEnabled = merged.animationsEnabled !== false;
-    merged.favorites = Array.isArray(merged.favorites) ? merged.favorites : [];
-    merged.recentTools = Array.isArray(merged.recentTools) ? merged.recentTools : [];
-    merged.pinnedTools = Array.isArray(merged.pinnedTools) ? merged.pinnedTools : [];
-    merged.usageStats = merged.usageStats && typeof merged.usageStats === 'object' && !Array.isArray(merged.usageStats)
-        ? merged.usageStats
-        : {};
-
-    return merged;
-}
-
-let appSettings = getDefaultSettings();
+let appSettings = {
+    theme: 'light',
+    fontSize: 'medium',
+    cardSize: 'normal',
+    animationsEnabled: true,
+    favorites: [],
+    recentTools: [],
+    usageStats: {},
+    pinnedTools: []
+};
 
 function loadSettings() {
     const saved = localStorage.getItem('infinityKitSettings');
     if (saved) {
         try {
-            appSettings = normalizeSettings(JSON.parse(saved));
+            appSettings = JSON.parse(saved);
         } catch (e) {
             console.log('Error loading settings, using defaults');
-            appSettings = getDefaultSettings();
         }
-    } else {
-        appSettings = getDefaultSettings();
     }
-
-    appSettings = normalizeSettings(appSettings);
     updateSettingsUI();
 }
 
@@ -3238,20 +3150,16 @@ function applySettings() {
 
 function updateSettingsUI() {
     // Update theme radio buttons
-    const themeInput = document.querySelector(`input[name="theme"][value="${appSettings.theme}"]`);
-    if (themeInput) themeInput.checked = true;
+    document.querySelector(`input[name="theme"][value="${appSettings.theme}"]`).checked = true;
     
     // Update font size radio buttons
-    const fontSizeInput = document.querySelector(`input[name="fontSize"][value="${appSettings.fontSize}"]`);
-    if (fontSizeInput) fontSizeInput.checked = true;
+    document.querySelector(`input[name="fontSize"][value="${appSettings.fontSize}"]`).checked = true;
     
     // Update card size radio buttons
-    const cardSizeInput = document.querySelector(`input[name="cardSize"][value="${appSettings.cardSize}"]`);
-    if (cardSizeInput) cardSizeInput.checked = true;
+    document.querySelector(`input[name="cardSize"][value="${appSettings.cardSize}"]`).checked = true;
     
     // Update animations toggle
-    const animToggle = document.getElementById('animToggle');
-    if (animToggle) animToggle.checked = appSettings.animationsEnabled;
+    document.getElementById('animToggle').checked = appSettings.animationsEnabled;
     
     // Update favorites list
     updateFavoritesList();
@@ -3307,7 +3215,6 @@ function toggleAnimations() {
 
 function updateFavoritesList() {
     const favoritesList = document.getElementById('favoritesList');
-    if (!favoritesList) return;
     
     if (appSettings.favorites.length === 0) {
         favoritesList.innerHTML = '<p style="color: #999; font-size: 0.9rem;">No favorites yet</p>';
@@ -3402,7 +3309,16 @@ function clearUsageStats() {
 function resetAllSettings() {
     if (confirm('⚠️ This will reset ALL settings, preferences, and data. Are you sure?')) {
         if (confirm('Really reset everything? This cannot be undone.')) {
-            appSettings = getDefaultSettings();
+            appSettings = {
+                theme: 'light',
+                fontSize: 'medium',
+                cardSize: 'normal',
+                animationsEnabled: true,
+                favorites: [],
+                recentTools: [],
+                usageStats: {},
+                pinnedTools: []
+            };
             localStorage.removeItem('infinityKitSettings');
             saveSettings();
             loadSettings();
@@ -3544,7 +3460,7 @@ function displaySearchResults(results, query) {
             div.onclick = () => {
                 openTool(item.id, item.name, item.icon);
                 searchResults.style.display = 'none';
-                addToRecentSearches(item.name);
+                addRecentSearch(item.name);
             };
         } else {
             div.className = 'search-result-item';
@@ -3552,7 +3468,7 @@ function displaySearchResults(results, query) {
             div.onclick = () => {
                 openFolder(item);
                 searchResults.style.display = 'none';
-                addToRecentSearches(item.name);
+                addRecentSearch(item.name);
             };
         }
         
