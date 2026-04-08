@@ -418,6 +418,12 @@ body {
 .tool-icon {
     font-size: 2.5rem;
     margin-bottom: 10px;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.tool-card:hover .tool-icon {
+    transform: scale(1.08);
+    filter: drop-shadow(0 6px 10px rgba(102, 126, 234, 0.35));
 }
 
 .tool-name {
@@ -1531,6 +1537,107 @@ body.card-compact .tool-square {
 body.card-normal .folder-card,
 body.card-normal .tool-square {
     padding: 20px;
+}
+
+/* Expense Tracker UI */
+.expense-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9edf5;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.expense-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.expense-stat-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e9edf5;
+    padding: 14px;
+}
+
+.expense-stat-label {
+    font-size: 0.85rem;
+    color: #667;
+    margin-bottom: 6px;
+}
+
+.expense-stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #3f51b5;
+}
+
+.expense-budget-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e9edf5;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.expense-progress {
+    margin-top: 10px;
+    height: 8px;
+    background: #eceff5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.expense-progress > div {
+    height: 100%;
+    border-radius: 8px;
+}
+
+.expense-warning {
+    margin-top: 8px;
+    color: #d32f2f;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.expense-chart-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e9edf5;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+.expense-legend {
+    margin-top: 12px;
+    display: grid;
+    gap: 6px;
+}
+
+.expense-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+}
+
+.expense-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.expense-tip-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e9edf5;
+    padding: 12px;
+    margin-bottom: 10px;
 }
 
 /* Animation Control */

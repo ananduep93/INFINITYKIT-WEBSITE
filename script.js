@@ -16,6 +16,24 @@ const baseFolders = [
         tools: ['calculator', 'todolist', 'notes', 'timer']
     },
     {
+        id: 'expense-tracker',
+        name: 'Expense Tracker',
+        icon: '💸',
+        emoji: '💸',
+        tools: [
+            'expenseadd',
+            'expenselist',
+            'categorysummary',
+            'dailymonthlyreport',
+            'budgettracker',
+            'searchexpenses',
+            'resetexpenses',
+            'expenseanalytics',
+            'topspendinginsights',
+            'smartsuggestions'
+        ]
+    },
+    {
         id: 'utilities',
         name: 'Utilities',
         icon: '🛠️',
@@ -186,6 +204,66 @@ const tools = [
         name: 'Timer & Stopwatch',
         icon: '⏱️',
         description: 'Track time'
+    },
+    {
+        id: 'expenseadd',
+        name: 'Add Expense',
+        icon: '➕💸',
+        description: 'Add a new expense entry'
+    },
+    {
+        id: 'expenselist',
+        name: 'Expense List',
+        icon: '📋',
+        description: 'View, edit, and delete expenses'
+    },
+    {
+        id: 'categorysummary',
+        name: 'Category Summary',
+        icon: '📊',
+        description: 'Category-wise expense totals'
+    },
+    {
+        id: 'dailymonthlyreport',
+        name: 'Daily / Monthly Report',
+        icon: '📅',
+        description: 'Today, week, and month spend report'
+    },
+    {
+        id: 'budgettracker',
+        name: 'Budget Tracker',
+        icon: '🎯',
+        description: 'Set budgets and monitor remaining'
+    },
+    {
+        id: 'searchexpenses',
+        name: 'Search Expenses',
+        icon: '🔍',
+        description: 'Instant search by note or category'
+    },
+    {
+        id: 'resetexpenses',
+        name: 'Reset Data',
+        icon: '🗑️',
+        description: 'Clear all expense tracker data'
+    },
+    {
+        id: 'expenseanalytics',
+        name: 'Graph & Analytics',
+        icon: '📈🔥',
+        description: 'Pie and bar charts for spending'
+    },
+    {
+        id: 'topspendinginsights',
+        name: 'Top Spending Insights',
+        icon: '🧠',
+        description: 'Auto insights from your spending'
+    },
+    {
+        id: 'smartsuggestions',
+        name: 'Smart Suggestions',
+        icon: '💡',
+        description: 'Simple intelligent spending tips'
     },
     {
         id: 'aiplanner',
@@ -683,6 +761,9 @@ function addToRecentSearches(search) {
 
 // Open tool
 function openTool(toolId, toolName, toolIcon) {
+    if (typeof cleanupExpenseToolSync === 'function') {
+        cleanupExpenseToolSync();
+    }
     toolTitle.textContent = `${toolIcon} ${toolName}`;
     toolContent.innerHTML = '';
     
@@ -710,6 +791,36 @@ function openTool(toolId, toolName, toolIcon) {
             break;
         case 'timer':
             loadTimer();
+            break;
+        case 'expenseadd':
+            loadExpenseAddTool();
+            break;
+        case 'expenselist':
+            loadExpenseListTool();
+            break;
+        case 'categorysummary':
+            loadCategorySummaryTool();
+            break;
+        case 'dailymonthlyreport':
+            loadDailyMonthlyReportTool();
+            break;
+        case 'budgettracker':
+            loadBudgetTrackerTool();
+            break;
+        case 'searchexpenses':
+            loadSearchExpensesTool();
+            break;
+        case 'resetexpenses':
+            loadResetExpenseDataTool();
+            break;
+        case 'expenseanalytics':
+            loadExpenseAnalyticsTool();
+            break;
+        case 'topspendinginsights':
+            loadTopSpendingInsightsTool();
+            break;
+        case 'smartsuggestions':
+            loadSmartSuggestionsTool();
             break;
         case 'imagetopdf':
             loadImageToPDF();
@@ -846,6 +957,9 @@ function openTool(toolId, toolName, toolIcon) {
 
 // Close tool
 function closeTool() {
+    if (typeof cleanupExpenseToolSync === 'function') {
+        cleanupExpenseToolSync();
+    }
     modal.style.display = 'none';
     calcDisplay = '';
 }
