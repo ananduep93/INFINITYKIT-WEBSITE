@@ -1,3 +1,5 @@
+console.log('Infinity Kit Version 15.0 Loaded - Cache Busted');
+
 // Folders with Tools Data
 const baseFolders = [
     {
@@ -73,7 +75,7 @@ const baseFolders = [
         name: 'Text Tools',
         icon: '✍️',
         emoji: '✍️',
-        tools: ['usernamegen', 'clipboardcleaner']
+        tools: ['usernamegen']
     },
     {
         id: 'student-tools',
@@ -983,9 +985,6 @@ function doOpenTool(toolId, toolName, toolIcon) {
         case 'usernamegen':
             loadUsernameGenerator();
             break;
-        case 'clipboardcleaner':
-            loadClipboardCleaner();
-            break;
         case 'examcalc':
             loadExamCalculator();
             break;
@@ -1460,56 +1459,85 @@ function deleteTodo(index) {
 
 // ==================== UNIT CONVERTER ====================
 function loadUnitConverter() {
-    const converters = [
-        { name: 'Length', unit1: 'Meters', unit2: 'Feet', factor: 3.28084 },
-        { name: 'Weight', unit1: 'Kg', unit2: 'Lbs', factor: 2.20462 },
-        { name: 'Temperature', unit1: 'Celsius', unit2: 'Fahrenheit', factor: null },
-        { name: 'Volume', unit1: 'Liters', unit2: 'Gallons', factor: 0.264172 },
-        { name: 'Speed', unit1: 'Km/h', unit2: 'Mph', factor: 0.621371 }
-    ];
-
-    let html = '<div class="tool-form">';
-
-    converters.forEach((conv, idx) => {
-        html += `
+    let html = `
+        <div class="tool-form">
+            <h3>🔄 Unit Converter</h3>
             <div class="form-group">
-                <label>${conv.name}</label>
-                <div class="converter-group">
-                    <input type="number" id="conv${idx}_1" placeholder="${conv.unit1}" 
-                           onchange="convertUnit(${idx})">
-                    <span style="padding: 12px; color: #999;">→</span>
-                    <input type="number" id="conv${idx}_2" placeholder="${conv.unit2}" readonly>
-                </div>
+                <label>Category</label>
+                <select id="ucCategory" onchange="ucPopulateUnits()" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                    <option value="Length">Length</option>
+                    <option value="Weight">Weight</option>
+                    <option value="Temperature">Temperature</option>
+                </select>
             </div>
-        `;
-    });
-
-    html += '</div>';
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <input type="number" id="ucInput1" oninput="ucConvert('1')" style="flex: 2; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;" placeholder="Value">
+                <select id="ucUnit1" onchange="ucConvert('1')" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;"></select>
+            </div>
+            <div style="text-align: center; margin: 10px 0; font-size: 1.5rem; color: #667eea; font-weight: bold;">⇅</div>
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <input type="number" id="ucInput2" oninput="ucConvert('2')" style="flex: 2; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;" placeholder="Value">
+                <select id="ucUnit2" onchange="ucConvert('2')" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;"></select>
+            </div>
+        </div>
+    `;
     toolContent.innerHTML = html;
-
-    window.converterData = converters;
+    ucPopulateUnits();
 }
 
-function convertUnit(index) {
-    const converters = window.converterData;
-    const conv = converters[index];
-    const input1 = document.getElementById(`conv${index}_1`);
-    const output = document.getElementById(`conv${index}_2`);
-    const value = parseFloat(input1.value);
-
-    if (isNaN(value)) {
-        output.value = '';
-        return;
+function ucPopulateUnits() {
+    const cat = document.getElementById('ucCategory').value;
+    const u1 = document.getElementById('ucUnit1');
+    const u2 = document.getElementById('ucUnit2');
+    
+    let options = '';
+    if (cat === 'Length') {
+        ['mm', 'cm', 'm', 'km'].forEach(u => options += `<option value="${u}">${u}</option>`);
+    } else if (cat === 'Weight') {
+        ['mg', 'g', 'kg'].forEach(u => options += `<option value="${u}">${u}</option>`);
+    } else if (cat === 'Temperature') {
+        ['°C', '°F', 'K'].forEach(u => options += `<option value="${u}">${u}</option>`);
     }
+    
+    u1.innerHTML = options;
+    u2.innerHTML = options;
+    if (u1.options.length > 1) u2.selectedIndex = 1;
+    ucConvert('1');
+}
 
-    let result;
-    if (conv.name === 'Temperature') {
-        result = (value * 9/5) + 32;
+function ucConvert(source) {
+    const cat = document.getElementById('ucCategory').value;
+    const fromId = source === '1' ? '1' : '2';
+    const toId = source === '1' ? '2' : '1';
+    
+    const vFrom = document.getElementById('ucInput' + fromId).value;
+    if(vFrom === '') { document.getElementById('ucInput' + toId).value = ''; return; }
+    const val = parseFloat(vFrom);
+    if(isNaN(val)) return;
+    
+    const uFrom = document.getElementById('ucUnit' + fromId).value;
+    const uTo = document.getElementById('ucUnit' + toId).value;
+    
+    let res = 0;
+    if (cat === 'Temperature') {
+        let c = 0;
+        if (uFrom === '°C') c = val;
+        else if (uFrom === '°F') c = (val - 32) * 5/9;
+        else if (uFrom === 'K') c = val - 273.15;
+        
+        if (uTo === '°C') res = c;
+        else if (uTo === '°F') res = (c * 9/5) + 32;
+        else if (uTo === 'K') res = c + 273.15;
     } else {
-        result = value * conv.factor;
+        const rates = {
+            'Length': { mm: 0.001, cm: 0.01, m: 1, km: 1000 },
+            'Weight': { mg: 0.000001, g: 0.001, kg: 1 }
+        };
+        const inBase = val * rates[cat][uFrom];
+        res = inBase / rates[cat][uTo];
     }
-
-    output.value = result.toFixed(2);
+    
+    document.getElementById('ucInput' + toId).value = parseFloat(res.toPrecision(10));
 }
 
 // ==================== PASSWORD GENERATOR ====================
@@ -1518,7 +1546,7 @@ function loadPasswordGenerator() {
         <div class="tool-form">
             <div class="form-group">
                 <label>Password Length:</label>
-                <input type="range" id="pwdLength" min="8" max="32" value="12" 
+                <input type="range" id="pwdLength" min="4" max="32" value="12" 
                        oninput="updatePasswordLength(this.value)">
                 <span id="lengthDisplay">12 characters</span>
             </div>
@@ -1559,7 +1587,8 @@ function updatePasswordLength(value) {
 }
 
 function generatePassword() {
-    const length = parseInt(document.getElementById('pwdLength').value);
+    let length = parseInt(document.getElementById('pwdLength').value);
+    if (length < 4) length = 4;
     const useUppercase = document.getElementById('pwdUppercase').checked;
     const useLowercase = document.getElementById('pwdLowercase').checked;
     const useNumbers = document.getElementById('pwdNumbers').checked;
@@ -2342,11 +2371,11 @@ function loadCompressImage() {
                 </div>
                 
                 <div class="form-group" style="margin-top: 15px;">
-                    <label>Compression Level:</label>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="setCompressionLevel('0.3')" class="compression-btn" data-level="0.3" style="flex: 1;">🟢 High (30%)</button>
-                        <button onclick="setCompressionLevel('0.6')" class="compression-btn" data-level="0.6" style="flex: 1;">🟡 Medium (60%)</button>
-                        <button onclick="setCompressionLevel('0.8')" class="compression-btn" data-level="0.8" style="flex: 1;">🔴 Low (80%)</button>
+                    <label>Compression Quality Slider (Slide left for smaller sizes, down to ~5KB):</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.85rem; color:#666;">Max Compression</span>
+                        <input type="range" id="compressionSlider" min="0.01" max="1" step="0.05" value="0.6" oninput="setCompressionLevel(this.value)" style="flex: 1; cursor: pointer;">
+                        <span style="font-size: 0.85rem; color:#666;">Original Quality</span>
                     </div>
                 </div>
                 
@@ -2421,12 +2450,7 @@ function loadImageForCompression(file) {
             document.getElementById('compressedSize').textContent = '';
             document.getElementById('sizeReduction').textContent = '--%';
             document.getElementById('downloadCompressedBtn').style.display = 'none';
-            
-            // Reset button styles
-            document.querySelectorAll('.compression-btn').forEach(btn => {
-                btn.style.background = '';
-                btn.style.transform = '';
-            });
+            document.getElementById('compressionSlider').value = 0.6;
             
             // Create original canvas
             const canvas = document.createElement('canvas');
@@ -2444,28 +2468,16 @@ function loadImageForCompression(file) {
     reader.readAsDataURL(file);
 }
 
+let compressTimeout = null;
 function setCompressionLevel(quality) {
     imageState.compressionQuality = parseFloat(quality);
     
-    // Update button styles
-    document.querySelectorAll('.compression-btn').forEach(btn => {
-        btn.style.background = '';
-        btn.style.transform = '';
-    });
-    document.querySelector(`[data-level="${quality}"]`).style.background = '#667eea';
-    document.querySelector(`[data-level="${quality}"]`).style.color = 'white';
-    document.querySelector(`[data-level="${quality}"]`).style.transform = 'scale(1.05)';
+    if (!imageState.originalCanvas) return;
     
-    if (!imageState.originalCanvas) {
-        showToast('Please load an image first', 'error');
-        return;
-    }
-    
-    showToast('⏳ Compressing image...', 'info');
-    
-    setTimeout(() => {
+    clearTimeout(compressTimeout);
+    compressTimeout = setTimeout(() => {
         compressImageCanvas();
-    }, 100);
+    }, 150);
 }
 
 function compressImageCanvas() {
@@ -2652,7 +2664,7 @@ function loadDiscountCalculator() {
         <div class="tool-form">
             <h3>🧮 Discount Calculator</h3>
             <div class="form-group">
-                <label>Original Price (€)</label>
+                <label>Original Price (₹)</label>
                 <input type="number" id="originalPrice" placeholder="Enter price" min="0" step="0.01" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
             </div>
             <div class="form-group">
@@ -2663,11 +2675,11 @@ function loadDiscountCalculator() {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
                         <div style="font-size: 0.85rem; color: #666;">Discount Amount</div>
-                        <div id="discountAmount" style="font-size: 1.5rem; font-weight: bold; color: #28a745; margin-top: 5px;">€ 0.00</div>
+                        <div id="discountAmount" style="font-size: 1.5rem; font-weight: bold; color: #28a745; margin-top: 5px;">₹ 0.00</div>
                     </div>
                     <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
                         <div style="font-size: 0.85rem; color: #666;">Final Price</div>
-                        <div id="finalPrice" style="font-size: 1.5rem; font-weight: bold; color: #667eea; margin-top: 5px;">€ 0.00</div>
+                        <div id="finalPrice" style="font-size: 1.5rem; font-weight: bold; color: #667eea; margin-top: 5px;">₹ 0.00</div>
                     </div>
                 </div>
             </div>
@@ -2684,8 +2696,8 @@ function calculateDiscount() {
     const discountAmount = (price * discount) / 100;
     const finalPrice = price - discountAmount;
     
-    document.getElementById('discountAmount').textContent = '€ ' + discountAmount.toFixed(2);
-    document.getElementById('finalPrice').textContent = '€ ' + finalPrice.toFixed(2);
+    document.getElementById('discountAmount').textContent = '₹ ' + discountAmount.toFixed(2);
+    document.getElementById('finalPrice').textContent = '₹ ' + finalPrice.toFixed(2);
 }
 
 // ========== PERCENTAGE CALCULATOR ==========
@@ -2851,6 +2863,9 @@ function calculateDays() {
 }
 
 // ========== USERNAME GENERATOR ==========
+let generatedUsernames = [];
+let usernameDisplayIndex = 0;
+
 function loadUsernameGenerator() {
     let html = `
         <div class="tool-form">
@@ -2859,8 +2874,12 @@ function loadUsernameGenerator() {
                 <label>Name / Keyword</label>
                 <input type="text" id="usernameKeyword" placeholder="e.g., john" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
             </div>
-            <button onclick="generateUsernames()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Generate Suggestions</button>
-            <div id="usernamesBox" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button onclick="generateUsernames()" style="flex: 2; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">Generate Recommendations</button>
+                <button onclick="showNextUsernames()" id="refreshUsernamesBtn" style="flex: 1; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; display: none;">🔄 Refresh</button>
+            </div>
+            <div id="usernamesBox" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none;">
+                <label style="font-weight:bold; margin-bottom: 10px; display: block;" id="usernamesCountLabel">Showing 10 usernames</label>
                 <div id="suggestionsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
         </div>
@@ -2875,20 +2894,43 @@ function generateUsernames() {
         return;
     }
     
-    const suggestions = [
-        keyword,
-        keyword + Math.floor(Math.random() * 999),
-        'the' + keyword,
-        keyword + '_x',
-        keyword + '007',
-        keyword + 'pro',
-        keyword + 'dev',
-        '_' + keyword,
-        keyword + '_',
-        'mr_' + keyword
-    ];
+    generatedUsernames = [];
+    usernameDisplayIndex = 0;
     
-    const html = suggestions.map(u => `
+    const prefixes = ['the', 'real', 'mr', 'ms', 'dr', 'pro', 'super', 'epic', 'itz', 'its', 'iam'];
+    const suffixes = ['_x', '007', 'pro', 'dev', '_', '123', 'official', 'gaming', 'vlogs', 'yt', 'hub'];
+    
+    generatedUsernames.push(keyword);
+    generatedUsernames.push(keyword + '_' + new Date().getFullYear());
+    
+    while(generatedUsernames.length < 100) {
+        let type = Math.floor(Math.random() * 4);
+        let name = '';
+        if (type === 0) name = keyword + Math.floor(Math.random() * 9999);
+        else if (type === 1) name = prefixes[Math.floor(Math.random()*prefixes.length)] + '_' + keyword;
+        else if (type === 2) name = keyword + suffixes[Math.floor(Math.random()*suffixes.length)];
+        else name = prefixes[Math.floor(Math.random()*prefixes.length)] + keyword + Math.floor(Math.random() * 99);
+        
+        if(!generatedUsernames.includes(name)) generatedUsernames.push(name);
+    }
+    
+    document.getElementById('usernamesBox').style.display = 'block';
+    document.getElementById('refreshUsernamesBtn').style.display = 'block';
+    showNextUsernames();
+    showToast('✓ 100 Usernames generated!', 'success');
+}
+
+function showNextUsernames() {
+    if (generatedUsernames.length === 0) return;
+    
+    let end = usernameDisplayIndex + 10;
+    if (end > generatedUsernames.length) {
+        usernameDisplayIndex = 0;
+        end = 10;
+    }
+    
+    const chunk = generatedUsernames.slice(usernameDisplayIndex, end);
+    const html = chunk.map(u => `
         <div style="padding: 10px; background: #f5f7fa; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-family: monospace;">${u}</span>
             <button onclick="copyToClip('${u}')" style="padding: 6px 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">📋 Copy</button>
@@ -2896,7 +2938,8 @@ function generateUsernames() {
     `).join('');
     
     document.getElementById('suggestionsList').innerHTML = html;
-    showToast('✓ Usernames generated!', 'success');
+    document.getElementById('usernamesCountLabel').textContent = `Showing recommendations ${usernameDisplayIndex + 1} to ${end} (out of 100)`;
+    usernameDisplayIndex = end;
 }
 
 function copyToClip(text) {
@@ -2905,104 +2948,75 @@ function copyToClip(text) {
     });
 }
 
-// ========== CLIPBOARD CLEANER ==========
-function loadClipboardCleaner() {
-    let html = `
-        <div class="tool-form">
-            <h3>📋 Clipboard Cleaner</h3>
-            <div class="form-group">
-                <label>Enter Text to Clean</label>
-                <textarea id="dirtyText" placeholder="Paste text here..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 150px;"></textarea>
-            </div>
-            <button onclick="cleanText()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">🧹 Clean Text</button>
-            <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <label style="font-weight: bold; display: block; margin-bottom: 10px;">Cleaned Result</label>
-                <textarea id="cleanedText" readonly style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 150px; background: #f5f7fa;"></textarea>
-                <button onclick="copyCleanedText()" style="width: 100%; margin-top: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer;">📋 Copy Cleaned Text</button>
-            </div>
-        </div>
-    `;
-    toolContent.innerHTML = html;
-}
 
-function cleanText() {
-    const dirty = document.getElementById('dirtyText').value;
-    const cleaned = dirty
-        .replace(/\s+/g, ' ')
-        .trim();
-    
-    document.getElementById('cleanedText').value = cleaned;
-    showToast('✓ Text cleaned!', 'success');
-}
-
-function copyCleanedText() {
-    const text = document.getElementById('cleanedText').value;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('✓ Copied to clipboard!', 'success');
-    });
-}
 
 // ========== EXAM MARKS CALCULATOR ==========
 function loadExamCalculator() {
     let html = `
         <div class="tool-form">
             <h3>📝 Exam Marks Calculator</h3>
-            <div id="subjectsContainer" style="margin-bottom: 15px;"></div>
-            <button onclick="addSubject()" style="width: 100%; padding: 10px; background: #ddd; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;">➕ Add Subject</button>
-            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div id="subjectCountForm" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Number of Subjects</label>
+                    <input type="number" id="numSubjects" placeholder="e.g. 5" min="1" max="20" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                </div>
+                <button onclick="generateSubjectFields()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">Generate Fields</button>
+            </div>
+            
+            <div id="subjectsContainer" style="margin-bottom: 15px; display: none;"></div>
+            
+            <div id="resultsContainer" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
                         <div style="font-size: 0.85rem; color: #666;">Total Marks</div>
                         <div id="totalMarks" style="font-size: 1.5rem; font-weight: bold; color: #667eea; margin-top: 5px;">0</div>
                     </div>
                     <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
-                        <div style="font-size: 0.85rem; color: #666;">Percentage</div>
+                        <div style="font-size: 0.85rem; color: #666;">Average (%)</div>
                         <div id="totalPercent" style="font-size: 1.5rem; font-weight: bold; color: #28a745; margin-top: 5px;">0%</div>
                     </div>
                 </div>
+                <button onclick="loadExamCalculator()" style="width: 100%; margin-top: 15px; padding: 10px; background: #ddd; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Reset Form</button>
             </div>
         </div>
     `;
     toolContent.innerHTML = html;
-    examSubjects = [];
-    addSubject();
 }
 
-let examSubjects = [];
-
-function addSubject() {
-    const id = examSubjects.length;
-    examSubjects.push({ name: '', marks: 0, total: 100 });
-    const html = `
-        <div id="subject-${id}" style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: end;">
-                <input type="text" placeholder="Subject name" value="" onchange="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="number" placeholder="Marks" value="0" min="0" onchange="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="number" placeholder="Out of" value="100" min="1" onchange="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <button onclick="removeSubject(${id})" style="padding: 8px 12px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️</button>
+function generateSubjectFields() {
+    const num = parseInt(document.getElementById('numSubjects').value) || 0;
+    if(num < 1) { showToast('Please enter a valid number', 'error'); return; }
+    
+    let html = '';
+    for(let i=0; i<num; i++) {
+        html += `
+        <div style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; align-items: end;">
+                <input type="text" placeholder="Subject ${i+1}" value="" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <input type="number" class="exam-mark" placeholder="Obtained" value="0" min="0" oninput="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <input type="number" class="exam-outof" placeholder="Out Of" value="100" min="1" oninput="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
             </div>
-        </div>
-    `;
-    document.getElementById('subjectsContainer').innerHTML += html;
-}
-
-function removeSubject(id) {
-    const elem = document.getElementById('subject-' + id);
-    if (elem) elem.remove();
+        </div>`;
+    }
+    document.getElementById('subjectsContainer').innerHTML = html;
+    document.getElementById('subjectsContainer').style.display = 'block';
+    document.getElementById('resultsContainer').style.display = 'block';
+    document.getElementById('subjectCountForm').style.display = 'none';
     updateMarks();
 }
 
 function updateMarks() {
     let total = 0, outOf = 0;
-    document.querySelectorAll('#subjectsContainer > div').forEach((elem, i) => {
-        const inputs = elem.querySelectorAll('input');
-        const marks = parseFloat(inputs[1].value) || 0;
-        const outOfVal = parseFloat(inputs[2].value) || 100;
-        total += marks;
-        outOf += outOfVal;
+    const marks = document.querySelectorAll('.exam-mark');
+    const outofs = document.querySelectorAll('.exam-outof');
+    
+    marks.forEach((input, index) => {
+        total += parseFloat(input.value) || 0;
+        outOf += parseFloat(outofs[index].value) || 100;
     });
+    
     const percent = outOf > 0 ? ((total / outOf) * 100).toFixed(1) : 0;
-    document.getElementById('totalMarks').textContent = total;
+    document.getElementById('totalMarks').textContent = total + ' / ' + outOf;
     document.getElementById('totalPercent').textContent = percent + '%';
 }
 
@@ -3023,7 +3037,10 @@ function loadTextToSpeech() {
                 <label>Pitch</label>
                 <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1" style="width: 100%;"> <span id="pitchValue">1</span>
             </div>
-            <button onclick="speakText()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 10px;">🔊 Speak</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <button onclick="speakText()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">🔊 Speak</button>
+                <button onclick="downloadSpeech()" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">📥 Download MP3</button>
+            </div>
             <button onclick="stopSpeech()" style="width: 100%; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">⏹️ Stop</button>
         </div>
     `;
@@ -3052,6 +3069,23 @@ function speakText() {
     } else {
         showToast('Speech Synthesis not supported in this browser', 'error');
     }
+}
+
+function downloadSpeech() {
+    const text = document.getElementById('speechText').value;
+    if (!text.trim()) {
+        showToast('Please enter some text', 'error');
+        return;
+    }
+    const safeText = encodeURIComponent(text.substring(0, 200)); // Google TTS has ~200 char limit
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${safeText}`;
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.download = 'speech.mp3';
+    a.click();
+    showToast('Opened MP3 audio stream for download!', 'success');
 }
 
 function stopSpeech() {
@@ -4706,3 +4740,152 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// ========== GRAPH MAKER ==========
+let currentChart = null;
+
+function loadGraphMaker() {
+    let html = `
+        <div class="tool-form">
+            <h3>📊 Graph Maker</h3>
+            <div class="form-group">
+                <label>Graph Type</label>
+                <select id="graphType" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                    <option value="bar">Column Chart (Vertical Bar)</option>
+                    <option value="horizontalBar">Bar Chart (Horizontal)</option>
+                    <option value="line">Line Chart</option>
+                    <option value="pie">Pie Chart</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Labels (Comma separated)</label>
+                <input type="text" id="graphLabels" placeholder="e.g. Jan, Feb, Mar, Apr" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            <div class="form-group">
+                <label>Values (Comma separated)</label>
+                <input type="text" id="graphValues" placeholder="e.g. 10, 20, 15, 30" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            </div>
+            
+            <button onclick="generateGraph()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Generate Graph</button>
+            
+            <div id="graphContainer" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none;">
+                <canvas id="graphCanvas" style="max-width: 100%;"></canvas>
+                <button onclick="downloadGraph()" style="width: 100%; margin-top: 15px; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">📥 Download as PNG</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function generateGraph() {
+    if (!window.Chart) {
+        showToast('Chart.js library is loading, please try again in a moment...', 'error');
+        return;
+    }
+
+    const typeSelection = document.getElementById('graphType').value;
+    const labelsRaw = document.getElementById('graphLabels').value;
+    const valuesRaw = document.getElementById('graphValues').value;
+
+    if (!labelsRaw.trim() || !valuesRaw.trim()) {
+        showToast('Please enter both labels and values', 'error');
+        return;
+    }
+
+    const labels = labelsRaw.split(',').map(l => l.trim());
+    const values = valuesRaw.split(',').map(v => parseFloat(v.trim()));
+
+    if (labels.length !== values.length) {
+        showToast('Number of labels must match number of values', 'error');
+        return;
+    }
+    
+    if (values.some(isNaN)) {
+        showToast('All values must be valid numbers', 'error');
+        return;
+    }
+
+    document.getElementById('graphContainer').style.display = 'block';
+    
+    // In Chart.js we need a fresh canvas to destroy previously bound contexts, 
+    // replacing the node is the cleanest approach.
+    const canvasContainer = document.getElementById('graphContainer');
+    const oldCanvas = document.getElementById('graphCanvas');
+    const newCanvas = document.createElement('canvas');
+    newCanvas.id = 'graphCanvas';
+    newCanvas.style.maxWidth = '100%';
+    canvasContainer.insertBefore(newCanvas, oldCanvas);
+    oldCanvas.remove();
+
+    const ctx = newCanvas.getContext('2d');
+
+    if (currentChart) {
+        currentChart.destroy();
+    }
+
+    let actualType = typeSelection;
+    let indexAxis = 'x';
+    if (typeSelection === 'horizontalBar') {
+        actualType = 'bar';
+        indexAxis = 'y';
+    }
+
+    const bgColors = [
+        'rgba(102, 126, 234, 0.6)', 'rgba(118, 75, 162, 0.6)',
+        'rgba(40, 167, 69, 0.6)', 'rgba(255, 193, 7, 0.6)',
+        'rgba(220, 53, 69, 0.6)', 'rgba(23, 162, 184, 0.6)'
+    ];
+    
+    // Repeat colors if more bars exist
+    const extendedBg = Array(Math.max(values.length, 1)).fill().map((_, i) => bgColors[i % bgColors.length]);
+    const borderColors = extendedBg.map(c => c.replace('0.6', '1'));
+
+    currentChart = new Chart(ctx, {
+        type: actualType,
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Dataset',
+                data: values,
+                backgroundColor: actualType === 'line' ? 'rgba(102, 126, 234, 0.2)' : extendedBg,
+                borderColor: actualType === 'line' ? borderColors[0] : borderColors,
+                borderWidth: 2,
+                fill: actualType === 'line',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: indexAxis,
+            plugins: {
+                legend: {
+                    display: actualType === 'pie' || actualType === 'line'
+                }
+            }
+        }
+    });
+    showToast('✓ Graph generated!', 'success');
+}
+
+function downloadGraph() {
+    const canvas = document.getElementById('graphCanvas');
+    if (!canvas) return;
+    
+    // Create a temporary canvas with white background for PNG transparency reasons
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tCtx = tempCanvas.getContext('2d');
+    tCtx.fillStyle = '#FFFFFF';
+    tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    tCtx.drawImage(canvas, 0, 0);
+
+    const url = tempCanvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'infinity_kit_graph.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('✓ Graph downloaded!', 'success');
+}
