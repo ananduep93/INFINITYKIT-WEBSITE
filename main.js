@@ -1,4 +1,4 @@
-console.log('Infinity Kit Version 15.0 Loaded - Cache Busted');
+console.log('Infinity Kit Version 15.3 Loaded - Cache Refresh Active');
 
 // Folders with Tools Data
 const baseFolders = [
@@ -545,6 +545,9 @@ const searchResultsList = document.getElementById('searchResultsList');
 const noResults = document.getElementById('noResults');
 const recentSearches = document.getElementById('recentSearches');
 const installAppBtn = document.getElementById('installAppBtn');
+const footerPwaContainer = document.getElementById('footerPwaContainer');
+const footerInstallBtn = document.getElementById('footerInstallBtn');
+const copyrightText = document.getElementById('copyrightText');
 
 // App State
 let calcDisplay = '';
@@ -562,12 +565,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     setupPwaInstall();
     registerServiceWorker();
+    updateCopyrightYear();
 });
 
 function setupPwaInstall() {
     updateInstallButtonState();
     if (installAppBtn) {
         installAppBtn.addEventListener('click', handleInstallApp);
+    }
+    if (footerInstallBtn) {
+        footerInstallBtn.addEventListener('click', handleInstallApp);
     }
 
     window.addEventListener('beforeinstallprompt', (event) => {
@@ -599,25 +606,35 @@ function setupPwaInstall() {
 }
 
 function updateInstallButtonState() {
-    if (!installAppBtn) {
-        return;
+    if (installAppBtn) {
+        installAppBtn.classList.remove('is-installed');
+        installAppBtn.disabled = false;
+        installAppBtn.textContent = '\uD83D\uDCF2 Install App';
+        installAppBtn.title = '';
+
+        if (isPwaInstalled) {
+            installAppBtn.disabled = true;
+            installAppBtn.classList.add('is-installed');
+            installAppBtn.textContent = 'Installed \u2705';
+        } else if (!deferredInstallPrompt) {
+            installAppBtn.disabled = true;
+            installAppBtn.title = 'Install will be available once your browser allows it.';
+        }
     }
 
-    installAppBtn.classList.remove('is-installed');
-    installAppBtn.disabled = false;
-    installAppBtn.textContent = '\uD83D\uDCF2 Install App';
-    installAppBtn.title = '';
-
-    if (isPwaInstalled) {
-        installAppBtn.disabled = true;
-        installAppBtn.classList.add('is-installed');
-        installAppBtn.textContent = 'Installed \u2705';
-        return;
+    if (footerPwaContainer) {
+        if (deferredInstallPrompt && !isPwaInstalled) {
+            footerPwaContainer.style.display = 'block';
+        } else {
+            footerPwaContainer.style.display = 'none';
+        }
     }
+}
 
-    if (!deferredInstallPrompt) {
-        installAppBtn.disabled = true;
-        installAppBtn.title = 'Install will be available once your browser allows it.';
+function updateCopyrightYear() {
+    if (copyrightText) {
+        const year = new Date().getFullYear();
+        copyrightText.textContent = `\u00A9 ${year} Infinity Kit. All rights reserved.`;
     }
 }
 

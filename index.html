@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INFINITY KIT&#9889; - Daily Life Tools</title>
-    <link rel="stylesheet" href="app.css?v=15.2">
+    <link rel="stylesheet" href="app.css?v=15.5">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
     <link rel="apple-touch-icon" href="icon-192.png">
@@ -34,7 +34,7 @@
             <section class="hero-section">
                 <h1 class="hero-title">&#9889;INFINITY KIT&#9889;</h1>
                 <p class="hero-subtitle">Your Ultimate Everyday Toolkit</p>
-                <div class="version-badge">Ver 15.1 - FRESH LOAD</div>
+                <div class="version-badge">Ver 15.5 </div>
                 <div class="hero-tagline">Boost your productivity with minimal effort.</div>
                 <button class="hero-cta" onclick="document.getElementById('toolsContainer').scrollIntoView({behavior: 'smooth'})">Explore Tools ✨</button>
             </section>
@@ -188,8 +188,18 @@
             <a href="#" onclick="navigateTo('contact-page')">Contact</a>
             <a href="#" onclick="navigateTo('disclaimer-page')">Disclaimer</a>
         </div>
-        <p class="footer-brand">Made for everyday tools ⚡</p>
-        <p class="footer-tagline">Built to simplify your digital life ⚡</p>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span>📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-brand">Made for everyday tools ⚡</p>
+            <p class="footer-tagline">Built to simplify your digital life ⚡</p>
+            <p id="copyrightText" class="copyright-text"></p>
+        </div>
     </footer>
 
     <!-- Loading Overlay for Tools -->
@@ -243,7 +253,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <script src="main.js?v=15.2"></script>
+    <script src="main.js?v=15.5"></script>
     <script src="expense-tracker.js?v=5"></script>
 </body>
 </html>

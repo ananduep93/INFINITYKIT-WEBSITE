@@ -436,10 +436,47 @@ body {
     color: #667eea;
 }
 
+.footer-pwa-container {
+    margin: 20px 0;
+}
+
+.footer-install-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.footer-install-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 20px;
+}
+
 .footer-brand {
     font-size: 0.85rem;
     opacity: 0.5;
     letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.copyright-text {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 15px;
+    opacity: 0.8;
 }
 
 /* Loading Overlay */

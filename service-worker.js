@@ -1,9 +1,9 @@
-const CACHE_NAME = 'infinity-kit-v2';
+const CACHE_NAME = 'infinity-kit-v15.4';
 const CORE_ASSETS = [
     './',
     './index.html',
-    './style.css',
-    './script.js',
+    './app.css',
+    './main.js',
     './expense-tracker.js',
     './manifest.json',
     './icon-192.png',
