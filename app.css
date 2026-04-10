@@ -465,21 +465,23 @@ body {
 }
 
 .back-button {
-    background: rgba(255, 255, 255, 0.2);
+    background: #1e293b;
     color: white;
-    border: 2px solid white;
+    border: 1px solid #334155;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .back-button:hover {
-    background: white;
-    color: #667eea;
+    background: #0f172a;
+    color: white;
     transform: translateX(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .current-folder-title {
