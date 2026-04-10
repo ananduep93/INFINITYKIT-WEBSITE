@@ -855,8 +855,37 @@ function addToRecentSearches(search) {
     localStorage.setItem('recentSearches', JSON.stringify(recentSearchesList));
 }
 
+// Pages Navigation
+function navigateTo(pageId) {
+    const pages = document.querySelectorAll('.page-view');
+    pages.forEach(page => {
+        page.style.display = 'none';
+        page.classList.remove('active');
+    });
+    
+    const targetPage = document.getElementById(pageId);
+    if(targetPage) {
+        targetPage.style.display = 'block';
+        targetPage.classList.add('active');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // Open tool
 function openTool(toolId, toolName, toolIcon) {
+    const loadingOverlay = document.getElementById('toolLoadingOverlay');
+    if(loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+            doOpenTool(toolId, toolName, toolIcon);
+        }, 400); // 400ms soft loading animation effect
+    } else {
+        doOpenTool(toolId, toolName, toolIcon);
+    }
+}
+
+function doOpenTool(toolId, toolName, toolIcon) {
     if (typeof cleanupExpenseToolSync === 'function') {
         cleanupExpenseToolSync();
     }
@@ -3406,6 +3435,7 @@ function saveSettings() {
 
 function applySettings() {
     // Apply theme
+    document.body.setAttribute('data-theme', appSettings.theme);
     document.body.classList.remove('dark-mode');
     if (appSettings.theme === 'dark') {
         document.body.classList.add('dark-mode');
