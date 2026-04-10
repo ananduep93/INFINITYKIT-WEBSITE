@@ -34,7 +34,7 @@
             <section class="hero-section">
                 <h1 class="hero-title">&#9889;INFINITY KIT&#9889;</h1>
                 <p class="hero-subtitle">Your Ultimate Everyday Toolkit</p>
-                <div class="version-badge">Ver 15.0 - FRESH LOAD</div>
+                <div class="version-badge">Ver 15.1 - FRESH LOAD</div>
                 <div class="hero-tagline">Boost your productivity with minimal effort.</div>
                 <button class="hero-cta" onclick="document.getElementById('toolsContainer').scrollIntoView({behavior: 'smooth'})">Explore Tools ✨</button>
             </section>
@@ -104,12 +104,12 @@
             <div class="page-content glass-panel">
                 <h2>Contact Us</h2>
                 <p>Have questions, feedback, or tool requests? We'd love to hear from you!</p>
-                <div class="glass-form">
-                    <input type="text" placeholder="Your Name" />
-                    <textarea placeholder="Your Message" rows="5"></textarea>
-                    <button class="hero-cta" style="margin-top: 15px;">Send Message</button>
+                <div class="contact-methods">
+                    <p class="contact-hint">Have questions or suggestions? Reach out to us directly!</p>
+                    <a href="mailto:infinitykit24@gmail.com" class="hero-cta contact-btn">
+                        <span>✉️ Message Us</span>
+                    </a>
                 </div>
-                <p style="margin-top:20px;">Or email us at: <a href="mailto:ananduep036@gmail.com" style="color:var(--text-color);">hello@infinitykit.local</a></p>
             </div>
         </div>
 
@@ -179,55 +179,7 @@
             </div>
             
             <div class="settings-content">
-                <!-- Theme Settings -->
-                <div class="settings-section">
-                    <h3>&#127767; Theme</h3>
-                    <div class="settings-option">
-                        <label>
-                            <input type="radio" name="theme" value="light" onchange="setTheme('light')"> &#9728;&#65039; Light Mode
-                        </label>
-                        <label>
-                            <input type="radio" name="theme" value="dark" onchange="setTheme('dark')"> &#127769; Dark Mode
-                        </label>
-                    </div>
-                </div>
 
-                <!-- Font Size Control -->
-                <div class="settings-section">
-                    <h3>&#128292; Font Size</h3>
-                    <div class="settings-option">
-                        <label>
-                            <input type="radio" name="fontSize" value="small" onchange="setFontSize('small')"> Small
-                        </label>
-                        <label>
-                            <input type="radio" name="fontSize" value="medium" onchange="setFontSize('medium')"> Medium
-                        </label>
-                        <label>
-                            <input type="radio" name="fontSize" value="large" onchange="setFontSize('large')"> Large
-                        </label>
-                    </div>
-                </div>
-
-                <!-- UI Preferences -->
-                <div class="settings-section">
-                    <h3>&#127912; UI Preferences</h3>
-                    <div class="settings-option">
-                        <label>Card Size:</label>
-                        <div style="margin: 8px 0;">
-                            <label>
-                                <input type="radio" name="cardSize" value="compact" onchange="setCardSize('compact')"> Compact
-                            </label>
-                            <label>
-                                <input type="radio" name="cardSize" value="normal" onchange="setCardSize('normal')"> Normal
-                            </label>
-                        </div>
-                    </div>
-                    <div class="settings-option">
-                        <label>
-                            <input type="checkbox" id="animToggle" onchange="toggleAnimations()"> Enable Animations
-                        </label>
-                    </div>
-                </div>
 
                 <!-- App Install -->
                 <div class="settings-section">
@@ -238,14 +190,7 @@
                     </div>
                 </div>
 
-                <!-- Favorites Management -->
-                <div class="settings-section">
-                    <h3>Favorite Folders</h3>
-                    <div id="favoritesList" style="margin: 10px 0; padding: 10px; background: #f5f7fa; border-radius: 6px; min-height: 30px; max-height: 150px; overflow-y: auto;">
-                        <p style="color: #999; font-size: 0.9rem;">Long-press a folder card to favorite it</p>
-                    </div>
-                    <button onclick="clearAllFavorites()" style="width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 8px;">Remove All Favorite Folders</button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -259,7 +204,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <script src="main.js?v=15.0"></script>
+    <script src="main.js?v=15.1"></script>
     <script src="expense-tracker.js?v=5"></script>
 </body>
 </html>

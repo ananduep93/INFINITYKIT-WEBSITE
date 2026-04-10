@@ -3491,20 +3491,8 @@ function applySettings() {
 }
 
 function updateSettingsUI() {
-    // Update theme radio buttons
-    document.querySelector(`input[name="theme"][value="${appSettings.theme}"]`).checked = true;
-    
-    // Update font size radio buttons
-    document.querySelector(`input[name="fontSize"][value="${appSettings.fontSize}"]`).checked = true;
-    
-    // Update card size radio buttons
-    document.querySelector(`input[name="cardSize"][value="${appSettings.cardSize}"]`).checked = true;
-    
-    // Update animations toggle
-    document.getElementById('animToggle').checked = appSettings.animationsEnabled;
-    
-    // Update favorites list
-    updateFavoritesList();
+    // Current settings UI only includes App Install section
+    // which is handled by updateInstallButtonState() when opening the settings
 }
 
 function openSettings() {
@@ -3528,56 +3516,7 @@ if (settingsModal) {
     });
 }
 
-function setTheme(theme) {
-    appSettings.theme = theme;
-    saveSettings();
-    applySettings();
-    showToast(`✓ Theme changed to ${theme} mode`, 'success');
-}
 
-function setFontSize(size) {
-    appSettings.fontSize = size;
-    saveSettings();
-    applySettings();
-    showToast(`✓ Font size set to ${size}`, 'success');
-}
-
-function setCardSize(size) {
-    appSettings.cardSize = size;
-    saveSettings();
-    applySettings();
-    showToast(`✓ Card size changed to ${size}`, 'success');
-}
-
-function toggleAnimations() {
-    appSettings.animationsEnabled = document.getElementById('animToggle').checked;
-    saveSettings();
-    applySettings();
-    showToast(`✓ Animations ${appSettings.animationsEnabled ? 'enabled' : 'disabled'}`, 'success');
-}
-
-function updateFavoritesList() {
-    const favoritesList = document.getElementById('favoritesList');
-    const favoriteFolderIds = getFavoriteFolderIds();
-
-    if (favoriteFolderIds.length === 0) {
-        favoritesList.innerHTML = '<p style="color: #999; font-size: 0.9rem;">No favorite folders yet. Long-press a folder card.</p>';
-        return;
-    }
-
-    const html = favoriteFolderIds.map(folderId => {
-        const folder = baseFolders.find(f => f.id === folderId);
-        const name = folder ? folder.name : folderId;
-        return `
-            <div class="favorite-item">
-                <span>${name}</span>
-                <button onclick="removeFavorite('${folderId}')">Remove</button>
-            </div>
-        `;
-    }).join('');
-
-    favoritesList.innerHTML = html;
-}
 
 function addFavorite(folderId) {
     if (!getFavoriteFolderIds().includes(folderId)) {
@@ -3585,7 +3524,6 @@ function addFavorite(folderId) {
         saveSettings();
         updateFolders();
         renderFolders();
-        updateFavoritesList();
         showToast('Folder added to favorites', 'success');
     }
 }
@@ -3595,7 +3533,6 @@ function removeFavorite(folderId) {
     saveSettings();
     updateFolders();
     renderFolders();
-    updateFavoritesList();
     showToast('Folder removed from favorites', 'success');
 }
 
@@ -3609,7 +3546,6 @@ function clearAllFavorites() {
         saveSettings();
         updateFolders();
         renderFolders();
-        updateFavoritesList();
         showToast('All favorite folders cleared', 'success');
     }
 }
