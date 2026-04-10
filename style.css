@@ -1976,3 +1976,78 @@ body.no-animations * {
         font-size: 1.6rem;
     }
 }
+
+/* --- Navbar Hamburger Fix --- */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu-btn {
+    display: none;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    line-height: 1;
+}
+
+@media (max-width: 650px) {
+    .navbar {
+        padding: 10px 15px !important;
+        position: relative !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+    }
+    .nav-logo {
+        flex: none !important;
+        font-size: 1.2rem !important;
+    }
+    .menu-btn {
+        display: block !important;
+    }
+    .nav-right {
+        display: flex !important;
+        flex-direction: column !important;
+        position: absolute !important;
+        top: 100% !important;
+        right: 15px !important;
+        left: auto !important;
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 12px !important;
+        padding: 15px 25px !important;
+        gap: 15px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        transform: translateY(-10px) !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: all 0.3s ease !important;
+        width: max-content !important;
+    }
+    .nav-right.show {
+        transform: translateY(10px) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    .nav-links {
+        flex-direction: column !important;
+        gap: 15px !important;
+        align-items: flex-end !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+    }
+    .nav-links a {
+        font-size: 1.1rem !important;
+    }
+    .settings-btn {
+        align-self: flex-end !important;
+        margin-top: 0 !important;
+        position: static !important;
+    }
+}

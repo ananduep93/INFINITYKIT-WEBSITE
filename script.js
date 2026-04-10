@@ -4681,3 +4681,28 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+
+// Hamburger Menu Logic
+function toggleMenu(forceState) {
+    const navRight = document.getElementById('navRight');
+    if (!navRight) return;
+    if (typeof forceState === 'boolean') {
+        if (forceState) navRight.classList.add('show');
+        else navRight.classList.remove('show');
+    } else {
+        navRight.classList.toggle('show');
+    }
+}
+function closeMenu() {
+    toggleMenu(false);
+}
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    const navRight = document.getElementById('navRight');
+    const menuBtn = document.getElementById('menuBtn');
+    if (navRight && navRight.classList.contains('show')) {
+        if (!navRight.contains(e.target) && !menuBtn.contains(e.target)) {
+            closeMenu();
+        }
+    }
+});

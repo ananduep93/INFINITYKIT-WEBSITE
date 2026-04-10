@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INFINITY KIT&#9889; - Daily Life Tools</title>
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
     <link rel="apple-touch-icon" href="icon-192.png">
@@ -13,12 +13,17 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-logo" onclick="navigateTo('home-page')">&#9889;INFINITY KIT</div>
-        <div class="nav-links">
-            <a href="#" onclick="navigateTo('home-page')">Home</a>
-            <a href="#" onclick="navigateTo('about-page')">About</a>
-            <a href="#" onclick="navigateTo('contact-page')">Contact</a>
+        
+        <button class="menu-btn" onclick="toggleMenu()" id="menuBtn">&#9776;</button>
+        
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="#" onclick="navigateTo('home-page'); closeMenu()">Home</a>
+                <a href="#" onclick="navigateTo('about-page'); closeMenu()">About</a>
+                <a href="#" onclick="navigateTo('contact-page'); closeMenu()">Contact</a>
+            </div>
+            <button class="settings-btn" id="settingsBtn" onclick="openSettings(); closeMenu()" aria-label="Settings" title="Settings">&#9881;&#65039;</button>
         </div>
-        <button class="settings-btn" id="settingsBtn" onclick="openSettings()" aria-label="Settings" title="Settings">&#9881;&#65039;</button>
     </nav>
 
     <!-- Main Content Wrapper -->
@@ -250,7 +255,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=5"></script>
     <script src="expense-tracker.js?v=2"></script>
 </body>
 </html>
