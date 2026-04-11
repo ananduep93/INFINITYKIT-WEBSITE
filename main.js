@@ -566,7 +566,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPwaInstall();
     registerServiceWorker();
     updateCopyrightYear();
+    handleInitialNavigation();
 });
+
+function handleInitialNavigation() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        const folder = folders.find(f => f.id === hash);
+        if (folder) {
+            openFolder(folder, true);
+        }
+    }
+}
 
 function setupPwaInstall() {
     updateInstallButtonState();
@@ -741,7 +752,7 @@ function renderFolders() {
 }
 
 // Open folder
-function openFolder(folder) {
+function openFolder(folder, fromHistory = false) {
     currentFolder = folder;
     foldersGrid.style.display = 'none';
     backButtonContainer.style.display = 'flex';
@@ -752,6 +763,14 @@ function openFolder(folder) {
     renderToolsInFolder(folder);
     
     toolsGrid.style.display = 'grid';
+
+    // Add animation classes
+    toolsGrid.classList.add('slide-in-right');
+    setTimeout(() => toolsGrid.classList.remove('slide-in-right'), 400);
+
+    if (!fromHistory) {
+        history.pushState({ type: 'folder', folderId: folder.id }, '', `#${folder.id}`);
+    }
 }
 
 // Render tools in a folder
@@ -787,13 +806,21 @@ function renderToolsInFolder(folder) {
 }
 
 // Back to folders
-function backToFolders() {
+function backToFolders(fromHistory = false) {
+    // Add animation classes for "going back"
+    foldersGrid.classList.add('slide-in-left');
+    setTimeout(() => foldersGrid.classList.remove('slide-in-left'), 400);
+
     toolsGrid.style.display = 'none';
     backButtonContainer.style.display = 'none';
     foldersGrid.style.display = 'grid';
     currentFolder = null;
     searchBar.value = '';
     searchResults.style.display = 'none';
+
+    if (!fromHistory && window.location.hash) {
+        history.back();
+    }
 }
 
 // Setup event listeners
@@ -825,7 +852,19 @@ function setupEventListeners() {
         if (e.target === modal) closeTool();
     });
 
-    backButton.addEventListener('click', backToFolders);
+    backButton.addEventListener('click', () => backToFolders(false));
+
+    // Support for browser back/forward and mobile gestures
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.type === 'folder') {
+            const folder = folders.find(f => f.id === event.state.folderId);
+            if (folder) openFolder(folder, true);
+        } else {
+            if (currentFolder) {
+                backToFolders(true);
+            }
+        }
+    });
 }
 
 // Smart search function
