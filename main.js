@@ -767,6 +767,7 @@ function renderFolders() {
                 longPressTriggered = false;
                 return;
             }
+            triggerHaptic('light');
             openFolder(folder);
         });
 
@@ -822,7 +823,10 @@ function renderToolsInFolder(folder) {
         
         if (!tool.comingSoon) {
             card.style.cursor = 'pointer';
-            card.addEventListener('click', () => openTool(tool.id, tool.name, tool.icon));
+            card.addEventListener('click', () => {
+                triggerHaptic('light');
+                openTool(tool.id, tool.name, tool.icon);
+            });
         }
         toolsGrid.appendChild(card);
     });
@@ -875,7 +879,10 @@ function setupEventListeners() {
         if (e.target === modal) closeTool();
     });
 
-    backButton.addEventListener('click', () => backToFolders(false));
+    backButton.addEventListener('click', () => {
+        triggerHaptic('light');
+        backToFolders(false);
+    });
 
     // Support for browser back/forward and mobile gestures
     window.addEventListener('popstate', (event) => {
@@ -1192,6 +1199,13 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.style.display = 'none';
     }, 3000);
+}
+
+// Haptic Feedback Helper
+function triggerHaptic(type = 'light') {
+    if (!('vibrate' in navigator)) return;
+    const durations = { light: 10, medium: 30, strong: 50 };
+    navigator.vibrate(durations[type] || 10);
 }
 
 // ==================== CALCULATOR ====================

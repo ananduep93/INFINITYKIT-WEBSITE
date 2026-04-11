@@ -13,6 +13,21 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
     <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Anti-flicker Theme Script -->
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('infinityKitSettings');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    if (settings.theme) {
+                        document.documentElement.setAttribute('data-theme', settings.theme);
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body>
     <!-- Navbar -->
