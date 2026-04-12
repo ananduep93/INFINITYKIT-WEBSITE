@@ -2535,3 +2535,105 @@ body.no-animations * {
     color: var(--text-color);
     opacity: 0.9;
 }
+/* ==================== NOTIFICATION & REMINDER UI ==================== */
+.notif-status {
+    margin-bottom: 20px;
+    display: block;
+    cursor: pointer;
+}
+
+.status-icon {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-icon.success {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.status-icon.warning {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+    cursor: pointer;
+}
+
+.status-icon.danger {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.active-reminders-container {
+    margin-top: 25px;
+    animation: fadeIn 0.5s ease;
+}
+
+.active-reminders-container h4 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reminder-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.reminder-card:hover {
+    transform: translateX(5px);
+    border-color: #667eea;
+}
+
+.reminder-info {
+    flex: 1;
+}
+
+.reminder-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.reminder-time {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+.delete-rem-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    filter: grayscale(1);
+    transition: all 0.2s;
+}
+
+.delete-rem-btn:hover {
+    filter: grayscale(0);
+    transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-kit-v15.9';
+const CACHE_NAME = 'infinity-kit-v16.1';
 const CORE_ASSETS = [
     './',
     './index.html',
@@ -67,4 +67,41 @@ self.addEventListener('fetch', (event) => {
             }).catch(() => caches.match('./'));
         })
     );
+});
+
+// Notifications API handlers
+self.addEventListener('notificationclick', (event) => {
+    const action = event.action;
+    const notification = event.notification;
+    const data = notification.data;
+
+    event.notification.close();
+
+    if (action === 'snooze') {
+        // Since we can't easily wait/reschedule from SW without main thread or IDB access
+        // We'll tell the clients to reschedule if any are open
+        event.waitUntil(
+            self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+                if (clients.length > 0) {
+                    clients[0].postMessage({ type: 'SNOOZE_ALERT', data: data });
+                }
+            })
+        );
+    } else if (action === 'done') {
+        // Just closed it
+    } else {
+        // Default click: focus the app
+        event.waitUntil(
+            self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+                for (const client of clients) {
+                    if (client.url.includes('/') && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                if (self.clients.openWindow) {
+                    return self.clients.openWindow('./');
+                }
+            })
+        );
+    }
 });

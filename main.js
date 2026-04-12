@@ -1,4 +1,4 @@
-console.log('Infinity Kit Version 15.9 Loaded - Cache Refresh Active');
+console.log('Infinity Kit Version 16.2 Loaded - Notification System Active');
 
 // Folders with Tools Data
 const baseFolders = [
@@ -598,8 +598,28 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPwaInstall();
     registerServiceWorker();
     updateCopyrightYear();
+
+    // Initialize Notification System
+    if (window.NotificationManager) {
+        window.NotificationManager.init();
+    }
+
     handleInitialNavigation();
 });
+
+// Listener for Service Worker messages (Snooze, etc)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'SNOOZE_ALERT') {
+            const data = event.data.data;
+            if (window.NotificationManager) {
+                console.log('Snoozing for 10 minutes...');
+                // Schedule new alert 10 mins into the future
+                window.NotificationManager.schedule(data.title || 'Snoozed Reminder', 'Dismissed alert resumed', 10, data.type);
+            }
+        }
+    });
+}
 
 function handleInitialNavigation() {
     const hash = window.location.hash.substring(1);
@@ -879,7 +899,13 @@ function backToFolders(fromHistory = false) {
     searchResults.style.display = 'none';
     
     if (!fromHistory && window.location.hash) {
-        history.back();
+        // If we are in a tool, we are 2 steps from Home (Grid -> Folder -> Tool)
+        // If we are just in a folder, we are 1 step from Home (Grid -> Folder)
+        if (history.state && history.state.type === 'tool' && history.state.folderId) {
+            history.go(-2);
+        } else {
+            history.back();
+        }
     }
 }
 
@@ -1960,6 +1986,8 @@ function deleteNote(index) {
 function loadTimer() {
     let html = `
         <div class="tool-form">
+            <div id="notifIndicator" class="notif-status"></div>
+            
             <div style="margin-bottom: 20px;">
                 <h3>⏱️ Timer Mode</h3>
                 <div class="form-group">
@@ -1977,19 +2005,28 @@ function loadTimer() {
                 </div>
             </div>
 
-            <hr style="margin: 20px 0; border: none; border-top: 2px solid #e0e0e0;">
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--glass-border);">
 
             <div>
                 <h3>⏱️ Stopwatch Mode</h3>
-                <div style="font-size: 2rem; text-align: center; font-weight: bold; margin: 20px 0; font-family: monospace;">
-                    <span id="stopwatchDisplay">00:00:00</span>
-                </div>
-                <div style="display: flex; gap: 10px;">
+                <div id="stopwatchDisplay" style="font-size: 2.5rem; text-align: center; font-weight: bold; margin: 20px 0; font-family: monospace; color: #667eea;">00:00:00</div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <button onclick="startStopwatch()">Start</button>
                     <button class="btn-secondary" onclick="stopStopwatch()">Stop</button>
                     <button class="btn-secondary" onclick="resetStopwatch()">Reset</button>
                 </div>
+                
+                <div class="form-group">
+                    <label>Alert at specific time:</label>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="number" id="swAlertMin" placeholder="Min" style="width: 70px;">
+                        <span>:</span>
+                        <input type="number" id="swAlertSec" placeholder="Sec" style="width: 70px;">
+                    </div>
+                </div>
             </div>
+
+            <div id="activeRemindersList" class="active-reminders-container"></div>
         </div>
     `;
     toolContent.innerHTML = html;
@@ -1997,6 +2034,11 @@ function loadTimer() {
     window.timerInterval = null;
     window.stopwatchInterval = null;
     window.stopwatchTime = 0;
+    
+    if (window.NotificationManager) {
+        window.NotificationManager.updateUIStatus();
+        window.NotificationManager.updateActiveLists();
+    }
 }
 
 function startTimer() {
@@ -2010,11 +2052,16 @@ function startTimer() {
         return;
     }
 
+    const totalMinutes = minutes + (seconds / 60);
+    if (window.NotificationManager) {
+        window.NotificationManager.schedule('Timer Finished', 'Your timer has ended.', totalMinutes, 'timer');
+    }
+
     window.timerInterval = setInterval(() => {
         if (seconds === 0) {
             if (minutes === 0) {
                 clearInterval(window.timerInterval);
-                showToast('Time\'s up!', 'success');
+                // showToast('Time\'s up!', 'success'); // Already handled by NotifTrigger
                 return;
             }
             minutes--;
@@ -2023,8 +2070,10 @@ function startTimer() {
             seconds--;
         }
 
-        document.getElementById('timerMin').value = minutes;
-        document.getElementById('timerSec').value = seconds;
+        const mEl = document.getElementById('timerMin');
+        const sEl = document.getElementById('timerSec');
+        if (mEl) mEl.value = minutes;
+        if (sEl) sEl.value = seconds;
     }, 1000);
 }
 
@@ -2042,9 +2091,23 @@ function resetTimer() {
 function startStopwatch() {
     if (window.stopwatchInterval) return;
 
+    const alertMin = parseInt(document.getElementById('swAlertMin')?.value) || -1;
+    const alertSec = parseInt(document.getElementById('swAlertSec')?.value) || 0;
+    const alertTotalSec = alertMin >= 0 ? (alertMin * 60) + alertSec : -1;
+
     window.stopwatchInterval = setInterval(() => {
         window.stopwatchTime++;
         updateStopwatchDisplay();
+
+        if (alertTotalSec > 0 && window.stopwatchTime === alertTotalSec) {
+            if (window.NotificationManager) {
+                window.NotificationManager.trigger({
+                    title: 'Stopwatch Alert',
+                    message: `Target time reached: ${pad(alertMin)}:${pad(alertSec)}`,
+                    type: 'stopwatch'
+                });
+            }
+        }
     }, 1000);
 }
 
@@ -4648,39 +4711,49 @@ function deletePlannerTask(id) {
 function loadReminderAlert() {
     let html = `
         <div class="tool-form">
+            <div id="notifIndicator" class="notif-status"></div>
+            
             <h3>⏰ Reminder Alert</h3>
             <div class="form-group">
-                <label>Reminder text</label>
-                <input type="text" id="reminderText" placeholder="What to remind you about..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
+                <label>Title</label>
+                <input type="text" id="reminderText" placeholder="What to remind you about..." style="width: 100%; padding: 12px; border: 1px solid var(--glass-border); border-radius: 6px; font-size: 1rem; margin-bottom: 10px; background: var(--glass-bg); color: var(--text-color);">
             </div>
             <div class="form-group">
-                <label>Minutes until reminder</label>
-                <input type="number" id="reminderTime" min="1" max="1440" value="5" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                <label>Schedule for:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="date" id="reminderDate" style="padding: 12px; border: 1px solid var(--glass-border); border-radius: 6px; background: var(--glass-bg); color: var(--text-color);">
+                    <input type="time" id="reminderTimeExact" style="padding: 12px; border: 1px solid var(--glass-border); border-radius: 6px; background: var(--glass-bg); color: var(--text-color);">
+                </div>
             </div>
-            <button onclick="setReminder()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Set Reminder</button>
-            <div id="reminderStatus" style="padding: 15px; background: white; border-radius: 8px; text-align: center; color: #667eea; font-weight: bold;"></div>
+            <button onclick="setReminder()" style="width: 100%; padding: 12px; background: var(--primary-gradient); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px; margin-top: 10px;">Set Reminder 🔔</button>
+            <div id="activeRemindersList" class="active-reminders-container"></div>
         </div>
     `;
     toolContent.innerHTML = html;
+    
+    // Set default date to today
+    const tomorrow = new Date();
+    document.getElementById('reminderDate').value = tomorrow.toISOString().split('T')[0];
+    
+    if (window.NotificationManager) {
+        window.NotificationManager.updateUIStatus();
+        window.NotificationManager.updateActiveLists();
+    }
 }
 
 function setReminder() {
     const text = document.getElementById('reminderText').value;
-    const minutes = parseInt(document.getElementById('reminderTime').value);
+    const date = document.getElementById('reminderDate').value;
+    const time = document.getElementById('reminderTimeExact').value;
     
-    if (!text || isNaN(minutes)) {
+    if (!text || !date || !time) {
         showToast('⚠️ Fill all fields', 'error');
         return;
     }
     
-    const ms = minutes * 60 * 1000;
-    setTimeout(() => {
-        alert(`⏰ REMINDER: ${text}`);
-        showToast(`⏰ Reminder: ${text}`, 'success');
-    }, ms);
-    
-    document.getElementById('reminderStatus').textContent = `✓ Reminder set for ${minutes} minute${minutes > 1 ? 's' : ''}!`;
-    showToast(`✓ Reminder set!`, 'success');
+    if (window.NotificationManager) {
+        window.NotificationManager.scheduleExact(text, 'Scheduled Reminder', date, time, 'reminder');
+    }
 }
 
 // ==================== NEW TOOLS - WEB TOOLS ====================
@@ -5180,6 +5253,8 @@ function calculateIV() {
 function loadMedicineReminder() {
     toolContent.innerHTML = `
         <div class="health-tool-card">
+            <div id="notifIndicator" class="notif-status"></div>
+            
             <div class="health-input-group">
                 <label>Medicine Name</label>
                 <input type="text" id="medName" class="health-input" placeholder="e.g. Paracetamol">
@@ -5192,7 +5267,10 @@ function loadMedicineReminder() {
                 <label>Start Time</label>
                 <input type="time" id="medStart" class="health-input">
             </div>
-            <button class="health-btn" onclick="generateMedReminder()">Generate Schedule</button>
+            <button class="health-btn" onclick="generateMedReminder()">Schedule & Generate 💊</button>
+            
+            <div id="activeRemindersList" class="active-reminders-container"></div>
+
             <div id="medResultBox" class="health-schedule-box" style="display: none;"></div>
         </div>
     `;
@@ -5202,6 +5280,11 @@ function loadMedicineReminder() {
     let hrs = now.getHours().toString().padStart(2, '0');
     let mins = now.getMinutes().toString().padStart(2, '0');
     document.getElementById('medStart').value = `${hrs}:${mins}`;
+
+    if (window.NotificationManager) {
+        window.NotificationManager.updateUIStatus();
+        window.NotificationManager.updateActiveLists();
+    }
 }
 
 function generateMedReminder() {
@@ -5227,6 +5310,16 @@ function generateMedReminder() {
 
     for(let i=0; i<Math.ceil(count); i++) {
         let timeStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Schedule in Notification System
+        if (window.NotificationManager && i === 0) {
+            // Only autoschedule first one for demo, or all? User asked for all schedules.
+            // But we don't want to spam if it's 24h. Let's do all.
+            const dateStr = d.toISOString().split('T')[0];
+            const tsStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+            window.NotificationManager.scheduleExact(`Take medicine: ${name}`, 'Dosage time reached', dateStr, tsStr, 'medicine');
+        }
+
         schedule.push(`
             <div class="med-schedule-item">
                 <span class="med-time">⏰ ${timeStr}</span>
@@ -5236,6 +5329,10 @@ function generateMedReminder() {
         d.setHours(d.getHours() + interval);
     }
 
-    resultBox.innerHTML = `<h4 style="margin-bottom:10px; color:var(--text-color);">Upcoming Doses (24h)</h4>` + schedule.join('');
+    resultBox.innerHTML = `<h4 style="margin-bottom:10px; color:var(--text-color);">Upcoming Doses Created</h4>` + schedule.join('');
     resultBox.style.display = 'block';
+    
+    if (window.NotificationManager) {
+        window.NotificationManager.updateActiveLists();
+    }
 }
