@@ -1,4 +1,4 @@
-console.log('Infinity Kit Version 15.3 Loaded - Cache Refresh Active');
+console.log('Infinity Kit Version 15.7 Loaded - Cache Refresh Active');
 
 // Folders with Tools Data
 const baseFolders = [
@@ -118,6 +118,13 @@ const baseFolders = [
         icon: '🌐',
         emoji: '🌐',
         tools: ['urlencoder', 'urlextractor', 'metatagviewer']
+    },
+    {
+        id: 'health-utility-hub',
+        name: 'Health Utility Hub 🩺⚡',
+        icon: '🩺',
+        emoji: '🩺',
+        tools: ['bmicalculator', 'drugdosage', 'ivdripcalc', 'medicinereminder']
     }
 ];
 
@@ -525,6 +532,31 @@ const tools = [
         name: 'Meta Tag Viewer',
         icon: '📄',
         description: 'View meta tags'
+    },
+    // Health Utility Hub Tools
+    {
+        id: 'bmicalculator',
+        name: 'BMI Calculator',
+        icon: '🧮',
+        description: 'Calculate your BMI instantly'
+    },
+    {
+        id: 'drugdosage',
+        name: 'Drug Dosage Calculator',
+        icon: '💊',
+        description: 'Calculate drug dosages (Educational)'
+    },
+    {
+        id: 'ivdripcalc',
+        name: 'IV Drip Rate Calculator',
+        icon: '💧',
+        description: 'Calculate IV drip rates'
+    },
+    {
+        id: 'medicinereminder',
+        name: 'Medicine Reminder',
+        icon: '⏰',
+        description: 'Generate reminder schedules'
     }
 ];
 
@@ -1164,6 +1196,19 @@ function doOpenTool(toolId, toolName, toolIcon, fromHistory = false) {
             break;
         case 'metatagviewer':
             loadMetaTagViewer();
+            break;
+        // Health Utility Tools
+        case 'bmicalculator':
+            loadBMICalculator();
+            break;
+        case 'drugdosage':
+            loadDrugDosage();
+            break;
+        case 'ivdripcalc':
+            loadIVDripCalc();
+            break;
+        case 'medicinereminder':
+            loadMedicineReminder();
             break;
     }
 
@@ -4933,4 +4978,263 @@ function downloadGraph() {
     a.click();
     document.body.removeChild(a);
     showToast('✓ Graph downloaded!', 'success');
+}
+
+// ==================== HEALTH UTILITY HUB ====================
+
+function loadBMICalculator() {
+    toolContent.innerHTML = `
+        <div class="health-tool-card">
+            <div class="health-input-group">
+                <label>Height</label>
+                <div class="health-input-row">
+                    <input type="number" id="bmiHeight" class="health-input" placeholder="e.g. 170" inputmode="decimal">
+                    <select id="bmiHeightUnit" class="health-select">
+                        <option value="cm">cm</option>
+                        <option value="ft">ft</option>
+                    </select>
+                </div>
+            </div>
+            <div class="health-input-group">
+                <label>Weight</label>
+                <div class="health-input-row">
+                    <input type="number" id="bmiWeight" class="health-input" placeholder="e.g. 70" inputmode="decimal">
+                    <select id="bmiWeightUnit" class="health-select">
+                        <option value="kg">kg</option>
+                        <option value="lbs">lbs</option>
+                    </select>
+                </div>
+            </div>
+            <div id="bmiResultBox" class="health-result-box" style="display: none;">
+                <div id="bmiValue" class="health-main-val"></div>
+                <div id="bmiCategory" class="health-sub-val"></div>
+            </div>
+        </div>
+    `;
+
+    const inputs = ['bmiHeight', 'bmiHeightUnit', 'bmiWeight', 'bmiWeightUnit'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateBMI);
+    });
+}
+
+function calculateBMI() {
+    let h = parseFloat(document.getElementById('bmiHeight').value);
+    let hU = document.getElementById('bmiHeightUnit').value;
+    let w = parseFloat(document.getElementById('bmiWeight').value);
+    let wU = document.getElementById('bmiWeightUnit').value;
+    let resultBox = document.getElementById('bmiResultBox');
+    
+    if (!h || !w) {
+        resultBox.style.display = 'none';
+        return;
+    }
+
+    if (hU === 'ft') {
+        h = h * 0.3048; 
+    } else {
+        h = h / 100;
+    }
+    
+    if (wU === 'lbs') {
+        w = w * 0.453592;
+    }
+    
+    if (h <= 0 || w <= 0) {
+        resultBox.style.display = 'none';
+        return;
+    }
+
+    let bmi = w / (h * h);
+    bmi = bmi.toFixed(1);
+    
+    let category = '';
+    let colorClass = '';
+    if (bmi < 18.5) {
+        category = 'Underweight';
+        colorClass = 'bmi-yellow';
+    } else if (bmi < 25) {
+        category = 'Normal';
+        colorClass = 'bmi-green';
+    } else if (bmi < 30) {
+        category = 'Overweight';
+        colorClass = 'bmi-yellow';
+    } else {
+        category = 'Obese';
+        colorClass = 'bmi-red';
+    }
+    
+    document.getElementById('bmiValue').textContent = `BMI: ${bmi}`;
+    let catEl = document.getElementById('bmiCategory');
+    catEl.textContent = category;
+    catEl.className = `health-sub-val ${colorClass}`;
+    // Trigger tiny reflow for animation
+    resultBox.style.display = 'none';
+    resultBox.offsetHeight; 
+    resultBox.style.display = 'block';
+}
+
+function loadDrugDosage() {
+    toolContent.innerHTML = `
+        <div class="health-tool-card">
+            <div class="health-input-group">
+                <label>Patient Weight (kg)</label>
+                <input type="number" id="drugWeight" class="health-input" placeholder="e.g. 20" inputmode="decimal">
+            </div>
+            <div class="health-input-group">
+                <label>Prescribed Dose (mg/kg)</label>
+                <input type="number" id="drugDose" class="health-input" placeholder="e.g. 15" inputmode="decimal">
+            </div>
+            <div class="health-input-group">
+                <label>Available Concentration (mg/ml)</label>
+                <input type="number" id="drugConc" class="health-input" placeholder="e.g. 250" inputmode="decimal">
+            </div>
+            <div id="drugResultBox" class="health-result-box" style="display: none;">
+                <div id="drugResultVal" class="health-main-val"></div>
+            </div>
+            <div class="health-warning">⚠️ For educational purposes only. Do not use for clinical decisions.</div>
+        </div>
+    `;
+
+    ['drugWeight', 'drugDose', 'drugConc'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateDrug);
+    });
+}
+
+function calculateDrug() {
+    let w = parseFloat(document.getElementById('drugWeight').value);
+    let d = parseFloat(document.getElementById('drugDose').value);
+    let c = parseFloat(document.getElementById('drugConc').value);
+    let resultBox = document.getElementById('drugResultBox');
+
+    if (!w || !d || !c) {
+        resultBox.style.display = 'none';
+        return;
+    }
+
+    let totalMg = w * d;
+    let ml = totalMg / c;
+
+    document.getElementById('drugResultVal').innerHTML = `<span>Final Dosage:</span> <br> <strong>${ml.toFixed(2)} ml</strong> <br><small>(${totalMg.toFixed(2)} mg total)</small>`;
+    resultBox.style.display = 'block';
+}
+
+function loadIVDripCalc() {
+    toolContent.innerHTML = `
+        <div class="health-tool-card">
+            <div class="health-input-group">
+                <label>Total Fluid Volume (ml)</label>
+                <input type="number" id="ivVol" class="health-input" placeholder="e.g. 1000" inputmode="numeric">
+            </div>
+            <div class="health-input-group">
+                <label>Time</label>
+                <div class="health-input-row">
+                    <input type="number" id="ivTime" class="health-input" placeholder="e.g. 8" inputmode="numeric">
+                    <select id="ivTimeUnit" class="health-select">
+                        <option value="hrs">Hours</option>
+                        <option value="mins">Minutes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="health-presets">
+                <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=1; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">1 hr</button>
+                <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=2; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">2 hr</button>
+                <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=6; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">6 hr</button>
+                <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=24; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">24 hr</button>
+            </div>
+            <div class="health-input-group">
+                <label>Drop Factor (gtt/ml)</label>
+                <input type="number" id="ivDrop" class="health-input" placeholder="e.g. 20 (Macrodrip)" inputmode="numeric">
+            </div>
+            <div id="ivResultBox" class="health-result-box" style="display: none;">
+                <div id="ivResultVal" class="health-main-val"></div>
+            </div>
+        </div>
+    `;
+
+    ['ivVol', 'ivTime', 'ivTimeUnit', 'ivDrop'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateIV);
+    });
+}
+
+function calculateIV() {
+    let vol = parseFloat(document.getElementById('ivVol').value);
+    let time = parseFloat(document.getElementById('ivTime').value);
+    let tu = document.getElementById('ivTimeUnit').value;
+    let drops = parseFloat(document.getElementById('ivDrop').value);
+    let resultBox = document.getElementById('ivResultBox');
+
+    if (!vol || !time || !drops) {
+        resultBox.style.display = 'none';
+        return;
+    }
+
+    let timeInMins = tu === 'hrs' ? time * 60 : time;
+    let rate = (vol * drops) / timeInMins;
+
+    document.getElementById('ivResultVal').innerHTML = `Drip Rate: <strong>${Math.round(rate)}</strong> drops/min`;
+    resultBox.style.display = 'block';
+}
+
+function loadMedicineReminder() {
+    toolContent.innerHTML = `
+        <div class="health-tool-card">
+            <div class="health-input-group">
+                <label>Medicine Name</label>
+                <input type="text" id="medName" class="health-input" placeholder="e.g. Paracetamol">
+            </div>
+            <div class="health-input-group">
+                <label>Interval (hours)</label>
+                <input type="number" id="medInterval" class="health-input" placeholder="e.g. 6" inputmode="numeric">
+            </div>
+            <div class="health-input-group">
+                <label>Start Time</label>
+                <input type="time" id="medStart" class="health-input">
+            </div>
+            <button class="health-btn" onclick="generateMedReminder()">Generate Schedule</button>
+            <div id="medResultBox" class="health-schedule-box" style="display: none;"></div>
+        </div>
+    `;
+    
+    // Default start time to now
+    let now = new Date();
+    let hrs = now.getHours().toString().padStart(2, '0');
+    let mins = now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('medStart').value = `${hrs}:${mins}`;
+}
+
+function generateMedReminder() {
+    let name = document.getElementById('medName').value || 'Medicine';
+    let interval = parseFloat(document.getElementById('medInterval').value);
+    let start = document.getElementById('medStart').value;
+    let resultBox = document.getElementById('medResultBox');
+
+    if (!interval || !start) {
+        showToast('Please enter an interval and start time', 'error');
+        return;
+    }
+
+    let [h, m] = start.split(':').map(Number);
+    let schedule = [];
+    
+    let count = 24 / interval;
+    if (count > 12) count = 12; // max cap
+    if (count < 1) count = 1;
+
+    let d = new Date();
+    d.setHours(h, m, 0, 0);
+
+    for(let i=0; i<Math.ceil(count); i++) {
+        let timeStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        schedule.push(`
+            <div class="med-schedule-item">
+                <span class="med-time">⏰ ${timeStr}</span>
+                <span class="med-name">${name}</span>
+            </div>
+        `);
+        d.setHours(d.getHours() + interval);
+    }
+
+    resultBox.innerHTML = `<h4 style="margin-bottom:10px; color:var(--text-color);">Upcoming Doses (24h)</h4>` + schedule.join('');
+    resultBox.style.display = 'block';
 }
