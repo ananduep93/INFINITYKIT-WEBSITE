@@ -1,4 +1,4 @@
-console.log('Infinity Kit Version 15.7 Loaded - Cache Refresh Active');
+console.log('Infinity Kit Version 15.9 Loaded - Cache Refresh Active');
 
 // Folders with Tools Data
 const baseFolders = [
@@ -873,10 +873,11 @@ function backToFolders(fromHistory = false) {
     toolsGrid.style.display = 'none';
     backButtonContainer.style.display = 'none';
     foldersGrid.style.display = 'grid';
+    closeTool(true);
     currentFolder = null;
     searchBar.value = '';
     searchResults.style.display = 'none';
-
+    
     if (!fromHistory && window.location.hash) {
         history.back();
     }
