@@ -886,6 +886,9 @@ function renderToolsInFolder(folder) {
 
 // Back to folders
 function backToFolders(fromHistory = false) {
+    // Ensure tool is fully unmounted first
+    closeTool(true);
+    
     // Add animation classes for "going back"
     foldersGrid.classList.add('slide-in-left');
     setTimeout(() => foldersGrid.classList.remove('slide-in-left'), 400);
@@ -893,18 +896,17 @@ function backToFolders(fromHistory = false) {
     toolsGrid.style.display = 'none';
     backButtonContainer.style.display = 'none';
     foldersGrid.style.display = 'grid';
-    closeTool(true);
     currentFolder = null;
     searchBar.value = '';
     searchResults.style.display = 'none';
     
-    if (!fromHistory && window.location.hash) {
-        // If we are in a tool, we are 2 steps from Home (Grid -> Folder -> Tool)
-        // If we are just in a folder, we are 1 step from Home (Grid -> Folder)
-        if (history.state && history.state.type === 'tool' && history.state.folderId) {
-            history.go(-2);
-        } else {
-            history.back();
+    if (!fromHistory) {
+        // If we have a hash, we want to go back to the root (no hash)
+        // We go back until the hash is gone, or just land on the home state
+        if (window.location.hash) {
+            history.pushState({ type: 'home' }, '', window.location.pathname);
+            // Trigger haptic for home transition
+            triggerHaptic('light');
         }
     }
 }
@@ -954,11 +956,16 @@ function setupEventListeners() {
             const folder = folders.find(f => f.id === state.folderId);
             if (folder) openFolder(folder, true);
         } else {
-            // No state or home state
+            // No state or home state - explicitly clear everything
             closeTool(true);
-            if (currentFolder) {
-                backToFolders(true);
-            }
+            currentFolder = null;
+            backButtonContainer.style.display = 'none';
+            toolsGrid.style.display = 'none';
+            foldersGrid.style.display = 'grid';
+            searchBar.value = '';
+            searchResults.style.display = 'none';
+            // Also ensure we are at the top
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
     });
 }
@@ -1254,10 +1261,17 @@ function closeTool(fromHistory = false) {
     if (typeof cleanupExpenseToolSync === 'function') {
         cleanupExpenseToolSync();
     }
+    
+    // Completely unmount/clear tool content as requested
     modal.style.display = 'none';
+    toolContent.innerHTML = '';
+    toolTitle.textContent = '';
     calcDisplay = '';
+    window.activeToolId = null;
 
-    if (!fromHistory && history.state && history.state.type === 'tool') {
+    // Trigger history back only if this wasn't called from a popstate event (e.g., clicking X button)
+    // fromHistory will be an Event object if called from button click, so we check strictly for true
+    if (fromHistory !== true && history.state && history.state.type === 'tool') {
         history.back();
     }
 }
@@ -3563,10 +3577,10 @@ function loadCaseConverter() {
                 <label>Enter Text</label>
                 <textarea id="caseInput" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 100px;"></textarea>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px;">
-                <button onclick="convertCase('upper')" style="padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">UPPER</button>
-                <button onclick="convertCase('lower')" style="padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">lower</button>
-                <button onclick="convertCase('capitalize')" style="padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Capitalize</button>
+            <div class="tool-grid-3">
+                <button onclick="convertCase('upper')" style="font-weight: bold;">UPPER</button>
+                <button onclick="convertCase('lower')" style="font-weight: bold;">lower</button>
+                <button onclick="convertCase('capitalize')" style="font-weight: bold;">Capitalize</button>
             </div>
             <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">Result</div>
@@ -4092,7 +4106,9 @@ function loadGraphMaker() {
                 <input type="text" id="graphInput" placeholder="e.g., 10,20,30,40,50" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
             </div>
             <button onclick="generateGraph()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Generate Graph</button>
-            <canvas id="graphCanvas" style="width: 100%; border: 1px solid #ddd; border-radius: 8px;"></canvas>
+            <div class="canvas-container">
+                <canvas id="graphCanvas" class="responsive-canvas"></canvas>
+            </div>
         </div>
     `;
     toolContent.innerHTML = html;
@@ -4109,7 +4125,8 @@ function generateGraph() {
     
     const canvas = document.getElementById('graphCanvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 400;
+    const containerWidth = canvas.parentElement.clientWidth;
+    canvas.width = containerWidth || 400;
     canvas.height = 300;
     
     const maxNum = Math.max(...numbers);
@@ -4144,12 +4161,12 @@ function loadAverageCalculator() {
                 <input type="text" id="avgInput" placeholder="e.g., 10,20,30,40,50" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
             </div>
             <button onclick="calculateAverage()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Calculate</button>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+            <div class="tool-grid-2">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                     <div style="color: #666; margin-bottom: 5px;">Average</div>
                     <div id="avgResult" style="font-size: 1.5rem; font-weight: bold; color: #667eea;">-</div>
                 </div>
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                     <div style="color: #666; margin-bottom: 5px;">Sum</div>
                     <div id="sumResult" style="font-size: 1.5rem; font-weight: bold; color: #764ba2;">-</div>
                 </div>
@@ -4223,7 +4240,7 @@ function loadCSVViewer() {
             </div>
             <input type="file" id="csvFile" accept=".csv" style="width: 100%; margin-bottom: 10px;">
             <button onclick="viewCSV()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">View as Table</button>
-            <div id="csvTable" style="overflow-x: auto; background: white; border-radius: 8px;"></div>
+            <div id="csvTable" class="table-container"></div>
         </div>
     `;
     toolContent.innerHTML = html;
@@ -4267,25 +4284,25 @@ function loadLCMHCF() {
     let html = `
         <div class="tool-form">
             <h3>📐 LCM / HCF Calculator</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="tool-grid-2">
                 <div class="form-group">
                     <label>Number 1</label>
-                    <input type="number" id="lcmNum1" placeholder="Enter number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="lcmNum1" placeholder="Value">
                 </div>
                 <div class="form-group">
                     <label>Number 2</label>
-                    <input type="number" id="lcmNum2" placeholder="Enter number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="lcmNum2" placeholder="Value">
                 </div>
             </div>
             <button onclick="calculateLCMHCF()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Calculate</button>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+            <div class="tool-grid-2">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                     <div style="color: #666; margin-bottom: 5px;">LCM</div>
-                    <div id="lcmResult" style="font-size: 1.5rem; font-weight: bold; color: #667eea;">-</div>
+                    <div id="lcmResult" style="font-size: 1.4rem; font-weight: bold; color: #667eea;">-</div>
                 </div>
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                     <div style="color: #666; margin-bottom: 5px;">HCF (GCD)</div>
-                    <div id="hcfResult" style="font-size: 1.5rem; font-weight: bold; color: #764ba2;">-</div>
+                    <div id="hcfResult" style="font-size: 1.4rem; font-weight: bold; color: #764ba2;">-</div>
                 </div>
             </div>
         </div>
@@ -4314,18 +4331,18 @@ function loadTriangleChecker() {
     let html = `
         <div class="tool-form">
             <h3>🔺 Triangle Type Checker</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div class="tool-grid-3">
                 <div class="form-group">
                     <label>Side A</label>
-                    <input type="number" id="triangleA" placeholder="Side A" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="triangleA" placeholder="A">
                 </div>
                 <div class="form-group">
                     <label>Side B</label>
-                    <input type="number" id="triangleB" placeholder="Side B" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="triangleB" placeholder="B">
                 </div>
                 <div class="form-group">
                     <label>Side C</label>
-                    <input type="number" id="triangleC" placeholder="Side C" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="triangleC" placeholder="C">
                 </div>
             </div>
             <button onclick="checkTriangleType()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Check Type</button>
@@ -4365,16 +4382,16 @@ function loadDistanceCalculator() {
     let html = `
         <div class="tool-form">
             <h3>📏 Distance Calculator</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="tool-grid-2">
                 <div>
                     <div style="margin-bottom: 8px; font-weight: bold;">Point 1 (x1, y1)</div>
-                    <input type="number" id="dist_x1" placeholder="x1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px;">
-                    <input type="number" id="dist_y1" placeholder="y1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="dist_x1" placeholder="x1" style="margin-bottom: 8px;">
+                    <input type="number" id="dist_y1" placeholder="y1">
                 </div>
                 <div>
                     <div style="margin-bottom: 8px; font-weight: bold;">Point 2 (x2, y2)</div>
-                    <input type="number" id="dist_x2" placeholder="x2" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px;">
-                    <input type="number" id="dist_y2" placeholder="y2" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <input type="number" id="dist_x2" placeholder="x2" style="margin-bottom: 8px;">
+                    <input type="number" id="dist_y2" placeholder="y2">
                 </div>
             </div>
             <button onclick="calculateDistance()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Calculate Distance</button>
@@ -4407,14 +4424,14 @@ function loadEquationSolver() {
     let html = `
         <div class="tool-form">
             <h3>🧮 Equation Solver (ax + b = 0)</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div class="tool-grid-2">
                 <div class="form-group">
-                    <label>Coefficient a</label>
-                    <input type="number" id="equationA" placeholder="Enter a" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <label>Coeff a</label>
+                    <input type="number" id="equationA" placeholder="a">
                 </div>
                 <div class="form-group">
-                    <label>Coefficient b</label>
-                    <input type="number" id="equationB" placeholder="Enter b" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                    <label>Coeff b</label>
+                    <input type="number" id="equationB" placeholder="b">
                 </div>
             </div>
             <button onclick="solveEquation()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Solve</button>
@@ -4456,7 +4473,9 @@ function loadSpinWheel() {
                 <input type="text" id="wheelOptions" placeholder="e.g., Option1, Option2, Option3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 10px;">
             </div>
             <button onclick="prepareWheel()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Prepare Wheel</button>
-            <canvas id="wheelCanvas" style="width: 100%; max-width: 400px; height: 400px; border: 2px solid #667eea; border-radius: 8px; margin: 20px auto; display: block;"></canvas>
+            <div class="canvas-container" style="margin: 15px 0;">
+                <canvas id="wheelCanvas" class="responsive-canvas"></canvas>
+            </div>
             <button onclick="spinTheWheel()" id="spinBtn" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">🎡 SPIN!</button>
             <div id="wheelResult" style="text-align: center; font-size: 1.2rem; font-weight: bold; color: #667eea;"></div>
         </div>
@@ -4475,12 +4494,21 @@ function prepareWheel() {
 
 function drawWheel() {
     const canvas = document.getElementById('wheelCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const radius = canvas.width / 2 - 5;
+    
+    // Set internal resolution based on parent container width
+    const parentWidth = canvas.parentElement.clientWidth;
+    const size = Math.min(parentWidth - 20, 400);
+    canvas.width = size;
+    canvas.height = size;
+    
+    const radius = size / 2 - 5;
     const options = window.wheelOptions;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(radius + 5, radius + 5);
+    ctx.save();
+    ctx.translate(size / 2, size / 2);
     ctx.rotate(window.wheelRotation);
     
     const sliceAngle = (Math.PI * 2) / options.length;
@@ -4501,8 +4529,16 @@ function drawWheel() {
         ctx.fillText(option, radius - 30, 0);
         ctx.restore();
     });
+    ctx.restore();
     
-    ctx.translate(-radius - 5, -radius - 5);
+    // Draw the pointer
+    ctx.fillStyle = '#ff4757';
+    const centerX = size / 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 12, 10);
+    ctx.lineTo(centerX + 12, 10);
+    ctx.lineTo(centerX, 35);
+    ctx.fill();
 }
 
 function spinTheWheel() {
@@ -4932,8 +4968,8 @@ function loadGraphMaker() {
             
             <button onclick="generateGraph()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Generate Graph</button>
             
-            <div id="graphContainer" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none;">
-                <canvas id="graphCanvas" style="max-width: 100%;"></canvas>
+            <div id="graphContainer" class="canvas-container" style="display: none; margin-top: 15px;">
+                <canvas id="graphCanvas" class="responsive-canvas"></canvas>
                 <button onclick="downloadGraph()" style="width: 100%; margin-top: 15px; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">📥 Download as PNG</button>
             </div>
         </div>
@@ -4977,7 +5013,7 @@ function generateGraph() {
     const oldCanvas = document.getElementById('graphCanvas');
     const newCanvas = document.createElement('canvas');
     newCanvas.id = 'graphCanvas';
-    newCanvas.style.maxWidth = '100%';
+    newCanvas.className = 'responsive-canvas';
     canvasContainer.insertBefore(newCanvas, oldCanvas);
     oldCanvas.remove();
 
@@ -5210,7 +5246,7 @@ function loadIVDripCalc() {
                     </select>
                 </div>
             </div>
-            <div class="health-presets">
+            <div class="health-presets tool-grid-2">
                 <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=1; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">1 hr</button>
                 <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=2; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">2 hr</button>
                 <button class="health-preset-btn" onclick="document.getElementById('ivTime').value=6; document.getElementById('ivTimeUnit').value='hrs'; calculateIV();">6 hr</button>
