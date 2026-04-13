@@ -277,7 +277,7 @@ function loadExpenseListTool() {
     toolContent.innerHTML = `
         <div class="tool-form">
             <h3>📋 Expense List</h3>
-            <div class="input-group" style="flex-wrap: wrap; margin-bottom: 20px;">
+            <div class="control-group" style="flex-wrap: wrap;">
                 <select id="expenseListCategoryFilter" onchange="renderExpenseListTable()" style="flex: 1; min-width: 140px;">
                     <option value="all">All Categories</option>
                     ${getExpenseCategoryOptions()}
@@ -465,7 +465,7 @@ function loadBudgetTrackerTool() {
     toolContent.innerHTML = `
         <div class="tool-form">
             <h3>🎯 Budget Tracker</h3>
-            <div class="input-group" style="flex-wrap: wrap; margin-bottom: 20px;">
+            <div class="control-group" style="flex-wrap: wrap;">
                 <select id="budgetCategory" style="flex: 1; min-width: 120px;">${getExpenseCategoryOptions()}</select>
                 <input type="number" id="budgetAmount" min="0.01" step="0.01" placeholder="Budget amount" style="flex: 1; min-width: 100px;">
                 <button onclick="saveCategoryBudget()">Save</button>

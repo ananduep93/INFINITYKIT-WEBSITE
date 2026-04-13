@@ -1754,7 +1754,7 @@ function loadPasswordGenerator() {
             <button onclick="generatePassword()">Generate Password</button>
             <div class="generated-password" id="generatedPwd">Click Generate</div>
             
-            <div class="input-group">
+            <div class="control-group">
                 <button onclick="copyPassword()">Copy</button>
                 <button onclick="savePwd()" class="btn-secondary">Save Password</button>
             </div>
@@ -1998,7 +1998,7 @@ function loadTimer() {
                     <label>Seconds:</label>
                     <input type="number" id="timerSec" min="0" max="59" value="0">
                 </div>
-                <div class="input-group">
+                <div class="control-group">
                     <button onclick="startTimer()">Start</button>
                     <button class="btn-secondary" onclick="stopTimer()">Stop</button>
                     <button class="btn-secondary" onclick="resetTimer()">Reset</button>
@@ -2010,7 +2010,7 @@ function loadTimer() {
             <div>
                 <h3>⏱️ Stopwatch Mode</h3>
                 <div id="stopwatchDisplay" style="font-size: 2.5rem; text-align: center; font-weight: bold; margin: 20px 0; font-family: monospace; color: #667eea;">00:00:00</div>
-                <div class="input-group">
+                <div class="control-group">
                     <button onclick="startStopwatch()">Start</button>
                     <button class="btn-secondary" onclick="stopStopwatch()">Stop</button>
                     <button class="btn-secondary" onclick="resetStopwatch()">Reset</button>

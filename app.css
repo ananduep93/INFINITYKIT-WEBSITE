@@ -1029,6 +1029,7 @@ input:focus, textarea:focus, select:focus {
 
 button {
     padding: 12px 20px;
+    min-height: 44px; /* Ensure better touch target size */
     background: var(--primary-gradient);
     color: white;
     border: none;
@@ -1072,6 +1073,21 @@ button:active {
     padding: 12px 24px;
     white-space: nowrap;
     border-radius: 10px;
+    min-height: 44px;
+}
+
+/* Control Group for clusters of action buttons (Start, Stop, etc.) */
+.control-group {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin-top: 24px;
+    margin-bottom: 20px;
+}
+
+.control-group button {
+    flex: 1;
+    min-height: 44px;
 }
 
 .btn-group {
@@ -2684,8 +2700,14 @@ body.no-animations * {
         border-radius: 8px !important;
     }
     
-    .input-group button, .todo-input-group button {
+    .input-group button, .todo-input-group button, .control-group button {
         padding: 10px 18px !important;
+        min-height: 42px !important; /* Slightly smaller but still accessible */
+    }
+    
+    .control-group {
+        margin-top: 20px;
+        gap: 10px;
     }
     
     .folder-card {
