@@ -851,6 +851,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-decoration: none;
+    color: inherit;
 }
 
 .tool-card:hover {
@@ -859,6 +861,7 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-color: rgba(102, 126, 234, 0.8);
+    text-decoration: none;
 }
 
 .tool-card-header {
@@ -919,6 +922,21 @@ body {
     font-size: 2.5rem;
     margin-bottom: 10px;
     transition: transform 0.25s ease, filter 0.25s ease;
+    padding-bottom: 5px;
+    position: relative;
+}
+
+.tool-icon::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 3px;
+    background: #667eea;
+    border-radius: 4px;
+    opacity: 0.8;
 }
 
 .tool-card:hover .tool-icon {
@@ -930,6 +948,37 @@ body {
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.4;
+    text-decoration: none;
+}
+
+/* Back Link as Button */
+.back-link {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    background: #1e293b;
+    color: white !important;
+    border: 1px solid #334155;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 25px;
+}
+
+.back-link:hover {
+    background: #0f172a;
+    transform: translateX(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    color: white !important;
+}
+
+.back-link span {
+    font-size: 1.1rem;
 }
 
 /* Modal Styling */
