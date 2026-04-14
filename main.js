@@ -594,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applySettings();
     updateFolders();
     renderFolders();
-    setupEventListeners();
+    setupSafeListeners();
     setupPwaInstall();
     registerServiceWorker();
     updateCopyrightYear();
@@ -606,6 +606,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     handleInitialNavigation();
 });
+
+// Helper to safely set up event listeners or elements
+function setupSafeListeners() {
+    if (searchBar) {
+        searchBar.addEventListener('focus', () => {
+            if (searchBar.value.trim() === '') {
+                showRecentSearches();
+            }
+        });
+
+        searchBar.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            if (query === '') {
+                showRecentSearches();
+            } else {
+                performSearch(query);
+            }
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeTool);
+    }
+
+    if (backButton) {
+        backButton.addEventListener('click', () => {
+            triggerHaptic('light');
+            backToFolders(false);
+        });
+    }
+}
 
 // Listener for Service Worker messages (Snooze, etc)
 if ('serviceWorker' in navigator) {
@@ -767,6 +798,7 @@ function registerServiceWorker() {
 
 // Render folder cards
 function renderFolders() {
+    if (!foldersGrid) return;
     foldersGrid.innerHTML = '';
 
     folders.forEach(folder => {
@@ -830,19 +862,21 @@ function renderFolders() {
 // Open folder
 function openFolder(folder, fromHistory = false) {
     currentFolder = folder;
-    foldersGrid.style.display = 'none';
-    backButtonContainer.style.display = 'flex';
-    searchResults.style.display = 'none';
-    searchBar.value = '';
+    if (foldersGrid) foldersGrid.style.display = 'none';
+    if (backButtonContainer) backButtonContainer.style.display = 'flex';
+    if (searchResults) searchResults.style.display = 'none';
+    if (searchBar) searchBar.value = '';
     
-    currentFolderTitle.textContent = `${folder.emoji} ${folder.name}`;
+    if (currentFolderTitle) currentFolderTitle.textContent = `${folder.emoji} ${folder.name}`;
     renderToolsInFolder(folder);
     
-    toolsGrid.style.display = 'grid';
+    if (toolsGrid) toolsGrid.style.display = 'grid';
 
     // Add animation classes
-    toolsGrid.classList.add('slide-in-right');
-    setTimeout(() => toolsGrid.classList.remove('slide-in-right'), 400);
+    if (toolsGrid) {
+        toolsGrid.classList.add('slide-in-right');
+        setTimeout(() => toolsGrid.classList.remove('slide-in-right'), 400);
+    }
 
     if (!fromHistory) {
         history.pushState({ type: 'folder', folderId: folder.id }, '', `#${folder.id}`);
@@ -858,11 +892,14 @@ function renderToolsInFolder(folder) {
         const tool = tools.find(t => t.id === toolId);
         if (!tool) return;
 
-        const card = document.createElement('div');
+        const card = document.createElement('a');
         card.className = 'tool-card';
+        card.href = tool.comingSoon ? '#' : `tools/${toolId}.html`;
+        
         if (tool.comingSoon) {
             card.style.opacity = '0.6';
             card.style.cursor = 'not-allowed';
+            card.onclick = (e) => e.preventDefault();
         }
         
         card.innerHTML = `
@@ -874,10 +911,10 @@ function renderToolsInFolder(folder) {
         `;
         
         if (!tool.comingSoon) {
-            card.style.cursor = 'pointer';
             card.addEventListener('click', () => {
                 triggerHaptic('light');
-                openTool(tool.id, tool.name, tool.icon);
+                // openTool is no longer needed for internal navigation, 
+                // but we keep it for backward compatibility or special cases
             });
         }
         toolsGrid.appendChild(card);
@@ -890,15 +927,17 @@ function backToFolders(fromHistory = false) {
     closeTool(true);
     
     // Add animation classes for "going back"
-    foldersGrid.classList.add('slide-in-left');
-    setTimeout(() => foldersGrid.classList.remove('slide-in-left'), 400);
+    if (foldersGrid) {
+        foldersGrid.classList.add('slide-in-left');
+        setTimeout(() => foldersGrid.classList.remove('slide-in-left'), 400);
+    }
 
-    toolsGrid.style.display = 'none';
-    backButtonContainer.style.display = 'none';
-    foldersGrid.style.display = 'grid';
+    if (toolsGrid) toolsGrid.style.display = 'none';
+    if (backButtonContainer) backButtonContainer.style.display = 'none';
+    if (foldersGrid) foldersGrid.style.display = 'grid';
     currentFolder = null;
-    searchBar.value = '';
-    searchResults.style.display = 'none';
+    if (searchBar) searchBar.value = '';
+    if (searchResults) searchResults.style.display = 'none';
     
     if (!fromHistory) {
         // If we have a hash, we want to go back to the root (no hash)
@@ -3943,17 +3982,18 @@ function displaySearchResults(results, query) {
     
     results.forEach(result => {
         const item = result.item;
-        const div = document.createElement('div');
         
         if (result.type === 'tool') {
-            div.className = 'search-result-item';
-            div.innerHTML = `<span>${item.icon} ${item.name}</span>`;
-            div.onclick = () => {
-                openTool(item.id, item.name, item.icon);
-                searchResults.style.display = 'none';
+            const link = document.createElement('a');
+            link.className = 'search-result-item';
+            link.href = `tools/${item.id}.html`;
+            link.innerHTML = `<span>${item.icon} ${item.name}</span>`;
+            link.onclick = () => {
                 addToRecentSearches(item.name);
             };
+            searchResultsList.appendChild(link);
         } else {
+            const div = document.createElement('div');
             div.className = 'search-result-item';
             div.innerHTML = `<span>${item.emoji} ${item.name} (Folder)</span>`;
             div.onclick = () => {
@@ -3961,9 +4001,8 @@ function displaySearchResults(results, query) {
                 searchResults.style.display = 'none';
                 addToRecentSearches(item.name);
             };
+            searchResultsList.appendChild(div);
         }
-        
-        searchResultsList.appendChild(div);
     });
 }
 
