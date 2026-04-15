@@ -652,7 +652,6 @@ let calcDisplay = '';
 let currentFolder = null;
 let recentSearchesList = JSON.parse(localStorage.getItem('recentSearches')) || [];
 let deferredInstallPrompt = null;
-let isPwaInstalled = false; // Will be updated dynamically
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -777,27 +776,8 @@ function handleInitialNavigation() {
     }
 }
 
-async function syncPwaInstallationStatus() {
-    // 1. Check if we're currently in standalone mode
-    let currentlyStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    
-    // 2. Try modern API to check for related apps (installed PWA)
-    let relatedAppsInstalled = false;
-    if ('getInstalledRelatedApps' in navigator) {
-        try {
-            const relatedApps = await navigator.getInstalledRelatedApps();
-            relatedAppsInstalled = relatedApps.length > 0;
-        } catch (e) {
-            console.warn('Unable to fetch installed related apps:', e);
-        }
-    }
-
-    isPwaInstalled = currentlyStandalone || relatedAppsInstalled;
-    updateInstallButtonState();
-}
-
 function setupPwaInstall() {
-    syncPwaInstallationStatus();
+    updateInstallButtonState();
     
     if (installAppBtn) {
         installAppBtn.addEventListener('click', handleInstallApp);
@@ -813,55 +793,25 @@ function setupPwaInstall() {
     });
 
     window.addEventListener('appinstalled', () => {
-        isPwaInstalled = true;
         deferredInstallPrompt = null;
         updateInstallButtonState();
         showToast('Infinity Kit installed successfully', 'success');
     });
 
-    if (window.matchMedia) {
-        const standaloneMedia = window.matchMedia('(display-mode: standalone)');
-        const onStandaloneChange = (event) => {
-            isPwaInstalled = event.matches;
-            updateInstallButtonState();
-        };
-
-        if (typeof standaloneMedia.addEventListener === 'function') {
-            standaloneMedia.addEventListener('change', onStandaloneChange);
-        } else if (typeof standaloneMedia.addListener === 'function') {
-            standaloneMedia.addListener(onStandaloneChange);
-        }
-    }
 }
 
 function updateInstallButtonState() {
     if (installAppBtn) {
-        // Reset state
+        // Button is ALWAYS enabled and shows "Install App" per user requirement
         installAppBtn.classList.remove('is-installed');
         installAppBtn.disabled = false;
         installAppBtn.textContent = '📥 Install App';
-        installAppBtn.title = '';
-
-        // If the browser session says it's already installed
-        if (isPwaInstalled && !deferredInstallPrompt) {
-            installAppBtn.disabled = true;
-            installAppBtn.classList.add('is-installed');
-            installAppBtn.textContent = 'Installed ✅';
-        } else if (!deferredInstallPrompt) {
-            // If we don't have a prompt and not in standalone, reset state
-            isPwaInstalled = false;
-            installAppBtn.disabled = true;
-            installAppBtn.title = 'Install will be available once your browser allows it.';
-        }
-        // If we have a prompt, the button is ALWAYS enabled even if isPwaInstalled is true (as the browser wouldn't send the prompt if already installed)
+        installAppBtn.title = 'Install Infinity Kit for faster access and offline support.';
     }
 
+    // Always show in footer if buttons exist
     if (footerPwaContainer) {
-        if (deferredInstallPrompt) {
-            footerPwaContainer.style.display = 'block';
-        } else {
-            footerPwaContainer.style.display = 'none';
-        }
+        footerPwaContainer.style.display = 'block';
     }
 }
 
@@ -873,13 +823,9 @@ function updateCopyrightYear() {
 }
 
 async function handleInstallApp() {
-    if (isPwaInstalled) {
-        showToast('Infinity Kit is already installed', 'info');
-        return;
-    }
-
     if (!deferredInstallPrompt) {
-        showToast('Install prompt is not available yet on this browser', 'info');
+        // If browser hasn't provided the prompt, we provide manual instructions
+        showToast('If it not pops up, To install: open your browser menu (⋮ or ⇧) and select "Add to Home Screen" or "Install App".', 'info');
         return;
     }
 
@@ -896,9 +842,8 @@ async function handleInstallApp() {
         showToast('Unable to open install prompt', 'error');
     } finally {
         deferredInstallPrompt = null;
+        updateInstallButtonState();
     }
-
-    updateInstallButtonState();
 }
 
 function registerServiceWorker() {
