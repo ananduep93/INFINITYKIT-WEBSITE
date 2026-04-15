@@ -277,9 +277,18 @@
             <div class="settings-content">
 
 
+                <!-- Cloud Sync -->
+                <div class="settings-section" id="accountSection" style="display: none;">
+                    <h3>☁️ Cloud Account</h3>
+                    <div class="settings-option">
+                        <button onclick="AuthHandler.handleUserSession(AuthHandler.user)" class="hero-cta" style="width: 100%; border-radius: 8px;">Sync Now</button>
+                        <p class="install-app-hint">Manually refresh your data from the cloud.</p>
+                    </div>
+                </div>
+
                 <!-- App Install -->
                 <div class="settings-section">
-                    <h3>&#128241; App</h3>
+                    <h3>📱 App</h3>
                     <div class="settings-option">
                         <button id="installAppBtn" type="button" class="install-app-btn">&#128242; Install App</button>
                         <p class="install-app-hint">Install Infinity Kit for faster access and offline support.</p>
@@ -303,6 +312,9 @@
     <script src="notifications.js?v=5"></script>
     <script src="main.js?v=16.5"></script>
     <script src="expense-tracker.js?v=6"></script>
+    
+    <script type="module" src="firebase-init.js"></script>
+    <script type="module" src="auth-handler.js"></script>
     
     <!-- Service Worker Update Detection -->
     <script>

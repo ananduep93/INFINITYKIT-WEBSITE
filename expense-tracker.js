@@ -102,6 +102,12 @@ function getExpenseDB() {
 
 function saveExpenseDB(db, notify = true) {
     localStorage.setItem(EXPENSE_DB_KEY, JSON.stringify(db));
+    
+    // Cloud Sync if logged in
+    if (window.AuthHandler && window.AuthHandler.user && !window.AuthHandler.isMigrating) {
+        window.AuthHandler.syncUp('toolData.expenses', db);
+    }
+
     if (notify) {
         window.dispatchEvent(new Event(EXPENSE_DATA_EVENT));
     }

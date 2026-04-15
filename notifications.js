@@ -34,7 +34,10 @@ class AlertStore {
             const tx = this.db.transaction('alerts', 'readwrite');
             const store = tx.objectStore('alerts');
             const request = store.add(alert);
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = async () => {
+                await this.syncCloud();
+                resolve(request.result);
+            };
         });
     }
 
@@ -52,7 +55,10 @@ class AlertStore {
             const tx = this.db.transaction('alerts', 'readwrite');
             const store = tx.objectStore('alerts');
             const request = store.delete(id);
-            request.onsuccess = () => resolve();
+            request.onsuccess = async () => {
+                await this.syncCloud();
+                resolve();
+            };
         });
     }
 
@@ -61,8 +67,18 @@ class AlertStore {
             const tx = this.db.transaction('alerts', 'readwrite');
             const store = tx.objectStore('alerts');
             const request = store.put(alert);
-            request.onsuccess = () => resolve();
+            request.onsuccess = async () => {
+                await this.syncCloud();
+                resolve();
+            };
         });
+    }
+
+    async syncCloud() {
+        if (window.AuthHandler && window.AuthHandler.user && !window.AuthHandler.isMigrating) {
+            const alerts = await this.getAll();
+            window.AuthHandler.syncUp('toolData.alerts', alerts);
+        }
     }
 
     async clearExpired() {

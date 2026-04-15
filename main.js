@@ -1124,6 +1124,11 @@ function addToRecentSearches(search) {
     
     // Save to localStorage
     localStorage.setItem('recentSearches', JSON.stringify(recentSearchesList));
+
+    // Cloud Sync if logged in
+    if (window.AuthHandler && window.AuthHandler.user && !window.AuthHandler.isMigrating) {
+        window.AuthHandler.syncUp('toolData.recentSearches', recentSearchesList);
+    }
 }
 
 // Pages Navigation
@@ -3804,6 +3809,19 @@ function loadSettings() {
 
 function saveSettings() {
     localStorage.setItem('infinityKitSettings', JSON.stringify(appSettings));
+    
+    // Cloud Sync if logged in
+    if (window.AuthHandler && window.AuthHandler.user && !window.AuthHandler.isMigrating) {
+        window.AuthHandler.syncUp('preferences', {
+            theme: appSettings.theme,
+            fontSize: appSettings.fontSize,
+            cardSize: appSettings.cardSize,
+            animationsEnabled: appSettings.animationsEnabled
+        });
+        window.AuthHandler.syncUp('favorites', appSettings.favorites);
+        window.AuthHandler.syncUp('toolData.recentTools', appSettings.recentTools);
+        window.AuthHandler.syncUp('toolData.usageStats', appSettings.usageStats);
+    }
 }
 
 function applySettings() {
