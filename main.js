@@ -1,4 +1,4 @@
-console.log('Infinity Kit Version 16.5 Loaded - Script-Based Path Resolver Active (Failsafe Fix)');
+console.log('Infinity Kit Version 16.6 Loaded - Script-Based Path Resolver Active (Failsafe Fix)');
 // Tip: If links fail, try a hard refresh (Ctrl + Shift + R) to clear browser cache.
 
 // Folders with Tools Data
