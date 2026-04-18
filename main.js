@@ -2266,426 +2266,551 @@ function pad(num) {
 
 // ==================== PDF TOOLS ====================
 
-// Helper: Create drag-drop file upload area
-function createFileUploadArea(acceptTypes, maxFiles = 1, helpText = '') {
-    return `
-        <div class="pdf-upload-area" ondrop="handlePDFDrop(event)" ondragover="event.preventDefault()" ondragleave="event.target.classList.remove('drag-active')" ondragenter="event.target.classList.add('drag-active')">
-            <div class="pdf-upload-content">
-                <div class="pdf-upload-icon">📁</div>
-                <div class="pdf-upload-text">
-                    <h3>Drag & drop your files here</h3>
-                    <p>or click to browse</p>
-                    ${helpText ? `<small>${helpText}</small>` : ''}
-                </div>
-            </div>
-            <input type="file" id="pdfFileInput" accept="${acceptTypes}" multiple="${maxFiles > 1}" style="display: none;">
-        </div>
-        <div id="filePreview" class="file-preview"></div>
-    `;
-}
-
-// Drag drop handler
-function handlePDFDrop(event) {
-    event.preventDefault();
-    event.target.classList.remove('drag-active');
-    
-    const files = event.dataTransfer.files;
-    const input = document.getElementById('pdfFileInput');
-    
-    if (input) {
-        input.files = files;
-        showFilePreview(files);
-    }
-}
-
-// Show file preview
-function showFilePreview(files) {
-    const preview = document.getElementById('filePreview');
-    if (!preview) return;
-    
-    preview.innerHTML = '<div class="file-items">';
-    
-    for (let file of files) {
-        preview.innerHTML += `
-            <div class="file-item">
-                <div class="file-icon">📄</div>
-                <div class="file-info">
-                    <div class="file-name">${file.name}</div>
-                    <div class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
-                </div>
-            </div>
-        `;
-    }
-    
-    preview.innerHTML += '</div>';
-}
-
-// Progress indicator
-function showProgress(message, progress = 0) {
-    return `
-        <div class="pdf-progress">
-            <div class="progress-message">${message}</div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: ${progress}%"></div>
-            </div>
-            <div class="progress-percent">${progress}%</div>
-        </div>
-    `;
-}
-
-// PDF Editor
-// ==================== PDF TOOLS ====================
+// ========== PDF HELPERS ==========
 let pdfState = {
     currentFiles: [],
     currentImages: [],
     converterFile: null,
+    rotateFile: null
 };
+
+// Standardized Download Function
+function downloadFile(data, filename, mimeType = 'application/pdf') {
+    console.log(`[PDF] Preparing download: ${filename}`);
+    try {
+        let url;
+        let isDataUrl = false;
+
+        if (typeof data === 'string' && data.startsWith('data:')) {
+            url = data; // Handle base64 strings (data URLs) directly
+            isDataUrl = true;
+        } else {
+            const blob = (data instanceof Blob) ? data : new Blob([data], { type: mimeType });
+            url = URL.createObjectURL(blob);
+        }
+
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        
+        // Use a slight delay to ensure the browser registers the click properly
+        setTimeout(() => {
+            a.click();
+            console.log(`[PDF] Triggered download for: ${filename}`);
+            
+            // Wait longer before cleanup to ensure the download starts, 
+            // especially for larger files or slower systems.
+            setTimeout(() => {
+                if (document.body.contains(a)) document.body.removeChild(a);
+                if (!isDataUrl && url.startsWith('blob:')) {
+                    window.URL.revokeObjectURL(url);
+                    console.log(`[PDF] Revoked Object URL for: ${filename}`);
+                }
+            }, 2000); 
+        }, 100);
+    } catch (error) {
+        console.error('[PDF] Download failed:', error);
+        showToast('Download failed. Please try again.', 'error');
+    }
+}
+
+// Visual Progress Update
+function updateProgress(message, progress) {
+    console.log(`[PDF Progress] ${message}: ${progress}%`);
+    const progressContainer = document.getElementById('pdfProgressContainer');
+    if (!progressContainer) {
+        const container = document.getElementById('toolContent');
+        const progressBarHtml = `
+            <div id="pdfProgressContainer" class="pdf-progress-container">
+                <div class="progress-message" id="progressMsg">${message}</div>
+                <div class="progress-bar-wrapper">
+                    <div id="progressBarFill" class="progress-bar-fill" style="width: ${progress}%"></div>
+                </div>
+                <div class="progress-percent" id="progressPercent">${progress}%</div>
+            </div>
+        `;
+        // Inject at top of toolContent
+        container.insertAdjacentHTML('afterbegin', progressBarHtml);
+    } else {
+        document.getElementById('progressMsg').textContent = message;
+        document.getElementById('progressBarFill').style.width = `${progress}%`;
+        document.getElementById('progressPercent').textContent = `${progress}%`;
+    }
+}
+
+function removeProgress() {
+    const el = document.getElementById('pdfProgressContainer');
+    if (el) el.remove();
+}
+
+// Toggle loading state on buttons
+function toggleToolLoading(buttonId, isLoading, defaultText) {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+    btn.disabled = isLoading;
+    btn.innerHTML = isLoading ? `<span class="spinner-small"></span> Processing...` : defaultText;
+}
+
+// Drag & Drop Handlers
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-active');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-active');
+}
 
 // Set up PDF.js worker
 if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
 
-// Ensure libraries are available
-const PDFLibModule = window.PDFLib || {};
-const jsPDFLib = window.jspdf || {};
-
+// ========== IMAGE TO PDF ==========
 // ========== IMAGE TO PDF ==========
 function loadImageToPDF() {
+    console.log('[PDF] Loading Image to PDF tool');
+    pdfState.currentImages = [];
+    
     let html = `
         <div class="tool-form">
-            <h3>🖼️ Image to PDF</h3>
-            <div class="pdf-upload-area" ondrop="handleImageDrop(event)" ondragover="event.preventDefault()" ondragleave="event.preventDefault()">
+            <div class="pdf-upload-area" id="imageUploadArea" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleImageDrop(event)">
                 <div class="pdf-upload-content">
                     <div class="pdf-upload-icon">🖼️</div>
-                    <h3>Upload Images</h3>
-                    <p>Drag & drop or click to select multiple images</p>
+                    <div class="pdf-upload-text">
+                        <h3>Upload Images</h3>
+                        <p>Drag & drop or click to select multiple images</p>
+                        <small>Supports JPG, PNG, GIF, BMP</small>
+                    </div>
                 </div>
-                <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.gif,.bmp" multiple style="display: none;">
+                <input type="file" id="imageFileInput" accept="image/*" multiple style="display: none;">
             </div>
-            <div id="imagePreviewContainer" style="margin-top: 15px;"></div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Page Size:</label>
-                <select id="pageSize">
-                    <option value="a4">A4 (210 x 297mm)</option>
-                    <option value="letter">Letter (8.5 x 11in)</option>
-                    <option value="a3">A3 (297 x 420mm)</option>
-                </select>
+            
+            <div id="imagePreviewContainer" class="image-preview-grid"></div>
+            
+            <div class="tool-settings glass-panel" style="margin-top: 20px; padding: 20px; display: none;" id="imageToPdfSettings">
+                <div class="form-group">
+                    <label>Page Size:</label>
+                    <select id="pageSize" class="glass-input">
+                        <option value="a4">A4 (210 x 297mm)</option>
+                        <option value="letter">Letter (8.5 x 11in)</option>
+                        <option value="a3">A3 (297 x 420mm)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Fit Mode:</label>
+                    <select id="fitMode" class="glass-input">
+                        <option value="contain">Fit (Maintain Aspect)</option>
+                        <option value="cover">Fill Page</option>
+                        <option value="original">Original Size</option>
+                    </select>
+                </div>
+                <button id="convertBtn" class="pdf-btn" onclick="convertImagesToPDF()">⬇️ Convert to PDF</button>
             </div>
-            <div class="form-group">
-                <label>Fit to Page:</label>
-                <select id="fitMode">
-                    <option value="contain">Fit (Maintain Aspect)</option>
-                    <option value="cover">Fill Page</option>
-                    <option value="original">Original Size</option>
-                </select>
-            </div>
-            <button id="convertBtn" onclick="convertImagesToPDF()" style="width: 100%; margin-top: 15px; display: none;">⬇️ Convert to PDF</button>
         </div>
     `;
     toolContent.innerHTML = html;
-    setupImageToPDFUpload();
-}
-
-function setupImageToPDFUpload() {
-    const uploadArea = document.querySelector('.pdf-upload-area');
-    const fileInput = document.getElementById('imageFileInput');
     
-    if (uploadArea && fileInput) {
-        uploadArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            handleImageSelect(e.target.files);
-        });
-    }
+    const fileInput = document.getElementById('imageFileInput');
+    const uploadArea = document.getElementById('imageUploadArea');
+    
+    uploadArea.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => handleImageFiles(e.target.files);
 }
 
 function handleImageDrop(e) {
     e.preventDefault();
-    e.stopPropagation();
-    const files = e.dataTransfer.files;
-    handleImageSelect(files);
+    e.currentTarget.classList.remove('drag-active');
+    handleImageFiles(e.dataTransfer.files);
 }
 
-async function handleImageSelect(files) {
-    pdfState.currentImages = [];
-    const container = document.getElementById('imagePreviewContainer');
-    container.innerHTML = '<h4>Selected Images:</h4><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px;">';
+async function handleImageFiles(files) {
+    console.log(`[PDF] Selected ${files.length} images`);
+    if (files.length === 0) return;
     
-    for (let file of files) {
+    const container = document.getElementById('imagePreviewContainer');
+    const settings = document.getElementById('imageToPdfSettings');
+    settings.style.display = 'block';
+    
+    for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        
+        // Show immediate placeholder to give user feedback
+        const tempId = 'temp_' + Math.random().toString(36).substr(2, 9);
+        const previewItem = document.createElement('div');
+        previewItem.className = 'image-preview-item';
+        previewItem.id = tempId;
+        previewItem.innerHTML = `
+            <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); font-size: 0.8rem; color: #666; padding: 10px; text-align: center;">
+                ⌛ Loading ${file.name}...
+            </div>
+            <button class="image-preview-remove" onclick="removeSelectedImage('${tempId}')">×</button>
+        `;
+        container.appendChild(previewItem);
+        
+        // Read file contents
         const reader = new FileReader();
         reader.onload = (e) => {
-            pdfState.currentImages.push({ name: file.name, data: e.target.result });
-            container.innerHTML += `<img src="${e.target.result}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; border: 2px solid #ddd;">`;
+            const imageData = e.target.result;
+            const id = 'img_' + Math.random().toString(36).substr(2, 9);
+            pdfState.currentImages.push({ id, name: file.name, data: imageData, type: file.type });
+            
+            // Update the placeholder with the actual image
+            const item = document.getElementById(tempId);
+            if (item) {
+                item.id = id;
+                item.innerHTML = `
+                    <img src="${imageData}" alt="${file.name}">
+                    <button class="image-preview-remove" onclick="removeSelectedImage('${id}')">×</button>
+                `;
+            }
+            console.log(`[PDF] Image loaded: ${file.name}`);
+        };
+        reader.onerror = () => {
+            console.error(`[PDF] Failed to read image: ${file.name}`);
+            const item = document.getElementById(tempId);
+            if (item) item.remove();
+            showToast(`Failed to load ${file.name}`, 'error');
         };
         reader.readAsDataURL(file);
     }
-    
-    container.innerHTML += '</div>';
-    document.getElementById('convertBtn').style.display = 'block';
+}
+
+function removeSelectedImage(id) {
+    pdfState.currentImages = pdfState.currentImages.filter(img => img.id !== id);
+    const el = document.getElementById(id);
+    if (el) el.remove();
+    if (pdfState.currentImages.length === 0) {
+        document.getElementById('imageToPdfSettings').style.display = 'none';
+    }
 }
 
 async function convertImagesToPDF() {
     if (pdfState.currentImages.length === 0) {
-        showToast('No images selected', 'error');
+        showToast('Please select images first', 'error');
         return;
     }
     
+    const { jsPDF } = window.jspdf;
+    const pageSize = document.getElementById('pageSize').value;
+    const fitMode = document.getElementById('fitMode').value;
+    const btn = document.getElementById('convertBtn');
+    
+    toggleToolLoading('convertBtn', true, '⬇️ Convert to PDF');
+    updateProgress('Initializing PDF...', 10);
+    
     try {
-        showProgress('Converting images to PDF...', 30);
-        const { jsPDF } = window.jspdf;
-        const pageSize = document.getElementById('pageSize').value;
-        const fitMode = document.getElementById('fitMode').value;
-        
-        let pageWidth = 210, pageHeight = 297; // A4 default
+        let pageWidth = 210, pageHeight = 297; // A4
         if (pageSize === 'letter') { pageWidth = 215.9; pageHeight = 279.4; }
         else if (pageSize === 'a3') { pageWidth = 297; pageHeight = 420; }
         
-        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: [pageWidth, pageHeight] });
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: pageSize });
         
         for (let i = 0; i < pdfState.currentImages.length; i++) {
-            const img = new Image();
-            img.src = pdfState.currentImages[i].data;
+            const imgData = pdfState.currentImages[i];
+            updateProgress(`Processing image ${i + 1}/${pdfState.currentImages.length}`, Math.round(10 + (80 * (i / pdfState.currentImages.length))));
             
-            await new Promise(resolve => {
+            await new Promise((resolve, reject) => {
+                const img = new Image();
                 img.onload = () => {
-                    const MAX_WIDTH = pageWidth - 10;
-                    const MAX_HEIGHT = pageHeight - 10;
-                    let width = MAX_WIDTH, height = (img.height * MAX_WIDTH) / img.width;
+                    if (i > 0) pdf.addPage(pageSize);
                     
-                    if (height > MAX_HEIGHT) {
-                        height = MAX_HEIGHT;
-                        width = (img.width * MAX_HEIGHT) / img.height;
+                    let w = pageWidth, h = pageHeight;
+                    let x = 0, y = 0;
+                    
+                    if (fitMode === 'contain') {
+                        const ratio = Math.min(pageWidth / img.width, pageHeight / img.height);
+                        w = img.width * ratio;
+                        h = img.height * ratio;
+                        x = (pageWidth - w) / 2;
+                        y = (pageHeight - h) / 2;
+                    } else if (fitMode === 'original') {
+                        w = img.width * 0.264583; // px to mm
+                        h = img.height * 0.264583;
                     }
                     
-                    const x = (pageWidth - width) / 2;
-                    const y = (pageHeight - height) / 2;
-                    
-                    pdf.addImage(pdfState.currentImages[i].data, 'JPEG', x, y, width, height);
-                    if (i < pdfState.currentImages.length - 1) pdf.addPage();
-                    
-                    showProgress(`Converting images to PDF...`, 30 + (60 * (i + 1) / pdfState.currentImages.length));
+                    pdf.addImage(imgData.data, 'JPEG', x, y, w, h, undefined, 'FAST');
                     resolve();
                 };
+                img.onerror = reject;
+                img.src = imgData.data;
             });
         }
         
-        showProgress('Finalizing PDF...', 95);
-        pdf.save('images-to-pdf.pdf');
-        showToast('✓ PDF created successfully', 'success');
-    } catch (e) {
-        showToast('Error converting images: ' + e.message, 'error');
+        updateProgress('Finalizing...', 95);
+        const pdfBlob = pdf.output('blob');
+        downloadFile(pdfBlob, 'converted-images.pdf');
+        showToast('✓ PDF generated successfully!', 'success');
+    } catch (error) {
+        console.error('[PDF] Error converting images:', error);
+        showToast('Error during conversion: ' + error.message, 'error');
+    } finally {
+        toggleToolLoading('convertBtn', false, '⬇️ Convert to PDF');
+        setTimeout(removeProgress, 2000);
     }
 }
 
 // ========== PDF TO IMAGE ==========
+// ========== PDF TO IMAGE ==========
 function loadPDFToImage() {
+    console.log('[PDF] Loading PDF to Image tool');
+    pdfState.converterFile = null;
+    
     let html = `
         <div class="tool-form">
-            <h3>📸 PDF to Image</h3>
-            <div class="pdf-upload-area" ondrop="handlePDFDrop(event, 'toimage')" ondragover="event.preventDefault()" ondragleave="event.preventDefault()">
+            <div class="pdf-upload-area" id="pdfToImageArea" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handlePDFToImageDrop(event)">
                 <div class="pdf-upload-content">
-                    <div class="pdf-upload-icon">📁</div>
-                    <h3>Upload PDF to Convert</h3>
-                    <p>Drag & drop or click to select</p>
+                    <div class="pdf-upload-icon">📄</div>
+                    <div class="pdf-upload-text">
+                        <h3>Upload PDF</h3>
+                        <p>Drag & drop or click to select a PDF file</p>
+                    </div>
                 </div>
                 <input type="file" id="pdfToImageInput" accept=".pdf" style="display: none;">
             </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Output Format:</label>
-                <select id="imageFormat">
-                    <option value="jpg">JPG (Smaller)</option>
-                    <option value="png">PNG (Better Quality)</option>
-                </select>
+            
+            <div id="pdfFileInfo" class="file-preview-container" style="display: none; margin-bottom: 20px;"></div>
+            
+            <div class="tool-settings glass-panel" id="pdfToImageSettings" style="display: none; padding: 20px;">
+                <div class="tool-grid-2">
+                    <div class="form-group">
+                        <label>Format:</label>
+                        <select id="imageFormat" class="glass-input">
+                            <option value="png">PNG (Best Quality)</option>
+                            <option value="jpeg">JPG (Smaller Size)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quality (DPI):</label>
+                        <select id="imageDPI" class="glass-input">
+                            <option value="150">150 DPI (Standard)</option>
+                            <option value="300">300 DPI (High Quality)</option>
+                            <option value="72">72 DPI (Web Optimized)</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="startConversionBtn" class="pdf-btn" onclick="startPDFToImageConversion()">📸 Convert to Images</button>
             </div>
-            <div class="form-group">
-                <label>DPI (Quality):</label>
-                <select id="imageDPI">
-                    <option value="72">72 DPI (Web)</option>
-                    <option value="150" selected>150 DPI (Standard)</option>
-                    <option value="300">300 DPI (High Quality)</option>
-                </select>
-            </div>
-            <div id="conversionResult" style="margin-top: 15px;"></div>
-            <button id="startConversionBtn" onclick="startPDFToImageConversion()" style="width: 100%; margin-top: 15px; display: none;">🔄 Convert to Images</button>
+            
+            <div id="conversionResult" class="image-preview-grid" style="margin-top: 20px;"></div>
         </div>
     `;
     toolContent.innerHTML = html;
-    setupPDFToImageUpload();
-}
-
-function setupPDFToImageUpload() {
-    const fileInput = document.getElementById('pdfToImageInput');
-    const uploadArea = document.querySelector('.pdf-upload-area');
     
-    if (uploadArea && fileInput) {
-        uploadArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                pdfState.converterFile = file;
-                document.getElementById('startConversionBtn').style.display = 'block';
-            }
-        });
-    }
+    const fileInput = document.getElementById('pdfToImageInput');
+    const uploadArea = document.getElementById('pdfToImageArea');
+    
+    uploadArea.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => handlePDFToImageFile(e.target.files[0]);
 }
 
-function handlePDFDrop(e, mode) {
+function handlePDFToImageDrop(e) {
     e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        if (mode === 'toimage') {
-            pdfState.converterFile = files[0];
-            document.getElementById('startConversionBtn').style.display = 'block';
-        } else if (mode === 'rotate') {
-            document.getElementById('rotateFileInput').files = files;
-            const event = new Event('change', { bubbles: true });
-            document.getElementById('rotateFileInput').dispatchEvent(event);
-        }
-    }
+    e.currentTarget.classList.remove('drag-active');
+    handlePDFToImageFile(e.dataTransfer.files[0]);
 }
 
-async function startPDFToImageConversion() {
-    if (!pdfState.converterFile) {
-        showToast('No PDF selected', 'error');
+function handlePDFToImageFile(file) {
+    if (!file || file.type !== 'application/pdf') {
+        showToast('Please select a valid PDF file', 'error');
         return;
     }
     
+    pdfState.converterFile = file;
+    console.log(`[PDF] Selected file for conversion: ${file.name}`);
+    
+    const info = document.getElementById('pdfFileInfo');
+    info.style.display = 'block';
+    info.innerHTML = `
+        <div class="file-item">
+            <div class="file-icon">📄</div>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('pdfToImageSettings').style.display = 'block';
+    document.getElementById('conversionResult').innerHTML = '';
+}
+
+async function startPDFToImageConversion() {
+    if (!pdfState.converterFile) return;
+    
+    const format = document.getElementById('imageFormat').value;
+    const dpi = parseInt(document.getElementById('imageDPI').value);
+    const scale = dpi / 72;
+    const results = document.getElementById('conversionResult');
+    
+    toggleToolLoading('startConversionBtn', true, '📸 Convert to Images');
+    results.innerHTML = '';
+    
     try {
-        showProgress('Loading PDF...', 20);
+        updateProgress('Reading PDF...', 10);
         const arrayBuffer = await pdfState.converterFile.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const format = document.getElementById('imageFormat').value;
-        const dpi = parseInt(document.getElementById('imageDPI').value);
-        const scale = dpi / 72;
+        const totalPages = Math.min(pdf.numPages, 50); // Limit to 50 pages for performance
         
-        const resultDiv = document.getElementById('conversionResult');
-        resultDiv.innerHTML = '<h4>Converting pages...</h4><div id="imagesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;"></div>';
-        
-        const imagesList = document.getElementById('imagesList');
-        
-        for (let pageNum = 1; pageNum <= Math.min(pdf.numPages, 20); pageNum++) {
-            const page = await pdf.getPage(pageNum);
+        for (let i = 1; i <= totalPages; i++) {
+            updateProgress(`Rendering page ${i}/${totalPages}`, Math.round(10 + (85 * (i / totalPages))));
+            
+            const page = await pdf.getPage(i);
             const viewport = page.getViewport({ scale });
             const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d');
             canvas.width = viewport.width;
             canvas.height = viewport.height;
             
-            await page.render({ canvasContext: context, viewport }).promise;
+            await page.render({ canvasContext: ctx, viewport }).promise;
             
-            const imgData = canvas.toDataURL(`image/${format}`, 0.95);
-            const img = document.createElement('img');
-            img.src = imgData;
-            img.style.cssText = 'width: 100%; border-radius: 4px; border: 1px solid #ddd; cursor: pointer;';
-            img.onclick = () => downloadImage(imgData, `page-${pageNum}.${format}`);
-            imagesList.appendChild(img);
-            
-            showProgress(`Converting page ${pageNum}/${Math.min(pdf.numPages, 20)}`, 20 + (70 * pageNum / Math.min(pdf.numPages, 20)));
+            const imgData = canvas.toDataURL(`image/${format}`, 0.9);
+            const previewItem = document.createElement('div');
+            previewItem.className = 'image-preview-item';
+            previewItem.style.cursor = 'pointer';
+            previewItem.title = 'Click to download this page';
+            previewItem.innerHTML = `
+                <img src="${imgData}">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 2px; text-align: center;">Page ${i}</div>
+            `;
+            previewItem.onclick = () => downloadFile(imgData, `page-${i}.${format}`, `image/${format}`);
+            results.appendChild(previewItem);
         }
         
-        showToast('✓ PDF converted! Click images to download', 'success');
-    } catch (e) {
-        showToast('Error converting PDF: ' + e.message, 'error');
+        showToast(`✓ Converted ${totalPages} pages. Click to download!`, 'success');
+    } catch (error) {
+        console.error('[PDF] Conversion error:', error);
+        showToast('Error converting PDF: ' + error.message, 'error');
+    } finally {
+        toggleToolLoading('startConversionBtn', false, '📸 Convert to Images');
+        setTimeout(removeProgress, 2000);
     }
-}
-
-function downloadImage(imgData, filename) {
-    const a = document.createElement('a');
-    a.href = imgData;
-    a.download = filename;
-    a.click();
 }
 
 // ========== MERGE PDF ==========
+// ========== MERGE PDF ==========
 function loadMergePDF() {
+    console.log('[PDF] Loading Merge PDF tool');
+    pdfState.currentFiles = [];
+    
     let html = `
         <div class="tool-form">
-            <h3>📎 Merge PDF</h3>
-            <div class="pdf-upload-area" ondrop="handleMergeDrop(event)" ondragover="event.preventDefault()" ondragleave="event.preventDefault()">
+            <div class="pdf-upload-area" id="mergeUploadArea" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleMergeDrop(event)">
                 <div class="pdf-upload-content">
-                    <div class="pdf-upload-icon">📁</div>
-                    <h3>Upload Multiple PDFs</h3>
-                    <p>Select 2 or more PDFs to merge</p>
+                    <div class="pdf-upload-icon">📎</div>
+                    <div class="pdf-upload-text">
+                        <h3>Upload PDFs</h3>
+                        <p>Select multiple PDF files to merge together</p>
+                    </div>
                 </div>
                 <input type="file" id="mergeFileInput" accept=".pdf" multiple style="display: none;">
             </div>
-            <div id="mergeFilesList" style="margin-top: 15px;"></div>
-            <button id="mergeBtn" onclick="performMergePDF()" style="width: 100%; margin-top: 15px; display: none;">📎 Merge PDFs</button>
+            
+            <div id="mergeFilesList" class="file-preview-container" style="display: none;">
+                <h4>Selected Files:</h4>
+                <div class="file-items" id="mergeFilesItems"></div>
+                <button id="mergeBtn" class="pdf-btn" onclick="performMergePDF()">📎 Merge PDFs</button>
+            </div>
         </div>
     `;
     toolContent.innerHTML = html;
-    setupMergePDFUpload();
-}
-
-function setupMergePDFUpload() {
-    const uploadArea = document.querySelector('.pdf-upload-area');
-    const fileInput = document.getElementById('mergeFileInput');
     
-    if (uploadArea && fileInput) {
-        uploadArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            handleMergeSelect(e.target.files);
-        });
-    }
+    const fileInput = document.getElementById('mergeFileInput');
+    const uploadArea = document.getElementById('mergeUploadArea');
+    
+    uploadArea.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => handleMergeFiles(e.target.files);
 }
 
 function handleMergeDrop(e) {
     e.preventDefault();
-    handleMergeSelect(e.dataTransfer.files);
+    e.currentTarget.classList.remove('drag-active');
+    handleMergeFiles(e.dataTransfer.files);
 }
 
-function handleMergeSelect(files) {
-    if (files.length < 2) {
-        showToast('Please select at least 2 PDFs', 'error');
+function handleMergeFiles(files) {
+    if (files.length === 0) return;
+    
+    for (const file of files) {
+        if (file.type !== 'application/pdf') continue;
+        const id = 'pdf_' + Math.random().toString(36).substr(2, 9);
+        pdfState.currentFiles.push({ id, file });
+    }
+    
+    renderMergeList();
+}
+
+function renderMergeList() {
+    const container = document.getElementById('mergeFilesList');
+    const items = document.getElementById('mergeFilesItems');
+    
+    if (pdfState.currentFiles.length === 0) {
+        container.style.display = 'none';
         return;
     }
     
-    pdfState.currentFiles = Array.from(files);
-    const filesList = document.getElementById('mergeFilesList');
-    filesList.innerHTML = '<h4>Files to Merge:</h4><ol>';
+    container.style.display = 'block';
+    items.innerHTML = '';
     
-    for (let i = 0; i < pdfState.currentFiles.length; i++) {
-        filesList.innerHTML += `<li style="margin: 8px 0;">${pdfState.currentFiles[i].name}</li>`;
-    }
-    filesList.innerHTML += '</ol>';
-    document.getElementById('mergeBtn').style.display = 'block';
+    pdfState.currentFiles.forEach((item, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <div class="file-icon">📄</div>
+            <div class="file-info">
+                <div class="file-name">${item.file.name}</div>
+                <div class="file-size">${(item.file.size / 1024 / 1024).toFixed(2)} MB</div>
+            </div>
+            <button class="file-remove-btn" onclick="removeMergeFile('${item.id}')">×</button>
+        `;
+        items.appendChild(fileItem);
+    });
+}
+
+function removeMergeFile(id) {
+    pdfState.currentFiles = pdfState.currentFiles.filter(f => f.id !== id);
+    renderMergeList();
 }
 
 async function performMergePDF() {
     if (pdfState.currentFiles.length < 2) {
-        showToast('Need at least 2 PDFs to merge', 'error');
+        showToast('Please select at least 2 PDF files to merge', 'error');
         return;
     }
     
-    if (!window.PDFLib) {
-        showToast('PDF library not loaded yet, please try again', 'error');
-        return;
-    }
+    toggleToolLoading('mergeBtn', true, '📎 Merge PDFs');
+    updateProgress('Loading PDF library...', 10);
     
     try {
-        showProgress('Merging PDFs...', 20);
+        if (!window.PDFLib) {
+            throw new Error('PDF library failed to load. Please refresh the page.');
+        }
+        
         const mergedPdf = await window.PDFLib.PDFDocument.create();
         
         for (let i = 0; i < pdfState.currentFiles.length; i++) {
-            const arrayBuffer = await pdfState.currentFiles[i].arrayBuffer();
+            const file = pdfState.currentFiles[i].file;
+            updateProgress(`Merging: ${file.name}`, Math.round(10 + (80 * (i / pdfState.currentFiles.length))));
+            
+            const arrayBuffer = await file.arrayBuffer();
             const pdf = await window.PDFLib.PDFDocument.load(arrayBuffer);
             const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
             copiedPages.forEach(page => mergedPdf.addPage(page));
-            showProgress(`Merging PDFs...`, 20 + (70 * (i + 1) / pdfState.currentFiles.length));
         }
         
-        showProgress('Finalizing...', 95);
-        const mergedPdfBytes = await mergedPdf.save();
-        const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'merged.pdf';
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('✓ PDFs merged successfully', 'success');
-    } catch (e) {
-        showToast('Error merging PDFs: ' + e.message, 'error');
+        updateProgress('Saving merged PDF...', 90);
+        const mergedBytes = await mergedPdf.save();
+        downloadFile(mergedBytes, 'merged-document.pdf');
+        showToast('✓ PDFs merged successfully!', 'success');
+    } catch (error) {
+        console.error('[PDF] Merge error:', error);
+        showToast('Error merging PDFs: ' + error.message, 'error');
+    } finally {
+        toggleToolLoading('mergeBtn', false, '📎 Merge PDFs');
+        setTimeout(removeProgress, 2000);
     }
 }
 
@@ -4106,76 +4231,107 @@ function trackToolUsage(toolId) {
 }
 
 // ========== ROTATE PDF ==========
+// ========== ROTATE PDF ==========
 function loadRotatePDF() {
+    console.log('[PDF] Loading Rotate PDF tool');
+    pdfState.rotateFile = null;
+    
     let html = `
         <div class="tool-form">
-            <h3>🔄 Rotate PDF</h3>
-            <div class="pdf-upload-area" ondrop="handlePDFDrop(event, 'rotate')" ondragover="event.preventDefault()" ondragleave="event.preventDefault()">
+            <div class="pdf-upload-area" id="rotateUploadArea" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleRotateDrop(event)">
                 <div class="pdf-upload-content">
-                    <div class="pdf-upload-icon">📁</div>
-                    <h3>Upload PDF to Rotate</h3>
-                    <p>Drag & drop or click to select</p>
+                    <div class="pdf-upload-icon">🔄</div>
+                    <div class="pdf-upload-text">
+                        <h3>Rotate PDF</h3>
+                        <p>Drag & drop or click to select a PDF to rotate</p>
+                    </div>
                 </div>
                 <input type="file" id="rotateFileInput" accept=".pdf" style="display: none;">
             </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Page Selection:</label>
-                <select id="pageSelection">
-                    <option value="all">All Pages</option>
-                    <option value="odd">Odd Pages Only</option>
-                    <option value="even">Even Pages Only</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Rotation:</label>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button onclick="performRotatePDF(90)" style="flex: 1; min-width: 100px;">↶ 90° Left</button>
-                    <button onclick="performRotatePDF(270)" style="flex: 1; min-width: 100px;">↷ 90° Right</button>
-                    <button onclick="performRotatePDF(180)" style="flex: 1; min-width: 100px;">↻ 180°</button>
+            
+            <div id="rotateFileInfo" class="file-preview-container" style="display: none; margin-bottom: 20px;"></div>
+            
+            <div class="tool-settings glass-panel" id="rotateSettings" style="display: none; padding: 20px;">
+                <div class="form-group">
+                    <label>Page Selection:</label>
+                    <select id="pageSelection" class="glass-input">
+                        <option value="all">All Pages</option>
+                        <option value="odd">Odd Pages Only</option>
+                        <option value="even">Even Pages Only</option>
+                    </select>
+                </div>
+                
+                <div class="rotation-group">
+                    <button class="rotation-btn" onclick="performRotatePDF(90)">↷ 90° Right</button>
+                    <button class="rotation-btn" onclick="performRotatePDF(270)">↶ 90° Left</button>
+                    <button class="rotation-btn" onclick="performRotatePDF(180)">↻ 180°</button>
+                </div>
+                
+                <div id="rotateBtnPlaceholder" style="margin-top: 15px;">
+                    <button id="rotateSubmitBtn" class="pdf-btn" style="display: none;">Processing...</button>
                 </div>
             </div>
-            <button style="width: 100%; margin-top: 15px; display: none;" id="rotateBtn">🔄 Rotate PDF</button>
         </div>
     `;
     toolContent.innerHTML = html;
-    setupRotatePDFUpload();
+    
+    const fileInput = document.getElementById('rotateFileInput');
+    const uploadArea = document.getElementById('rotateUploadArea');
+    
+    uploadArea.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => handleRotateFile(e.target.files[0]);
 }
 
-function setupRotatePDFUpload() {
-    const fileInput = document.getElementById('rotateFileInput');
-    const uploadArea = document.querySelector('.pdf-upload-area');
-    
-    if (uploadArea && fileInput) {
-        uploadArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                pdfState.rotateFile = file;
-                document.getElementById('rotateBtn').style.display = 'block';
-            }
-        });
+function handleRotateDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-active');
+    handleRotateFile(e.dataTransfer.files[0]);
+}
+
+function handleRotateFile(file) {
+    if (!file || file.type !== 'application/pdf') {
+        showToast('Please select a valid PDF file', 'error');
+        return;
     }
+    
+    pdfState.rotateFile = file;
+    console.log(`[PDF] Selected file for rotation: ${file.name}`);
+    
+    const info = document.getElementById('rotateFileInfo');
+    info.style.display = 'block';
+    info.innerHTML = `
+        <div class="file-item">
+            <div class="file-icon">📄</div>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('rotateSettings').style.display = 'block';
 }
 
 async function performRotatePDF(angle) {
-    if (!pdfState.rotateFile) {
-        showToast('No PDF selected', 'error');
-        return;
-    }
+    if (!pdfState.rotateFile) return;
     
-    if (!window.PDFLib) {
-        showToast('PDF library not loaded yet, please try again', 'error');
-        return;
-    }
+    const pageSelection = document.getElementById('pageSelection').value;
+    const info = document.getElementById('rotateFileInfo');
+    
+    // We don't have a single submit button to load, so we use a toast and progress
+    updateProgress('Loading PDF...', 10);
     
     try {
-        showProgress('Loading PDF...', 20);
+        if (!window.PDFLib) {
+            throw new Error('PDF library not loaded');
+        }
+        
         const arrayBuffer = await pdfState.rotateFile.arrayBuffer();
         const pdfDoc = await window.PDFLib.PDFDocument.load(arrayBuffer);
-        const pageSelection = document.getElementById('pageSelection').value;
-        
         const pages = pdfDoc.getPages();
         let rotatedCount = 0;
+        
+        updateProgress('Rotating pages...', 40);
         
         pages.forEach((page, i) => {
             let shouldRotate = false;
@@ -4184,40 +4340,22 @@ async function performRotatePDF(angle) {
             else if (pageSelection === 'even' && (i + 1) % 2 === 0) shouldRotate = true;
             
             if (shouldRotate) {
-                page.setRotation(window.PDFLib.degrees(angle + (page.getRotation().angle || 0)));
+                const currentRotation = page.getRotation().angle;
+                page.setRotation(window.PDFLib.degrees(currentRotation + angle));
                 rotatedCount++;
             }
         });
         
-        showProgress('Finalizing...', 80);
+        updateProgress('Saving rotated PDF...', 80);
         const rotatedBytes = await pdfDoc.save();
-        downloadFile(rotatedBytes, 'rotated.pdf');
-        showToast(`✓ Rotated ${rotatedCount} pages successfully`, 'success');
-    } catch (e) {
-        showToast('Error rotating PDF: ' + e.message, 'error');
+        downloadFile(rotatedBytes, `rotated-${pdfState.rotateFile.name}`);
+        showToast(`✓ Successfully rotated ${rotatedCount} pages!`, 'success');
+    } catch (error) {
+        console.error('[PDF] Rotation error:', error);
+        showToast('Error rotating PDF: ' + error.message, 'error');
+    } finally {
+        setTimeout(removeProgress, 2000);
     }
-}
-
-// ========== HELPER FUNCTIONS ==========
-function togglePasswordVisibility(id) {
-    const input = document.getElementById(id);
-    if (input) {
-        input.type = input.type === 'password' ? 'text' : 'password';
-    }
-}
-
-function downloadFile(data, filename) {
-    const blob = new Blob([data], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function showProgress(message, percent) {
-    showToast(`${message} ${percent}%`, 'info');
 }
 
 // ==================== NEW TOOLS - DATA TOOLS ====================
