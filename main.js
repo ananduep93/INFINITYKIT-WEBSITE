@@ -16,7 +16,7 @@ const baseFolders = [
         name: 'Daily Essentials',
         icon: '🏠',
         emoji: '🏠',
-        tools: ['calculator', 'todolist', 'notes', 'timer']
+        tools: ['todolist', 'notes', 'timer']
     },
     {
         id: 'expense-tracker',
@@ -179,12 +179,7 @@ function updateFolders() {
 
 // Tools Data
 const tools = [
-    {
-        id: 'calculator',
-        name: 'Calculator',
-        icon: '🧮',
-        description: 'Simple Calculator'
-    },
+
     {
         id: 'todolist',
         name: 'To-Do List',
@@ -3438,12 +3433,12 @@ function loadExamCalculator() {
             <div id="subjectsContainer" style="margin-bottom: 15px; display: none;"></div>
             
             <div id="resultsContainer" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
+                <div class="tool-results-grid">
+                    <div class="result-box">
                         <div style="font-size: 0.85rem; color: #666;">Total Marks</div>
                         <div id="totalMarks" style="font-size: 1.5rem; font-weight: bold; color: #667eea; margin-top: 5px;">0</div>
                     </div>
-                    <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
+                    <div class="result-box">
                         <div style="font-size: 0.85rem; color: #666;">Average (%)</div>
                         <div id="totalPercent" style="font-size: 1.5rem; font-weight: bold; color: #28a745; margin-top: 5px;">0%</div>
                     </div>
@@ -3462,11 +3457,11 @@ function generateSubjectFields() {
     let html = '';
     for(let i=0; i<num; i++) {
         html += `
-        <div style="padding: 12px; background: white; border-radius: 6px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; align-items: end;">
-                <input type="text" placeholder="Subject ${i+1}" value="" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="number" class="exam-mark" placeholder="Obtained" value="0" min="0" oninput="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="number" class="exam-outof" placeholder="Out Of" value="100" min="1" oninput="updateMarks()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        <div class="subject-field-card">
+            <div class="exam-subject-row">
+                <input type="text" placeholder="Subject ${i+1}" value="">
+                <input type="number" class="exam-mark" placeholder="Obtained" value="0" min="0" oninput="updateMarks()">
+                <input type="number" class="exam-outof" placeholder="Out Of" value="100" min="1" oninput="updateMarks()">
             </div>
         </div>`;
     }
@@ -4914,7 +4909,7 @@ function loadCalendarViewer() {
     let html = `
         <div class="tool-form">
             <h3>📅 Calendar Viewer</h3>
-            <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div class="form-group tool-controls-grid">
                 <select id="calendarMonth" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
                     ${Array(12).fill().map((_, i) => `<option value="${i}">${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i]}</option>`).join('')}
                 </select>
@@ -4937,10 +4932,10 @@ function showCalendar() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
     let calendar = `<div style="text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem;">${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][month]} ${year}</div>`;
-    calendar += '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;">';
+    calendar += '<div class="calendar-grid">';
     
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
-        calendar += `<div style="font-weight: bold; padding: 8px; background: #667eea; color: white; border-radius: 4px;">${day}</div>`;
+        calendar += `<div class="weekday-header">${day}</div>`;
     });
     
     for (let i = 0; i < firstDay; i++) {
@@ -4949,7 +4944,7 @@ function showCalendar() {
     
     for (let day = 1; day <= daysInMonth; day++) {
         const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
-        calendar += `<div style="padding: 10px; background: ${isToday ? '#ffc107' : '#f5f7fa'}; border-radius: 4px; font-weight: ${isToday ? 'bold' : 'normal'};">${day}</div>`;
+        calendar += `<div class="${isToday ? 'today' : ''}">${day}</div>`;
     }
     
     calendar += '</div>';

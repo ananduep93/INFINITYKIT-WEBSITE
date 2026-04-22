@@ -3164,3 +3164,174 @@ body.no-animations * {
 }
 
 
+/* --- Tool Specific Responsive Fixes --- */
+
+/* Exam Marks Calculator */
+.tool-results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.result-box {
+    padding: 15px;
+    background: #f5f7fa;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.subject-field-card {
+    padding: 12px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.exam-subject-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.exam-subject-row input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Calendar Viewer */
+.tool-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-grid div {
+    padding: 10px;
+    background: #f5f7fa;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-grid .weekday-header {
+    font-weight: bold;
+    padding: 8px;
+    background: #667eea;
+    color: white;
+    border-radius: 4px;
+}
+
+.calendar-grid .today {
+    background: #ffc107 !important;
+    font-weight: bold;
+    color: #333;
+}
+
+/* General Tool Responsiveness */
+@media (max-width: 600px) {
+    .tool-results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .exam-subject-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .exam-subject-row input {
+        min-height: 44px;
+    }
+
+    .tool-controls-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tool-controls-grid select {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .calendar-grid {
+        gap: 3px;
+    }
+    
+    .calendar-grid div {
+        padding: 6px 2px;
+        font-size: 0.8rem;
+        min-height: 40px;
+    }
+
+    .calendar-grid .weekday-header {
+        padding: 4px 2px;
+        font-size: 0.75rem;
+    }
+
+    /* Full width buttons on mobile */
+    .tool-form button {
+        width: 100% !important;
+        min-height: 44px;
+        margin-top: 10px;
+    }
+
+    /* Container padding and max-width */
+    .tool-page-container {
+        padding: 10px !important;
+        margin-top: 5px !important;
+    }
+
+    .glass-panel {
+        padding: 15px !important;
+        border-radius: 12px !important;
+        margin: 10px auto !important;
+    }
+
+    .tool-title {
+        font-size: 1.6rem !important;
+    }
+}
+
+/* Ensure no horizontal scrolling */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Touch friendly spacing for all inputs and buttons */
+input, select, textarea, button {
+    min-height: 44px;
+}
+
+/* Specific fix for subject inputs on very small screens */
+@media (max-width: 480px) {
+    .exam-subject-row {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Fix calendar header overflow */
+@media (max-width: 400px) {
+    .calendar-grid div {
+        font-size: 0.7rem;
+    }
+    .calendar-grid .weekday-header {
+        font-size: 0.65rem;
+    }
+}
+
