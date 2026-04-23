@@ -34,13 +34,13 @@ export const syncService = {
     },
 
     async saveData(toolName, data) {
-        // Update local cache first (instant responsiveness)
-        localStorage.setItem(toolName, JSON.stringify(data));
-
         const userId = sessionStorage.getItem('userId');
         const isLoggedIn = authService.isLoggedIn();
 
         if (isLoggedIn && userId) {
+            // Update local cache first (instant responsiveness)
+            localStorage.setItem(toolName, JSON.stringify(data));
+
             // Debounce cloud sync
             if (debounceTimers[toolName]) {
                 clearTimeout(debounceTimers[toolName]);
@@ -58,6 +58,16 @@ export const syncService = {
                     console.error(`Error syncing ${toolName} to cloud:`, error);
                 }
             }, DEBOUNCE_DELAY);
+        } else {
+            // If not logged in, do NOT save locally.
+            // Instead, trigger the sign-in prompt
+            window.dispatchEvent(new CustomEvent('showSignInPrompt', { 
+                detail: { 
+                    title: 'Cloud Sync Required',
+                    message: `Please Sign In to save your progress! Your data is currently not being saved.` 
+                } 
+            }));
+            console.warn("Save blocked: User not logged in.");
         }
     },
 

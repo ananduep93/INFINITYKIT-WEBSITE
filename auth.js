@@ -2,6 +2,8 @@ import {
     getAuth, 
     GoogleAuthProvider, 
     signInWithPopup, 
+    signInWithRedirect,
+    getRedirectResult,
     signOut, 
     onAuthStateChanged,
     createUserWithEmailAndPassword,
@@ -14,15 +16,38 @@ import { auth, googleProvider } from './firebase-config.js';
 export const authService = {
     async loginWithGoogle() {
         try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            sessionStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem('userId', user.uid);
-            return user;
+            // Check if user is on a mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Use redirect for mobile (more reliable)
+                await signInWithRedirect(auth, googleProvider);
+            } else {
+                // Use popup for desktop
+                const result = await signInWithPopup(auth, googleProvider);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userId', result.user.uid);
+                return result.user;
+            }
         } catch (error) {
             console.error("Login failed:", error);
             throw error;
         }
+    },
+
+    // Handle the result of a redirect sign-in (call this on app load)
+    async handleRedirectResult() {
+        try {
+            const result = await getRedirectResult(auth);
+            if (result) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userId', result.user.uid);
+                return result.user;
+            }
+        } catch (error) {
+            console.error("Redirect result error:", error);
+        }
+        return null;
     },
 
     async signUpWithEmail(email, password, name) {
@@ -65,8 +90,17 @@ export const authService = {
     },
 
     async logout() {
+        if (!confirm("Are you sure you want to log out? Your local data will be cleared for security.")) {
+            return;
+        }
+
         try {
             await signOut(auth);
+            
+            // Clear local data for privacy (Optionally keep infinityKitStats if you want global stats)
+            const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentTools', 'recentSearches'];
+            toolKeys.forEach(key => localStorage.removeItem(key));
+            
             sessionStorage.removeItem('isLoggedIn');
             sessionStorage.removeItem('userId');
             window.location.href = '/index.html';
