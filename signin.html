@@ -287,14 +287,14 @@
     <script type="module">
         import { authService } from './auth.js';
         import { syncService } from './sync.js';
+        import { authUI } from './auth-ui.js';
 
         const emailSignInBtn = document.getElementById('emailSignInBtn');
         const googleBtn = document.getElementById('googleSignInBtn');
         const emailInput = document.getElementById('emailInput');
         const passwordInput = document.getElementById('passwordInput');
         
-        // Handle redirect result for mobile
-        authService.handleRedirectResult();
+        const passwordInput = document.getElementById('passwordInput');
 
         // Email/Password Sign In
         emailSignInBtn.addEventListener('click', async () => {
@@ -312,7 +312,8 @@
             try {
                 await authService.loginWithEmail(email, password);
                 await syncService.syncLocalToCloud();
-                window.location.href = 'index.html';
+                authUI.showToast('Successfully signed in! 🚀', 'success');
+                setTimeout(() => window.location.href = 'index.html', 1500);
             } catch (error) {
                 console.error(error);
                 alert('Sign in failed: ' + error.message);

@@ -30,6 +30,7 @@ export const authService = {
             } catch (popupError) {
                 // If popup is blocked or it's mobile, use redirect
                 console.log("Popup failed or mobile detected, switching to redirect...");
+                localStorage.setItem('isLoggedIn', 'loading');
                 await signInWithRedirect(auth, googleProvider);
             }
         } catch (error) {

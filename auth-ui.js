@@ -44,7 +44,7 @@ export const authUI = {
 
     init() {
         // Handle redirect result for mobile users
-        authService.handleRedirectResult();
+        this.handleMobileRedirect();
 
         authService.onAuthChange((user) => {
             this.updateNavbar();
@@ -100,16 +100,80 @@ export const authUI = {
         };
     },
 
-    showBlockedSaveModal(title, message) {
-        // Simple alert for now, but can be a pretty modal
-        if (confirm(`${title}\n\n${message}\n\nWould you like to Sign In now?`)) {
-            window.location.href = window.location.pathname.includes('/tools/') ? '../signin.html' : 'signin.html';
+    async handleMobileRedirect() {
+        try {
+            // Check if we are potentially returning from a redirect
+            if (window.location.hash.includes('id_token') || window.location.hash.includes('access_token') || localStorage.getItem('isLoggedIn') === 'loading') {
+                this.showToast('Processing your login... please wait ⚡', 'info');
+            }
+
+            const user = await authService.handleRedirectResult();
+            if (user) {
+                this.showToast('Successfully signed in with Google! 🚀', 'success');
+            }
+        } catch (error) {
+            console.error("Redirect error:", error);
         }
+    },
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `ik-toast ik-toast-${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span class="toast-message">${message}</span>
+            </div>
+        `;
+        document.body.appendChild(toast);
+
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.add('ik-toast-fade-out');
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    },
+
+    showBlockedSaveModal(title, message) {
+        // Use toast instead of confirm for a better feel
+        this.showToast(message, 'info');
+        setTimeout(() => {
+            if (confirm(`Would you like to Sign In now to save your data?`)) {
+                window.location.href = window.location.pathname.includes('/tools/') ? '../signin.html' : 'signin.html';
+            }
+        }, 1000);
     },
 
     injectPromptStyles() {
         const style = document.createElement('style');
         style.textContent = `
+            .ik-toast {
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 24px;
+                border-radius: 12px;
+                background: rgba(30, 31, 45, 0.9);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: white;
+                z-index: 10001;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                animation: toastSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            .ik-toast-success { border-left: 4px solid #4CAF50; }
+            .ik-toast-error { border-left: 4px solid #F44336; }
+            .ik-toast-fade-out { opacity: 0; transform: translate(-50%, 20px); transition: all 0.5s; }
+            .toast-content { display: flex; align-items: center; gap: 12px; }
+            .toast-icon { font-size: 1.2rem; }
+            .toast-message { font-weight: 500; font-size: 0.95rem; }
+
+            @keyframes toastSlideUp {
+                from { transform: translate(-50%, 100px); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+
             .one-tap-container {
                 position: fixed;
                 top: 20px;

@@ -267,6 +267,7 @@
     <script type="module">
         import { authService } from './auth.js';
         import { syncService } from './sync.js';
+        import { authUI } from './auth-ui.js';
 
         const emailSignUpBtn = document.getElementById('emailSignUpBtn');
         const googleBtn = document.getElementById('googleSignUpBtn');
@@ -274,8 +275,7 @@
         const emailInput = document.getElementById('emailInput');
         const passwordInput = document.getElementById('passwordInput');
 
-        // Handle redirect result for mobile
-        authService.handleRedirectResult();
+        const passwordInput = document.getElementById('passwordInput');
 
         // Email/Password Sign Up
         emailSignUpBtn.addEventListener('click', async () => {
@@ -299,7 +299,8 @@
             try {
                 await authService.signUpWithEmail(email, password, name);
                 await syncService.syncLocalToCloud();
-                window.location.href = 'index.html';
+                authUI.showToast('Account created successfully! Welcome! 🚀', 'success');
+                setTimeout(() => window.location.href = 'index.html', 1500);
             } catch (error) {
                 console.error(error);
                 alert('Account creation failed: ' + error.message);
