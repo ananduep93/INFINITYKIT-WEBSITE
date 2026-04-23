@@ -19,15 +19,18 @@ export const authService = {
             // Check if user is on a mobile device
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
-            if (isMobile) {
-                // Use redirect for mobile (more reliable)
-                await signInWithRedirect(auth, googleProvider);
-            } else {
-                // Use popup for desktop
+            // Try popup first (best UX if not blocked)
+            try {
+                if (isMobile) throw new Error("Force redirect on mobile"); // Direct to redirect for mobile
+                
                 const result = await signInWithPopup(auth, googleProvider);
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('userId', result.user.uid);
                 return result.user;
+            } catch (popupError) {
+                // If popup is blocked or it's mobile, use redirect
+                console.log("Popup failed or mobile detected, switching to redirect...");
+                await signInWithRedirect(auth, googleProvider);
             }
         } catch (error) {
             console.error("Login failed:", error);
@@ -42,8 +45,11 @@ export const authService = {
             if (result) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('userId', result.user.uid);
-                // After redirect success, send them home
-                window.location.href = 'index.html';
+                
+                // Determine root path for redirect
+                const isToolPage = window.location.pathname.includes('/tools/');
+                window.location.href = isToolPage ? '../index.html' : 'index.html';
+                
                 return result.user;
             }
         } catch (error) {
