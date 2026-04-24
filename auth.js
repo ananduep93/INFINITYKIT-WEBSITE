@@ -11,7 +11,7 @@ import {
     signInAnonymously,
     updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { auth, googleProvider } from './firebase-config.js';
+import { auth, googleProvider, db, doc, setDoc } from './firebase-config.js';
 
 export const authService = {
     async loginWithGoogle() {
@@ -24,6 +24,7 @@ export const authService = {
                 if (isMobile) throw new Error("Force redirect on mobile"); // Direct to redirect for mobile
                 
                 const result = await signInWithPopup(auth, googleProvider);
+                await this.saveUserProfile(result.user);
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userId', result.user.uid);
                 return result.user;
@@ -46,6 +47,7 @@ export const authService = {
             const result = await getRedirectResult(auth);
             if (result) {
                 console.log("Redirect success for user:", result.user.uid);
+                await this.saveUserProfile(result.user);
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userId', result.user.uid);
                 
@@ -69,6 +71,7 @@ export const authService = {
             if (name) {
                 await updateProfile(result.user, { displayName: name });
             }
+            await this.saveUserProfile(result.user);
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userId', result.user.uid);
             return result.user;
@@ -81,6 +84,7 @@ export const authService = {
     async loginWithEmail(email, password) {
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
+            await this.saveUserProfile(result.user);
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userId', result.user.uid);
             return result.user;
@@ -141,6 +145,24 @@ export const authService = {
 
     isLoggedIn() {
         return localStorage.getItem('isLoggedIn') === 'true';
+    },
+
+    async saveUserProfile(user) {
+        if (!user) return;
+        try {
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || 'Infinity User',
+                photoURL: user.photoURL || null,
+                lastLogin: new Date().toISOString(),
+                version: '16.7'
+            }, { merge: true });
+            console.log("User profile saved to Firestore.");
+        } catch (error) {
+            console.error("Error saving user profile:", error);
+        }
     }
 };
 

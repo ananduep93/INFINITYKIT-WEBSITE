@@ -6,7 +6,7 @@ const debounceTimers = {};
 
 export const syncService = {
     async getData(toolName, forceCloud = false) {
-        const userId = sessionStorage.getItem('userId');
+        const userId = localStorage.getItem('userId');
         const isLoggedIn = authService.isLoggedIn();
         const localData = localStorage.getItem(toolName);
 
@@ -34,7 +34,7 @@ export const syncService = {
     },
 
     async saveData(toolName, data) {
-        const userId = sessionStorage.getItem('userId');
+        const userId = localStorage.getItem('userId');
         const isLoggedIn = authService.isLoggedIn();
 
         if (isLoggedIn && userId) {
@@ -72,7 +72,7 @@ export const syncService = {
     },
 
     async syncLocalToCloud() {
-        const userId = sessionStorage.getItem('userId');
+        const userId = localStorage.getItem('userId');
         if (!userId) return;
 
         console.log("Starting initial sync (local -> cloud)...");
@@ -114,7 +114,7 @@ export const syncService = {
     },
 
     async syncCloudToLocal() {
-        const userId = sessionStorage.getItem('userId');
+        const userId = localStorage.getItem('userId');
         if (!userId) return;
 
         console.log("Background sync: Fetching latest cloud data...");

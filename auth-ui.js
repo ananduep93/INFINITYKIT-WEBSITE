@@ -8,37 +8,62 @@ export const authUI = {
         
         if (!navLinksContainer || !navRight) return;
 
-        // Remove existing auth buttons to avoid duplicates
-        const existingAuthButtons = navLinksContainer.querySelectorAll('.auth-nav-link');
-        existingAuthButtons.forEach(btn => btn.remove());
+        // Remove existing auth elements to avoid duplicates
+        const existingAuth = document.querySelectorAll('.auth-nav-item, .profile-badge');
+        existingAuth.forEach(el => el.remove());
 
         const isLoggedIn = authService.isLoggedIn();
+        const user = authService.getCurrentUser();
 
-        if (isLoggedIn) {
-            // Show Logout
-            const logoutBtn = document.createElement('a');
-            logoutBtn.href = '#';
-            logoutBtn.className = 'auth-nav-link logout-link';
-            logoutBtn.innerHTML = '<span>Logout</span>';
-            logoutBtn.onclick = (e) => {
+        if (isLoggedIn && user) {
+            // Show Profile Badge instead of just a logout link
+            const profileBadge = document.createElement('div');
+            profileBadge.className = 'profile-badge';
+            
+            const userInitial = user.displayName ? user.displayName.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U');
+            const photoURL = user.photoURL;
+
+            profileBadge.innerHTML = `
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        ${photoURL ? `<img src="${photoURL}" alt="Profile">` : `<span>${userInitial}</span>`}
+                    </div>
+                    <div class="profile-details">
+                        <span class="profile-name">${user.displayName || 'Infinity User'}</span>
+                        <span class="profile-email">${user.email}</span>
+                    </div>
+                </div>
+                <button class="profile-logout-btn" title="Logout">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9z"/></svg>
+                </button>
+            `;
+
+            profileBadge.querySelector('.profile-logout-btn').onclick = (e) => {
                 e.preventDefault();
                 authService.logout();
             };
-            navLinksContainer.appendChild(logoutBtn);
+
+            // Insert before settings button
+            const settingsBtn = document.getElementById('settingsBtn');
+            navRight.insertBefore(profileBadge, settingsBtn);
         } else {
             // Show Sign In & Sign Up
+            const authContainer = document.createElement('div');
+            authContainer.className = 'auth-nav-item';
+            
             const signInBtn = document.createElement('a');
             signInBtn.href = 'signin.html';
-            signInBtn.className = 'auth-nav-link';
+            signInBtn.className = 'auth-nav-link signin-link';
             signInBtn.textContent = 'Sign In';
             
             const signUpBtn = document.createElement('a');
             signUpBtn.href = 'signup.html';
-            signUpBtn.className = 'auth-nav-link';
+            signUpBtn.className = 'auth-nav-link signup-link';
             signUpBtn.textContent = 'Sign Up';
 
-            navLinksContainer.appendChild(signInBtn);
-            navLinksContainer.appendChild(signUpBtn);
+            authContainer.appendChild(signInBtn);
+            authContainer.appendChild(signUpBtn);
+            navLinksContainer.appendChild(authContainer);
         }
     },
 
@@ -174,57 +199,117 @@ export const authUI = {
                 to { transform: translate(-50%, 0); opacity: 1; }
             }
 
-            .one-tap-container {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                width: 320px;
-                padding: 15px;
-                z-index: 10000;
-                animation: slideInRight 0.5s ease-out;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            .profile-badge {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 6px 12px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 50px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                margin-right: 10px;
+                transition: all 0.3s ease;
             }
-            .one-tap-header {
+            .profile-badge:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            .profile-info {
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                margin-bottom: 12px;
             }
-            .one-tap-logo { font-size: 1.2rem; }
-            .one-tap-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
-            .one-tap-close {
-                background: none;
-                border: none;
-                color: var(--text-color);
-                font-size: 1.5rem;
-                cursor: pointer;
-                padding: 0 5px;
-                opacity: 0.6;
-            }
-            .one-tap-close:hover { opacity: 1; }
-            .one-tap-body p {
-                font-size: 0.85rem;
-                margin-bottom: 15px;
-                opacity: 0.8;
-            }
-            .google-btn-mini {
-                width: 100%;
+            .profile-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: var(--primary-gradient);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 10px;
-                padding: 10px;
-                background: white;
-                color: #3c4043;
-                border: 1px solid #dadce0;
-                border-radius: 4px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: background 0.2s;
+                font-weight: 700;
+                font-size: 0.9rem;
+                overflow: hidden;
+                border: 2px solid rgba(255, 255, 255, 0.2);
             }
-            .google-btn-mini:hover { background: #f8f9fa; }
-            
+            .profile-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .profile-details {
+                display: flex;
+                flex-direction: column;
+                max-width: 120px;
+            }
+            .profile-name {
+                font-size: 0.85rem;
+                font-weight: 600;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .profile-email {
+                font-size: 0.7rem;
+                opacity: 0.6;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .profile-logout-btn {
+                background: none;
+                border: none;
+                color: #ff4b2b;
+                cursor: pointer;
+                padding: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: background 0.2s;
+                opacity: 0.8;
+            }
+            .profile-logout-btn:hover {
+                background: rgba(255, 75, 43, 0.1);
+                opacity: 1;
+            }
+
+            .auth-nav-item {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+            .signup-link {
+                background: var(--primary-gradient);
+                padding: 8px 16px !important;
+                border-radius: 8px;
+                font-weight: 600 !important;
+                color: white !important;
+            }
+            .signup-link:hover {
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                transform: translateY(-1px);
+            }
+
+            @media (max-width: 768px) {
+                .profile-badge {
+                    margin: 10px 0;
+                    width: 100%;
+                    justify-content: space-between;
+                }
+                .profile-details {
+                    max-width: 200px;
+                }
+                .auth-nav-item {
+                    flex-direction: column;
+                    width: 100%;
+                    gap: 5px;
+                }
+                .auth-nav-link {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+
             @keyframes slideInRight {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
