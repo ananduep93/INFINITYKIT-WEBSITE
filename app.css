@@ -67,6 +67,7 @@ body {
     color: var(--text-color);
     font-size: 1.8rem;
     cursor: pointer;
+    z-index: 1002;
 }
 
 .nav-links {
@@ -95,9 +96,25 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     transition: transform 0.3s;
+    color: var(--text-color);
 }
 .settings-btn:hover {
     transform: rotate(90deg) scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .settings-btn {
+        margin-top: 5px;
+        padding: 10px;
+        background: var(--glass-bg);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--glass-border);
+    }
 }
 
 /* Hero Section */
@@ -1958,31 +1975,46 @@ button:active {
 
     .nav-right {
         position: fixed;
-        top: 70px;
+        top: 75px;
         right: -100%;
-        width: 100%;
+        width: 220px;
         height: auto;
-        background: rgba(20, 20, 35, 0.98);
+        background: var(--bg-gradient);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         flex-direction: column;
-        padding: 40px 20px;
-        gap: 30px;
+        padding: 20px;
+        gap: 10px;
         transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-bottom: 1px solid var(--glass-border);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 1001;
+        display: flex;
+        align-items: center;
     }
 
-    .nav-right.show {
-        right: 0;
+    .nav-right.show, .nav-right.active {
+        right: 15px;
     }
 
     .nav-links {
         flex-direction: column;
         align-items: center;
         width: 100%;
+        gap: 5px;
     }
 
     .nav-links a {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        padding: 8px;
+        width: 100%;
+        text-align: center;
+        border-radius: 8px;
+    }
+
+    .nav-links a:hover {
+        background: rgba(102, 126, 234, 0.1);
     }
 }
 

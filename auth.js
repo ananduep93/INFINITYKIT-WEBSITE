@@ -16,23 +16,27 @@ import { auth, googleProvider, db, doc, setDoc } from './firebase-config.js';
 export const authService = {
     async loginWithGoogle() {
         try {
-            // Check if user is on a mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            console.log("Starting Google Sign-In...");
             
-            // Try popup first (best UX if not blocked)
+            // Try popup first as it's more reliable on desktop and modern mobile
             try {
-                if (isMobile) throw new Error("Force redirect on mobile"); // Direct to redirect for mobile
-                
                 const result = await signInWithPopup(auth, googleProvider);
+                console.log("Popup sign-in successful");
                 await this.saveUserProfile(result.user);
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userId', result.user.uid);
                 return result.user;
             } catch (popupError) {
-                // If popup is blocked or it's mobile, use redirect
-                console.log("Popup failed or mobile detected, switching to redirect...");
-                localStorage.setItem('isLoggedIn', 'loading');
-                await signInWithRedirect(auth, googleProvider);
+                console.warn("Popup sign-in failed or was blocked:", popupError.code);
+                
+                // If popup is blocked or fails, use redirect as fallback
+                if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user' || /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                    console.log("Switching to redirect sign-in...");
+                    localStorage.setItem('isLoggedIn', 'loading');
+                    await signInWithRedirect(auth, googleProvider);
+                } else {
+                    throw popupError;
+                }
             }
         } catch (error) {
             console.error("Login failed:", error);
@@ -44,7 +48,15 @@ export const authService = {
     async handleRedirectResult() {
         try {
             console.log("Checking for redirect result...");
-            const result = await getRedirectResult(auth);
+            
+            // Add a timeout to getRedirectResult because it can hang if domain is not authorized
+            const redirectPromise = getRedirectResult(auth);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Redirect result timeout")), 5000)
+            );
+
+            const result = await Promise.race([redirectPromise, timeoutPromise]);
+            
             if (result) {
                 console.log("Redirect success for user:", result.user.uid);
                 await this.saveUserProfile(result.user);
@@ -58,9 +70,15 @@ export const authService = {
                 window.location.href = target;
                 
                 return result.user;
+            } else {
+                console.log("No redirect result found.");
             }
         } catch (error) {
-            console.error("Redirect result error:", error);
+            console.error("Redirect result error:", error.message);
+            // If it timed out, don't block the app
+            if (localStorage.getItem('isLoggedIn') === 'loading') {
+                localStorage.removeItem('isLoggedIn');
+            }
         }
         return null;
     },
@@ -150,6 +168,7 @@ export const authService = {
     async saveUserProfile(user) {
         if (!user) return;
         try {
+            console.log("Saving user profile to Firestore...");
             const userRef = doc(db, 'users', user.uid);
             await setDoc(userRef, {
                 uid: user.uid,
@@ -159,9 +178,10 @@ export const authService = {
                 lastLogin: new Date().toISOString(),
                 version: '16.7'
             }, { merge: true });
-            console.log("User profile saved to Firestore.");
+            console.log("User profile saved successfully.");
         } catch (error) {
-            console.error("Error saving user profile:", error);
+            console.warn("Non-critical: Error saving user profile to Firestore:", error.message);
+            // We don't throw here so the user can still be logged in locally
         }
     }
 };
