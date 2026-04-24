@@ -1,13 +1,19 @@
-const CACHE_NAME = 'infinity-kit-v16.7';
+const CACHE_NAME = 'infinity-kit-v16.7.20260424.2151';
 const CORE_ASSETS = [
     './',
     './index.html',
-    './app.css',
-    './main.js',
-    './expense-tracker.js',
     './manifest.json',
     './icon-192.png',
-    './icon-512.png'
+    './icon-512.png',
+    './app.css',
+    './auth-ui.js',
+    './auth.js',
+    './expense-tracker.js',
+    './firebase-config.js',
+    './main.js',
+    './notifications.js',
+    './shared-tool.js',
+    './sync.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -33,6 +39,13 @@ self.addEventListener('fetch', (event) => {
     }
 
     const requestUrl = new URL(event.request.url);
+    
+    // Bypass cache for version.json and other configuration files
+    if (requestUrl.pathname.endsWith('version.json') || requestUrl.pathname.endsWith('firebase-config.js')) {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
     if (requestUrl.origin !== self.location.origin) {
         return;
     }
@@ -59,6 +72,11 @@ self.addEventListener('fetch', (event) => {
             }
 
             return fetch(event.request).then((networkResponse) => {
+                // Only cache successful GET responses
+                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                    return networkResponse;
+                }
+
                 const responseClone = networkResponse.clone();
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, responseClone);
@@ -68,6 +86,14 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+// Handle messages from the client
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
 
 // Notifications API handlers
 self.addEventListener('notificationclick', (event) => {

@@ -848,11 +848,32 @@ function registerServiceWorker() {
 
     window.addEventListener('load', () => {
         const swPath = `${PathManager.getPrefix()}service-worker.js`;
-        navigator.serviceWorker.register(swPath).catch((error) => {
+        navigator.serviceWorker.register(swPath).then(reg => {
+            // Check for updates periodically
+            setInterval(() => {
+                reg.update();
+            }, 60 * 60 * 1000); // Check every hour
+
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // New content available!
+                        console.log('New version detected! Preparing to update...');
+                        
+                        // We can show a toast or a confirm
+                        if (confirm('A new version of Infinity Kit is available! Refresh now to update?')) {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+        }).catch((error) => {
             console.error('Service worker registration failed:', error);
         });
     });
 }
+
 
 // Render folder cards
 function renderFolders() {
