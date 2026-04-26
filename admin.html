@@ -151,15 +151,38 @@
     </div>
 
     <!-- Admin Panel Section -->
-    <div id="adminPanel" class="admin-card">
-        <h2>Admin Panel</h2>
-        <p style="margin-bottom: 20px; opacity: 0.8;">Post a new update to the website</p>
-        <div class="form-group">
-            <label for="updateMessage">Update Message</label>
-            <textarea id="updateMessage" placeholder="What's new?"></textarea>
+    <div id="adminPanel" style="display: none;">
+        <!-- Post Update Card -->
+        <div class="admin-card" style="margin-bottom: 2rem;">
+            <h2>Post Update</h2>
+            <p style="margin-bottom: 20px; opacity: 0.8;">Post a new update to the website</p>
+            <div class="form-group">
+                <label for="updateMessage">Update Message</label>
+                <textarea id="updateMessage" placeholder="What's new?"></textarea>
+            </div>
+            <button id="submitUpdate" class="admin-btn">Post Update ✨</button>
+            <p id="successMsg" class="success-msg">Update posted successfully!</p>
         </div>
-        <button id="submitUpdate" class="admin-btn">Post Update ✨</button>
-        <p id="successMsg" class="success-msg">Update posted successfully!</p>
+
+        <!-- Affiliate Ad Card -->
+        <div class="admin-card">
+            <h2>Affiliate Ad</h2>
+            <p style="margin-bottom: 20px; opacity: 0.8;">Add a new affiliate product</p>
+            <div class="form-group">
+                <label for="productTitle">Product Title</label>
+                <input type="text" id="productTitle" placeholder="Enter product name">
+            </div>
+            <div class="form-group">
+                <label for="affiliateLink">Affiliate Link</label>
+                <input type="url" id="affiliateLink" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label for="mediaLink">Media (Image) Link</label>
+                <input type="url" id="mediaLink" placeholder="Image URL">
+            </div>
+            <button id="submitAffiliate" class="admin-btn">Add Product 🎁</button>
+            <p id="affiliateSuccessMsg" class="success-msg">Product added successfully!</p>
+        </div>
     </div>
 
     <script type="module">
@@ -176,6 +199,12 @@
         const updateMessage = document.getElementById('updateMessage');
         const successMsg = document.getElementById('successMsg');
 
+        const submitAffiliateBtn = document.getElementById('submitAffiliate');
+        const productTitle = document.getElementById('productTitle');
+        const affiliateLink = document.getElementById('affiliateLink');
+        const mediaLink = document.getElementById('mediaLink');
+        const affiliateSuccessMsg = document.getElementById('affiliateSuccessMsg');
+
         // Login Logic
         loginBtn.addEventListener('click', () => {
             const user = usernameInput.value;
@@ -184,6 +213,8 @@
             if (user === 'infinitykit' && pass === 'infinity27') {
                 loginSection.style.display = 'none';
                 adminPanel.style.display = 'block';
+                document.body.style.alignItems = 'flex-start';
+                document.body.style.padding = '2rem 0';
             } else {
                 loginError.style.display = 'block';
                 setTimeout(() => {
@@ -219,6 +250,46 @@
             } finally {
                 submitUpdateBtn.disabled = false;
                 submitUpdateBtn.textContent = 'Post Update ✨';
+            }
+        });
+
+        // Submit Affiliate Logic
+        submitAffiliateBtn.addEventListener('click', async () => {
+            const title = productTitle.value.trim();
+            const aLink = affiliateLink.value.trim();
+            const mLink = mediaLink.value.trim();
+
+            if (!title || !aLink || !mLink) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            submitAffiliateBtn.disabled = true;
+            submitAffiliateBtn.textContent = 'Saving...';
+            affiliateSuccessMsg.style.display = 'none';
+
+            try {
+                await addDoc(collection(db, 'affiliateAds'), {
+                    title: title,
+                    affiliateLink: aLink,
+                    mediaLink: mLink,
+                    timestamp: serverTimestamp()
+                });
+
+                affiliateSuccessMsg.style.display = 'block';
+                productTitle.value = '';
+                affiliateLink.value = '';
+                mediaLink.value = '';
+                
+                setTimeout(() => {
+                    affiliateSuccessMsg.style.display = 'none';
+                }, 4000);
+            } catch (error) {
+                console.error("Error adding affiliate: ", error);
+                alert("Failed to add product. Check console.");
+            } finally {
+                submitAffiliateBtn.disabled = false;
+                submitAffiliateBtn.textContent = 'Add Product 🎁';
             }
         });
 
