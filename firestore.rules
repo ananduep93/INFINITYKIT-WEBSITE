@@ -20,5 +20,11 @@ service cloud.firestore {
       allow read: if request.auth != null; // Owner check logic
       allow create: if true; // Public can submit
     }
+
+    // What's New Updates
+    match /updates/{updateId} {
+      allow read: if true;
+      allow write: if true;
+    }
   }
 }

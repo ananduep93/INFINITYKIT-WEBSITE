@@ -62,7 +62,7 @@ main, #main-content, .tool-page-container {
     display: flex;
     align-items: center;
     gap: 25px;
-    transition: all 0.3s ease;
+    margin-left: auto;
 }
 
 .menu-btn {
@@ -78,6 +78,7 @@ main, #main-content, .tool-page-container {
 .nav-links {
     display: flex;
     gap: 20px;
+    align-items: center;
 }
 
 .nav-links a {
@@ -104,12 +105,18 @@ main, #main-content, .tool-page-container {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
 }
 
 .settings-icon {
     font-size: 1.5rem;
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.3s ease;
+    line-height: 1;
 }
 
 .settings-text {
@@ -3394,3 +3401,67 @@ input, select, textarea, button {
     }
 }
 
+
+/* What's New Update Popup (Navbar Version) */
+.update-popup-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #3c3e6e;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-left: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border: none;
+    animation: fadeIn 0.5s ease forwards;
+    white-space: nowrap;
+    height: 32px;
+    align-self: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.update-popup-badge:hover {
+    background: #4a4d85;
+    transform: translateY(-1px);
+}
+
+.update-popup-text {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.update-popup-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 0;
+    line-height: 1;
+    margin-left: 2px;
+}
+
+.update-popup-close:hover {
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .update-popup-badge {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        height: 28px;
+        margin-left: 6px;
+    }
+}

@@ -222,7 +222,7 @@ export const authUI = {
             .profile-badge:hover {
                 background: rgba(255, 255, 255, 0.1);
             }
-            .profile-info {
+            .profile-main {
                 display: flex;
                 align-items: center;
                 gap: 10px;
@@ -281,6 +281,10 @@ export const authUI = {
             .profile-logout-btn:hover {
                 background: rgba(255, 75, 43, 0.1);
                 opacity: 1;
+            }
+
+            .profile-mobile-dropdown {
+                display: none;
             }
 
             .auth-nav-item {
