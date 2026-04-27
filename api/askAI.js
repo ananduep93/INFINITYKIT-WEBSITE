@@ -15,58 +15,40 @@ module.exports = async (req, res) => {
     try {
         const { type, message, text, code, helpType, targetLang, prompt } = req.body;
 
-        // 1. Image Generation (Free & No Key) - Already working
+        // 1. IMAGE GENERATION (Completely Free)
         if (type === 'image') {
             const seed = Math.floor(Math.random() * 1000000);
             const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=1024&height=1024&nologo=true`;
             return res.status(200).json({ result: imageUrl });
         }
 
-        // 2. Text Generation (Using Direct Gemini REST API)
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return res.status(500).json({ error: 'Missing GEMINI_API_KEY. Please set it in Vercel Settings.' });
-        }
-
+        // 2. TEXT GENERATION (Completely Free via Pollinations Text API)
         let systemPrompt = "You are a helpful assistant part of Infinity Kit.";
         let userPrompt = "";
 
         switch (type) {
             case 'chat': userPrompt = message; break;
-            case 'improve': systemPrompt = "Improve this text:"; userPrompt = text; break;
-            case 'summarize': systemPrompt = "Summarize this text:"; userPrompt = text; break;
-            case 'code': systemPrompt = "Helper for code:"; userPrompt = code; break;
-            case 'translate': systemPrompt = `Translate to ${targetLang}:`; userPrompt = text; break;
+            case 'improve': systemPrompt = "Improve this text for professional use:"; userPrompt = text; break;
+            case 'summarize': systemPrompt = "Summarize this text in bullet points:"; userPrompt = text; break;
+            case 'code': systemPrompt = "Explain or fix this code:"; userPrompt = code; break;
+            case 'translate': systemPrompt = `Translate this text to ${targetLang}:`; userPrompt = text; break;
             default: return res.status(400).json({ error: 'Invalid type' });
         }
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        // Call Pollinations Text API (No Key Needed!)
+        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(userPrompt)}?system=${encodeURIComponent(systemPrompt)}&model=openai`;
         
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }]
-                }]
-            })
-        });
+        const response = await fetch(apiUrl);
+        const resultText = await response.text();
 
-        const data = await response.json();
-
-        if (data.error) {
-            throw new Error(data.error.message || 'Gemini API Error');
-        }
-
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-            const resultText = data.candidates[0].content.parts[0].text;
+        if (resultText) {
             return res.status(200).json({ result: resultText });
         } else {
-            throw new Error('No response from Gemini. Check your API Key or Quota.');
+            throw new Error('AI was unable to generate a response.');
         }
 
     } catch (error) {
-        console.error('Final Error:', error);
+        console.error('Pollinations Error:', error);
         return res.status(500).json({ error: error.message });
     }
 };
