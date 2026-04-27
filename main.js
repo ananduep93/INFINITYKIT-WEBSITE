@@ -128,6 +128,13 @@ const baseFolders = [
         icon: '🩺',
         emoji: '🩺',
         tools: ['bmicalculator', 'drugdosage', 'ivdripcalc', 'medicinereminder']
+    },
+    {
+        id: 'ai-tools',
+        name: 'AI Tools',
+        icon: '🤖',
+        emoji: '🤖',
+        tools: ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker']
     }
 ];
 
@@ -566,6 +573,55 @@ const tools = [
         name: 'Response Viewer',
         icon: '📊',
         description: 'View and analyze survey responses'
+    },
+    // AI Tools
+    {
+        id: 'chatbot',
+        name: 'AI Chatbot',
+        icon: '🤖',
+        description: 'Chat with a powerful AI assistant'
+    },
+    {
+        id: 'text-improver',
+        name: 'Text Improver',
+        icon: '✍️',
+        description: 'Rewrite your text for better clarity'
+    },
+    {
+        id: 'summarizer',
+        name: 'Summarizer',
+        icon: '📋',
+        description: 'Condense long text into key points'
+    },
+    {
+        id: 'code-helper',
+        name: 'Code Helper',
+        icon: '💻',
+        description: 'Explain, fix, or convert your code'
+    },
+    {
+        id: 'image-generator',
+        name: 'Image Generator',
+        icon: '🎨',
+        description: 'Generate images from text prompts'
+    },
+    {
+        id: 'translator',
+        name: 'AI Translator',
+        icon: '🌍',
+        description: 'Translate text between languages'
+    },
+    {
+        id: 'voice-assistant',
+        name: 'Voice Assistant',
+        icon: '🎙️',
+        description: 'Interact using your voice'
+    },
+    {
+        id: 'document-checker',
+        name: 'Document Checker',
+        icon: '📄',
+        description: 'Extract points from documents'
     }
 ];
 
@@ -620,6 +676,10 @@ const PathManager = {
     },
 
     getToolPath(toolId) {
+        const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker'];
+        if (aiTools.includes(toolId)) {
+            return `${this.getPrefix()}ai-tools/${toolId}.html`;
+        }
         return `${this.getPrefix()}tools/${toolId}.html`;
     },
 

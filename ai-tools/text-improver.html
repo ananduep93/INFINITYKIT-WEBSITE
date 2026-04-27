@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Text Improver | Infinity Kit ⚡</title>
+    <link rel="stylesheet" href="../app.css">
+    <script>document.documentElement.setAttribute('data-theme', 'light');</script>
+    <style>
+        body { background-color: #f0f2f5; }
+        .tool-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .breadcrumb { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
+        .breadcrumb a { color: #4a6cf7; text-decoration: none; }
+        .glass-panel { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
+        h2 { color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd; margin-top: 15px; font-size: 1rem; }
+        .hero-cta { background: #4a6cf7; color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
+        #text-output { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-top: 20px; min-height: 100px; color: #333; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="window.location.href='../index.html'">⚡ INFINITY KIT</div>
+    </nav>
+    <div class="tool-container">
+        <div class="breadcrumb"><a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; <a href="index.html">AI Tools</a> &nbsp;&rsaquo;&nbsp; Text Improver</div>
+        <div class="glass-panel">
+            <h2>✍️ AI Text Improver</h2>
+            <p style="color: #666;">Paste your text below to make it more professional and clear.</p>
+            <textarea id="text-input" rows="8" placeholder="Paste your text here..."></textarea>
+            <button id="improve-btn" class="hero-cta">Improve Text ✨</button>
+            <div id="output-container" style="margin-top: 30px;">
+                <h3 style="font-size: 1.1rem; color: #333;">Improved Text:</h3>
+                <div id="text-output"></div>
+                <button id="copy-btn" class="hero-cta" style="display: none; background: #2d3748;">Copy to Clipboard 📋</button>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { authService } from '../auth.js';
+        authService.onAuthChange((user) => { if (!user) window.location.href = '../signin.html'; });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools | Infinity Kit ⚡</title>
+    <link rel="stylesheet" href="../app.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="../icon-192.png">
+    
+    <script>
+        // Force light theme for this view to match user photo
+        document.documentElement.setAttribute('data-theme', 'light');
+    </script>
+
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+        .ai-tools-header {
+            padding: 40px 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .breadcrumb a {
+            color: #4a6cf7;
+            text-decoration: none;
+        }
+        .folder-title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .folder-title-emoji {
+            font-size: 2.5rem;
+        }
+        .folder-title-text {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            padding: 0 30px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tool-square {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .tool-square:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .tool-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        /* Match photo's logo style */
+        .nav-logo {
+            font-weight: 900 !important;
+            color: #333 !important;
+            letter-spacing: -0.5px !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="window.location.href='../index.html'">⚡ INFINITY KIT</div>
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="ai-tools-header">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; AI Tools
+        </div>
+        <div class="folder-title-container">
+            <span class="folder-title-emoji">🤖</span>
+            <h1 class="folder-title-text">AI Tools</h1>
+        </div>
+    </div>
+
+    <main>
+        <div class="tools-grid">
+            <div class="tool-square" onclick="window.location.href='chatbot.html'">
+                <div class="tool-icon">🤖</div>
+                <div class="tool-name">AI Chatbot</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='text-improver.html'">
+                <div class="tool-icon">✍️</div>
+                <div class="tool-name">Text Improver</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='summarizer.html'">
+                <div class="tool-icon">📋</div>
+                <div class="tool-name">Summarizer</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='code-helper.html'">
+                <div class="tool-icon">💻</div>
+                <div class="tool-name">Code Helper</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='image-generator.html'">
+                <div class="tool-icon">🎨</div>
+                <div class="tool-name">Image Generator</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='translator.html'">
+                <div class="tool-icon">🌍</div>
+                <div class="tool-name">AI Translator</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='voice-assistant.html'">
+                <div class="tool-icon">🎙️</div>
+                <div class="tool-name">Voice Assistant</div>
+            </div>
+            <div class="tool-square" onclick="window.location.href='document-checker.html'">
+                <div class="tool-icon">📄</div>
+                <div class="tool-name">Document Checker</div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { authService } from '../auth.js';
+        authService.onAuthChange((user) => {
+            if (!user) window.location.href = '../signin.html';
+        });
+    </script>
+</body>
+</html>

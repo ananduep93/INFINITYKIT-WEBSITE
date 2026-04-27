@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Checker | Infinity Kit ⚡</title>
+    <link rel="stylesheet" href="../app.css">
+    <script>document.documentElement.setAttribute('data-theme', 'light');</script>
+    <style>
+        body { background-color: #f0f2f5; }
+        .tool-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .breadcrumb { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
+        .breadcrumb a { color: #4a6cf7; text-decoration: none; }
+        .glass-panel { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); text-align: center; }
+        h2 { color: #333; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .upload-area { border: 2px dashed #ddd; padding: 40px; border-radius: 15px; cursor: pointer; margin-top: 30px; transition: border-color 0.3s; }
+        .upload-area:hover { border-color: #4a6cf7; }
+        .hero-cta { background: #4a6cf7; color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
+        #doc-output { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-top: 20px; min-height: 100px; color: #333; text-align: left; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="window.location.href='../index.html'">⚡ INFINITY KIT</div>
+    </nav>
+    <div class="tool-container">
+        <div class="breadcrumb"><a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; <a href="index.html">AI Tools</a> &nbsp;&rsaquo;&nbsp; Document Checker</div>
+        <div class="glass-panel">
+            <h2>📄 Document Checker</h2>
+            <p style="color: #666;">Upload a document (.txt) to analyze and extract key information.</p>
+            <div class="upload-area" id="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📤</div>
+                <p>Click or drag & drop a .txt file here</p>
+                <input type="file" id="file-input" accept=".txt" style="display: none;">
+            </div>
+            <button id="analyze-btn" class="hero-cta">Analyze Document 🔍</button>
+            <div id="output-container" style="margin-top: 30px;">
+                <h3 style="font-size: 1.1rem; color: #333; text-align: left;">AI Insights:</h3>
+                <div id="doc-output"></div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { authService } from '../auth.js';
+        authService.onAuthChange((user) => { if (!user) window.location.href = '../signin.html'; });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

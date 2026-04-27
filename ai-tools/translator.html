@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Translator | Infinity Kit ⚡</title>
+    <link rel="stylesheet" href="../app.css">
+    <script>document.documentElement.setAttribute('data-theme', 'light');</script>
+    <style>
+        body { background-color: #f0f2f5; }
+        .tool-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .breadcrumb { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
+        .breadcrumb a { color: #4a6cf7; text-decoration: none; }
+        .glass-panel { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
+        h2 { color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-top: 15px; font-size: 1rem; }
+        .hero-cta { background: #4a6cf7; color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
+        #translation-output { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-top: 20px; min-height: 100px; color: #333; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="window.location.href='../index.html'">⚡ INFINITY KIT</div>
+    </nav>
+    <div class="tool-container">
+        <div class="breadcrumb"><a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; <a href="index.html">AI Tools</a> &nbsp;&rsaquo;&nbsp; AI Translator</div>
+        <div class="glass-panel">
+            <h2>🌍 AI Translator</h2>
+            <p style="color: #666;">High-quality AI translation for any language.</p>
+            <select id="target-lang">
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Japanese">Japanese</option>
+            </select>
+            <textarea id="text-input" rows="6" placeholder="Type or paste text to translate..."></textarea>
+            <button id="translate-btn" class="hero-cta">Translate 🌍</button>
+            <div id="output-container" style="margin-top: 30px;">
+                <h3 style="font-size: 1.1rem; color: #333;">Translation:</h3>
+                <div id="translation-output"></div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { authService } from '../auth.js';
+        authService.onAuthChange((user) => { if (!user) window.location.href = '../signin.html'; });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator | Infinity Kit ⚡</title>
+    <link rel="stylesheet" href="../app.css">
+    <script>document.documentElement.setAttribute('data-theme', 'light');</script>
+    <style>
+        body { background-color: #f0f2f5; }
+        .tool-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .breadcrumb { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
+        .breadcrumb a { color: #4a6cf7; text-decoration: none; }
+        .glass-panel { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); text-align: center; }
+        h2 { color: #333; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        input { width: 100%; padding: 15px; border-radius: 50px; border: 1px solid #ddd; margin-top: 15px; font-size: 1rem; outline: none; }
+        input:focus { border-color: #4a6cf7; }
+        .hero-cta { background: #4a6cf7; color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%; }
+        #image-result { max-width: 100%; border-radius: 15px; margin-top: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="window.location.href='../index.html'">⚡ INFINITY KIT</div>
+    </nav>
+    <div class="tool-container">
+        <div class="breadcrumb"><a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; <a href="index.html">AI Tools</a> &nbsp;&rsaquo;&nbsp; Image Generator</div>
+        <div class="glass-panel">
+            <h2>🎨 AI Image Generator</h2>
+            <p style="color: #666;">Turn your imagination into art. Describe the image you want.</p>
+            <input type="text" id="prompt-input" placeholder="e.g., A futuristic city with flying cars at sunset">
+            <button id="generate-btn" class="hero-cta">Generate Image ✨</button>
+            <div id="output-container" style="margin-top: 30px;">
+                <img id="image-result" src="" alt="Generated AI Art">
+                <a id="download-btn" class="hero-cta" style="display: none; margin-top: 15px; text-decoration: none; background: #2d3748;" download="ai-image.png">Download Image 💾</a>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { authService } from '../auth.js';
+        authService.onAuthChange((user) => { if (!user) window.location.href = '../signin.html'; });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
