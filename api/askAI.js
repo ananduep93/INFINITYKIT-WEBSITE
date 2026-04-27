@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { type, message, text, code, helpType, targetLang, prompt } = req.body;
+        const { type, message, text, code, helpType, targetLang, prompt, context } = req.body;
 
         // 1. IMAGE GENERATION (High Quality via Pollinations)
         if (type === 'image') {
@@ -22,14 +22,16 @@ module.exports = async (req, res) => {
             return res.status(200).json({ result: imageUrl });
         }
 
-        // 2. TEXT GENERATION (Advanced System Prompts for "Impressive" Results)
-        let systemPrompt = "You are Infinity AI, a premium and highly intelligent assistant. Provide detailed, helpful, and professional answers.";
+        // 2. TEXT GENERATION (Advanced System Prompts with Memory)
+        let systemPrompt = "You are Infinity AI, a premium and highly intelligent assistant. Provide detailed, helpful, and professional answers. Use beautiful formatting but avoid excessive markdown symbols like raw asterisks where possible—use clean bullet points instead.";
         let userPrompt = "";
 
         switch (type) {
             case 'chat': 
-                systemPrompt = "You are Infinity AI, a brilliant and friendly assistant. Use emojis where appropriate. Be concise but very smart.";
-                userPrompt = message; 
+                systemPrompt = "You are Infinity AI, a brilliant and friendly assistant. Use emojis where appropriate. You have memory of the previous conversation provided below.";
+                // Include context in the user prompt for the API
+                const historyString = context ? context.map(m => `${m.role.toUpperCase()}: ${m.text}`).join('\n') : "";
+                userPrompt = `${historyString}\nUSER: ${message}\nINFINITY AI:`; 
                 break;
             case 'improve': 
                 systemPrompt = "You are a world-class editor. Rewrite the following text to make it sound professional, persuasive, and elegant. Keep the meaning but elevate the vocabulary.";
@@ -39,25 +41,11 @@ module.exports = async (req, res) => {
                 systemPrompt = "You are an expert at information density. Summarize the text using clear bullet points. Include a 'Key Takeaway' at the end.";
                 userPrompt = text; 
                 break;
-            case 'code': 
-                if (helpType === 'explain') {
-                    systemPrompt = "You are a senior software engineer. Explain this code line-by-line so even a beginner can understand, but include technical insights.";
-                } else if (helpType === 'fix') {
-                    systemPrompt = "You are a senior debugger. Identify the bugs in this code, fix them, and explain why they happened.";
-                } else {
-                    systemPrompt = "You are a coding architect. Optimize or refactor this code for better performance and readability.";
-                }
-                userPrompt = code; 
-                break;
-            case 'translate': 
-                systemPrompt = `You are a professional translator. Translate the text into ${targetLang} perfectly, preserving the tone and cultural context.`;
-                userPrompt = text; 
-                break;
             default: 
                 return res.status(400).json({ error: 'Invalid type' });
         }
 
-        // Call Pollinations Text API with the new System Prompts
+        // Call Pollinations Text API
         const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(userPrompt)}?system=${encodeURIComponent(systemPrompt)}&model=openai`;
         
         const response = await fetch(apiUrl);

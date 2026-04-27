@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Image Generator | Infinity Kit ⚡</title>
     <link rel="stylesheet" href="../app.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>document.documentElement.setAttribute('data-theme', 'light');</script>
     <style>
         body { background-color: #f0f2f5; }
@@ -26,7 +27,10 @@
     <div class="tool-container">
         <div class="breadcrumb"><a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; <a href="index.html">AI Tools</a> &nbsp;&rsaquo;&nbsp; Image Generator</div>
         <div class="glass-panel">
-            <h2>🎨 AI Image Generator</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">🎨 AI Image Generator</h2>
+                <button id="history-btn" class="send-btn" style="background: #edf2f7; color: #4a5568; font-size: 0.8rem; padding: 5px 15px;">📜 History</button>
+            </div>
             <p style="color: #666;">Turn your imagination into art. Describe the image you want.</p>
             <input type="text" id="prompt-input" placeholder="e.g., A futuristic city with flying cars at sunset">
             <button id="generate-btn" class="hero-cta">Generate Image ✨</button>

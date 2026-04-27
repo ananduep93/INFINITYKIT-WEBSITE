@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Text Improver | Infinity Kit ⚡</title>
     <link rel="stylesheet" href="../app.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>document.documentElement.setAttribute('data-theme', 'light');</script>
     <style>
         body { background-color: #f0f2f5; }
@@ -25,7 +26,10 @@
     <div class="tool-container">
         <div class="breadcrumb"><a href="../index.html">Home</a> &nbsp;&rsaquo;&nbsp; <a href="index.html">AI Tools</a> &nbsp;&rsaquo;&nbsp; Text Improver</div>
         <div class="glass-panel">
-            <h2>✍️ AI Text Improver</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">✍️ AI Text Improver</h2>
+                <button id="history-btn" class="send-btn" style="background: #edf2f7; color: #4a5568; font-size: 0.8rem; padding: 5px 15px;">📜 History</button>
+            </div>
             <p style="color: #666;">Paste your text below to make it more professional and clear.</p>
             <textarea id="text-input" rows="8" placeholder="Paste your text here..."></textarea>
             <button id="improve-btn" class="hero-cta">Improve Text ✨</button>
