@@ -169,19 +169,27 @@ export const authService = {
         if (!user) return;
         try {
             console.log("Saving user profile to Firestore...");
-            const userRef = doc(db, 'users', user.uid);
-            await setDoc(userRef, {
+            // Store profile in users/{uid}/profile/info subcollection
+            const profileRef = doc(db, 'users', user.uid, 'profile', 'info');
+            await setDoc(profileRef, {
                 uid: user.uid,
                 email: user.email,
                 displayName: user.displayName || 'Infinity User',
                 photoURL: user.photoURL || null,
                 lastLogin: new Date().toISOString(),
-                version: '16.7'
+                version: '16.7',
+                platform: 'web'
             }, { merge: true });
+
+            // Also update basic info on root for legacy support/rules
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, {
+                lastActive: new Date().toISOString()
+            }, { merge: true });
+
             console.log("User profile saved successfully.");
         } catch (error) {
             console.warn("Non-critical: Error saving user profile to Firestore:", error.message);
-            // We don't throw here so the user can still be logged in locally
         }
     }
 };

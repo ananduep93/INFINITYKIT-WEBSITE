@@ -1,16 +1,16 @@
-import { db, doc, getDoc, setDoc, updateDoc } from './firebase-config.js';
+import { db, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, orderBy, limit } from './firebase-config.js';
 import { authService } from './auth.js';
 
 const DEBOUNCE_DELAY = 1000;
 const debounceTimers = {};
 
 export const syncService = {
+    // Standard data sync (for tool-specific data like todos, settings)
     async getData(toolName, forceCloud = false) {
         const userId = localStorage.getItem('userId');
         const isLoggedIn = authService.isLoggedIn();
         const localData = localStorage.getItem(toolName);
 
-        // If we have local data and aren't forcing a cloud fetch, return local data immediately (Instant UI)
         if (localData && !forceCloud) {
             return JSON.parse(localData);
         }
@@ -38,10 +38,8 @@ export const syncService = {
         const isLoggedIn = authService.isLoggedIn();
 
         if (isLoggedIn && userId) {
-            // Update local cache first (instant responsiveness)
             localStorage.setItem(toolName, JSON.stringify(data));
 
-            // Debounce cloud sync
             if (debounceTimers[toolName]) {
                 clearTimeout(debounceTimers[toolName]);
             }
@@ -59,15 +57,64 @@ export const syncService = {
                 }
             }, DEBOUNCE_DELAY);
         } else {
-            // If not logged in, do NOT save locally.
-            // Instead, trigger the sign-in prompt
             window.dispatchEvent(new CustomEvent('showSignInPrompt', { 
                 detail: { 
                     title: 'Cloud Sync Required',
                     message: `Please Sign In to save your progress! Your data is currently not being saved.` 
                 } 
             }));
-            console.warn("Save blocked: User not logged in.");
+        }
+    },
+
+    // Unified Favorites Sync (Parity with Mobile)
+    async saveFavorite(toolId, isFavorite) {
+        const userId = localStorage.getItem('userId');
+        if (!userId) return;
+
+        try {
+            const favRef = doc(db, 'users', userId, 'favorites', toolId);
+            if (isFavorite) {
+                await setDoc(favRef, {
+                    toolId: toolId,
+                    savedAt: new Date().toISOString()
+                });
+            } else {
+                await deleteDoc(favRef);
+            }
+            console.log(`Favorite ${isFavorite ? 'saved' : 'removed'}: ${toolId}`);
+        } catch (error) {
+            console.error("Error syncing favorite:", error);
+        }
+    },
+
+    async getFavorites() {
+        const userId = localStorage.getItem('userId');
+        if (!userId) return [];
+
+        try {
+            const favsCol = collection(db, 'users', userId, 'favorites');
+            const snapshot = await getDocs(favsCol);
+            return snapshot.docs.map(doc => doc.id);
+        } catch (error) {
+            console.error("Error fetching favorites:", error);
+            return [];
+        }
+    },
+
+    // Unified History Sync (Parity with Mobile)
+    async addToHistory(toolId) {
+        const userId = localStorage.getItem('userId');
+        if (!userId) return;
+
+        try {
+            const historyRef = doc(db, 'users', userId, 'history', toolId);
+            await setDoc(historyRef, {
+                toolId: toolId,
+                lastAccessed: new Date().toISOString()
+            });
+            console.log(`History updated: ${toolId}`);
+        } catch (error) {
+            console.error("Error syncing history:", error);
         }
     },
 
@@ -77,40 +124,38 @@ export const syncService = {
 
         console.log("Starting initial sync (local -> cloud)...");
         
-        // List of tool keys to sync (we'll need to expand this or detect them)
-        const toolKeys = [
-            'todos', 
-            'savedPasswords', 
-            'quickNotes', 
-            'expenses_db', 
-            'infinityKitSettings',
-            'recentTools',
-            'recentSearches'
-        ];
-
+        // 1. Sync standard tool data
+        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitSettings', 'recentSearches'];
         for (const key of toolKeys) {
             const localData = localStorage.getItem(key);
             if (localData) {
                 try {
                     const data = JSON.parse(localData);
                     const docRef = doc(db, 'users', userId, 'tools', key);
-                    
-                    // Only upload if cloud data doesn't exist (to honor "Firebase overrides local" rule for subsequent logins)
                     const docSnap = await getDoc(docRef);
                     if (!docSnap.exists()) {
-                        await setDoc(docRef, { 
-                            data: data,
-                            updatedAt: new Date().toISOString()
-                        });
-                        console.log(`Uploaded local data for ${key} to cloud.`);
-                    } else {
-                        console.log(`Cloud data exists for ${key}, skipping local upload.`);
+                        await setDoc(docRef, { data: data, updatedAt: new Date().toISOString() });
                     }
-                } catch (error) {
-                    console.error(`Error syncing ${key} during initial sync:`, error);
-                }
+                } catch (e) {}
             }
         }
+
+        // 2. Sync Favorites (Array to Collection migration)
+        try {
+            const localFavs = JSON.parse(localStorage.getItem('favorites')) || [];
+            for (const toolId of localFavs) {
+                await this.saveFavorite(toolId, true);
+            }
+        } catch (e) {}
+
+        // 3. Sync Recent Tools (Array to Collection migration)
+        try {
+            const localRecent = JSON.parse(localStorage.getItem('recentTools')) || [];
+            for (const tool of localRecent) {
+                const id = typeof tool === 'string' ? tool : tool.id;
+                await this.addToHistory(id);
+            }
+        } catch (e) {}
     },
 
     async syncCloudToLocal() {
@@ -118,14 +163,33 @@ export const syncService = {
         if (!userId) return;
 
         console.log("Background sync: Fetching latest cloud data...");
-        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentTools', 'recentSearches'];
         
+        // Sync tools
+        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitSettings', 'recentSearches'];
         for (const key of toolKeys) {
-            await this.getData(key, true); // Force cloud fetch to update local cache
+            await this.getData(key, true);
         }
+
+        // Sync Favorites
+        const cloudFavs = await this.getFavorites();
+        localStorage.setItem('favorites', JSON.stringify(cloudFavs));
+
+        // Sync History (Recent Tools)
+        try {
+            const historyCol = collection(db, 'users', userId, 'history');
+            const q = query(historyCol, orderBy('lastAccessed', 'desc'), limit(15));
+            const snapshot = await getDocs(q);
+            const history = snapshot.docs.map(doc => ({
+                id: doc.id,
+                name: doc.id, 
+                time: doc.data().lastAccessed
+            }));
+            localStorage.setItem('recentTools', JSON.stringify(history));
+        } catch (e) {
+            console.warn("History sync failed:", e);
+        }
+
         console.log("Background sync complete.");
-        
-        // Dispatch event so tools can re-render if they want
         window.dispatchEvent(new CustomEvent('infinityKitDataSynced'));
     }
 };

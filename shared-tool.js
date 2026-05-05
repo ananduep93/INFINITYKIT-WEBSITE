@@ -18,24 +18,23 @@
 // Track tool usage
 async function trackToolUsage(toolId) {
     try {
-        // Wait for sync service to initialize if it's currently loading
         for (let i = 0; i < 10; i++) {
             if (window.syncService) break;
             await new Promise(r => setTimeout(r, 200));
         }
 
-        let stats = {};
+        // Add to unified Firestore history (Collection-based)
         if (window.syncService) {
-            stats = await window.syncService.getData('infinityKitStats') || {};
-        } else {
-            stats = JSON.parse(localStorage.getItem('infinityKitStats')) || {};
-        }
-        
-        stats[toolId] = (stats[toolId] || 0) + 1;
-        
-        if (window.syncService) {
+            await window.syncService.addToHistory(toolId);
+            
+            // Also update usage stats (counts)
+            let stats = await window.syncService.getData('infinityKitStats') || {};
+            stats[toolId] = (stats[toolId] || 0) + 1;
             await window.syncService.saveData('infinityKitStats', stats);
         } else {
+            // Fallback to local storage
+            let stats = JSON.parse(localStorage.getItem('infinityKitStats')) || {};
+            stats[toolId] = (stats[toolId] || 0) + 1;
             localStorage.setItem('infinityKitStats', JSON.stringify(stats));
         }
     } catch (e) {
@@ -46,28 +45,23 @@ async function trackToolUsage(toolId) {
 // Add to recently used
 async function addRecentTool(toolId, toolName) {
     try {
-        // Wait for sync service to initialize
         for (let i = 0; i < 10; i++) {
             if (window.syncService) break;
             await new Promise(r => setTimeout(r, 200));
         }
 
-        let recent = [];
+        // Add to unified Firestore history (Collection-based)
         if (window.syncService) {
-            recent = await window.syncService.getData('recentTools') || [];
-        } else {
-            recent = JSON.parse(localStorage.getItem('recentTools')) || [];
+            await window.syncService.addToHistory(toolId);
         }
 
-        recent = recent.filter(t => t.id !== toolId);
+        // Maintain local cache for UI responsiveness
+        let recent = JSON.parse(localStorage.getItem('recentTools')) || [];
+        recent = recent.filter(t => (typeof t === 'string' ? t : t.id) !== toolId);
         recent.unshift({ id: toolId, name: toolName, time: Date.now() });
         recent = recent.slice(0, 10);
+        localStorage.setItem('recentTools', JSON.stringify(recent));
 
-        if (window.syncService) {
-            await window.syncService.saveData('recentTools', recent);
-        } else {
-            localStorage.setItem('recentTools', JSON.stringify(recent));
-        }
     } catch (e) {
         console.error("Error adding recent tool:", e);
     }
