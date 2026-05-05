@@ -8,13 +8,8 @@ const HEADERS_FILE = './_headers'; // For Cloudflare/Netlify/Vercel
 const TARGET_DIRS = ['./', './folder', './tools'];
 const EXCLUDED_FILES = ['cache-buster.js', 'service-worker.js', 'firebase-api-keys.js'];
 
-// Generate a dynamic version based on current timestamp
-// Format: 16.7.[YYYYMMDD].[HHMM]
-const now = new Date();
-const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-const timeStr = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
-const baseVersion = "16.7"; // Major.Minor
-const newVersion = `${baseVersion}.${dateStr}.${timeStr}`;
+const baseVersion = "1.0";
+const newVersion = baseVersion;
 
 console.log(`🚀 Cache-Buster: Generating New Version: ${newVersion}`);
 
