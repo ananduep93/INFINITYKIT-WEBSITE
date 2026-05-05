@@ -177,7 +177,7 @@ export const authService = {
                 displayName: user.displayName || 'Infinity User',
                 photoURL: user.photoURL || null,
                 lastLogin: new Date().toISOString(),
-                version: '16.7',
+                version: '1.0',
                 platform: 'web'
             }, { merge: true });
 

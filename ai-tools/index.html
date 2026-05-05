@@ -19,76 +19,153 @@
     </script>
 
     <style>
+        :root {
+            --primary: #2563EB;
+            --bg: #F8FAFC;
+            --text: #1E293B;
+            --secondary: #64748B;
+        }
         body {
-            background-color: #f0f2f5;
+            background-color: var(--bg);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
         }
         .ai-tools-header {
-            padding: 40px 30px 20px;
-            max-width: 1200px;
+            padding: 60px 20px 40px;
+            max-width: 1000px;
             margin: 0 auto;
+            text-align: center;
         }
         .breadcrumb {
             font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 30px;
+            color: var(--secondary);
+            margin-bottom: 20px;
         }
         .breadcrumb a {
-            color: #4a6cf7;
+            color: var(--primary);
             text-decoration: none;
+            font-weight: 500;
         }
-        .folder-title-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .folder-title-container h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-subtitle {
+            color: var(--secondary);
+            font-size: 1.1rem;
             margin-bottom: 30px;
         }
-        .folder-title-emoji {
-            font-size: 2.5rem;
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
         }
-        .folder-title-text {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #333;
+        .search-input {
+            width: 100%;
+            padding: 18px 25px;
+            padding-left: 55px;
+            border-radius: 20px;
+            border: none;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
+        .search-input:focus {
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            padding: 0 30px 60px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 0 20px 80px;
+            max-width: 1000px;
             margin: 0 auto;
         }
-        .tool-square {
+        .tool-card {
             background: white;
-            border-radius: 20px;
-            padding: 40px 20px;
-            text-align: center;
+            border-radius: 24px;
+            padding: 30px;
+            text-align: left;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0,0,0,0.05);
+            gap: 20px;
+            border: 1px solid rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
         }
-        .tool-square:hover {
+        .tool-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            border-color: rgba(37, 99, 235, 0.1);
+        }
+        .tool-card::after {
+            content: '→';
+            position: absolute;
+            right: 25px;
+            font-size: 1.2rem;
+            opacity: 0.2;
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover::after {
+            opacity: 0.6;
+            transform: translateX(5px);
         }
         .tool-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 2.2rem;
+            width: 64px;
+            height: 64px;
+            background: #F1F5F9;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover .tool-icon {
+            background: #EEF2FF;
+            transform: scale(1.05);
+        }
+        .tool-info {
+            flex: 1;
         }
         .tool-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #333;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--text);
+            margin-bottom: 4px;
         }
-        .nav-logo {
-            font-weight: 900 !important;
-            color: #333 !important;
-            letter-spacing: -0.5px !important;
+        .tool-desc {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+            .tools-grid { grid-template-columns: 1fr; }
+            .ai-tools-header h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -107,28 +184,45 @@
             <a href="/">Home</a> &nbsp;&rsaquo;&nbsp; AI Tools
         </div>
         <div class="folder-title-container">
-            <span class="folder-title-emoji">🤖</span>
-            <h1 class="folder-title-text">AI Tools</h1>
+            <h1>Infinity AI Hub</h1>
+        </div>
+        <p class="header-subtitle">Advanced artificial intelligence tools to supercharge your workflow.</p>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search AI tools..." id="toolSearch">
         </div>
     </div>
 
     <main>
-        <div class="tools-grid">
-            <div class="tool-square" onclick="window.location.href='chatbot.html'">
+        <div class="tools-grid" id="toolsGrid">
+            <div class="tool-card" onclick="window.location.href='/ai-tools/chatbot.html'">
                 <div class="tool-icon">🤖</div>
-                <div class="tool-name">AI Chatbot</div>
+                <div class="tool-info">
+                    <div class="tool-name">AI Chatbot</div>
+                    <div class="tool-desc">Chat with an advanced AI assistant for any task.</div>
+                </div>
             </div>
-            <div class="tool-square" onclick="window.location.href='text-improver.html'">
+            <div class="tool-card" onclick="window.location.href='/ai-tools/text-improver.html'">
                 <div class="tool-icon">✍️</div>
-                <div class="tool-name">Text Improver</div>
+                <div class="tool-info">
+                    <div class="tool-name">Text Improver</div>
+                    <div class="tool-desc">Polish your writing for clarity, tone, and grammar.</div>
+                </div>
             </div>
-            <div class="tool-square" onclick="window.location.href='summarizer.html'">
+            <div class="tool-card" onclick="window.location.href='/ai-tools/summarizer.html'">
                 <div class="tool-icon">📋</div>
-                <div class="tool-name">Summarizer</div>
+                <div class="tool-info">
+                    <div class="tool-name">Summarizer</div>
+                    <div class="tool-desc">Condense long articles or documents into key points.</div>
+                </div>
             </div>
-            <div class="tool-square" onclick="window.location.href='image-generator.html'">
+            <div class="tool-card" onclick="window.location.href='/ai-tools/image-generator.html'">
                 <div class="tool-icon">🎨</div>
-                <div class="tool-name">Image Generator</div>
+                <div class="tool-info">
+                    <div class="tool-name">Image Generator</div>
+                    <div class="tool-desc">Generate stunning artwork from text descriptions.</div>
+                </div>
             </div>
         </div>
     </main>
@@ -136,7 +230,22 @@
     <script type="module">
         import { authService } from '../auth.js';
         authService.onAuthChange((user) => {
-            if (!user) window.location.href = '../signin.html';
+            if (!user) window.location.href = '/signin.html';
+        });
+
+        // Search filter
+        document.getElementById('toolSearch').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.tool-card');
+            cards.forEach(card => {
+                const name = card.querySelector('.tool-name').textContent.toLowerCase();
+                const desc = card.querySelector('.tool-desc').textContent.toLowerCase();
+                if (name.includes(query) || desc.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>

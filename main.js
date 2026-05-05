@@ -1,4 +1,4 @@
-console.log('Infinity Kit Version 16.7 Loaded - Script-Based Path Resolver Active (Failsafe Fix)');
+console.log('Infinity Kit Version 1.0 Loaded - Script-Based Path Resolver Active (Failsafe Fix)');
 // Tip: If links fail, try a hard refresh (Ctrl + Shift + R) to clear browser cache.
 
 // Folders with Tools Data
@@ -597,7 +597,8 @@ const tools = [
         id: 'code-helper',
         name: 'Code Helper',
         icon: '💻',
-        description: 'Explain, fix, or convert your code'
+        description: 'Explain, fix, or convert your code',
+        comingSoon: true
     },
     {
         id: 'image-generator',
@@ -609,19 +610,22 @@ const tools = [
         id: 'translator',
         name: 'AI Translator',
         icon: '🌍',
-        description: 'Translate text between languages'
+        description: 'Translate text between languages',
+        comingSoon: true
     },
     {
         id: 'voice-assistant',
         name: 'Voice Assistant',
         icon: '🎙️',
-        description: 'Interact using your voice'
+        description: 'Interact using your voice',
+        comingSoon: true
     },
     {
         id: 'document-checker',
         name: 'Document Checker',
         icon: '📄',
-        description: 'Extract points from documents'
+        description: 'Extract points from documents',
+        comingSoon: true
     }
 ];
 
@@ -664,13 +668,13 @@ const PathManager = {
     getToolPath(toolId) {
         const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker'];
         if (aiTools.includes(toolId)) {
-            return `/ai-tools/${toolId}`;
+            return `/ai-tools/${toolId}.html`;
         }
-        return `/tools/${toolId}`;
+        return `/tools/${toolId}.html`;
     },
 
     getFolderPath(folderId) {
-        return `/folder/${folderId}`;
+        return `/folder/${folderId}.html`;
     },
 
     getHomePath() {
@@ -699,9 +703,20 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         // Robust Self-healing logic for invalid URLs
         const path = window.location.pathname;
+        const isFolder = path.includes('/folder/') && !path.endsWith('.html');
+        const isTool = (path.includes('/tools/') || path.includes('/ai-tools/')) && !path.endsWith('.html');
+        const isSurvey = path.includes('/survey/') && !path.endsWith('.html');
+        
+        if (isFolder || isTool || isSurvey) {
+            const correctPath = path + '.html' + window.location.search + window.location.hash;
+            console.log('Path Guard: Missing .html detected. Redirecting to:', correctPath);
+            window.location.replace(correctPath);
+            return;
+        }
+
         if (path.includes('folder/tools/') || path.includes('tools/tools/')) {
             const correctPath = path.replace('folder/tools/', 'tools/').replace('tools/tools/', 'tools/');
-            console.log('Path Guard: Auto-correcting URL to:', correctPath);
+            console.log('Path Guard: Double-prefix detected. Correcting URL to:', correctPath);
             window.location.replace(correctPath);
             return;
         }
