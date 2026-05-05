@@ -678,13 +678,13 @@ const PathManager = {
     getToolPath(toolId) {
         const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker'];
         if (aiTools.includes(toolId)) {
-            return `${this.getPrefix()}ai-tools/${toolId}`;
+            return `${this.getPrefix()}ai-tools/${toolId}.html`;
         }
-        return `${this.getPrefix()}tools/${toolId}`;
+        return `${this.getPrefix()}tools/${toolId}.html`;
     },
 
     getFolderPath(folderId) {
-        return `${this.getPrefix()}folder/${folderId}`;
+        return `${this.getPrefix()}folder/${folderId}.html`;
     },
 
     getHomePath() {
