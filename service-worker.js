@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-kit-v16.7.20260425.1713';
+const CACHE_NAME = 'infinity-kit-v16.7.20260505.1640';
 const CORE_ASSETS = [
     './',
     './index.html',
@@ -14,7 +14,8 @@ const CORE_ASSETS = [
     './notifications.js',
     './shared-tool.js',
     './survey-hub.js',
-    './sync.js'
+    './sync.js',
+    './updates-popup.js'
 ];
 
 self.addEventListener('install', (event) => {

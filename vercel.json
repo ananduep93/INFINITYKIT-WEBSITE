@@ -1,0 +1,18 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/folder/:id",
+      "destination": "/folder/:id.html"
+    },
+    {
+      "source": "/tools/:id",
+      "destination": "/tools/:id.html"
+    },
+    {
+      "source": "/ai-tools/:id",
+      "destination": "/ai-tools/:id.html"
+    }
+  ]
+}

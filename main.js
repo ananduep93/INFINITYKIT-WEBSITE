@@ -651,44 +651,30 @@ const PathManager = {
     // Detect current directory depth (0 = root, 1 = subfolder)
     // Uses segment analysis to avoid false positives from site root folder names
     getDepth() {
-        // Failsafe method: Check how the script itself was loaded.
-        // If loaded via '../main.js', we are in a subfolder.
-        const scripts = document.getElementsByTagName('script');
-        for (let i = 0; i < scripts.length; i++) {
-            const src = scripts[i].getAttribute('src');
-            if (src && src.includes('main.js')) {
-                if (src.startsWith('../')) return 1;
-                if (src.includes('folder/') || src.includes('tools/')) return 0; // Loaded from root into root
-            }
-        }
-        
-        // Fallback to path analysis if script detection fails
         const path = window.location.pathname;
-        const segments = path.split('/').filter(s => s !== '');
-        const hasSubdir = segments.some((s, i) => 
-            (s === 'folder' || s === 'tools') && i < segments.length - 1
-        );
-        return hasSubdir ? 1 : 0;
+        const segments = path.split('/').filter(s => s !== '' && !s.includes('.html'));
+        return segments.length;
     },
 
     getPrefix() {
-        return this.getDepth() === 1 ? '../' : '';
+        // Absolute paths are more reliable for modern web hosting
+        return '/';
     },
 
     getToolPath(toolId) {
         const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker'];
         if (aiTools.includes(toolId)) {
-            return `${this.getPrefix()}ai-tools/${toolId}.html`;
+            return `/ai-tools/${toolId}`;
         }
-        return `${this.getPrefix()}tools/${toolId}.html`;
+        return `/tools/${toolId}`;
     },
 
     getFolderPath(folderId) {
-        return `${this.getPrefix()}folder/${folderId}.html`;
+        return `/folder/${folderId}`;
     },
 
     getHomePath() {
-        return `${this.getPrefix()}`;
+        return '/';
     },
 
     // Guard to prevent invalid navigation patterns

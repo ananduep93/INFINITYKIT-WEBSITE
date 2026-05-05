@@ -79,12 +79,12 @@ export const authUI = {
             authContainer.className = 'auth-nav-item';
             
             const signInBtn = document.createElement('a');
-            signInBtn.href = 'signin.html';
+            signInBtn.href = '/signin';
             signInBtn.className = 'auth-nav-link signin-link';
             signInBtn.textContent = 'Sign In';
             
             const signUpBtn = document.createElement('a');
-            signUpBtn.href = 'signup.html';
+            signUpBtn.href = '/signup';
             signUpBtn.className = 'auth-nav-link signup-link';
             signUpBtn.textContent = 'Sign Up';
 
@@ -173,7 +173,7 @@ export const authUI = {
         this.showToast(message, 'info');
         setTimeout(() => {
             if (confirm(`Would you like to Sign In now to save your data?`)) {
-                window.location.href = window.location.pathname.includes('/tools/') ? '../signin.html' : 'signin.html';
+                window.location.href = '/signin';
             }
         }, 1000);
     },
