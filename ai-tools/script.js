@@ -11,29 +11,88 @@ const AITools = {
         try {
             this.setLoading(true);
             
-            // Add context for Chatbot
+            // Add context for Chatbot matching Flutter logic
             if (type === 'chat') {
-                payload.context = chatContext.slice(-6); // Keep last 3 rounds
+                payload.context = chatContext.slice(-6); 
             }
 
-            const response = await fetch(API_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type, ...payload }),
-            });
+            let resultText;
 
-            if (!response.ok) throw new Error('AI request failed. Please try again.');
+            // Try local API first
+            try {
+                // Get Firebase ID token for authentication
+                const user = auth.currentUser;
+                let idToken = null;
+                if (user) {
+                    idToken = await user.getIdToken();
+                }
 
-            const data = await response.json();
-            const resultText = data.result;
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': idToken ? `Bearer ${idToken}` : ''
+                    },
+                    body: JSON.stringify({ type, ...payload }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultText = data.result;
+                } else {
+                    throw new Error('Local API not available');
+                }
+            } catch (apiError) {
+                console.warn('Local API failed, falling back to direct Pollinations call...', apiError);
+                
+                // FALLBACK LOGIC (Matching Flutter/Backend logic)
+                let systemPrompt = "You are Infinity AI, a premium and highly intelligent assistant. Provide detailed, helpful, and professional answers.";
+                let userPrompt = "";
+
+                switch (type) {
+                    case 'chat':
+                        systemPrompt = "You are Infinity AI, a brilliant, helpful, and friendly assistant. Provide direct, informative answers. Use markdown tables and lists for clarity when appropriate, but DO NOT use '---' as a separator. Be concise and professional.";
+                        const historyString = chatContext.length > 0 
+                            ? chatContext.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n') 
+                            : "";
+                        userPrompt = `${historyString}\nUSER: ${payload.message}\nASSISTANT:`;
+                        break;
+                    case 'improve':
+                        systemPrompt = "You are a world-class editor. Rewrite the following text to make it sound professional and elegant. Provide only the improved text.";
+                        userPrompt = payload.text || "";
+                        break;
+                    case 'summarize':
+                        systemPrompt = "Summarize the following text using clear, concise bullet points.";
+                        userPrompt = payload.text || "";
+                        break;
+                    case 'code':
+                        systemPrompt = "You are a senior software engineer. Explain the following code in detail, breaking down what each part does. If there are errors, suggest fixes. Use markdown code blocks.";
+                        userPrompt = `Please explain this code:\n\n${payload.text}`;
+                        break;
+                    case 'translate':
+                        systemPrompt = "Translate the following text accurately. Provide only the translated result.";
+                        userPrompt = payload.text || "";
+                        break;
+                    default:
+                        userPrompt = payload.text || payload.message || "";
+                }
+
+                if (!userPrompt.trim()) throw new Error('Input text is empty');
+
+                const pollinationsUrl = `https://text.pollinations.ai/${encodeURIComponent(userPrompt)}?system=${encodeURIComponent(systemPrompt)}&model=openai`;
+                const pollResp = await fetch(pollinationsUrl);
+                resultText = await pollResp.text();
+            }
+
+            if (!resultText) throw new Error('AI was unable to generate a response.');
 
             // Save to Firebase History
             this.saveToHistory(type, payload, resultText);
 
             // Update local context for Chatbot
             if (type === 'chat') {
-                chatContext.push({ role: 'user', text: payload.message });
-                chatContext.push({ role: 'ai', text: resultText });
+                chatContext.push({ role: 'user', content: payload.message });
+                chatContext.push({ role: 'ai', content: resultText });
             }
 
             return resultText;
@@ -74,13 +133,14 @@ const AITools = {
         const overlay = document.createElement('div');
         overlay.id = 'toolLoadingOverlay';
         overlay.style = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(3px);';
-        overlay.innerHTML = '<div class="spinner" style="width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #4a6cf7;border-radius:50%;animation:spin 1s linear infinite;"></div><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
+        overlay.innerHTML = '<div class="spinner" style="width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #2563EB;border-radius:50%;animation:spin 1s linear infinite;"></div><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>';
         document.body.appendChild(overlay);
         return overlay;
     },
 
     showError(message) {
-        alert(message);
+        // Use a more premium toast if available, otherwise alert
+        alert('AI Error: ' + message);
     },
 
     renderMarkdown(text, element) {
@@ -90,6 +150,15 @@ const AITools = {
             element.textContent = text;
         }
     }
+};
+
+// Export to window for HTML inline scripts
+window.askAI = (type, data) => {
+    if (typeof data === 'string') {
+        const payload = type === 'chat' ? { message: data } : (type === 'image' ? { prompt: data } : { text: data });
+        return AITools.ask(type, payload);
+    }
+    return AITools.ask(type, data);
 };
 
 // History UI Logic
@@ -102,8 +171,8 @@ async function showHistory(toolType) {
     historyOverlay.id = 'history-overlay';
     
     const panel = document.createElement('div');
-    panel.style = 'background:white;width:100%;max-width:600px;max-height:80vh;border-radius:20px;padding:30px;overflow-y:auto;position:relative;';
-    panel.innerHTML = `<h2 style="margin-top:0;">📜 Your ${toolType} History</h2><button id="close-history" style="position:absolute;top:20px;right:20px;border:none;background:none;font-size:1.5rem;cursor:pointer;">✕</button><div id="history-list" style="margin-top:20px;">Loading...</div>`;
+    panel.style = 'background:white;width:100%;max-width:600px;max-height:80vh;border-radius:24px;padding:30px;overflow-y:auto;position:relative;box-shadow: 0 20px 50px rgba(0,0,0,0.2);';
+    panel.innerHTML = `<h2 style="margin-top:0;font-weight:800;">📜 ${toolType.charAt(0).toUpperCase() + toolType.slice(1)} History</h2><button id="close-history" style="position:absolute;top:20px;right:20px;border:none;background:none;font-size:1.5rem;cursor:pointer;color:#64748B;">✕</button><div id="history-list" style="margin-top:20px;">Loading...</div>`;
     
     historyOverlay.appendChild(panel);
     document.body.appendChild(historyOverlay);
@@ -124,25 +193,35 @@ async function showHistory(toolType) {
         list.innerHTML = '';
 
         if (snapshot.empty) {
-            list.innerHTML = '<p style="color:#666;">No history found yet.</p>';
+            list.innerHTML = '<p style="color:#64748B;text-align:center;padding:40px 0;">No history found yet.</p>';
             return;
         }
 
         snapshot.forEach(doc => {
             const data = doc.data();
             const item = document.createElement('div');
-            item.style = 'padding:15px;border-bottom:1px solid #eee;margin-bottom:10px;';
-            item.innerHTML = `<p style="font-weight:600;margin-bottom:5px;font-size:0.9rem;color:#4a6cf7;">You: ${data.input.substring(0, 50)}...</p><div style="font-size:0.85rem;color:#333;background:#f8f9fa;padding:10px;border-radius:10px;">${data.output.substring(0, 150)}...</div>`;
+            item.style = 'padding:15px;border:1px solid #E2E8F0;border-radius:16px;margin-bottom:12px;cursor:pointer;transition:all 0.2s;';
+            item.onmouseover = () => item.style.borderColor = '#2563EB';
+            item.onmouseout = () => item.style.borderColor = '#E2E8F0';
+            
+            const inputPreview = data.input ? (data.input.length > 50 ? data.input.substring(0, 50) + '...' : data.input) : 'No input';
+            const outputPreview = data.output ? (data.output.length > 100 ? data.output.substring(0, 100) + '...' : data.output) : 'No output';
+            
+            item.innerHTML = `<p style="font-weight:700;margin-bottom:8px;font-size:0.9rem;color:#2563EB;">You: ${inputPreview}</p><div style="font-size:0.85rem;color:#1E293B;background:#F8FAFC;padding:12px;border-radius:12px;line-height:1.4;">${outputPreview}</div>`;
+            
             item.onclick = () => {
-                if(confirm('Do you want to restore this response to the screen?')) {
-                    const outputEl = document.getElementById('text-output') || document.getElementById('summary-output') || document.getElementById('chat-history');
-                    if(outputEl.id === 'chat-history') {
+                if(confirm('Do you want to restore this response?')) {
+                    const outputEl = document.getElementById('text-output') || document.getElementById('textOutput') || document.getElementById('summary-output') || document.getElementById('resultContent') || document.getElementById('chat-history') || document.getElementById('chatHistory');
+                    if(outputEl && (outputEl.id === 'chat-history' || outputEl.id === 'chatHistory')) {
                         const msgDiv = document.createElement('div');
-                        msgDiv.className = 'chat-message ai-message';
+                        msgDiv.className = 'message-bubble ai-message';
                         AITools.renderMarkdown(data.output, msgDiv);
                         outputEl.appendChild(msgDiv);
-                    } else {
+                        outputEl.scrollTop = outputEl.scrollHeight;
+                    } else if (outputEl) {
                         AITools.renderMarkdown(data.output, outputEl);
+                        const resultCard = document.getElementById('resultCard') || document.getElementById('result-card');
+                        if (resultCard) resultCard.style.display = 'block';
                     }
                     historyOverlay.remove();
                 }
@@ -161,19 +240,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageId = path.split('/').pop().replace('.html', '');
     
     // Bind History Button
-    const histBtn = document.getElementById('history-btn');
-    if (histBtn) histBtn.onclick = () => showHistory(pageId === 'chatbot' ? 'chat' : pageId === 'text-improver' ? 'improve' : pageId === 'summarizer' ? 'summarize' : 'image');
+    const histBtn = document.getElementById('history-btn') || document.getElementById('historyBtn');
+    if (histBtn) {
+        histBtn.onclick = () => {
+            const toolType = pageId === 'chatbot' ? 'chat' : pageId === 'text-improver' ? 'improve' : pageId === 'summarizer' ? 'summarize' : 'image';
+            showHistory(toolType);
+        };
+    }
 
-    if (pageId === 'chatbot') initChatbot();
-    else if (pageId === 'text-improver') initTextImprover();
-    else if (pageId === 'summarizer') initSummarizer();
-    else if (pageId === 'image-generator') initImageGenerator();
+    // Initialize tools based on existing elements
+    if (document.getElementById('chatForm') || document.getElementById('chat-form')) {
+        initChatbot();
+    }
+    
+    const textToolBtn = document.getElementById('improve-btn') || document.getElementById('processBtn') || document.getElementById('summarize-btn');
+    if (textToolBtn && pageId !== 'image-generator') {
+        initTextTools();
+    }
+
+    if (pageId === 'image-generator' || document.getElementById('generate-btn') || document.getElementById('generateBtn')) {
+        initImageGenerator();
+    }
 });
 
 function initChatbot() {
-    const chatForm = document.getElementById('chat-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatHistory = document.getElementById('chat-history');
+    const chatForm = document.getElementById('chatForm') || document.getElementById('chat-form');
+    const chatInput = document.getElementById('chatInput') || document.getElementById('chat-input');
+    const chatHistory = document.getElementById('chatHistory') || document.getElementById('chat-history');
     if (!chatForm) return;
 
     chatForm.addEventListener('submit', async (e) => {
@@ -191,8 +284,9 @@ function initChatbot() {
     });
 
     function appendMessage(role, text) {
+        if (!chatHistory) return;
         const msgDiv = document.createElement('div');
-        msgDiv.className = `chat-message ${role}-message`;
+        msgDiv.className = `message-bubble ${role}-message`;
         if (role === 'ai') {
             AITools.renderMarkdown(text, msgDiv);
         } else {
@@ -203,38 +297,46 @@ function initChatbot() {
     }
 }
 
-function initTextImprover() {
-    const improveBtn = document.getElementById('improve-btn');
-    const input = document.getElementById('text-input');
-    const output = document.getElementById('text-output');
-    if (!improveBtn) return;
+function initTextTools() {
+    const btn = document.getElementById('improve-btn') || document.getElementById('processBtn') || document.getElementById('summarize-btn');
+    const input = document.getElementById('text-input') || document.getElementById('textInput');
+    const output = document.getElementById('text-output') || document.getElementById('resultContent') || document.getElementById('summary-output');
+    const resultCard = document.getElementById('result-card') || document.getElementById('resultCard');
+    
+    if (!btn) return;
 
-    improveBtn.addEventListener('click', async () => {
+    // Determine type from path or elements
+    const path = window.location.pathname;
+    let type = 'improve';
+    if (path.includes('summarizer')) type = 'summarize';
+    else if (path.includes('code-explainer')) type = 'code';
+    else if (path.includes('translator')) type = 'translate';
+
+    btn.addEventListener('click', async () => {
         const text = input.value.trim();
         if (!text) return;
-        const response = await AITools.ask('improve', { text });
-        if (response) AITools.renderMarkdown(response, output);
-    });
-}
+        
+        const originalText = btn.textContent;
+        btn.textContent = 'Processing...';
 
-function initSummarizer() {
-    const summarizeBtn = document.getElementById('summarize-btn');
-    const input = document.getElementById('text-input');
-    const output = document.getElementById('summary-output');
-    if (!summarizeBtn) return;
+        const response = await AITools.ask(type, { text });
+        
+        btn.textContent = originalText;
 
-    summarizeBtn.addEventListener('click', async () => {
-        const text = input.value.trim();
-        if (!text) return;
-        const response = await AITools.ask('summarize', { text });
-        if (response) AITools.renderMarkdown(response, output);
+        if (response) {
+            if (resultCard) resultCard.style.display = 'block';
+            AITools.renderMarkdown(response, output);
+            if (resultCard) resultCard.scrollIntoView({ behavior: 'smooth' });
+        }
     });
 }
 
 function initImageGenerator() {
-    const generateBtn = document.getElementById('generate-btn');
-    const promptInput = document.getElementById('prompt-input');
-    const imageResult = document.getElementById('image-result');
+    const generateBtn = document.getElementById('generate-btn') || document.getElementById('generateBtn');
+    const promptInput = document.getElementById('prompt-input') || document.getElementById('promptInput');
+    const imageResult = document.getElementById('image-result') || document.getElementById('resultImage');
+    const resultCard = document.getElementById('result-card') || document.getElementById('resultCard');
+    
     if (!generateBtn) return;
 
     generateBtn.addEventListener('click', async () => {
@@ -242,8 +344,13 @@ function initImageGenerator() {
         if (!prompt) return;
         const response = await AITools.ask('image', { prompt });
         if (response) {
-            imageResult.src = response;
-            imageResult.style.display = 'block';
+            if (resultCard) resultCard.style.display = 'block';
+            if (imageResult) {
+                imageResult.src = response;
+                imageResult.style.display = 'block';
+            }
+            const loader = document.getElementById('imageLoader');
+            if (loader) loader.style.display = 'none';
         }
     });
 }

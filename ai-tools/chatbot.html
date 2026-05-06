@@ -181,81 +181,13 @@
         </form>
     </div>
 
+    <script type="module" src="script.js?v=1.1"></script>
     <script type="module">
         import { authService } from '../auth.js';
-        
-        const chatHistory = document.getElementById('chatHistory');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-
         authService.onAuthChange((user) => { 
             if (!user) window.location.href = '/signin.html'; 
         });
-
-        function appendMessage(content, role) {
-            const bubble = document.createElement('div');
-            bubble.className = `message-bubble ${role}-message`;
-            
-            // Use marked for AI messages
-            if (role === 'ai' && window.marked) {
-                bubble.innerHTML = marked.parse(content);
-            } else {
-                bubble.textContent = content;
-            }
-            
-            chatHistory.appendChild(bubble);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-
-        function showTyping() {
-            const indicator = document.createElement('div');
-            indicator.id = 'typingIndicator';
-            indicator.className = 'typing-indicator';
-            indicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-            chatHistory.appendChild(indicator);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-
-        function hideTyping() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) indicator.remove();
-        }
-
-        chatForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            appendMessage(text, 'user');
-            chatInput.value = '';
-            
-            showTyping();
-            sendBtn.disabled = true;
-
-            try {
-                // In a real app, this calls script.js logic
-                // For now, we simulate the AI response or wait for script.js to handle it
-                if (window.askAI) {
-                    const response = await window.askAI('chat', text);
-                    hideTyping();
-                    appendMessage(response, 'ai');
-                } else {
-                    // Fallback for demo
-                    setTimeout(() => {
-                        hideTyping();
-                        appendMessage("I'm processing your request. Please ensure AI scripts are loaded correctly.", 'ai');
-                    }, 1500);
-                }
-            } catch (err) {
-                hideTyping();
-                appendMessage("Sorry, something went wrong. Please try again.", 'ai');
-            } finally {
-                sendBtn.disabled = false;
-            }
-        };
     </script>
-    <script src="script.js?v=1.0"></script>
 </body>
 </html>
 

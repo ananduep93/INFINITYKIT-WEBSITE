@@ -6,8 +6,8 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator | Infinity Kit ⚡</title>
-    <link rel="canonical" href="https://infinitykit.online/ai-tools/image-generator">
+    <title>AI Translator | Infinity Kit ⚡</title>
+    <link rel="canonical" href="https://infinitykit.online/ai-tools/translator">
     <link rel="stylesheet" href="../app.css?v=1.0">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>document.documentElement.setAttribute('data-theme', 'light');</script>
@@ -69,28 +69,28 @@
             margin-bottom: 25px;
         }
 
-        .prompt-textarea {
+        .text-area {
             width: 100%;
             padding: 20px;
             border-radius: 18px;
             border: 1px solid #E2E8F0;
             background: #F8FAFC;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 1.1rem;
             outline: none;
             resize: vertical;
-            min-height: 120px;
+            min-height: 150px;
             box-sizing: border-box;
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
-        .prompt-textarea:focus {
+        .text-area:focus {
             border-color: var(--primary);
             background: white;
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
-        .generate-btn {
+        .action-btn {
             width: 100%;
             padding: 18px;
             border-radius: 18px;
@@ -103,11 +103,11 @@
             transition: all 0.3s ease;
             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
         }
-        .generate-btn:hover {
+        .action-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
         }
-        .generate-btn:disabled {
+        .action-btn:disabled {
             background: #CBD5E1;
             box-shadow: none;
             cursor: not-allowed;
@@ -118,7 +118,6 @@
             border-radius: 24px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            text-align: center;
             display: none;
             animation: fadeIn 0.5s ease;
         }
@@ -126,56 +125,38 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .result-image-wrapper {
-            width: 100%;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            background: #F1F5F9;
-            aspect-ratio: 1;
+        .result-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            margin-bottom: 20px;
         }
-        .result-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .result-title {
+            font-weight: 800;
+            font-size: 1.2rem;
         }
-        .action-btns {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-        .action-btn {
-            padding: 12px 25px;
-            border-radius: 12px;
+        .copy-btn {
+            padding: 8px 15px;
+            border-radius: 10px;
             border: 1px solid #E2E8F0;
-            background: white;
-            color: var(--text);
-            font-weight: 600;
-            font-size: 0.9rem;
+            background: #F8FAFC;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
+            gap: 6px;
         }
-        .action-btn:hover {
-            background: #F8FAFC;
-            border-color: #CBD5E1;
-        }
+        .copy-btn:hover { background: #F1F5F9; }
 
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(37, 99, 235, 0.1);
-            border-left-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .result-content {
+            background: rgba(37, 99, 235, 0.04);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            border-radius: 18px;
+            padding: 25px;
+            line-height: 1.6;
+            font-size: 1.2rem;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -186,50 +167,70 @@
 
     <div class="tool-container">
         <div class="breadcrumb">
-            <a href="/">Home</a> &nbsp;&rsaquo;&nbsp; <a href="/ai-tools">AI Tools</a> &nbsp;&rsaquo;&nbsp; Image Generator
+            <a href="/">Home</a> &nbsp;&rsaquo;&nbsp; <a href="/ai-tools">AI Tools</a> &nbsp;&rsaquo;&nbsp; Translator
         </div>
 
         <div class="input-card">
-            <h2>🎨 AI Image Generator</h2>
-            <p>Describe your vision and let AI bring it to life in seconds.</p>
+            <h2>🌍 AI Translator</h2>
+            <p>Enter text and tell Infinity AI which language you want it translated to.</p>
             
-            <textarea id="promptInput" class="prompt-textarea" placeholder="e.g. A cyberpunk astronaut sitting on a neon moon, digital art style..."></textarea>
+            <textarea id="textInput" class="text-area" placeholder="e.g. Translate 'Hello how are you' to Spanish..."></textarea>
             
-            <button id="generateBtn" class="generate-btn">Generate Masterpiece ✨</button>
+            <button id="processBtn" class="action-btn">Translate with AI ⚡</button>
         </div>
 
         <div id="resultCard" class="result-card">
-            <h3 style="margin-top: 0; margin-bottom: 20px; font-weight: 700;">Generated Result</h3>
-            <div class="result-image-wrapper">
-                <img id="resultImage" class="result-image" src="" alt="AI Generated Art" style="display: none;">
-                <div id="imageLoader" class="loading-spinner"></div>
-            </div>
-            
-            <div class="action-btns">
-                <button class="action-btn" id="download-btn">
-                    📥 Save to Gallery
-                </button>
-                <button class="action-btn" id="share-btn">
-                    🔗 Share Art
+            <div class="result-header">
+                <div class="result-title">Translated Result</div>
+                <button class="copy-btn" id="copyBtn">
+                    📋 Copy
                 </button>
             </div>
+            <div id="resultContent" class="result-content"></div>
         </div>
     </div>
 
     <script type="module" src="script.js?v=1.1"></script>
     <script type="module">
         import { authService } from '../auth.js';
+        
+        const processBtn = document.getElementById('processBtn');
+        const textInput = document.getElementById('textInput');
+        const resultCard = document.getElementById('resultCard');
+        const resultContent = document.getElementById('resultContent');
+        const copyBtn = document.getElementById('copyBtn');
+
         authService.onAuthChange((user) => { 
             if (!user) window.location.href = '/signin.html'; 
         });
+
+        processBtn.onclick = async () => {
+            const text = textInput.value.trim();
+            if (!text) return;
+
+            processBtn.disabled = true;
+            processBtn.textContent = 'Translating...';
+            resultCard.style.display = 'none';
+
+            try {
+                if (window.askAI) {
+                    const response = await window.askAI('translate', text);
+                    resultCard.style.display = 'block';
+                    resultContent.textContent = response;
+                }
+            } catch (err) {
+                alert("Failed to translate.");
+            } finally {
+                processBtn.disabled = false;
+                processBtn.textContent = 'Translate with AI ⚡';
+            }
+        };
+
+        copyBtn.onclick = () => {
+            navigator.clipboard.writeText(resultContent.textContent);
+            copyBtn.textContent = '✅ Copied!';
+            setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
+        };
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-

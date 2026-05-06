@@ -190,53 +190,13 @@
         </div>
     </div>
 
+    <script type="module" src="script.js?v=1.1"></script>
     <script type="module">
         import { authService } from '../auth.js';
-        
-        const textInput = document.getElementById('textInput');
-        const processBtn = document.getElementById('processBtn');
-        const resultCard = document.getElementById('resultCard');
-        const resultContent = document.getElementById('resultContent');
-        const copyBtn = document.getElementById('copyBtn');
-
         authService.onAuthChange((user) => { 
             if (!user) window.location.href = '/signin.html'; 
         });
-
-        processBtn.onclick = async () => {
-            const text = textInput.value.trim();
-            if (!text) return;
-
-            processBtn.disabled = true;
-            processBtn.textContent = 'Improving...';
-            resultCard.style.display = 'none';
-
-            try {
-                if (window.askAI) {
-                    const response = await window.askAI('improve', text);
-                    resultCard.style.display = 'block';
-                    resultContent.innerHTML = window.marked ? marked.parse(response) : response;
-                } else {
-                    setTimeout(() => {
-                        resultCard.style.display = 'block';
-                        resultContent.textContent = "Improved text would appear here. Please ensure AI scripts are loaded.";
-                    }, 1500);
-                }
-            } catch (err) {
-                alert("Failed to improve text.");
-            } finally {
-                processBtn.disabled = false;
-                processBtn.textContent = 'Improve Text with AI ⚡';
-            }
-        };
-
-        copyBtn.onclick = () => {
-            navigator.clipboard.writeText(resultContent.textContent);
-            copyBtn.textContent = '✅ Copied!';
-            setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
-        };
     </script>
-    <script src="script.js?v=1.0"></script>
 </body>
 </html>
 
