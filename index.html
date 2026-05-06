@@ -66,26 +66,28 @@
     </script>
 </head>
 <body>
-    <!-- Version Guard: Forces refresh if a new version is detected -->
     <script>
-        // EMERGENCY CACHE CLEANER & RELOAD PREVENTER
+        // CRITICAL LOOP PROTECTOR
         (function() {
-            console.log("Infinity Kit v1.1.1 - Resetting Environment...");
+            const reloadKey = 'ik_reload_emergency_stop';
+            const now = Date.now();
+            const lastReload = sessionStorage.getItem(reloadKey);
             
-            // 1. Unregister all Service Workers to kill any bad cached versions
+            if (lastReload && (now - parseInt(lastReload)) < 2000) {
+                // If we reloaded less than 2 seconds ago, STOP EVERYTHING
+                console.error("EMERGENCY STOP: Reload loop detected. Blocking execution.");
+                window.stop(); 
+                document.documentElement.innerHTML = "<div style='padding:50px; text-align:center; font-family:sans-serif;'><h1>Emergency Stop Active</h1><p>A reload loop was detected and stopped for your safety. Please clear your cache and refresh manually.</p><button onclick='sessionStorage.clear(); location.reload();'>Try Again</button></div>";
+                throw new Error("Reload loop blocked");
+            }
+            sessionStorage.setItem(reloadKey, now.toString());
+
+            // FORCE UNREGISTER ALL WORKERS
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(registrations => {
-                    for(let registration of registrations) {
-                        registration.unregister();
-                        console.log("Old Service Worker Unregistered");
-                    }
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    for(let reg of regs) reg.unregister();
                 });
             }
-
-            // 2. Clear all local storage related to version reloads
-            localStorage.removeItem('last_version_reload_time');
-            localStorage.removeItem('version_reload_count');
-            localStorage.removeItem('last_sw_reload_time');
         })();
     </script>
 

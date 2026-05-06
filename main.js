@@ -701,26 +701,6 @@ let deferredInstallPrompt = null;
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        // Robust Self-healing logic for invalid URLs
-        const path = window.location.pathname;
-        const isFolder = path.includes('/folder/') && !path.endsWith('.html');
-        const isTool = (path.includes('/tools/') || path.includes('/ai-tools/')) && !path.endsWith('.html');
-        const isSurvey = path.includes('/survey/') && !path.endsWith('.html');
-        
-        if (isFolder || isTool || isSurvey) {
-            const correctPath = path + '.html' + window.location.search + window.location.hash;
-            console.log('Path Guard: Missing .html detected. Redirecting to:', correctPath);
-            window.location.replace(correctPath);
-            return;
-        }
-
-        if (path.includes('folder/tools/') || path.includes('tools/tools/')) {
-            const correctPath = path.replace('folder/tools/', 'tools/').replace('tools/tools/', 'tools/');
-            console.log('Path Guard: Double-prefix detected. Correcting URL to:', correctPath);
-            window.location.replace(correctPath);
-            return;
-        }
-
         loadSettings();
         applySettings();
         updateFolders(); // Called after loadSettings so favorites are populated correctly
@@ -915,55 +895,10 @@ async function handleInstallApp() {
     }
 }
 
-function registerServiceWorker() {
-    if (!('serviceWorker' in navigator)) {
-        return;
-    }
-
+    // Service Worker Registration Disabled for Safety
     window.addEventListener('load', () => {
-        const swPath = `${PathManager.getPrefix()}service-worker.js`;
-        navigator.serviceWorker.register(swPath).then(reg => {
-            // Check for updates more frequently (every 5 minutes)
-            setInterval(() => {
-                reg.update();
-            }, 5 * 60 * 1000);
-
-            reg.addEventListener('updatefound', () => {
-                const newWorker = reg.installing;
-                newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // New version available!
-                        console.log('New version detected! Preparing to update...');
-                        
-                        const now = Date.now();
-                        const lastSwReload = localStorage.getItem('last_sw_reload_time');
-                        if (lastSwReload && (now - parseInt(lastSwReload)) < 60000) {
-                            console.log('SW Update: Cooldown active. Skipping reload.');
-                            return;
-                        }
-                        localStorage.setItem('last_sw_reload_time', now.toString());
-
-                        // If the user is on the home page and not in a tool, we can reload automatically
-                        const isHomePage = document.getElementById('home-page')?.classList.contains('active');
-                        const isModalOpen = document.getElementById('toolModal')?.style.display === 'block';
-                        
-                        if (isHomePage && !isModalOpen) {
-                            console.log("SW Update: Automatic reload disabled for safety.");
-                            // window.location.reload(); 
-                        } else {
-                            // Otherwise, show a less intrusive toast or a confirm
-                            if (confirm('A new version of Infinity Kit is available! Update now?')) {
-                                window.location.reload();
-                            }
-                        }
-                    }
-                });
-            });
-        }).catch((error) => {
-            console.error('Service worker registration failed:', error);
-        });
+        console.log("Service Worker Registration bypassed.");
     });
-}
 
 
 
