@@ -935,6 +935,14 @@ function registerServiceWorker() {
                         // New version available!
                         console.log('New version detected! Preparing to update...');
                         
+                        const now = Date.now();
+                        const lastSwReload = localStorage.getItem('last_sw_reload_time');
+                        if (lastSwReload && (now - parseInt(lastSwReload)) < 60000) {
+                            console.log('SW Update: Cooldown active. Skipping reload.');
+                            return;
+                        }
+                        localStorage.setItem('last_sw_reload_time', now.toString());
+
                         // If the user is on the home page and not in a tool, we can reload automatically
                         const isHomePage = document.getElementById('home-page')?.classList.contains('active');
                         const isModalOpen = document.getElementById('toolModal')?.style.display === 'block';

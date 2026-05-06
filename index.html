@@ -70,24 +70,43 @@
     <script>
         (function() {
             const currentVersion = "1.0"; // This will be updated by cache-buster.js
-            const lastReloadedVersion = sessionStorage.getItem('last_reloaded_version');
+            const now = Date.now();
+            
+            // Safety Check: If we reloaded less than 30 seconds ago, stop immediately.
+            const lastReloadTime = localStorage.getItem('last_version_reload_time');
+            if (lastReloadTime && (now - parseInt(lastReloadTime)) < 30000) {
+                console.log('Version Guard: Cooldown active. Skipping check.');
+                return;
+            }
 
-            fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
-                .then(response => response.json())
+            fetch('version.json?t=' + now, { cache: 'no-store' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Fetch failed');
+                    return response.json();
+                })
                 .then(data => {
                     if (data.version && data.version !== currentVersion) {
-                        console.log('New version detected:', data.version, 'Current:', currentVersion);
-                        
-                        // Prevent infinite loop: if we already tried to reload to this version, stop.
-                        if (lastReloadedVersion === data.version) {
-                            console.warn('Already attempted reload for version ' + data.version + '. Stopping loop.');
+                        const attemptedVersion = localStorage.getItem('last_attempted_version');
+                        const reloadCount = parseInt(localStorage.getItem('version_reload_count') || '0');
+
+                        // If we already tried reloading to THIS specific version more than twice, stop.
+                        if (attemptedVersion === data.version && reloadCount >= 2) {
+                            console.warn('Version Guard: Already tried updating to ' + data.version + ' multiple times. Manual refresh may be required.');
                             return;
                         }
 
-                        sessionStorage.setItem('last_reloaded_version', data.version);
+                        // Update tracking before reloading
+                        localStorage.setItem('last_version_reload_time', now.toString());
+                        localStorage.setItem('last_attempted_version', data.version);
+                        localStorage.setItem('version_reload_count', (attemptedVersion === data.version ? reloadCount + 1 : 1).toString());
+
+                        console.log('Version Guard: New version detected (' + data.version + '). Reloading...');
                         setTimeout(() => {
-                            window.location.reload(true);
-                        }, 500);
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        // Reset count if versions match
+                        localStorage.removeItem('version_reload_count');
                     }
                 })
                 .catch(err => console.log('Version check failed:', err));
