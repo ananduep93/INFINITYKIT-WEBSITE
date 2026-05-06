@@ -948,7 +948,8 @@ function registerServiceWorker() {
                         const isModalOpen = document.getElementById('toolModal')?.style.display === 'block';
                         
                         if (isHomePage && !isModalOpen) {
-                            window.location.reload();
+                            console.log("SW Update: Automatic reload disabled for safety.");
+                            // window.location.reload(); 
                         } else {
                             // Otherwise, show a less intrusive toast or a confirm
                             if (confirm('A new version of Infinity Kit is available! Update now?')) {

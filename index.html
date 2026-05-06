@@ -68,8 +68,25 @@
 <body>
     <!-- Version Guard: Forces refresh if a new version is detected -->
     <script>
-        // Version 1.1 - Cache cleared
-        console.log("Infinity Kit v1.1 - Version Guard Disabled");
+        // EMERGENCY CACHE CLEANER & RELOAD PREVENTER
+        (function() {
+            console.log("Infinity Kit v1.1.1 - Resetting Environment...");
+            
+            // 1. Unregister all Service Workers to kill any bad cached versions
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    for(let registration of registrations) {
+                        registration.unregister();
+                        console.log("Old Service Worker Unregistered");
+                    }
+                });
+            }
+
+            // 2. Clear all local storage related to version reloads
+            localStorage.removeItem('last_version_reload_time');
+            localStorage.removeItem('version_reload_count');
+            localStorage.removeItem('last_sw_reload_time');
+        })();
     </script>
 
 
