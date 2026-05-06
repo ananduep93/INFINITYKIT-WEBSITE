@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-kit-v1.0';
+const CACHE_NAME = 'infinity-kit-v1.1';
 const CORE_ASSETS = [
     './',
     './index.html',

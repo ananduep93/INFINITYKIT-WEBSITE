@@ -8,7 +8,7 @@ const HEADERS_FILE = './_headers'; // For Cloudflare/Netlify/Vercel
 const TARGET_DIRS = ['./', './folder', './tools'];
 const EXCLUDED_FILES = ['cache-buster.js', 'service-worker.js', 'firebase-api-keys.js'];
 
-const baseVersion = "1.0";
+const baseVersion = "1.1";
 const newVersion = baseVersion;
 
 console.log(`🚀 Cache-Buster: Generating New Version: ${newVersion}`);
