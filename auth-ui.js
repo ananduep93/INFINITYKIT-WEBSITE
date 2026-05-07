@@ -74,22 +74,16 @@ export const authUI = {
             const settingsBtn = document.getElementById('settingsBtn');
             navRight.insertBefore(profileBadge, settingsBtn ? settingsBtn.nextSibling : null);
         } else {
-            // Show Sign In & Sign Up
+            // Show Login / Sign Up
             const authContainer = document.createElement('div');
             authContainer.className = 'auth-nav-item';
             
-            const signInBtn = document.createElement('a');
-            signInBtn.href = '/signin.html';
-            signInBtn.className = 'auth-nav-link signin-link';
-            signInBtn.textContent = 'Sign In';
-            
-            const signUpBtn = document.createElement('a');
-            signUpBtn.href = '/signup.html';
-            signUpBtn.className = 'auth-nav-link signup-link';
-            signUpBtn.textContent = 'Sign Up';
+            const loginBtn = document.createElement('a');
+            loginBtn.href = '/signin.html';
+            loginBtn.className = 'auth-nav-link login-btn-premium';
+            loginBtn.textContent = 'Login / Sign Up';
 
-            authContainer.appendChild(signInBtn);
-            authContainer.appendChild(signUpBtn);
+            authContainer.appendChild(loginBtn);
             navLinksContainer.appendChild(authContainer);
         }
     },

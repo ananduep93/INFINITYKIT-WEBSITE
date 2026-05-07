@@ -4233,27 +4233,30 @@ function displaySearchResults(results, query) {
     
     results.forEach(result => {
         const item = result.item;
+        const icon = result.type === 'tool' ? (item.icon || '🛠️') : (item.emoji || '📁');
+        const category = result.type === 'tool' ? 'Utility Tool' : 'Category Folder';
         
-        if (result.type === 'tool') {
-            const link = document.createElement('a');
-            link.className = 'search-result-item';
-            link.href = PathManager.getToolPath(item.id);
-            link.innerHTML = `<span>${item.icon} ${item.name}</span>`;
-            link.onclick = () => {
-                addToRecentSearches(item.name);
-            };
-            searchResultsList.appendChild(link);
-        } else {
-            const div = document.createElement('div');
-            div.className = 'search-result-item';
-            div.innerHTML = `<span>${item.emoji} ${item.name} (Folder)</span>`;
-            div.onclick = () => {
+        const itemEl = document.createElement(result.type === 'tool' ? 'a' : 'div');
+        itemEl.className = 'search-result-item';
+        if (result.type === 'tool') itemEl.href = PathManager.getToolPath(item.id);
+        
+        itemEl.innerHTML = `
+            <div class="result-icon">${icon}</div>
+            <div class="result-info">
+                <div class="result-name">${item.name}</div>
+                <div class="result-category">${category}</div>
+            </div>
+        `;
+        
+        itemEl.onclick = () => {
+            if (result.type === 'folder') {
                 openFolder(item);
                 searchResults.style.display = 'none';
-                addToRecentSearches(item.name);
-            };
-            searchResultsList.appendChild(div);
-        }
+            }
+            addToRecentSearches(item.name);
+        };
+        
+        searchResultsList.appendChild(itemEl);
     });
 }
 

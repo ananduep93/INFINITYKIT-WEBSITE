@@ -94,17 +94,38 @@
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="nav-logo" onclick="navigateTo('home-page')">&#9889;INFINITY KIT</div>
+        <div class="nav-logo" style="animation: float 3s ease-in-out infinite;" onclick="navigateTo('home-page')">&#9889;INFINITY KIT</div>
         
         <button class="menu-btn" onclick="toggleMenu()" id="menuBtn">&#9776;</button>
         
         <div class="nav-right" id="navRight">
             <div class="nav-links">
                 <a href="#" onclick="navigateTo('home-page'); closeMenu()">Home</a>
+                
+                <div class="nav-dropdown" id="exploreDropdown">
+                    <a href="#" class="nav-dropdown-toggle" onclick="event.preventDefault(); document.getElementById('exploreDropdown').classList.toggle('active');">Explore Tools <span style="font-size: 0.7em;">&#9660;</span></a>
+                    <div class="mega-menu">
+                        <div class="mega-menu-content">
+                            <div class="mega-menu-column">
+                                <h4>Popular Categories</h4>
+                                <a href="folder/quick-tools.html">Quick Tools &rarr;</a>
+                                <a href="folder/data-tools.html">Data Tools &rarr;</a>
+                                <a href="folder/text-tools.html">Text Tools &rarr;</a>
+                            </div>
+                            <div class="mega-menu-column">
+                                <h4>Utilities</h4>
+                                <a href="folder/pdf-tools.html">PDF Toolkit &rarr;</a>
+                                <a href="folder/expense-tracker.html">Finance &rarr;</a>
+                                <a href="folder/student-tools.html">Education &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" onclick="document.querySelector('.why-choose-section').scrollIntoView({behavior: 'smooth'}); closeMenu()">Features</a>
                 <a href="#" onclick="navigateTo('about-page'); closeMenu()">About</a>
                 <a href="#" onclick="navigateTo('contact-page'); closeMenu()">Contact</a>
             </div>
-            <button class="settings-btn" id="settingsBtn" onclick="openSettings(); closeMenu()" aria-label="Settings" title="Settings">&#9881;&#65039;</button>
         </div>
     </nav>
 
@@ -112,64 +133,225 @@
     <main id="main-content">
         <!-- Home Page View -->
         <div id="home-page" class="page-view active">
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <h1 class="hero-title">&#9889;INFINITY KIT&#9889;</h1>
-                <p class="hero-subtitle">Your Ultimate Everyday Toolkit</p>
-                <div class="version-badge">Ver 1.0</div>
-                <div class="hero-tagline">Boost your productivity with minimal effort.</div>
-                <button class="hero-cta" onclick="document.getElementById('toolsContainer').scrollIntoView({behavior: 'smooth'})">Explore Tools ✨</button>
+            
+            <!-- Cinematic Hero Section -->
+            <section class="hero-section premium-hero">
+                <div class="hero-layout">
+                    <div class="hero-content-left">
+                        <div class="logo-3d-wrapper" style="text-align: left;">
+                            <span class="logo-3d">&#9889;</span>
+                        </div>
+                        <h1 class="hero-title premium-title" style="text-align: left; font-size: clamp(2rem, 4vw, 3.5rem);">All Your Digital Tools in One Place.</h1>
+                        <p class="hero-subtitle premium-subtitle" style="text-align: left; margin: 0 0 30px 0; font-size: 1.2rem;">Discover productivity, media, developer, and utility tools through a premium next-generation experience.</p>
+                        <div class="hero-buttons" style="justify-content: flex-start;">
+                            <button class="hero-cta btn-primary" onclick="document.getElementById('allToolsSection').scrollIntoView({behavior: 'smooth'})">Explore Tools ✨</button>
+                            <button class="hero-cta btn-secondary" onclick="openSettings()">Download App 📲</button>
+                        </div>
+                    </div>
+                    <div class="hero-content-right fade-in">
+                        <div class="hero-graphic">
+                            <div class="glass-orb orb-1"></div>
+                            <div class="glass-orb orb-2"></div>
+                            <div class="glass-card-mockup floating-tool t1" onclick="navigateTo('pdf-tools')">
+                                <span style="font-size: 24px;">🖼️</span>
+                                <h4 style="margin: 0; font-size: 1rem;">Image to PDF</h4>
+                            </div>
+                            <div class="glass-card-mockup floating-tool t2" onclick="navigateTo('expense-tracker')">
+                                <span style="font-size: 24px;">💸</span>
+                                <h4 style="margin: 0; font-size: 1rem;">Expense Tracker</h4>
+                            </div>
+                            
+                            <div class="glass-card-mockup floating-tool t3" style="width: 280px; padding: 15px; display: flex; flex-direction: column; gap: 10px; cursor: default;" onclick="event.stopPropagation();">
+                                <div style="display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px;">
+                                    <span style="font-size: 24px; background: #e0e7ff; border-radius: 50%; padding: 5px;">🤖</span>
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 0.9rem; color: #0145F2;">Infinity AI</h4>
+                                        <span style="font-size: 0.7rem; color: #10b981;">● Online</span>
+                                    </div>
+                                </div>
+                                <div id="miniChatHistory" style="height: 120px; overflow-y: auto; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="background: rgba(1, 69, 242, 0.1); padding: 8px; border-radius: 8px 8px 8px 0; color: #333; width: fit-content; max-width: 90%;">Hi! I can help you find tools in Infinity Kit. Try asking "Where is PDF merger?"</div>
+                                </div>
+                                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                                    <input type="text" id="miniChatInput" placeholder="Ask about tools..." style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 0.8rem;" onkeypress="if(event.key === 'Enter') sendMiniChat()">
+                                    <button onclick="sendMiniChat()" style="background: #0145F2; color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer;">&rarr;</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Features & Stats Highlights -->
-            <section class="highlights-section">
-                <div class="stats-card">
-                    <h3>50+</h3>
-                    <p>Powerful Tools</p>
+            <!-- Scroll Storytelling Sections -->
+            <section class="story-section">
+                <div class="story-card fade-in">
+                    <div class="story-icon">🚀</div>
+                    <h3>Infinity Kit Ecosystem</h3>
+                    <p>A unified experience combining all your essential digital tasks.</p>
                 </div>
-                <div class="stats-card">
-                    <h3>⚡</h3>
-                    <p>Lightning Fast</p>
+                <div class="story-card fade-in">
+                    <div class="story-icon">⚡</div>
+                    <h3>Productivity Suite</h3>
+                    <p>Lightning-fast tools designed to boost your efficiency.</p>
                 </div>
-                <div class="stats-card">
-                    <h3>🔒</h3>
-                    <p>100% Private</p>
+                <div class="story-card fade-in">
+                    <div class="story-icon">👨‍💻</div>
+                    <h3>Developer Utilities</h3>
+                    <p>Advanced formatters, checkers, and AI assistants.</p>
+                </div>
+                <div class="story-card fade-in">
+                    <div class="story-icon">🎯</div>
+                    <h3>Everything in One Place</h3>
+                    <p>Your complete digital dashboard.</p>
                 </div>
             </section>
 
-    <!-- Search Bar -->
-    <div class="search-container">
-        <input 
-            type="text" 
-            id="searchBar" 
-            class="search-bar" 
-            placeholder="Search tools..."
-        >
-        <!-- Search Results Dropdown -->
-        <div class="search-results" id="searchResults" style="display: none;">
-            <div id="recentSearches" class="recent-searches-section"></div>
-            <div id="searchResultsList" class="search-results-list"></div>
-            <div id="noResults" class="no-results" style="display: none;">No results found</div>
-        </div>
-    </div>
+            <!-- Smart Search Section -->
+            <section class="smart-search-section">
+                <div class="search-container">
+                    <div class="search-wrapper" style="display: flex; align-items: center; width: 100%;">
+                        <div style="position: relative; flex: 1;">
+                            <input type="text" id="searchBar" class="search-bar premium-search" placeholder="Search for any tool..." style="width: 100%;">
+                            <span class="search-icon-float">🔍</span>
+                        </div>
+                        <button class="hero-cta btn-primary" onclick="document.getElementById('searchBar').focus()" style="padding: 10px 25px; border-radius: 15px; border: none; font-weight: 600; cursor: pointer; height: 54px; margin-left: 10px;">Search</button>
+                    </div>
+                    <!-- Search Results Dropdown -->
+                    <div class="search-results" id="searchResults" style="display: none;">
+                        <div id="recentSearches" class="recent-searches-section"></div>
+                        <div id="searchResultsList" class="search-results-list"></div>
+                        <div id="noResults" class="no-results" style="display: none;">No results found</div>
+                    </div>
+                </div>
+            </section>
 
-    <!-- Back Button (Hidden by default) -->
-    <div class="back-button-container" id="backButtonContainer" style="display: none;">
-        <button class="back-button" id="backButton">&larr; Back to Folders</button>
-        <h2 id="currentFolderTitle" class="current-folder-title"></h2>
-    </div>
+            <!-- Featured Tools Showcase -->
+            <section class="featured-tools-section">
+                <h2 class="section-heading">Featured Premium Tools</h2>
+                <div class="featured-grid">
+                    <div class="premium-tool-card" onclick="location.href = PathManager.getToolPath('chatbot')">
+                        <div class="tool-card-bg"></div>
+                        <div class="tool-icon">🤖</div>
+                        <h3>AI Chat Assistant</h3>
+                        <p>Powerful AI to help you with any task</p>
+                        <span class="tool-tag">AI</span>
+                    </div>
+                    <div class="premium-tool-card" onclick="location.href = PathManager.getToolPath('compressimage')">
+                        <div class="tool-card-bg"></div>
+                        <div class="tool-icon">🗜️</div>
+                        <h3>Image Compressor</h3>
+                        <p>Reduce image sizes instantly</p>
+                        <span class="tool-tag">Media</span>
+                    </div>
+                    <div class="premium-tool-card" onclick="location.href = PathManager.getToolPath('imagetopdf')">
+                        <div class="tool-card-bg"></div>
+                        <div class="tool-icon">📄</div>
+                        <h3>PDF Toolkit</h3>
+                        <p>Convert and manage PDFs</p>
+                        <span class="tool-tag">Utility</span>
+                    </div>
+                    <div class="premium-tool-card" onclick="location.href = PathManager.getToolPath('expenselist')">
+                        <div class="tool-card-bg"></div>
+                        <div class="tool-icon">💸</div>
+                        <h3>Expense Tracker</h3>
+                        <p>Manage your daily expenses</p>
+                        <span class="tool-tag">Finance</span>
+                    </div>
+                </div>
+            </section>
 
-    <!-- Folders Grid -->
-    <div class="tools-container" id="toolsContainer">
-        <div class="folders-grid" id="foldersGrid">
-            <!-- Folder cards will be generated by JavaScript -->
-        </div>
-        
-        <!-- Tools Grid (Hidden until folder is clicked) -->
-        <div class="tools-grid" id="toolsGrid" style="display: none;">
-            <!-- Tool squares will be generated by JavaScript -->
-        </div>
-    </div>
+            <!-- Categories section removed as requested -->
+
+            <!-- Existing Tools Grid Area (kept for dynamic rendering) -->
+            <div class="all-tools-section" id="allToolsSection">
+                <h2 class="section-heading">All Tools Explorer</h2>
+                <!-- Back Button (Hidden by default) -->
+                <div class="back-button-container" id="backButtonContainer" style="display: none;">
+                    <button class="back-button premium-back" id="backButton">&larr; Back to Categories</button>
+                    <h2 id="currentFolderTitle" class="current-folder-title"></h2>
+                </div>
+
+                <!-- Folders Grid -->
+                <div class="tools-container premium-tools-container" id="toolsContainer">
+                    <div class="folders-grid" id="foldersGrid">
+                        <!-- Folder cards will be generated by JavaScript -->
+                    </div>
+                    
+                    <!-- Tools Grid (Hidden until folder is clicked) -->
+                    <div class="tools-grid" id="toolsGrid" style="display: none;">
+                        <!-- Tool squares will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infinity Kit Ecosystem Bento Grid -->
+            <section class="why-choose-section" style="padding-top: 80px; padding-bottom: 80px;">
+                <h2 class="section-heading" style="text-align: center; margin-bottom: 50px;">The Infinity Ecosystem</h2>
+                
+                <div class="bento-grid">
+                    <!-- Big Box 1: Functions -->
+                    <div class="bento-card large-card scroll-reveal">
+                        <div class="bento-content">
+                            <div class="bento-badge">Multi-Functionality</div>
+                            <h3>50+ Powerful Functions in One App</h3>
+                            <p>Infinity Kit is more than just a tool—it's a complete ecosystem. From complex PDF manipulation (merge, rotate, convert) to advanced financial tracking with real-time analytics. Every function is designed to be lightweight, running entirely in your browser for maximum privacy and speed.</p>
+                            <div class="bento-features">
+                                <span>🚀 All-in-One Hub</span>
+                                <span>✨ Clean Interface</span>
+                                <span>⚡ Fast & Secure</span>
+                            </div>
+                            <a href="#" onclick="document.querySelector('.all-tools-section').scrollIntoView({behavior: 'smooth'})" class="read-more" style="color: #0145F2; margin-top: 20px; display: inline-block; font-weight: 600;">Browse All Functions &rarr;</a>
+                        </div>
+                        <div class="bento-visual functions-visual"></div>
+                    </div>
+                    
+                    <!-- Box 2: Developers -->
+                    <div class="bento-card scroll-reveal">
+                        <div class="bento-content">
+                            <div class="bento-icon">👨‍💻</div>
+                            <h3>Developer-First Mindset</h3>
+                            <p>Built for the modern workflow. Quickly access regex testers, URL encoders, JSON validators, and advanced text formatting tools that just work.</p>
+                        </div>
+                    </div>
+
+                    <!-- Box 3: Performance -->
+                    <div class="bento-card scroll-reveal" style="background: linear-gradient(135deg, #0145F2 0%, #013bc7 100%); color: white;">
+                        <div class="bento-content">
+                            <div class="bento-icon">🚀</div>
+                            <h3 style="color: white;">Lightning Fast Performance</h3>
+                            <p style="color: rgba(255,255,255,0.9);">Say goodbye to heavy loading screens. Our architecture ensures that every utility executes instantly, saving you valuable seconds every day.</p>
+                        </div>
+                    </div>
+
+                    <!-- Box 4: Wide Feature -->
+                    <div class="bento-card wide-card scroll-reveal">
+                        <div class="bento-content">
+                            <div class="bento-badge">Continuous Workflow</div>
+                            <h3>Secure Cloud Synchronization</h3>
+                            <p>Never lose your progress. Your history, favorites, and custom settings are securely synchronized across all your devices, giving you a seamless transition from your desktop to your mobile phone.</p>
+                        </div>
+                    </div>
+
+                    <!-- Box 5: Design -->
+                    <div class="bento-card scroll-reveal">
+                        <div class="bento-content">
+                            <div class="bento-icon">✨</div>
+                            <h3>Premium Minimal Design</h3>
+                            <p>A distraction-free environment focused on what matters: your productivity. Clean gradients, elegant typography, and a modern card-based UI.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Blog Section -->
+            <section class="blog-section">
+                <h2 class="section-heading">Latest Insights</h2>
+                <div class="blog-grid" id="homeUpdatesContainer">
+                    <div style="text-align: center; width: 100%; opacity: 0.7; padding: 40px 0;">Loading latest updates...</div>
+                </div>
+            </section>
+
         </div> <!-- End Home Page View -->
 
         <!-- About Page View -->
@@ -280,9 +462,12 @@
     <footer class="footer">
         <div class="footer-links">
             <a href="#" onclick="navigateTo('about-page')">About</a>
+            <a href="#" onclick="navigateTo('contact-page')">Contact</a>
             <a href="#" onclick="navigateTo('privacy-page')">Privacy Policy</a>
             <a href="#" onclick="navigateTo('terms-page')">Terms & Conditions</a>
-            <a href="#" onclick="navigateTo('contact-page')">Contact</a>
+            <a href="#" onclick="navigateTo('contact-page')">Support</a>
+            <a href="#" onclick="navigateTo('contact-page')">Social Media</a>
+            <a href="#" onclick="navigateTo('about-page')">Developer Info</a>
             <a href="#" onclick="navigateTo('disclaimer-page')">Disclaimer</a>
         </div>
 
@@ -320,7 +505,7 @@
     <div id="settingsModal" class="settings-modal">
         <div class="settings-panel">
             <div class="settings-header">
-                <h2>&#9881;&#65039; Settings </h2>
+                <h2>📲 Download App</h2>
                 <button class="settings-close" onclick="closeSettings()">&#10005;</button>
             </div>
             
@@ -356,8 +541,83 @@
     <script src="expense-tracker.js?v=1.0"></script>
     <script type="module" src="auth-ui.js?v=1.0"></script>
     <script type="module" src="updates-popup.js?v=1.0"></script>
-    
-    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in, .premium-tool-card, .feature-item, .blog-card, .scroll-reveal').forEach((el) => {
+                el.classList.add('fade-in');
+                observer.observe(el);
+            });
+        });
+    </script>
+    <!-- Script to close dropdown on outside click -->
+    <script>
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('exploreDropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
+    <!-- Mini Chatbot Logic -->
+    <script>
+        function sendMiniChat() {
+            const input = document.getElementById('miniChatInput');
+            const history = document.getElementById('miniChatHistory');
+            const text = input.value.trim().toLowerCase();
+            if(!text) return;
+            
+            // Add user message
+            history.innerHTML += `<div style="background: #0145F2; color: white; padding: 8px; border-radius: 8px 8px 0 8px; align-self: flex-end; max-width: 90%; margin-top: 5px;">${input.value}</div>`;
+            input.value = '';
+            
+            // Auto scroll
+            history.scrollTop = history.scrollHeight;
+            
+            // Process bot response
+            setTimeout(() => {
+                let response = "I'm a local AI assistant. I can help you navigate the website, find tools, or explain features. Try asking 'What tools do you have?' or 'Take me to Finance tools'.";
+                
+                // Advanced keyword routing
+                if (text.includes('pdf') || text.includes('merge') || text.includes('image to pdf')) {
+                    response = "We have an amazing PDF Toolkit! You can merge PDFs, convert Images to PDF, and rotate pages. <a href='folder/pdf-tools.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open PDF Tools</a>";
+                } 
+                else if (text.includes('expense') || text.includes('finance') || text.includes('money') || text.includes('budget')) {
+                    response = "Managing money? The Expense Tracker folder has a Budget Tracker, Expense List, and Daily/Monthly reports. <a href='folder/expense-tracker.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open Finance Tools</a>";
+                } 
+                else if (text.includes('survey') || text.includes('form') || text.includes('poll')) {
+                    response = "You can build and manage custom surveys using our Survey Hub. <a href='folder/survey-hub.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open Survey Hub</a>";
+                } 
+                else if (text.includes('ai') || text.includes('chatbot') || text.includes('artificial')) {
+                    response = "Infinity Kit has several AI features! If you want to use the main AI chatbot or text tools, try searching 'AI' in the search bar below or checking the Quick Tools folder.";
+                } 
+                else if (text.includes('math') || text.includes('calculator') || text.includes('discount')) {
+                    response = "Need to do some math? We have Discount Calculators, Equation Solvers, and more! <a href='folder/math-tools.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open Math Tools</a>";
+                }
+                else if (text.includes('password') || text.includes('utility') || text.includes('converter')) {
+                    response = "Our Utilities folder has Unit Converters, Password Generators, and strength checkers. <a href='folder/utilities.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open Utilities</a>";
+                }
+                else if (text.includes('hello') || text.includes('hi ') || text === 'hi' || text.includes('hey')) {
+                    response = "Hello! I am Infinity AI, your site assistant. I can guide you to any of our 50+ tools. What are you looking to do today?";
+                }
+                else if (text.includes('about') || text.includes('website') || text.includes('who')) {
+                    response = "Infinity Kit is a premium SaaS platform offering productivity, developer, and media tools for free. Our goal is to unify your digital tasks in one beautiful interface.";
+                }
+                else if (text.includes('thank')) {
+                    response = "You're welcome! Enjoy exploring Infinity Kit ⚡";
+                }
+                
+                history.innerHTML += `<div style="background: rgba(1, 69, 242, 0.1); padding: 8px; border-radius: 8px 8px 8px 0; color: #333; max-width: 90%; margin-top: 5px;">${response}</div>`;
+                history.scrollTop = history.scrollHeight;
+            }, 600);
+        }
+    </script>
 </body>
 </html>
-
