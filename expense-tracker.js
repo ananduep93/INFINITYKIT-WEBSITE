@@ -33,7 +33,7 @@ async function syncExpenseTool(renderFn) {
 
     // Fetch fresh cloud data before rendering if logged in
     if (window.syncService) {
-        await window.syncService.getData(EXPENSE_DB_KEY);
+        await window.syncService.getData(EXPENSE_DB_KEY, true);
     }
 
     const safeRender = () => {

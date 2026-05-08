@@ -9,27 +9,28 @@ export const syncService = {
     async getData(toolName, forceCloud = false) {
         const userId = localStorage.getItem('userId');
         const isLoggedIn = authService.isLoggedIn();
-        const localData = localStorage.getItem(toolName);
-
-        if (localData && !forceCloud) {
-            return JSON.parse(localData);
-        }
 
         if (isLoggedIn && userId) {
             try {
-                const docRef = doc(db, 'users', userId, 'tools', toolName);
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    const cloudData = docSnap.data().data;
-                    localStorage.setItem(toolName, JSON.stringify(cloudData));
-                    return cloudData;
+                // If not forced, we can check if we have local data first for speed, 
+                // but for parity we should really check the cloud if we're in a "sync" context.
+                // For now, let's always fetch if forceCloud is true OR if we want to ensure latest.
+                if (forceCloud || !localStorage.getItem(toolName)) {
+                    const docRef = doc(db, 'users', userId, 'tools', toolName);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        const cloudData = docSnap.data().data;
+                        localStorage.setItem(toolName, JSON.stringify(cloudData));
+                        return cloudData;
+                    }
                 }
             } catch (error) {
                 console.error(`Error fetching cloud data for ${toolName}:`, error);
             }
         }
 
+        const localData = localStorage.getItem(toolName);
         return localData ? JSON.parse(localData) : null;
     },
 
@@ -125,7 +126,7 @@ export const syncService = {
         console.log("Starting initial sync (local -> cloud)...");
         
         // 1. Sync standard tool data
-        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitSettings', 'recentSearches'];
+        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches'];
         for (const key of toolKeys) {
             const localData = localStorage.getItem(key);
             if (localData) {
@@ -165,7 +166,7 @@ export const syncService = {
         console.log("Background sync: Fetching latest cloud data...");
         
         // Sync tools
-        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitSettings', 'recentSearches'];
+        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches'];
         for (const key of toolKeys) {
             await this.getData(key, true);
         }

@@ -1745,7 +1745,7 @@ async function loadToDoList() {
 
     let todos = [];
     if (window.syncService) {
-        todos = await window.syncService.getData('todos') || [];
+        todos = await window.syncService.getData('todos', true) || [];
     } else {
         todos = JSON.parse(localStorage.getItem('todos')) || [];
     }
@@ -1791,7 +1791,7 @@ async function addTodo() {
         return;
     }
 
-    const todos = await window.syncService.getData('todos') || [];
+    const todos = await window.syncService.getData('todos', true) || [];
     todos.push({ text, completed: false });
     await window.syncService.saveData('todos', todos);
     loadToDoList(); // Refresh
@@ -1799,7 +1799,7 @@ async function addTodo() {
 }
 
 async function toggleTodo(index) {
-    const todos = await window.syncService.getData('todos') || [];
+    const todos = await window.syncService.getData('todos', true) || [];
     todos[index].completed = !todos[index].completed;
     await window.syncService.saveData('todos', todos);
     loadToDoList();
@@ -1808,7 +1808,7 @@ async function toggleTodo(index) {
 async function deleteTodo(index) {
     if (!confirm('Are you sure you want to delete this task?')) return;
 
-    const todos = await window.syncService.getData('todos') || [];
+    const todos = await window.syncService.getData('todos', true) || [];
     todos.splice(index, 1);
     await window.syncService.saveData('todos', todos);
     loadToDoList();
@@ -1992,7 +1992,7 @@ async function savePwd() {
     const appName = prompt('Enter application/service name:');
     if (!appName) return;
 
-    const passwords = await window.syncService.getData('savedPasswords') || [];
+    const passwords = await window.syncService.getData('savedPasswords', true) || [];
     passwords.push({ appName, password: pwd, date: new Date().toLocaleString() });
     await window.syncService.saveData('savedPasswords', passwords);
     showToast('Password saved!', 'success');
@@ -2008,7 +2008,7 @@ async function loadPasswordSaver() {
 
     let passwords = [];
     if (window.syncService) {
-        passwords = await window.syncService.getData('savedPasswords') || [];
+        passwords = await window.syncService.getData('savedPasswords', true) || [];
     } else {
         const saved = localStorage.getItem('savedPasswords');
         passwords = saved ? JSON.parse(saved) : [];
@@ -2079,7 +2079,7 @@ async function saveSinglePassword() {
         return;
     }
 
-    const passwords = await window.syncService.getData('savedPasswords') || [];
+    const passwords = await window.syncService.getData('savedPasswords', true) || [];
     passwords.push({ appName, password, date: new Date().toLocaleString() });
     await window.syncService.saveData('savedPasswords', passwords);
     
@@ -2090,7 +2090,7 @@ async function saveSinglePassword() {
 }
 
 async function copyPasswordItem(index) {
-    const passwords = await window.syncService.getData('savedPasswords') || [];
+    const passwords = await window.syncService.getData('savedPasswords', true) || [];
     navigator.clipboard.writeText(passwords[index].password);
     showToast('Password copied!', 'success');
 }
@@ -2098,7 +2098,7 @@ async function copyPasswordItem(index) {
 async function deletePasswordItem(index) {
     if (!confirm('Are you sure you want to delete this password?')) return;
 
-    const passwords = await window.syncService.getData('savedPasswords') || [];
+    const passwords = await window.syncService.getData('savedPasswords', true) || [];
     passwords.splice(index, 1);
     await window.syncService.saveData('savedPasswords', passwords);
     loadPasswordSaver();
@@ -2116,7 +2116,7 @@ async function loadQuickNotes() {
 
     let notes = [];
     if (window.syncService) {
-        notes = await window.syncService.getData('quickNotes') || [];
+        notes = await window.syncService.getData('quickNotes', true) || [];
     } else {
         const saved = localStorage.getItem('quickNotes');
         notes = saved ? JSON.parse(saved) : [];
@@ -2164,7 +2164,7 @@ async function saveNote() {
     }
 
     const title = content.substring(0, 50);
-    const notes = await window.syncService.getData('quickNotes') || [];
+    const notes = await window.syncService.getData('quickNotes', true) || [];
     notes.push({ title, content, date: new Date().toLocaleString() });
     await window.syncService.saveData('quickNotes', notes);
 
@@ -2176,7 +2176,7 @@ async function saveNote() {
 async function deleteNote(index) {
     if (!confirm('Are you sure?')) return;
 
-    const notes = await window.syncService.getData('quickNotes') || [];
+    const notes = await window.syncService.getData('quickNotes', true) || [];
     notes.splice(index, 1);
     await window.syncService.saveData('quickNotes', notes);
     loadQuickNotes();
