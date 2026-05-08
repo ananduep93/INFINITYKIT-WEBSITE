@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-# Host
-Host: https://infinitykit.online
-
-# Sitemap
 Sitemap: https://infinitykit.online/sitemap.xml
