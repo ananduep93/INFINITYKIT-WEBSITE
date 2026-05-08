@@ -15,7 +15,12 @@ const CORE_ASSETS = [
     './shared-tool.js',
     './survey-hub.js',
     './sync.js',
-    './updates-popup.js'
+    './updates-popup.js',
+    './about.html',
+    './contact.html',
+    './privacy-policy.html',
+    './terms-conditions.html',
+    './disclaimer.html'
 ];
 
 self.addEventListener('install', (event) => {

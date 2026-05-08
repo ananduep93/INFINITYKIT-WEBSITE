@@ -123,8 +123,8 @@
                 </div>
 
                 <a href="#" onclick="document.querySelector('.why-choose-section').scrollIntoView({behavior: 'smooth'}); closeMenu()">Features</a>
-                <a href="#" onclick="navigateTo('about-page'); closeMenu()">About</a>
-                <a href="#" onclick="navigateTo('contact-page'); closeMenu()">Contact</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
             </div>
         </div>
     </nav>
@@ -354,121 +354,20 @@
 
         </div> <!-- End Home Page View -->
 
-        <!-- About Page View -->
-        <div id="about-page" class="page-view" style="display: none;">
-            <div class="page-content glass-panel about-container">
-                <h2 class="about-title">About Infinity Kit</h2>
-                
-                <div class="about-section highlight-section">
-                    <p>Infinity Kit is an all-in-one platform designed to simplify your everyday digital tasks. Instead of switching between multiple apps or tabs, Infinity Kit brings together a powerful collection of tools in one clean and efficient space.</p>
-                    <p>From quick calculations and file conversions to smart utilities and productivity tools, everything is built with speed, simplicity, and usability in mind. Our goal is to eliminate unnecessary complexity and give users instant access to tools that just work—no signups, no delays, no distractions.</p>
-                    <p>We believe that technology should save time, not waste it. That’s why Infinity Kit focuses on delivering a smooth, lightweight, and lightning-fast experience across all devices, especially mobile. ⚡</p>
-                </div>
-
-                <div class="about-section vision-section">
-                    <h3><span>⚡</span> Our Vision</h3>
-                    <p>Our vision is to create a universal toolkit for everyone—students, creators, and everyday users—where all essential digital tools are accessible in one place. We aim to continuously expand and improve Infinity Kit while keeping it fast, simple, and free to use.</p>
-                </div>
-
-                <div class="about-section creators-section">
-                    <h3><span>👨‍💻</span> Meet the Creators</h3>
-                    <p class="creators-intro">Infinity Kit is built and maintained by passionate creators who enjoy building useful and practical tools for everyday life.</p>
-                    
-                    <div class="creator-cards">
-                        <a href="https://www.instagram.com/infinitykit.online?igsh=MXRpMzZiZTN1cHk1aQ==" target="_blank" class="creator-card kit-card">
-                            <span class="creator-icon">📸</span>
-                            <div class="creator-info">
-                                <strong>Infinity Kit</strong>
-                                <span>Official Page</span>
-                            </div>
-                        </a>
-                        <a href="https://www.instagram.com/_akku__zap_?igsh=MWF3d2RueWtxaGJ5cg==" target="_blank" class="creator-card profile-card">
-                            <span class="creator-icon">👨‍💻</span>
-                            <div class="creator-info">
-                                <strong>Aswanth EP</strong>
-                                <span>Co-Creator</span>
-                            </div>
-                        </a>
-                        <a href="https://www.instagram.com/anandu_ep?igsh=MXhsN3hsbnRnZDQ1Zg==" target="_blank" class="creator-card profile-card">
-                            <span class="creator-icon">👨‍💻</span>
-                            <div class="creator-info">
-                                <strong>Anandu EP</strong>
-                                <span>Co-Creator</span>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact Page View -->
-        <div id="contact-page" class="page-view" style="display: none;">
-            <div class="page-content glass-panel">
-                <h2>Contact Us</h2>
-                <p>Have questions, feedback, or tool requests? We'd love to hear from you!</p>
-                <div class="contact-methods">
-                    <p class="contact-hint">Have questions or suggestions? Reach out to us directly!</p>
-                    <a href="mailto:infinitykit24@gmail.com" class="hero-cta contact-btn">
-                        <span>✉️ Message Us</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Privacy Page View -->
-        <div id="privacy-page" class="page-view" style="display: none;">
-            <div class="page-content glass-panel">
-                <h2>Privacy Policy</h2>
-                <p>Your privacy is our number one priority.</p>
-                
-                <section class="privacy-section">
-                    <h3>Data Privacy</h3>
-                    <p>Infinity Kit is designed to process the vast majority of your data locally in your browser. We do not collect, sell, or distribute your personal data. Tools like the Expense Tracker use your local browser storage, ensuring that what happens on your device stays on your device.</p>
-                </section>
-
-                <section class="privacy-section">
-                    <h3>Google AdSense & Cookies</h3>
-                    <p>We use Google AdSense to serve ads when you visit our website. Google, as a third-party vendor, uses cookies to serve ads on your site. Google's use of advertising cookies enables it and its partners to serve ads to your users based on their visit to your sites and/or other sites on the Internet.</p>
-                    <p>Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank">Ads Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info" target="_blank">www.aboutads.info</a>.</p>
-                </section>
-
-                <section class="privacy-section">
-                    <h3>Log Files</h3>
-                    <p>Like many other websites, Infinity Kit makes use of log files. The information inside the log files includes internet protocol (IP) addresses, type of browser, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and number of clicks to analyze trends, administer the site, track user’s movement around the site, and gather demographic information. IP addresses, and other such information are not linked to any information that is personally identifiable.</p>
-                </section>
-            </div>
-        </div>
-
-        <!-- Terms Page View -->
-        <div id="terms-page" class="page-view" style="display: none;">
-            <div class="page-content glass-panel">
-                <h2>Terms & Conditions</h2>
-                <p>By using Infinity Kit, you agree to these simple terms of use.</p>
-                <p>These tools are provided "as-is", without warranty of any kind. They are meant to be helpful daily utilities but shouldn't replace professional or legal tools for critical life-and-death scenarios. Use them responsibly!</p>
-            </div>
-        </div>
-
-        <!-- Disclaimer Page View -->
-        <div id="disclaimer-page" class="page-view" style="display: none;">
-            <div class="page-content glass-panel">
-                <h2>Disclaimer</h2>
-                <p>The tools and calculators available on Infinity Kit are for general informational and utility purposes only.</p>
-                <p>While we strive for accuracy, we cannot guarantee completely error-free results. Please double-check any calculations for important financial or engineering decisions.</p>
-            </div>
-        </div>
+        </div> <!-- End Home Page View -->
     </main> <!-- End Main Content -->
 
     <!-- Global Footer -->
     <footer class="footer">
         <div class="footer-links">
-            <a href="#" onclick="navigateTo('about-page')">About</a>
-            <a href="#" onclick="navigateTo('contact-page')">Contact</a>
-            <a href="#" onclick="navigateTo('privacy-page')">Privacy Policy</a>
-            <a href="#" onclick="navigateTo('terms-page')">Terms & Conditions</a>
-            <a href="#" onclick="navigateTo('contact-page')">Support</a>
-            <a href="#" onclick="navigateTo('contact-page')">Social Media</a>
-            <a href="#" onclick="navigateTo('about-page')">Developer Info</a>
-            <a href="#" onclick="navigateTo('disclaimer-page')">Disclaimer</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms-conditions">Terms & Conditions</a>
+            <a href="/contact">Support</a>
+            <a href="/contact">Social Media</a>
+            <a href="/about">Developer Info</a>
+            <a href="/disclaimer">Disclaimer</a>
         </div>
 
         <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
