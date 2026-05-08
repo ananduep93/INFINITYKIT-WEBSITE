@@ -126,7 +126,11 @@ export const syncService = {
         console.log("Starting initial sync (local -> cloud)...");
         
         // 1. Sync standard tool data
-        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches'];
+        const toolKeys = [
+            'todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 
+            'infinityKitSettings', 'recentSearches', 'budget', 'dailyPlanner', 
+            'medicineReminders', 'reminderAlerts', 'examMarks'
+        ];
         for (const key of toolKeys) {
             const localData = localStorage.getItem(key);
             if (localData) {
@@ -166,7 +170,11 @@ export const syncService = {
         console.log("Background sync: Fetching latest cloud data...");
         
         // Sync tools
-        const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches'];
+        const toolKeys = [
+            'todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 
+            'infinityKitSettings', 'recentSearches', 'budget', 'dailyPlanner', 
+            'medicineReminders', 'reminderAlerts', 'examMarks'
+        ];
         for (const key of toolKeys) {
             await this.getData(key, true);
         }

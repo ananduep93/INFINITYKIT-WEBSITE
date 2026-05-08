@@ -75,9 +75,40 @@ class AlertStore {
     }
 
     async syncCloud() {
-        if (window.AuthHandler && window.AuthHandler.user && !window.AuthHandler.isMigrating) {
-            const alerts = await this.getAll();
-            window.AuthHandler.syncUp('toolData.alerts', alerts);
+        if (!window.syncService) return;
+        
+        const alerts = await this.getAll();
+        
+        // Filter and sync medicine reminders
+        const medicineReminders = alerts.filter(a => a.type === 'medicine');
+        await window.syncService.saveData('medicineReminders', medicineReminders);
+        
+        // Filter and sync general reminder alerts
+        const reminderAlerts = alerts.filter(a => a.type === 'reminder');
+        await window.syncService.saveData('reminderAlerts', reminderAlerts);
+        
+        // Log for debug
+        console.log(`[Notification Sync] Synced ${medicineReminders.length} meds and ${reminderAlerts.length} alerts.`);
+    }
+
+    async loadFromCloud() {
+        if (!window.syncService) return;
+
+        // Pull latest from cloud to localStorage first
+        const meds = await window.syncService.getData('medicineReminders', true) || [];
+        const alerts = await window.syncService.getData('reminderAlerts', true) || [];
+        
+        const allCloudAlerts = [...meds, ...alerts];
+        
+        // Clear local and repopulate with cloud data to ensure parity
+        const tx = this.db.transaction('alerts', 'readwrite');
+        const store = tx.objectStore('alerts');
+        store.clear();
+        
+        for (const a of allCloudAlerts) {
+            // Ensure ID is not carried over if auto-incrementing, or keep it if unique
+            delete a.id; 
+            store.add(a);
         }
     }
 
@@ -100,6 +131,17 @@ const NotificationManager = {
     
     async init() {
         await alertStore.init();
+        
+        // Wait for sync service to be available for initial pull
+        for (let i = 0; i < 15; i++) {
+            if (window.syncService) break;
+            await new Promise(r => setTimeout(r, 200));
+        }
+        
+        if (window.syncService) {
+            await alertStore.loadFromCloud();
+        }
+        
         this.setupAudio();
         this.checkPermissions();
         this.startEngine();

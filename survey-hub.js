@@ -33,7 +33,7 @@ const RESPONSES_DOC = 'surveyResponses';
 
 // Helper to get survey subcollection path
 function getSurveyPath(userId) {
-    return collection(db, SURVEYS_COLLECTION, SURVEY_HUB_DOC, userId);
+    return collection(db, 'users', userId, 'tools', 'surveyHub', 'surveys');
 }
 
 // Helper to get responses subcollection path

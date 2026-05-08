@@ -3495,7 +3495,7 @@ function copyToClip(text) {
 
 
 // ========== EXAM MARKS CALCULATOR ==========
-function loadExamCalculator() {
+async function loadExamCalculator() {
     let html = `
         <div class="tool-form">
             <h3>📝 Exam Marks Calculator</h3>
@@ -3525,20 +3525,35 @@ function loadExamCalculator() {
         </div>
     `;
     toolContent.innerHTML = html;
+
+    // Wait for sync service
+    for (let i = 0; i < 10; i++) {
+        if (window.syncService) break;
+        await new Promise(r => setTimeout(r, 200));
+    }
+
+    if (window.syncService) {
+        const savedData = await window.syncService.getData('examMarks', true);
+        if (savedData && savedData.subjects) {
+            document.getElementById('numSubjects').value = savedData.subjects.length;
+            generateSubjectFields(savedData.subjects);
+        }
+    }
 }
 
-function generateSubjectFields() {
-    const num = parseInt(document.getElementById('numSubjects').value) || 0;
+function generateSubjectFields(existingSubjects = null) {
+    const num = existingSubjects ? existingSubjects.length : (parseInt(document.getElementById('numSubjects').value) || 0);
     if(num < 1) { showToast('Please enter a valid number', 'error'); return; }
     
     let html = '';
     for(let i=0; i<num; i++) {
+        const subject = existingSubjects ? existingSubjects[i] : { name: `Subject ${i+1}`, obtained: 0, outOf: 100 };
         html += `
         <div class="subject-field-card">
             <div class="exam-subject-row">
-                <input type="text" placeholder="Subject ${i+1}" value="">
-                <input type="number" class="exam-mark" placeholder="Obtained" value="0" min="0" oninput="updateMarks()">
-                <input type="number" class="exam-outof" placeholder="Out Of" value="100" min="1" oninput="updateMarks()">
+                <input type="text" class="exam-subject-name" placeholder="Subject ${i+1}" value="${subject.name}" oninput="updateMarks()">
+                <input type="number" class="exam-mark" placeholder="Obtained" value="${subject.obtained}" min="0" oninput="updateMarks()">
+                <input type="number" class="exam-outof" placeholder="Out Of" value="${subject.outOf}" min="1" oninput="updateMarks()">
             </div>
         </div>`;
     }
@@ -3546,22 +3561,35 @@ function generateSubjectFields() {
     document.getElementById('subjectsContainer').style.display = 'block';
     document.getElementById('resultsContainer').style.display = 'block';
     document.getElementById('subjectCountForm').style.display = 'none';
-    updateMarks();
+    updateMarks(false); // Don't save on initial render
 }
 
-function updateMarks() {
+async function updateMarks(shouldSave = true) {
     let total = 0, outOf = 0;
+    const names = document.querySelectorAll('.exam-subject-name');
     const marks = document.querySelectorAll('.exam-mark');
     const outofs = document.querySelectorAll('.exam-outof');
     
+    const subjects = [];
     marks.forEach((input, index) => {
-        total += parseFloat(input.value) || 0;
-        outOf += parseFloat(outofs[index].value) || 100;
+        const m = parseFloat(input.value) || 0;
+        const o = parseFloat(outofs[index].value) || 100;
+        total += m;
+        outOf += o;
+        subjects.push({
+            name: names[index].value || `Subject ${index+1}`,
+            obtained: m,
+            outOf: o
+        });
     });
     
     const percent = outOf > 0 ? ((total / outOf) * 100).toFixed(1) : 0;
     document.getElementById('totalMarks').textContent = total + ' / ' + outOf;
     document.getElementById('totalPercent').textContent = percent + '%';
+
+    if (shouldSave && window.syncService) {
+        await window.syncService.saveData('examMarks', { subjects, total, outOf, percent });
+    }
 }
 
 // ========== TEXT TO SPEECH ==========
@@ -5000,7 +5028,7 @@ function showCalendar() {
     document.getElementById('calendarDisplay').innerHTML = calendar;
 }
 
-function loadDailyPlanner() {
+async function loadDailyPlanner() {
     let html = `
         <div class="tool-form">
             <h3>📝 Daily Planner</h3>
@@ -5012,16 +5040,34 @@ function loadDailyPlanner() {
         </div>
     `;
     toolContent.innerHTML = html;
-    window.plannerTasks = [];
+    
+    // Wait for sync service
+    for (let i = 0; i < 10; i++) {
+        if (window.syncService) break;
+        await new Promise(r => setTimeout(r, 200));
+    }
+    
+    if (window.syncService) {
+        window.plannerTasks = await window.syncService.getData('dailyPlanner', true) || [];
+    } else {
+        window.plannerTasks = JSON.parse(localStorage.getItem('dailyPlanner')) || [];
+    }
     renderPlannerTasks();
 }
 
-function addPlannerTask() {
+async function addPlannerTask() {
     const task = document.getElementById('plannerTask').value.trim();
     if (!task) return;
     
     window.plannerTasks.unshift({id: Date.now(), text: task, done: false});
     document.getElementById('plannerTask').value = '';
+    
+    if (window.syncService) {
+        await window.syncService.saveData('dailyPlanner', window.plannerTasks);
+    } else {
+        localStorage.setItem('dailyPlanner', JSON.stringify(window.plannerTasks));
+    }
+    
     renderPlannerTasks();
     showToast('✓ Task added!', 'success');
 }
@@ -5039,13 +5085,26 @@ function renderPlannerTasks() {
     `).join('');
 }
 
-function toggleTask(id) {
-    window.plannerTasks.find(t => t.id === id).done = !window.plannerTasks.find(t => t.id === id).done;
-    renderPlannerTasks();
+async function toggleTask(id) {
+    const task = window.plannerTasks.find(t => t.id === id);
+    if (task) {
+        task.done = !task.done;
+        if (window.syncService) {
+            await window.syncService.saveData('dailyPlanner', window.plannerTasks);
+        } else {
+            localStorage.setItem('dailyPlanner', JSON.stringify(window.plannerTasks));
+        }
+        renderPlannerTasks();
+    }
 }
 
-function deletePlannerTask(id) {
+async function deletePlannerTask(id) {
     window.plannerTasks = window.plannerTasks.filter(t => t.id !== id);
+    if (window.syncService) {
+        await window.syncService.saveData('dailyPlanner', window.plannerTasks);
+    } else {
+        localStorage.setItem('dailyPlanner', JSON.stringify(window.plannerTasks));
+    }
     renderPlannerTasks();
     showToast('✓ Task deleted!', 'success');
 }
