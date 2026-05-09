@@ -511,6 +511,12 @@ main, #main-content, .tool-page-container {
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
+.is-installed {
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    cursor: default;
+}
+
 .footer-bottom {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     padding-top: 20px;

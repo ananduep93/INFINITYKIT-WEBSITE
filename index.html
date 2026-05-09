@@ -145,7 +145,7 @@
                         <p class="hero-subtitle premium-subtitle" style="text-align: left; margin: 0 0 30px 0; font-size: 1.2rem;">Discover productivity, media, developer, and utility tools through a premium next-generation experience.</p>
                         <div class="hero-buttons" style="justify-content: flex-start;">
                             <button class="hero-cta btn-primary" onclick="document.getElementById('allToolsSection').scrollIntoView({behavior: 'smooth'})">Explore Tools ✨</button>
-                            <button class="hero-cta btn-secondary" onclick="openSettings()">Download App 📲</button>
+                            <button id="heroDownloadBtn" class="hero-cta btn-secondary" onclick="openSettings()">Download App 📲</button>
                         </div>
                     </div>
                     <div class="hero-content-right fade-in">
@@ -372,7 +372,7 @@
 
         <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
             <button id="footerInstallBtn" class="footer-install-btn">
-                <span>📲 Download App</span>
+                <span id="footerDownloadText">📲 Download App</span>
             </button>
         </div>
 
@@ -404,7 +404,7 @@
     <div id="settingsModal" class="settings-modal">
         <div class="settings-panel">
             <div class="settings-header">
-                <h2>📲 Download App</h2>
+                <h2 id="settingsDownloadTitle">📲 Download App</h2>
                 <button class="settings-close" onclick="closeSettings()">&#10005;</button>
             </div>
             

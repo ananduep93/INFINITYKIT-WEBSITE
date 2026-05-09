@@ -849,13 +849,50 @@ function setupPwaInstall() {
 
 }
 
+function isRunningInApp() {
+    // Check if running as PWA Standalone
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                        window.navigator.standalone === true ||
+                        document.referrer.includes('android-app://');
+                        
+    // Check for WebView (Common in Flutter/Android)
+    const isWebView = /wv|WebView/i.test(navigator.userAgent);
+    
+    return isStandalone || isWebView;
+}
+
 function updateInstallButtonState() {
+    const isApp = isRunningInApp();
+    
     if (installAppBtn) {
-        // Button is ALWAYS enabled and shows "Install App" per user requirement
-        installAppBtn.classList.remove('is-installed');
-        installAppBtn.disabled = false;
-        installAppBtn.textContent = '📥 Install App';
-        installAppBtn.title = 'Install Infinity Kit for faster access and offline support.';
+        if (isApp) {
+            installAppBtn.textContent = '✅ Downloaded';
+            installAppBtn.classList.add('is-installed');
+            installAppBtn.title = 'Infinity Kit is already installed on this device.';
+        } else {
+            installAppBtn.textContent = '📥 Install App';
+            installAppBtn.classList.remove('is-installed');
+            installAppBtn.title = 'Install Infinity Kit for faster access and offline support.';
+        }
+        installAppBtn.disabled = false; // Keep enabled as per user preference for website
+    }
+
+    // Update hero section button if it exists
+    const heroDownloadBtn = document.getElementById('heroDownloadBtn');
+    if (heroDownloadBtn) {
+        heroDownloadBtn.textContent = isApp ? 'Downloaded ✅' : 'Download App 📲';
+    }
+
+    // Update footer text if it exists
+    const footerDownloadText = document.getElementById('footerDownloadText');
+    if (footerDownloadText) {
+        footerDownloadText.textContent = isApp ? '📲 Downloaded' : '📲 Download App';
+    }
+
+    // Update settings modal title if it exists
+    const settingsDownloadTitle = document.getElementById('settingsDownloadTitle');
+    if (settingsDownloadTitle) {
+        settingsDownloadTitle.textContent = isApp ? '📲 Downloaded' : '📲 Download App';
     }
 
     // Always show in footer if buttons exist
@@ -872,9 +909,13 @@ function updateCopyrightYear() {
 }
 
 async function handleInstallApp() {
+    if (isRunningInApp()) {
+        showToast('Infinity Kit is already running as an app.', 'success');
+        return;
+    }
     if (!deferredInstallPrompt) {
         // If browser hasn't provided the prompt, we provide manual instructions
-        showToast('If it not pops up, To install: open your browser menu (⋮ or ⇧) and select "Add to Home Screen" or "Install App".', 'info');
+        showToast('To install: open your browser menu (⋮ or ⇧) and select "Add to Home Screen" or "Install App".', 'info');
         return;
     }
 
