@@ -45,10 +45,10 @@
       gtag('config', 'G-NKVKE3XZC8');
     </script>
 
-    <link rel="stylesheet" href="app.css?v=1.0">
-    <link rel="manifest" href="manifest.json?v=1.0">
+    <link rel="stylesheet" href="app.css?v=1.5">
+    <link rel="manifest" href="manifest.json?v=1.5">
     <meta name="theme-color" content="#667eea">
-    <link rel="apple-touch-icon" href="icon-192.png?v=1.0">
+    <link rel="apple-touch-icon" href="icon-192.png?v=1.5">
 
     <!-- Anti-flicker Theme Script -->
     <script>
@@ -152,11 +152,11 @@
                         <div class="hero-graphic">
                             <div class="glass-orb orb-1"></div>
                             <div class="glass-orb orb-2"></div>
-                            <div class="glass-card-mockup floating-tool t1" onclick="navigateTo('pdf-tools')">
+                            <div class="glass-card-mockup floating-tool t1" onclick="location.href = PathManager.getToolPath('imagetopdf')">
                                 <span style="font-size: 24px;">🖼️</span>
                                 <h4 style="margin: 0; font-size: 1rem;">Image to PDF</h4>
                             </div>
-                            <div class="glass-card-mockup floating-tool t2" onclick="navigateTo('expense-tracker')">
+                            <div class="glass-card-mockup floating-tool t2" onclick="location.href = PathManager.getFolderPath('expense-tracker')">
                                 <span style="font-size: 24px;">💸</span>
                                 <h4 style="margin: 0; font-size: 1rem;">Expense Tracker</h4>
                             </div>
@@ -244,7 +244,7 @@
                         <p>Reduce image sizes instantly</p>
                         <span class="tool-tag">Media</span>
                     </div>
-                    <div class="premium-tool-card" onclick="location.href = PathManager.getToolPath('imagetopdf')">
+                    <div class="premium-tool-card" onclick="location.href = PathManager.getFolderPath('pdf-toolkit')">
                         <div class="tool-card-bg"></div>
                         <div class="tool-icon">📄</div>
                         <h3>PDF Toolkit</h3>
@@ -434,12 +434,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <script src="notifications.js?v=1.0"></script>
-    <script src="main.js?v=1.0"></script>
-    <script src="expense-tracker.js?v=1.0"></script>
-    <script type="module" src="auth-ui.js?v=1.0"></script>
-    <script type="module" src="updates-popup.js?v=1.0"></script>
+    <script src="notifications.js?v=1.5"></script>
+    <script src="main.js?v=1.5"></script>
+    <script src="expense-tracker.js?v=1.5"></script>
+    <script type="module" src="auth-ui.js?v=1.5"></script>
+    <script type="module" src="updates-popup.js?v=1.5"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const observer = new IntersectionObserver((entries) => {
@@ -486,7 +487,7 @@
                 
                 // Advanced keyword routing
                 if (text.includes('pdf') || text.includes('merge') || text.includes('image to pdf')) {
-                    response = "We have an amazing PDF Toolkit! You can merge PDFs, convert Images to PDF, and rotate pages. <a href='folder/pdf-tools.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open PDF Tools</a>";
+                    response = "We have an amazing PDF Toolkit! You can merge PDFs, convert Images to PDF, and rotate pages. <a href='folder/pdf-toolkit.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open PDF Tools</a>";
                 } 
                 else if (text.includes('expense') || text.includes('finance') || text.includes('money') || text.includes('budget')) {
                     response = "Managing money? The Expense Tracker folder has a Budget Tracker, Expense List, and Daily/Monthly reports. <a href='folder/expense-tracker.html' style='color:#0145F2; font-weight:bold; display:block; margin-top:5px;'>&rarr; Open Finance Tools</a>";

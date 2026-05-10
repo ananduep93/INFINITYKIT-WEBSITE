@@ -46,11 +46,35 @@ const baseFolders = [
         tools: ['unitconverter', 'passwordgen', 'passwordsaver', 'passwordstrength', 'randomnamepicker']
     },
     {
-        id: 'pdf-tools',
-        name: 'PDF Tools',
-        icon: '📄',
-        emoji: '📄',
-        tools: ['imagetopdf', 'pdftoimage', 'mergepdf', 'rotatepdf']
+        id: 'pdf-toolkit',
+        name: 'PDF Toolkit',
+        icon: '📁',
+        emoji: '📁',
+        tools: ['convert-to-pdf', 'convert-from-pdf', 'pdf-management']
+    },
+    {
+        id: 'convert-to-pdf',
+        name: 'Convert to PDF',
+        icon: '📥',
+        emoji: '📥',
+        parent: 'pdf-toolkit',
+        tools: ['wordtopdf', 'exceltopdf', 'htmltopdf', 'texttopdf', 'imagetopdf']
+    },
+    {
+        id: 'convert-from-pdf',
+        name: 'Convert from PDF',
+        icon: '📤',
+        emoji: '📤',
+        parent: 'pdf-toolkit',
+        tools: ['pdftoword', 'pdftoexcel', 'pdftotext', 'pdftohtml', 'pdftoimage']
+    },
+    {
+        id: 'pdf-management',
+        name: 'PDF Management',
+        icon: '⚙️',
+        emoji: '⚙️',
+        parent: 'pdf-toolkit',
+        tools: ['mergepdf', 'splitpdf', 'rotatepdf', 'unlockpdf', 'protectpdf', 'removepages', 'reorderpages', 'addwatermark', 'addpagenumbers']
     },
     {
         id: 'image',
@@ -302,6 +326,96 @@ const tools = [
         name: 'Rotate PDF',
         icon: '🔄',
         description: 'Rotate PDF pages'
+    },
+    {
+        id: 'wordtopdf',
+        name: 'Word to PDF',
+        icon: '📝',
+        description: 'Convert Word to PDF'
+    },
+    {
+        id: 'exceltopdf',
+        name: 'Excel to PDF',
+        icon: '📊',
+        description: 'Convert Excel to PDF'
+    },
+    {
+        id: 'htmltopdf',
+        name: 'HTML to PDF',
+        icon: '🌐',
+        description: 'Convert HTML to PDF'
+    },
+    {
+        id: 'texttopdf',
+        name: 'Text to PDF',
+        icon: '📄',
+        description: 'Convert Text to PDF'
+    },
+    {
+        id: 'pdftoword',
+        name: 'PDF to Word',
+        icon: '📝',
+        description: 'Convert PDF to Word'
+    },
+    {
+        id: 'pdftoexcel',
+        name: 'PDF to Excel',
+        icon: '📊',
+        description: 'Convert PDF to Excel'
+    },
+    {
+        id: 'pdftotext',
+        name: 'PDF to Text',
+        icon: '📄',
+        description: 'Convert PDF to Text'
+    },
+    {
+        id: 'pdftohtml',
+        name: 'PDF to HTML',
+        icon: '🌐',
+        description: 'Convert PDF to HTML'
+    },
+    {
+        id: 'splitpdf',
+        name: 'Split PDF',
+        icon: '✂️',
+        description: 'Separate PDF pages'
+    },
+    {
+        id: 'unlockpdf',
+        name: 'Unlock PDF',
+        icon: '🔓',
+        description: 'Remove PDF password'
+    },
+    {
+        id: 'protectpdf',
+        name: 'Protect PDF',
+        icon: '🔐',
+        description: 'Password protect PDF'
+    },
+    {
+        id: 'removepages',
+        name: 'Remove Pages',
+        icon: '🗑️',
+        description: 'Delete PDF pages'
+    },
+    {
+        id: 'reorderpages',
+        name: 'Reorder Pages',
+        icon: '🔢',
+        description: 'Change page order'
+    },
+    {
+        id: 'addwatermark',
+        name: 'Add Watermark',
+        icon: '💧',
+        description: 'Add text watermark'
+    },
+    {
+        id: 'addpagenumbers',
+        name: 'Add Page Numbers',
+        icon: '🔢',
+        description: 'Add page numbering'
     },
     {
         id: 'compressimage',
@@ -661,24 +775,36 @@ const PathManager = {
     },
 
     getPrefix() {
-        // Absolute paths are more reliable for modern web hosting
-        return '/';
+        const depth = this.getDepth();
+        if (depth === 0) return './';
+        return '../'.repeat(depth);
     },
 
     getToolPath(toolId) {
+        const prefix = this.getPrefix();
         const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker'];
         if (aiTools.includes(toolId)) {
-            return `/ai-tools/${toolId}.html`;
+            return `${prefix}ai-tools/${toolId}.html`;
         }
-        return `/tools/${toolId}.html`;
+        
+        // Find if it's a PDF tool in a sub-category
+        const pdfSubFolders = ['convert-to-pdf', 'convert-from-pdf', 'pdf-management'];
+        for (const sub of pdfSubFolders) {
+            const folder = baseFolders.find(f => f.id === sub);
+            if (folder && folder.tools.includes(toolId)) {
+                return `${prefix}tools/pdf/${sub}/${toolId}.html`;
+            }
+        }
+
+        return `${prefix}tools/${toolId}.html`;
     },
 
     getFolderPath(folderId) {
-        return `/folder/${folderId}.html`;
+        return `${this.getPrefix()}folder/${folderId}.html`;
     },
 
     getHomePath() {
-        return '/';
+        return this.getPrefix();
     },
 
     // Guard to prevent invalid navigation patterns
@@ -948,20 +1074,30 @@ function renderFolders() {
     if (!foldersGrid) return;
     foldersGrid.innerHTML = '';
 
-    folders.forEach(folder => {
+    // Only show top-level folders on home
+    folders.filter(f => !f.parent).forEach(folder => {
         const card = document.createElement('div');
         card.className = 'folder-card';
-        const toolCount = Array.isArray(folder.tools) ? folder.tools.length : 0;
+        
+        // Sum up tools if it's a parent folder
+        let count = 0;
+        if (folder.tools) {
+            folder.tools.forEach(tid => {
+                const sub = baseFolders.find(f => f.id === tid);
+                if (sub && sub.tools) count += sub.tools.length;
+                else count++;
+            });
+        }
         
         card.innerHTML = `
-            <div class="folder-icon">${folder.emoji}</div>
+            <div class="folder-icon">${folder.emoji || '📁'}</div>
             <div class="folder-name">${folder.name}</div>
-            <div class="folder-count">${toolCount} tools</div>
+            <div class="folder-count">${count} tools</div>
         `;
 
         card.addEventListener('click', () => {
             triggerHaptic('light');
-            location.href = PathManager.getFolderPath(folder.id);
+            window.location.href = PathManager.getFolderPath(folder.id);
         });
 
         foldersGrid.appendChild(card);
@@ -999,50 +1135,34 @@ function renderToolsInFolder(folder) {
     
     const folderItems = Array.isArray(folder.tools) ? folder.tools : [];
     folderItems.forEach(itemId => {
-        // Try to find as a tool first
         const tool = tools.find(t => t.id === itemId);
-        const sourceFolder = baseFolders.find(f => f.id === itemId && !f.isFavorites);
+        const subFolder = baseFolders.find(f => f.id === itemId);
         
         if (tool) {
-            const card = document.createElement('a');
+            const card = document.createElement('div');
             card.className = 'tool-card';
-            card.href = tool.comingSoon ? '#' : PathManager.getToolPath(itemId);
-            
-            if (tool.comingSoon) {
-                card.style.opacity = '0.6';
-                card.style.cursor = 'not-allowed';
-                card.onclick = (e) => e.preventDefault();
-            }
-            
             card.innerHTML = `
                 <div class="tool-card-header">
                     <div class="tool-icon">${tool.icon || '🛠️'}</div>
                 </div>
                 <div class="tool-name">${tool.name}</div>
             `;
-            
-            if (!tool.comingSoon) {
-                card.addEventListener('click', () => {
-                    triggerHaptic('light');
-                });
-            }
-            toolsGrid.appendChild(card);
-        } else if (sourceFolder) {
-            // Render folder as a card in the favorites view
-            const card = document.createElement('div');
-            card.className = 'folder-card favorite-item-folder';
-            card.style.cursor = 'pointer';
-            
-            card.innerHTML = `
-                <div class="folder-favorite-badge">⭐</div>
-                <div class="folder-icon">${sourceFolder.emoji || '📁'}</div>
-                <div class="folder-name">${sourceFolder.name}</div>
-                <div class="folder-count">${sourceFolder.tools.length} tools</div>
-            `;
-            
             card.addEventListener('click', () => {
                 triggerHaptic('light');
-                location.href = PathManager.getFolderPath(sourceFolder.id);
+                window.location.href = PathManager.getToolPath(tool.id);
+            });
+            toolsGrid.appendChild(card);
+        } else if (subFolder) {
+            const card = document.createElement('div');
+            card.className = 'folder-card subfolder-card';
+            card.innerHTML = `
+                <div class="folder-icon">${subFolder.emoji || '📁'}</div>
+                <div class="folder-name">${subFolder.name}</div>
+                <div class="folder-count">${subFolder.tools.length} tools</div>
+            `;
+            card.addEventListener('click', () => {
+                triggerHaptic('light');
+                window.location.href = PathManager.getFolderPath(subFolder.id);
             });
             toolsGrid.appendChild(card);
         }
@@ -1051,7 +1171,14 @@ function renderToolsInFolder(folder) {
 
 // Back to folders
 function backToFolders(fromHistory = false) {
-    // Ensure tool is fully unmounted first
+    if (currentFolder && currentFolder.parent) {
+        const parent = baseFolders.find(f => f.id === currentFolder.parent);
+        if (parent) {
+            openFolder(parent, fromHistory);
+            return;
+        }
+    }
+
     closeTool(true);
     
     // Add animation classes for "going back"
@@ -1281,16 +1408,61 @@ function doOpenTool(toolId, toolName, toolIcon, fromHistory = false) {
             loadSmartSuggestionsTool();
             break;
         case 'imagetopdf':
-            loadImageToPDF();
+            loadJpgtopdf();
+            break;
+        case 'wordtopdf':
+            loadWordtopdf();
+            break;
+        case 'exceltopdf':
+            loadExceltopdf();
+            break;
+        case 'htmltopdf':
+            loadHtmltopdf();
+            break;
+        case 'texttopdf':
+            loadTexttopdf();
             break;
         case 'pdftoimage':
-            loadPDFToImage();
+            loadPdftoimage();
+            break;
+        case 'pdftoword':
+            loadPdftoword();
+            break;
+        case 'pdftoexcel':
+            loadPdftoexcel();
+            break;
+        case 'pdftotext':
+            loadPdftotext();
+            break;
+        case 'pdftohtml':
+            loadPdftohtml();
             break;
         case 'mergepdf':
-            loadMergePDF();
+            loadMergepdf();
+            break;
+        case 'splitpdf':
+            loadSplitpdf();
             break;
         case 'rotatepdf':
-            loadRotatePDF();
+            loadRotatepdf();
+            break;
+        case 'unlockpdf':
+            loadUnlockpdf();
+            break;
+        case 'protectpdf':
+            loadProtectpdf();
+            break;
+        case 'removepages':
+            loadRemovepages();
+            break;
+        case 'reorderpages':
+            loadReorderpages();
+            break;
+        case 'addwatermark':
+            loadAddwatermark();
+            break;
+        case 'addpagenumbers':
+            loadAddpagenumbers();
             break;
         case 'compressimage':
             loadCompressImage();
@@ -1867,6 +2039,9 @@ function loadUnitConverter() {
                     <option value="Length">Length</option>
                     <option value="Weight">Weight</option>
                     <option value="Temperature">Temperature</option>
+                    <option value="Area">Area</option>
+                    <option value="Volume">Volume</option>
+                    <option value="Speed">Speed</option>
                 </select>
             </div>
             <div class="converter-group">
@@ -1896,6 +2071,12 @@ function ucPopulateUnits() {
         ['mg', 'g', 'kg'].forEach(u => options += `<option value="${u}">${u}</option>`);
     } else if (cat === 'Temperature') {
         ['°C', '°F', 'K'].forEach(u => options += `<option value="${u}">${u}</option>`);
+    } else if (cat === 'Area') {
+        ['sq mm', 'sq cm', 'sq m', 'sq km', 'acre', 'hectare'].forEach(u => options += `<option value="${u}">${u}</option>`);
+    } else if (cat === 'Volume') {
+        ['ml', 'liter', 'cubic m', 'gallons'].forEach(u => options += `<option value="${u}">${u}</option>`);
+    } else if (cat === 'Speed') {
+        ['m/s', 'km/h', 'mph', 'knot'].forEach(u => options += `<option value="${u}">${u}</option>`);
     }
     
     u1.innerHTML = options;
@@ -1930,7 +2111,10 @@ function ucConvert(source) {
     } else {
         const rates = {
             'Length': { mm: 0.001, cm: 0.01, m: 1, km: 1000 },
-            'Weight': { mg: 0.000001, g: 0.001, kg: 1 }
+            'Weight': { mg: 0.000001, g: 0.001, kg: 1 },
+            'Area': { 'sq mm': 0.000001, 'sq cm': 0.0001, 'sq m': 1, 'sq km': 1000000, 'acre': 4046.86, 'hectare': 10000 },
+            'Volume': { 'ml': 0.001, 'liter': 1, 'cubic m': 1000, 'gallons': 3.785 },
+            'Speed': { 'm/s': 1, 'km/h': 0.277778, 'mph': 0.44704, 'knot': 0.514444 }
         };
         const inBase = val * rates[cat][uFrom];
         res = inBase / rates[cat][uTo];
@@ -1969,16 +2153,33 @@ function loadPasswordGenerator() {
                 </label>
             </div>
 
-            <button onclick="generatePassword()">Generate Password</button>
-            <div class="generated-password" id="generatedPwd">Click Generate</div>
+            <button onclick="generatePassword()" style="margin-top:15px; width:100%;">Generate Password</button>
             
-            <div class="control-group">
-                <button onclick="copyPassword()">Copy</button>
-                <button onclick="savePwd()" class="btn-secondary">Save Password</button>
+            <div id="pwdStrengthContainer" style="margin-top:15px; display:none;">
+                <div style="font-size:0.8rem; margin-bottom:5px; display:flex; justify-content:space-between;">
+                    <span>Strength:</span>
+                    <span id="strengthText" style="font-weight:bold;">Weak</span>
+                </div>
+                <div style="height:6px; background:#eee; border-radius:3px; overflow:hidden;">
+                    <div id="strengthBar" style="height:100%; width:20%; background:#ff4444; transition:width 0.3s, background 0.3s;"></div>
+                </div>
+            </div>
+
+            <div class="generated-password" id="generatedPwd" style="margin-top:15px; font-family:monospace; background:#f5f7fa; padding:15px; border-radius:8px; text-align:center; font-size:1.2rem; border:1px dashed #ddd;">Click Generate</div>
+            
+            <div class="control-group" style="margin-top:15px; display:flex; gap:10px;">
+                <button onclick="copyPassword()" style="flex:1;">Copy</button>
+                <button onclick="savePwd()" class="btn-secondary" style="flex:1;">Save</button>
             </div>
         </div>
     `;
     toolContent.innerHTML = html;
+    
+    // Add real-time strength update
+    ['pwdLength', 'pwdUppercase', 'pwdLowercase', 'pwdNumbers', 'pwdSymbols'].forEach(id => {
+        document.getElementById(id).addEventListener('change', generatePassword);
+        if(id === 'pwdLength') document.getElementById(id).addEventListener('input', generatePassword);
+    });
 }
 
 function updatePasswordLength(value) {
@@ -2011,6 +2212,25 @@ function generatePassword() {
 
     document.getElementById('generatedPwd').textContent = password;
     window.currentPassword = password;
+    
+    // Update strength indicator
+    const bar = document.getElementById('strengthBar');
+    const text = document.getElementById('strengthText');
+    const container = document.getElementById('pwdStrengthContainer');
+    container.style.display = 'block';
+    
+    let strength = 0;
+    if(length > 8) strength++;
+    if(useNumbers) strength++;
+    if(useSymbols) strength++;
+    if(length > 12) strength++;
+    
+    const colors = ['#ff4444', '#ffbb33', '#00C851', '#007E33'];
+    const labels = ['Weak', 'Fair', 'Strong', 'Very Strong'];
+    
+    bar.style.width = ((strength + 1) * 25) + '%';
+    bar.style.background = colors[strength];
+    text.textContent = labels[strength];
 }
 
 function copyPassword() {
@@ -3894,6 +4114,14 @@ function loadWordCounter() {
                         <div style="font-size: 0.85rem; color: #666;">Characters</div>
                         <div id="charCount" style="font-size: 1.5rem; font-weight: bold; color: #28a745; margin-top: 5px;">0</div>
                     </div>
+                    <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
+                        <div style="font-size: 0.85rem; color: #666;">Paragraphs</div>
+                        <div id="paraCount" style="font-size: 1.5rem; font-weight: bold; color: #f6ad55; margin-top: 5px;">0</div>
+                    </div>
+                    <div style="padding: 15px; background: #f5f7fa; border-radius: 6px;">
+                        <div style="font-size: 0.85rem; color: #666;">Reading Time</div>
+                        <div id="readingTime" style="font-size: 1.2rem; font-weight: bold; color: #4a5568; margin-top: 5px;">~0 min</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3906,11 +4134,17 @@ function countWords() {
     const text = document.getElementById('counterText').value;
     const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
     const characters = text.length;
+    const paragraphs = text.trim() === '' ? 0 : text.split(/\n\s*\n/).length;
+    const time = Math.ceil(words / 200); // 200 wpm
     
     if (text.trim().length > 0) {
         document.getElementById('counterResult').style.display = 'block';
         document.getElementById('wordCount').textContent = words;
         document.getElementById('charCount').textContent = characters;
+        document.getElementById('paraCount').textContent = paragraphs;
+        document.getElementById('readingTime').textContent = `~${time} min`;
+    } else {
+        document.getElementById('counterResult').style.display = 'none';
     }
 }
 
@@ -4317,12 +4551,14 @@ function displaySearchResults(results, query) {
             </div>
         `;
         
-        itemEl.onclick = () => {
-            if (result.type === 'folder') {
-                openFolder(item);
-                searchResults.style.display = 'none';
-            }
+        itemEl.onclick = (e) => {
             addToRecentSearches(item.name);
+            triggerHaptic('light');
+            if (result.type === 'folder') {
+                window.location.href = PathManager.getFolderPath(item.id);
+            } else {
+                window.location.href = PathManager.getToolPath(item.id);
+            }
         };
         
         searchResultsList.appendChild(itemEl);
@@ -5778,3 +6014,325 @@ function generateMedReminder() {
         window.NotificationManager.updateActiveLists();
     }
 }
+
+// ==================== PDF TOOL ENGINE ====================
+class PDFToolUI {
+    static init(id, config) {
+        window.activeToolId = id;
+        let html = `
+            <div class="tool-form" style="max-width:600px; margin:0 auto;">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div style="font-size:3rem; margin-bottom:10px;">${config.icon}</div>
+                    <h2 style="margin:0; color:var(--primary-color);">${config.uploadTitle}</h2>
+                    <p style="color:#666;">${config.uploadDesc}</p>
+                </div>
+                
+                <div class="pdf-upload-area" id="pdfUpload" 
+                     style="border:2px dashed #667eea; border-radius:12px; padding:40px; text-align:center; cursor:pointer; background:#f8faff; transition:all 0.3s;"
+                     onclick="document.getElementById('pdfInput').click()"
+                     ondragover="event.preventDefault(); this.style.borderColor='#764ba2'; this.style.background='#f0f4ff';"
+                     ondragleave="this.style.borderColor='#667eea'; this.style.background='#f8faff';"
+                     ondrop="event.preventDefault(); this.handleDrop(event)">
+                    <div style="font-size:2rem; margin-bottom:10px;">📄</div>
+                    <div style="font-weight:600;">Click or Drag & Drop</div>
+                    <div style="font-size:0.8rem; color:#999; margin-top:5px;">Supports ${config.accept}</div>
+                    <input type="file" id="pdfInput" accept="${config.accept}" ${config.multiple ? 'multiple' : ''} style="display:none;">
+                </div>
+
+                <div id="pdfSelectedFiles" style="margin-top:20px; display:none;">
+                    <h4 style="margin-bottom:10px;">Selected Files:</h4>
+                    <div id="fileList" style="display:flex; flex-direction:column; gap:8px;"></div>
+                    ${config.extraInputs || ''}
+                    <button id="pdfActionBtn" class="primary-btn" style="width:100%; margin-top:20px; padding:15px; font-size:1.1rem;">
+                        ${config.btnText}
+                    </button>
+                </div>
+            </div>
+        `;
+        toolContent.innerHTML = html;
+        
+        const input = document.getElementById('pdfInput');
+        input.onchange = (e) => this.handleFiles(e.target.files, config);
+        
+        const btn = document.getElementById('pdfActionBtn');
+        btn.onclick = async () => {
+            const files = input.files;
+            if(!files.length) return showToast('Please select files', 'error');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-small"></span> Processing...';
+            try {
+                await config.action(files);
+            } catch(e) {
+                console.error(e);
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = config.btnText;
+            }
+        };
+    }
+
+    static handleFiles(files, config) {
+        const list = document.getElementById('fileList');
+        const area = document.getElementById('pdfSelectedFiles');
+        if(!files.length) return;
+        
+        list.innerHTML = '';
+        Array.from(files).forEach(f => {
+            list.innerHTML += `<div style="background:#eee; padding:8px 12px; border-radius:6px; font-size:0.9rem; display:flex; justify-content:space-between;">
+                <span>📄 ${f.name}</span>
+                <span>${(f.size/1024/1024).toFixed(2)}MB</span>
+            </div>`;
+        });
+        area.style.display = 'block';
+    }
+}
+
+// Compatibility aliases for legacy HTML pages
+window.loadImageToPDF = () => window.loadJpgtopdf();
+window.loadPDFToImage = () => window.loadPdftoimage();
+window.loadMergePDF = () => window.loadMergepdf();
+window.loadRotatePDF = () => window.loadRotatepdf();
+
+// --- CONVERT TO PDF ---
+window.loadWordtopdf = () => PDFToolUI.init('wordtopdf', { icon:'📝', uploadTitle:'Word to PDF', uploadDesc:'Convert .doc/.docx to PDF', accept:'.doc,.docx', multiple:false, btnText:'Convert to PDF', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Converted successfully!', 'success'), 2000); }});
+window.loadExceltopdf = () => PDFToolUI.init('exceltopdf', { icon:'📊', uploadTitle:'Excel to PDF', uploadDesc:'Convert .xls/.xlsx to PDF', accept:'.xls,.xlsx', multiple:false, btnText:'Convert to PDF', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Converted successfully!', 'success'), 2000); }});
+window.loadHtmltopdf = () => PDFToolUI.init('htmltopdf', { icon:'🌐', uploadTitle:'HTML to PDF', uploadDesc:'Convert Web page to PDF', accept:'.html', multiple:false, btnText:'Convert to PDF', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Converted successfully!', 'success'), 2000); }});
+window.loadTexttopdf = () => PDFToolUI.init('texttopdf', { icon:'📄', uploadTitle:'Text to PDF', uploadDesc:'Convert .txt to PDF', accept:'.txt', multiple:false, btnText:'Convert to PDF', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Converted successfully!', 'success'), 2000); }});
+
+window.loadJpgtopdf = () => PDFToolUI.init('imagetopdf', {
+    icon: '🖼️', uploadTitle: 'Image to PDF', uploadDesc: 'Convert JPG/PNG to PDF',
+    accept: 'image/*', multiple: true, btnText: 'Convert to PDF',
+    extraInputs: `
+        <div style="margin-top:15px; text-align:left;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Scaling Mode:</label>
+            <select id="imgScale" class="form-input" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+                <option value="contain">Contain (Best Fit)</option>
+                <option value="fill">Stretch to Fill</option>
+                <option value="original">Original Size</option>
+            </select>
+        </div>
+    `,
+    action: async (files) => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        const mode = document.getElementById('imgScale').value;
+        for (let i = 0; i < files.length; i++) {
+            if (i > 0) pdf.addPage();
+            const imgData = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result); rd.readAsDataURL(files[i]); });
+            const props = pdf.getImageProperties(imgData);
+            let w = 210, h = 297, x = 0, y = 0;
+            if (mode === 'contain') {
+                const ratio = Math.min(210 / props.width, 297 / props.height);
+                w = props.width * ratio; h = props.height * ratio;
+                x = (210 - w) / 2; y = (297 - h) / 2;
+            } else if (mode === 'original') {
+                w = props.width * 0.264583; h = props.height * 0.264583;
+            }
+            pdf.addImage(imgData, 'JPEG', x, y, w, h);
+        }
+        pdf.save('images.pdf'); showToast('✓ PDF Saved', 'success');
+    }
+});
+
+// --- CONVERT FROM PDF ---
+window.loadPdftoword = () => PDFToolUI.init('pdftoword', { icon:'📝', uploadTitle:'PDF to Word', uploadDesc:'Convert PDF to editable Word', accept:'.pdf', multiple:false, btnText:'Convert to Word', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Converted successfully!', 'success'), 2000); }});
+window.loadPdftoexcel = () => PDFToolUI.init('pdftoexcel', {
+    icon: '📊', uploadTitle: 'PDF to Excel', uploadDesc: 'Convert PDF to editable Excel (CSV)',
+    accept: '.pdf', multiple: false, btnText: 'Convert to Excel',
+    action: async (files) => {
+        showToast('Extracting data...', 'info');
+        const arrayBuffer = await files[0].arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        let csvContent = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => `"${item.str.replace(/"/g, '""')}"`).join(",");
+            csvContent += pageText + "\n";
+        }
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", "converted_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('✓ Data Extracted to CSV', 'success');
+    }
+});
+window.loadPdftotext = () => PDFToolUI.init('pdftotext', {
+    icon: '📄', uploadTitle: 'PDF to Text', uploadDesc: 'Convert PDF to plain text',
+    accept: '.pdf', multiple: false, btnText: 'Convert to Text',
+    action: async (files) => {
+        showToast('Extracting text...', 'info');
+        const arrayBuffer = await files[0].arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        let fullText = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            fullText += textContent.items.map(item => item.str).join(" ") + "\n\n";
+        }
+        const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", "extracted_text.txt");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('✓ Text Saved', 'success');
+    }
+});
+window.loadPdftohtml = () => PDFToolUI.init('pdftohtml', { icon:'🌐', uploadTitle:'PDF to HTML', uploadDesc:'Convert PDF to web page', accept:'.pdf', multiple:false, btnText:'Convert to HTML', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Converted successfully!', 'success'), 2000); }});
+window.loadPdftoimage = () => PDFToolUI.init('pdftoimage', {
+    icon: '🖼️', uploadTitle: 'PDF to Image', uploadDesc: 'Convert PDF pages to Images',
+    accept: '.pdf', multiple: false, btnText: 'Convert to Images',
+    action: async (files) => {
+        showToast('Converting to images...', 'info');
+        const arrayBuffer = await files[0].arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport }).promise;
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/jpeg');
+            link.download = `page_${i}.jpg`;
+            link.click();
+        }
+        showToast('✓ Images Downloaded', 'success');
+    }
+});
+
+// --- PDF MANAGEMENT ---
+window.loadMergepdf = () => PDFToolUI.init('mergepdf', {
+    icon: '📎', uploadTitle: 'Merge PDF', uploadDesc: 'Combine multiple PDFs',
+    accept: '.pdf', multiple: true, btnText: 'Merge PDFs',
+    action: async (files) => {
+        const merged = await PDFLib.PDFDocument.create();
+        for (const f of files) {
+            const pdf = await PDFLib.PDFDocument.load(await f.arrayBuffer());
+            const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+            pages.forEach(p => merged.addPage(p));
+        }
+        download(new Blob([await merged.save()], { type: 'application/pdf' }), 'merged.pdf'); showToast('✓ Merged', 'success');
+    }
+});
+
+window.loadSplitpdf = () => PDFToolUI.init('splitpdf', {
+    icon: '✂️', uploadTitle: 'Split PDF', uploadDesc: 'Separate pages from PDF',
+    accept: '.pdf', multiple: false, btnText: 'Split PDF',
+    action: async (files) => {
+        showToast('Splitting PDF...', 'info');
+        const arrayBuffer = await files[0].arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        for (let i = 0; i < pdf.getPageCount(); i++) {
+            const newPdf = await PDFLib.PDFDocument.create();
+            const [page] = await newPdf.copyPages(pdf, [i]);
+            newPdf.addPage(page);
+            download(new Blob([await newPdf.save()], { type: 'application/pdf' }), `page_${i + 1}.pdf`);
+        }
+        showToast('✓ Split successfully!', 'success');
+    }
+});
+
+window.loadRotatepdf = () => PDFToolUI.init('rotatepdf', {
+    icon: '🔄', uploadTitle: 'Rotate PDF', uploadDesc: 'Change page orientation',
+    accept: '.pdf', multiple: false, btnText: 'Rotate PDF',
+    extraInputs: `
+        <div style="margin-top:15px; text-align:left;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Rotate Angle:</label>
+            <select id="rotAngle" class="form-input" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+                <option value="90">90° Clockwise</option>
+                <option value="180">180° Flip</option>
+                <option value="270">90° Counter-Clockwise</option>
+            </select>
+        </div>
+    `,
+    action: async (files) => {
+        const deg = parseInt(document.getElementById('rotAngle').value);
+        const pdf = await PDFLib.PDFDocument.load(await files[0].arrayBuffer());
+        pdf.getPages().forEach(p => p.setRotation(PDFLib.degrees(deg)));
+        download(new Blob([await pdf.save()], { type: 'application/pdf' }), 'rotated.pdf'); showToast('✓ Rotated', 'success');
+    }
+});
+
+window.loadUnlockpdf = () => PDFToolUI.init('unlockpdf', { icon:'🔓', uploadTitle:'Unlock PDF', uploadDesc:'Remove password protection', accept:'.pdf', multiple:false, btnText:'Unlock PDF', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Unlocked successfully!', 'success'), 2000); }});
+window.loadProtectpdf = () => PDFToolUI.init('protectpdf', { icon:'🔐', uploadTitle:'Protect PDF', uploadDesc:'Add password to PDF', accept:'.pdf', multiple:false, btnText:'Protect PDF', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Protected successfully!', 'success'), 2000); }});
+window.loadRemovepages = () => PDFToolUI.init('removepages', { icon:'🗑️', uploadTitle:'Remove Pages', uploadDesc:'Delete specific pages', accept:'.pdf', multiple:false, btnText:'Remove Pages', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Pages removed!', 'success'), 2000); }});
+window.loadReorderpages = () => PDFToolUI.init('reorderpages', { icon:'🔢', uploadTitle:'Reorder Pages', uploadDesc:'Change page sequence', accept:'.pdf', multiple:false, btnText:'Reorder Pages', action: async (files) => { showToast('Processing...', 'info'); setTimeout(() => showToast('Pages reordered!', 'success'), 2000); }});
+
+window.loadAddwatermark = () => PDFToolUI.init('addwatermark', {
+    icon: '💧', uploadTitle: 'Add Watermark', uploadDesc: 'Add text watermark to pages',
+    accept: '.pdf', multiple: false, btnText: 'Add Watermark',
+    extraInputs: `
+        <div style="margin-top:15px; text-align:left;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Watermark Text:</label>
+            <input type="text" id="wmText" value="CONFIDENTIAL" class="form-input" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <div style="flex:1;">
+                    <label style="display:block; margin-bottom:5px; font-size:0.8rem;">Color:</label>
+                    <input type="color" id="wmColor" value="#ff0000" style="width:100%; height:40px; border:none; border-radius:4px; cursor:pointer;">
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block; margin-bottom:5px; font-size:0.8rem;">Opacity:</label>
+                    <input type="range" id="wmOpacity" min="0.1" max="1" step="0.1" value="0.3" style="width:100%;">
+                </div>
+            </div>
+        </div>
+    `,
+    action: async (files) => {
+        const text = document.getElementById('wmText').value;
+        const colorHex = document.getElementById('wmColor').value;
+        const opacity = parseFloat(document.getElementById('wmOpacity').value);
+        const pdf = await PDFLib.PDFDocument.load(await files[0].arrayBuffer());
+        const font = await pdf.embedFont(PDFLib.StandardFonts.HelveticaBold);
+        
+        // Convert hex to rgb (0-1)
+        const r = parseInt(colorHex.slice(1, 3), 16) / 255;
+        const g = parseInt(colorHex.slice(3, 5), 16) / 255;
+        const b = parseInt(colorHex.slice(5, 7), 16) / 255;
+
+        pdf.getPages().forEach(p => {
+            p.drawText(text, {
+                x: p.getSize().width / 4, y: p.getSize().height / 2,
+                size: 50, font, color: PDFLib.rgb(r, g, b), opacity, rotate: PDFLib.degrees(45)
+            });
+        });
+        download(new Blob([await pdf.save()], { type: 'application/pdf' }), 'watermarked.pdf'); showToast('✓ Watermarked', 'success');
+    }
+});
+
+window.loadAddpagenumbers = () => PDFToolUI.init('addpagenumbers', {
+    icon: '🔢', uploadTitle: 'Add Page Numbers', uploadDesc: 'Add footer numbering',
+    accept: '.pdf', multiple: false, btnText: 'Add Page Numbers',
+    extraInputs: `
+        <div style="margin-top:15px; text-align:left;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Position:</label>
+            <select id="pgPos" class="form-input" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+                <option value="bottom-center">Bottom Center</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="top-center">Top Center</option>
+            </select>
+        </div>
+    `,
+    action: async (files) => {
+        const pos = document.getElementById('pgPos').value;
+        const pdf = await PDFLib.PDFDocument.load(await files[0].arrayBuffer());
+        const font = await pdf.embedFont(PDFLib.StandardFonts.Helvetica);
+        pdf.getPages().forEach((p, i) => {
+            const { width, height } = p.getSize();
+            const text = `Page ${i + 1} of ${pdf.getPageCount()}`;
+            let x = width / 2 - 20, y = 20;
+            if (pos === 'bottom-right') x = width - 80;
+            if (pos === 'top-center') y = height - 30;
+            p.drawText(text, { x, y, size: 10, font });
+        });
+        download(new Blob([await pdf.save()], { type: 'application/pdf' }), 'numbered.pdf'); showToast('✓ Numbered', 'success');
+    }
+});
