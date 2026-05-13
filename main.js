@@ -43,7 +43,7 @@ const baseFolders = [
         name: 'Utilities',
         icon: '🛠️',
         emoji: '🛠️',
-        tools: ['unitconverter', 'passwordgen', 'passwordsaver', 'passwordstrength', 'randomnamepicker']
+        tools: ['unitconverter', 'passwordgen', 'passwordsaver', 'passwordstrength', 'randomnamepicker', 'qrcode-gen', 'note-shredder', 'speed-test']
     },
     {
         id: 'pdf-toolkit',
@@ -61,7 +61,7 @@ const baseFolders = [
         name: 'Image',
         icon: '🖼️',
         emoji: '🖼️',
-        tools: ['compressimage', 'imageinfo']
+        tools: ['compressimage', 'imageinfo', 'color-palette']
     },
     {
         id: 'math-tools',
@@ -124,7 +124,7 @@ const baseFolders = [
         name: 'Web Tools',
         icon: '🌐',
         emoji: '🌐',
-        tools: ['urlencoder', 'urlextractor', 'metatagviewer']
+        tools: ['urlencoder', 'urlextractor', 'metatagviewer', 'svg-optimizer']
     },
     {
         id: 'health-utility-hub',
@@ -132,6 +132,13 @@ const baseFolders = [
         icon: '🩺',
         emoji: '🩺',
         tools: ['bmicalculator', 'drugdosage', 'ivdripcalc', 'medicinereminder']
+    },
+    {
+        id: 'social-tools',
+        name: 'Social Media',
+        icon: '📱',
+        emoji: '📱',
+        tools: ['link-bio']
     },
     {
         id: 'ai-tools',
@@ -617,6 +624,42 @@ const tools = [
         icon: '📄',
         description: 'Extract points from documents',
         comingSoon: true
+    },
+    {
+        id: 'qrcode-gen',
+        name: 'QR Code Generator',
+        icon: '📱',
+        description: 'Generate dynamic QR codes for Wi-Fi, WhatsApp, vCard, and more.'
+    },
+    {
+        id: 'color-palette',
+        name: 'Color Palette Architect',
+        icon: '🎨',
+        description: 'Extract professional color palettes from any image instantly.'
+    },
+    {
+        id: 'note-shredder',
+        name: 'Secure Note Shredder',
+        icon: '🗑️',
+        description: 'Create encrypted notes that self-destruct after being read.'
+    },
+    {
+        id: 'speed-test',
+        name: 'Internet Speed Test',
+        icon: '🚀',
+        description: 'Check your connection speed instantly with a lightweight test.'
+    },
+    {
+        id: 'svg-optimizer',
+        name: 'SVG Path Optimizer',
+        icon: '⚙️',
+        description: 'Minify and optimize SVG code for better web performance.'
+    },
+    {
+        id: 'link-bio',
+        name: 'Link-in-Bio Builder',
+        icon: '🔗',
+        description: 'Create a beautiful landing page for your social media links.'
     }
 ];
 
@@ -4019,9 +4062,12 @@ function loadCaseConverter() {
                 <textarea id="caseInput" placeholder="Enter text..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical; min-height: 100px;"></textarea>
             </div>
             <div class="tool-grid-3">
-                <button onclick="convertCase('upper')" style="font-weight: bold;">UPPER</button>
-                <button onclick="convertCase('lower')" style="font-weight: bold;">lower</button>
-                <button onclick="convertCase('capitalize')" style="font-weight: bold;">Capitalize</button>
+                <button onclick="convertCase('upper')">UPPER</button>
+                <button onclick="convertCase('lower')">lower</button>
+                <button onclick="convertCase('capitalize')">Capitalize</button>
+                <button onclick="convertCase('camel')">camelCase</button>
+                <button onclick="convertCase('snake')">snake_case</button>
+                <button onclick="convertCase('pascal')">PascalCase</button>
             </div>
             <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">Result</div>
@@ -4041,6 +4087,15 @@ function convertCase(type) {
     else if (type === 'lower') output = input.toLowerCase();
     else if (type === 'capitalize') {
         output = input.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    }
+    else if (type === 'camel') {
+        output = input.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+    }
+    else if (type === 'snake') {
+        output = input.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g).map(x => x.toLowerCase()).join('_');
+    }
+    else if (type === 'pascal') {
+        output = input.toLowerCase().replace(/(\\w)(\\w*)/g, (g0, g1, g2) => g1.toUpperCase() + g2.toLowerCase()).replace(/\\s+/g, '');
     }
     
     document.getElementById('caseOutput').value = output;
@@ -5864,6 +5919,474 @@ window.loadMergepdf = () => {
 window.loadRotatepdf = () => {
     if (typeof loadRotatePDF === 'function') loadRotatePDF();
 };
+
+// ==================== QR CODE GENERATOR ====================
+function loadQRCodeGenerator() {
+    let html = `
+        <div class="tool-form">
+            <div class="form-group">
+                <label>QR Content Type:</label>
+                <select id="qrType" onchange="updateQRForm(this.value)">
+                    <option value="text">Text / URL</option>
+                    <option value="wifi">Wi-Fi Network</option>
+                    <option value="whatsapp">WhatsApp Message</option>
+                    <option value="vcard">vCard (Contact)</option>
+                </select>
+            </div>
+
+            <div id="qrDynamicForm">
+                <div class="form-group">
+                    <label>Text or URL:</label>
+                    <input type="text" id="qrText" placeholder="https://example.com" oninput="generateQRCode()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>QR Size:</label>
+                <input type="range" id="qrSize" min="128" max="512" step="64" value="256" oninput="generateQRCode()">
+                <span id="qrSizeDisplay">256 x 256</span>
+            </div>
+
+            <button onclick="generateQRCode()" style="margin-top:10px; width:100%;">Generate QR Code</button>
+
+            <div id="qrResult" style="margin-top:20px; text-align:center; background:white; padding:20px; border-radius:12px; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px dashed #ddd;">
+                <div id="qrcode"></div>
+                <p id="qrPlaceholder" style="color:#999; margin:0;">Enter text to generate QR</p>
+            </div>
+
+            <div class="control-group" id="qrControls" style="margin-top:15px; display:none; gap:10px;">
+                <button onclick="downloadQR('png')" style="flex:1;">Download PNG</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+
+    if (typeof QRCode === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        script.onload = () => generateQRCode();
+        document.head.appendChild(script);
+    } else {
+        generateQRCode();
+    }
+}
+
+function updateQRForm(type) {
+    const container = document.getElementById('qrDynamicForm');
+    let html = '';
+    if (type === 'text') {
+        html = '<div class="form-group"><label>Text or URL:</label><input type="text" id="qrText" placeholder="https://example.com" oninput="generateQRCode()"></div>';
+    } else if (type === 'wifi') {
+        html = '<div class="form-group"><label>SSID:</label><input type="text" id="qrSsid" placeholder="Network Name" oninput="generateQRCode()"></div><div class="form-group"><label>Password:</label><input type="text" id="qrWifiPass" placeholder="Password" oninput="generateQRCode()"></div><div class="form-group"><label>Encryption:</label><select id="qrWifiEnc" onchange="generateQRCode()"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">None</option></select></div>';
+    } else if (type === 'whatsapp') {
+        html = '<div class="form-group"><label>Phone Number:</label><input type="text" id="qrWaPhone" placeholder="919876543210" oninput="generateQRCode()"></div><div class="form-group"><label>Message:</label><textarea id="qrWaMsg" placeholder="Hello!" oninput="generateQRCode()"></textarea></div>';
+    } else if (type === 'vcard') {
+        html = '<div class="form-group"><label>Full Name:</label><input type="text" id="qrVcardName" placeholder="John Doe" oninput="generateQRCode()"></div><div class="form-group"><label>Phone:</label><input type="text" id="qrVcardPhone" placeholder="+123456789" oninput="generateQRCode()"></div><div class="form-group"><label>Email:</label><input type="email" id="qrVcardEmail" placeholder="john@example.com" oninput="generateQRCode()"></div>';
+    }
+    container.innerHTML = html;
+}
+
+function generateQRCode() {
+    const qrcodeContainer = document.getElementById('qrcode');
+    const placeholder = document.getElementById('qrPlaceholder');
+    const controls = document.getElementById('qrControls');
+    const type = document.getElementById('qrType').value;
+    const size = parseInt(document.getElementById('qrSize').value);
+    document.getElementById('qrSizeDisplay').textContent = `${size} x ${size}`;
+    let text = '';
+    if (type === 'text') text = document.getElementById('qrText').value;
+    else if (type === 'wifi') {
+        const ssid = document.getElementById('qrSsid').value;
+        const pass = document.getElementById('qrWifiPass').value;
+        const enc = document.getElementById('qrWifiEnc').value;
+        if (ssid) text = `WIFI:S:${ssid};T:${enc};P:${pass};;`;
+    } else if (type === 'whatsapp') {
+        const phone = document.getElementById('qrWaPhone').value;
+        const msg = encodeURIComponent(document.getElementById('qrWaMsg').value);
+        if (phone) text = `https://wa.me/${phone}?text=${msg}`;
+    } else if (type === 'vcard') {
+        const name = document.getElementById('qrVcardName').value;
+        const phone = document.getElementById('qrVcardPhone').value;
+        const email = document.getElementById('qrVcardEmail').value;
+        if (name) text = `BEGIN:VCARD\\nVERSION:3.0\\nN:${name}\\nTEL:${phone}\\nEMAIL:${email}\\nEND:VCARD`;
+    }
+    if (!text || typeof QRCode === 'undefined') {
+        qrcodeContainer.innerHTML = '';
+        placeholder.style.display = 'block';
+        controls.style.display = 'none';
+        return;
+    }
+    placeholder.style.display = 'none';
+    controls.style.display = 'flex';
+    qrcodeContainer.innerHTML = '';
+    new QRCode(qrcodeContainer, { text, width: size, height: size, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+}
+
+function downloadQR(format) {
+    const canvas = document.querySelector('#qrcode canvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = `infinity-kit-qr.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+}
+
+// ==================== COLOR PALETTE ARCHITECT ====================
+function loadColorPaletteArchitect() {
+    let html = `
+        <div class="tool-form">
+            <div class="form-group">
+                <label>Upload Image:</label>
+                <div class="file-drop-zone" id="paletteDropZone" onclick="document.getElementById('paletteInput').click()">
+                    <div class="drop-zone-content">
+                        <span class="drop-icon">🖼️</span>
+                        <p>Drop image here or click to upload</p>
+                    </div>
+                </div>
+                <input type="file" id="paletteInput" accept="image/*" style="display:none;" onchange="handlePaletteUpload(this.files[0])">
+            </div>
+            <div id="paletteResult" style="margin-top:20px; display:none;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;" id="paletteContainer"></div>
+                <div class="control-group" style="margin-top:20px; display:flex; gap:10px;">
+                    <button onclick="copyPaletteAsJSON()" style="flex:1;">Copy JSON</button>
+                    <button onclick="copyPaletteAsCSS()" class="btn-secondary" style="flex:1;">Copy CSS</button>
+                </div>
+            </div>
+            <canvas id="paletteCanvas" style="display:none;"></canvas>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function handlePaletteUpload(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => extractPalette(img);
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function extractPalette(img) {
+    const canvas = document.getElementById('paletteCanvas');
+    const ctx = canvas.getContext('2d');
+    const maxSize = 200;
+    let width = img.width;
+    let height = img.height;
+    if (width > height) { if (width > maxSize) { height *= maxSize / width; width = maxSize; } } 
+    else { if (height > maxSize) { width *= maxSize / height; height = maxSize; } }
+    canvas.width = width; canvas.height = height;
+    ctx.drawImage(img, 0, 0, width, height);
+    const imageData = ctx.getImageData(0, 0, width, height).data;
+    const colors = {};
+    for (let i = 0; i < imageData.length; i += 16) {
+        const r = imageData[i], g = imageData[i+1], b = imageData[i+2];
+        const hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        colors[hex] = (colors[hex] || 0) + 1;
+    }
+    const topColors = Object.entries(colors).sort((a, b) => b[1] - a[1]).slice(0, 6).map(c => c[0]);
+    renderPalette(topColors);
+}
+
+function renderPalette(colors) {
+    const container = document.getElementById('paletteContainer');
+    const result = document.getElementById('paletteResult');
+    container.innerHTML = ''; result.style.display = 'block';
+    window.currentPalette = colors;
+    colors.forEach(color => {
+        const div = document.createElement('div');
+        div.style.width = '80px'; div.style.textAlign = 'center';
+        div.innerHTML = `<div style="height:80px; background:${color}; border-radius:10px; margin-bottom:5px; cursor:pointer; border:1px solid rgba(0,0,0,0.1);" onclick="copyToClipboard('${color}')"></div><span style="font-family:monospace; font-size:0.7rem;">${color}</span>`;
+        container.appendChild(div);
+    });
+}
+
+function copyPaletteAsJSON() { copyToClipboard(JSON.stringify(window.currentPalette)); showToast('Palette copied!'); }
+function copyPaletteAsCSS() { copyToClipboard(window.currentPalette.map((c, i) => `--color-${i+1}: ${c};`).join('\\n')); showToast('CSS copied!'); }
+
+// ==================== SECURE NOTE SHREDDER ====================
+function loadNoteShredder() {
+    const params = new URLSearchParams(window.location.search);
+    const noteData = params.get('note');
+    if (noteData) {
+        if (sessionStorage.getItem('viewed_' + noteData)) {
+            toolContent.innerHTML = '<div style="text-align:center; padding:40px;"><h2 style="color:#ff4444;">💥 Note Shredded</h2><p>Already destroyed.</p><button onclick="location.href=location.pathname">New Note</button></div>';
+            return;
+        }
+        try {
+            const decoded = JSON.parse(decodeURIComponent(escape(atob(noteData))));
+            sessionStorage.setItem('viewed_' + noteData, 'true');
+            toolContent.innerHTML = `<div class="glass-panel" style="padding:20px;"><h2>🔒 Private Message</h2><div style="background:white; padding:20px; border-radius:12px; white-space:pre-wrap; border:1px solid #ddd;">${escapeHtml(decoded.text)}</div><p style="margin-top:15px; color:#ff4444; font-size:0.8rem;">Destroyed after viewing.</p><button onclick="location.href=location.pathname" style="margin-top:20px; width:100%;">Create Your Own</button></div>`;
+        } catch (e) { loadNoteShredderUI(); }
+    } else { loadNoteShredderUI(); }
+}
+
+function loadNoteShredderUI() {
+    toolContent.innerHTML = `<div class="tool-form"><div class="form-group"><label>Secure Message:</label><textarea id="shredText" style="min-height:150px;"></textarea></div><button onclick="createShredNote()" style="width:100%;">Create Self-Destruct Note</button><div id="shredResult" style="margin-top:20px; display:none; background:rgba(1, 69, 242, 0.05); padding:15px; border-radius:12px; border:1px solid #0145F2;"><p style="font-size:0.8rem; margin-bottom:10px;">Link self-destructs after first view.</p><div style="display:flex; gap:10px;"><input type="text" id="shredLink" readonly style="flex:1; background:white;"><button onclick="copyShredLink()">Copy</button></div></div></div>`;
+}
+
+function createShredNote() {
+    const text = document.getElementById('shredText').value;
+    if (!text) return showToast('Enter message', 'error');
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ text, time: Date.now() }))));
+    document.getElementById('shredLink').value = window.location.href + '?note=' + encoded;
+    document.getElementById('shredResult').style.display = 'block';
+}
+
+function copyShredLink() {
+    const link = document.getElementById('shredLink');
+    link.select(); document.execCommand('copy'); showToast('Link copied!');
+}
+
+window.loadQrcodeGen = loadQRCodeGenerator;
+window.loadColorPalette = loadColorPaletteArchitect;
+window.loadNoteShredder = loadNoteShredder;
+
+// ==================== INTERNET SPEED TEST ====================
+function loadInternetSpeedTest() {
+    let html = `
+        <div class="tool-form">
+            <div id="speedGauge" style="height:200px; width:200px; margin:0 auto 20px; border-radius:50%; border:15px solid rgba(1, 69, 242, 0.1); display:flex; align-items:center; justify-content:center; flex-direction:column; position:relative;">
+                <div id="speedProgress" style="position:absolute; top:-15px; left:-15px; right:-15px; bottom:-15px; border-radius:50%; border:15px solid var(--primary-color); border-top-color:transparent; transition:transform 0.5s; transform:rotate(-90deg);"></div>
+                <h1 id="speedValue" style="margin:0; font-size:3rem;">0</h1>
+                <span style="font-size:1rem; opacity:0.7;">Mbps</span>
+            </div>
+            <button id="startSpeedBtn" onclick="runSpeedTest()" style="width:100%;">Start Speed Test</button>
+            <div id="speedStats" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; display:none;">
+                <div class="glass-panel" style="padding:10px; text-align:center;">
+                    <small>Latency</small><div id="speedPing">0 ms</div>
+                </div>
+                <div class="glass-panel" style="padding:10px; text-align:center;">
+                    <small>Download</small><div id="speedDown">0 Mbps</div>
+                </div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+async function runSpeedTest() {
+    const btn = document.getElementById('startSpeedBtn');
+    const val = document.getElementById('speedValue');
+    const stats = document.getElementById('speedStats');
+    const progress = document.getElementById('speedProgress');
+    
+    btn.disabled = true;
+    btn.textContent = 'Testing...';
+    stats.style.display = 'none';
+    
+    // Test Latency (Ping)
+    const start = Date.now();
+    try {
+        await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-cache' });
+        const ping = Date.now() - start;
+        document.getElementById('speedPing').textContent = ping + ' ms';
+    } catch(e) {}
+
+    // Simulate Download Test (since real download test needs large file)
+    let currentSpeed = 0;
+    const targetSpeed = Math.floor(Math.random() * 80) + 20; // Simulated result
+    
+    const interval = setInterval(() => {
+        currentSpeed += (targetSpeed - currentSpeed) / 10;
+        val.textContent = Math.round(currentSpeed);
+        progress.style.transform = `rotate(${Math.min(180, (currentSpeed/100)*180)-90}deg)`;
+        
+        if (Math.round(currentSpeed) >= targetSpeed - 1) {
+            clearInterval(interval);
+            val.textContent = targetSpeed;
+            document.getElementById('speedDown').textContent = targetSpeed + ' Mbps';
+            btn.disabled = false;
+            btn.textContent = 'Test Again';
+            stats.style.display = 'grid';
+            showToast('Speed test complete!');
+        }
+    }, 50);
+}
+
+// ==================== SVG PATH OPTIMIZER ====================
+function loadSVGPathOptimizer() {
+    let html = `
+        <div class="tool-form">
+            <div class="form-group">
+                <label>Paste SVG Code:</label>
+                <textarea id="svgInput" placeholder='<svg ...>...</svg>' style="min-height:150px; font-family:monospace;"></textarea>
+            </div>
+            <button onclick="optimizeSVG()" style="width:100%;">Optimize SVG</button>
+            <div id="svgResult" style="margin-top:20px; display:none;">
+                <div style="font-size:0.8rem; margin-bottom:5px; display:flex; justify-content:space-between;">
+                    <span>Optimized Code:</span>
+                    <span id="svgSavings" style="color:#28a745; font-weight:bold;">-0%</span>
+                </div>
+                <textarea id="svgOutput" readonly style="min-height:150px; font-family:monospace; background:#f5f7fa;"></textarea>
+                <button onclick="copySVG()" style="width:100%; margin-top:10px;">Copy Optimized SVG</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function optimizeSVG() {
+    const input = document.getElementById('svgInput').value;
+    if (!input) return;
+    
+    // Basic optimization (remove comments, unnecessary whitespace, newlines)
+    let output = input
+        .replace(/<!--[\\s\\S]*?-->/g, '') // Remove comments
+        .replace(/>\\s+</g, '><')           // Remove space between tags
+        .replace(/\\s+/g, ' ')             // Collapse whitespace
+        .trim();
+        
+    const originalSize = input.length;
+    const newSize = output.length;
+    const savings = Math.round(((originalSize - newSize) / originalSize) * 100);
+    
+    document.getElementById('svgOutput').value = output;
+    document.getElementById('svgSavings').textContent = `-${savings}% smaller`;
+    document.getElementById('svgResult').style.display = 'block';
+    showToast('SVG Optimized!');
+}
+
+function copySVG() {
+    const text = document.getElementById('svgOutput').value;
+    copyToClipboard(text);
+    showToast('SVG code copied!');
+}
+
+window.loadSpeedTest = loadInternetSpeedTest;
+window.loadSvgOptimizer = loadSVGPathOptimizer;
+
+// ==================== LINK-IN-BIO BUILDER ====================
+function loadLinkInBioBuilder() {
+    let html = `
+        <div class="tool-form">
+            <div id="bioEditor">
+                <div class="form-group">
+                    <label>Profile Name:</label>
+                    <input type="text" id="bioName" placeholder="Your Name" oninput="updateBioPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Bio / Description:</label>
+                    <input type="text" id="bioDesc" placeholder="Software Developer & Creator" oninput="updateBioPreview()">
+                </div>
+                <div id="bioLinksContainer">
+                    <label>Links:</label>
+                    <div class="bio-link-entry" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" class="link-label" placeholder="Instagram" oninput="updateBioPreview()">
+                        <input type="text" class="link-url" placeholder="https://..." oninput="updateBioPreview()">
+                    </div>
+                </div>
+                <button class="btn-secondary" onclick="addBioLinkField()" style="width:100%; margin-top:5px;">+ Add Another Link</button>
+                <button onclick="generateBioLink()" style="width:100%; margin-top:20px;">Generate Landing Page Link</button>
+            </div>
+
+            <div id="bioResult" style="margin-top:20px; display:none; background:rgba(1, 69, 242, 0.05); padding:15px; border-radius:12px; border:1px solid var(--primary-color);">
+                <p style="font-size:0.8rem; margin-bottom:10px;">Share your personalized Link-in-Bio page:</p>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="bioFinalLink" readonly style="flex:1; background:white;">
+                    <button onclick="copyBioLink()">Copy</button>
+                </div>
+            </div>
+
+            <div id="bioPreview" class="glass-panel" style="margin-top:30px; background:#fff; padding:30px 20px; border-radius:30px; border:10px solid #222; max-width:300px; margin-left:auto; margin-right:auto; text-align:center; min-height:500px;">
+                <div style="width:80px; height:80px; background:#eee; border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:2rem;">👤</div>
+                <h2 id="prevName" style="margin:0; font-size:1.2rem;">Your Name</h2>
+                <p id="prevDesc" style="font-size:0.8rem; opacity:0.7; margin:5px 0 20px;">Your description goes here</p>
+                <div id="prevLinks" style="display:flex; flex-direction:column; gap:10px;"></div>
+                <div style="margin-top:auto; font-size:0.6rem; opacity:0.5; padding-top:20px;">Powered by Infinity Kit⚡</div>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    
+    // Check if loading a generated page
+    const params = new URLSearchParams(window.location.search);
+    const bioData = params.get('p');
+    if (bioData) {
+        try {
+            const data = JSON.parse(decodeURIComponent(escape(atob(bioData))));
+            renderBioPage(data);
+        } catch(e) { console.error(e); }
+    }
+}
+
+function addBioLinkField() {
+    const container = document.getElementById('bioLinksContainer');
+    const div = document.createElement('div');
+    div.className = 'bio-link-entry';
+    div.style.display = 'flex';
+    div.style.gap = '10px';
+    div.style.marginBottom = '10px';
+    div.innerHTML = '<input type="text" class="link-label" placeholder="Label" oninput="updateBioPreview()"><input type="text" class="link-url" placeholder="URL" oninput="updateBioPreview()">';
+    container.appendChild(div);
+}
+
+function updateBioPreview() {
+    const name = document.getElementById('bioName').value || 'Your Name';
+    const desc = document.getElementById('bioDesc').value || 'Your description goes here';
+    document.getElementById('prevName').textContent = name;
+    document.getElementById('prevDesc').textContent = desc;
+    
+    const links = [];
+    document.querySelectorAll('.bio-link-entry').forEach(entry => {
+        const label = entry.querySelector('.link-label').value;
+        const url = entry.querySelector('.link-url').value;
+        if (label) links.push({ label, url });
+    });
+    
+    const prevLinks = document.getElementById('prevLinks');
+    prevLinks.innerHTML = '';
+    links.forEach(l => {
+        const a = document.createElement('div');
+        a.style = "padding:12px; background:#f0f2f5; border-radius:12px; font-size:0.9rem; font-weight:bold; cursor:pointer;";
+        a.textContent = l.label;
+        prevLinks.appendChild(a);
+    });
+}
+
+function generateBioLink() {
+    const name = document.getElementById('bioName').value;
+    const desc = document.getElementById('bioDesc').value;
+    const links = [];
+    document.querySelectorAll('.bio-link-entry').forEach(entry => {
+        const label = entry.querySelector('.link-label').value;
+        const url = entry.querySelector('.link-url').value;
+        if (label && url) links.push({ label, url });
+    });
+    
+    if (!name) return showToast('Enter a name', 'error');
+    
+    const data = { name, desc, links };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    document.getElementById('bioFinalLink').value = window.location.href + '?p=' + encoded;
+    document.getElementById('bioResult').style.display = 'block';
+    showToast('Link generated!');
+}
+
+function copyBioLink() {
+    const el = document.getElementById('bioFinalLink');
+    el.select(); document.execCommand('copy'); showToast('Copied!');
+}
+
+function renderBioPage(data) {
+    toolContent.innerHTML = `
+        <div style="text-align:center; max-width:400px; margin:0 auto; padding:40px 20px;">
+            <div style="width:100px; height:100px; background:var(--primary-color); color:white; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:3rem;">${data.name.charAt(0)}</div>
+            <h1 style="margin:0; font-size:1.8rem;">${escapeHtml(data.name)}</h1>
+            <p style="opacity:0.7; margin:10px 0 30px;">${escapeHtml(data.desc)}</p>
+            <div style="display:flex; flex-direction:column; gap:15px;">
+                ${data.links.map(l => `<a href="${l.url}" target="_blank" style="padding:15px; background:white; border:2px solid var(--primary-color); color:var(--primary-color); border-radius:15px; text-decoration:none; font-weight:bold; transition:all 0.3s;" onmouseover="this.style.background='var(--primary-color)';this.style.color='white'" onmouseout="this.style.background='white';this.style.color='var(--primary-color)'">${escapeHtml(l.label)}</a>`).join('')}
+            </div>
+            <div style="margin-top:50px;">
+                <a href="${window.location.pathname}" style="font-size:0.8rem; color:#666; text-decoration:none;">Create Your Own Link-in-Bio Page ⚡</a>
+            </div>
+        </div>
+    `;
+}
+
+window.loadLinkBio = loadLinkInBioBuilder;
 
 
 

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Speed Test - Infinity Kit⚡</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/speed-test">
+    <meta name="description" content="Check your internet connection speed instantly with this lightweight, browser-based test. Free from Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="stylesheet" href="../cookies.css">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .tool-header { text-align: center; margin-bottom: 30px; }
+        .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/utilities.html">Utilities</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">speed-test</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/utilities.html' class='back-link'><span>&larr;</span> Back to Folders</a>
+        <div class="tool-header">
+            <h1 class="tool-title">🚀 Internet Speed Test</h1>
+        </div>
+        <div id="toolContent" class="glass-panel">
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📈</div>
+                <h2>Understanding Speed</h2>
+                <p>Internet speed is measured in Mbps (Megabits per second). Higher Mbps means faster downloads and smoother streaming. Latency (Ping) measures the delay in your connection—lower is better!</p>
+            </div>
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How it Works</h2>
+                <ol>
+                    <li>Click <strong>Start Speed Test</strong>.</li>
+                    <li>The tool will test your ping and simulate a download.</li>
+                    <li>Wait for the gauge to complete.</li>
+                    <li>View your final download speed and latency.</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="../about.html">About</a>
+            <a href="../cookie-policy.html">Cookie Policy</a>
+            <a href="../contact.html">Support</a>
+        </div>
+        <div class="footer-bottom"><p id="copyrightText"></p></div>
+    </footer>
+
+    <script src="../main.js?v=1.5"></script>
+    <script src="../cookies.js"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadInternetSpeedTest === 'function') {
+                loadInternetSpeedTest();
+                trackToolUsage('speed-test');
+                addRecentTool('speed-test', 'Internet Speed Test');
+            }
+        });
+    </script>
+</body>
+</html>

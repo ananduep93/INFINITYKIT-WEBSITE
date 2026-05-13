@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link-in-Bio Builder - Infinity Kit⚡</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/link-bio">
+    <meta name="description" content="Create a beautiful, mobile-optimized landing page for your social media links. Free tool from Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="stylesheet" href="../cookies.css">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .tool-header { text-align: center; margin-bottom: 30px; }
+        .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
+        .bio-link-entry input { margin-bottom: 0 !important; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/social-tools.html">Social Media</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">link-bio</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/social-tools.html' class='back-link'><span>&larr;</span> Back to Folders</a>
+        <div class="tool-header">
+            <h1 class="tool-title">🔗 Link-in-Bio Builder</h1>
+        </div>
+        <div id="toolContent" class="glass-panel">
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📱</div>
+                <h2>Your Personal Portal</h2>
+                <p>Social media platforms like Instagram only allow one link in your bio. Use this tool to create a custom landing page that hosts all your important links in one beautiful, mobile-friendly place.</p>
+            </div>
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use</h2>
+                <ol>
+                    <li>Enter your name and a short bio.</li>
+                    <li>Add your social media links (Instagram, Twitter, etc.).</li>
+                    <li>Watch the live preview as you build.</li>
+                    <li>Generate the link and paste it into your social profile!</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="../about.html">About</a>
+            <a href="../cookie-policy.html">Cookie Policy</a>
+            <a href="../contact.html">Support</a>
+        </div>
+        <div class="footer-bottom"><p id="copyrightText"></p></div>
+    </footer>
+
+    <script src="../main.js?v=1.5"></script>
+    <script src="../cookies.js"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadLinkBio === 'function') {
+                loadLinkBio();
+                trackToolUsage('link-bio');
+                addRecentTool('link-bio', 'Link-in-Bio Builder');
+            }
+        });
+    </script>
+</body>
+</html>

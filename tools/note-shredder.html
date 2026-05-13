@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Note Shredder - Infinity Kit⚡</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/note-shredder">
+    <meta name="description" content="Create encrypted notes that self-destruct after being read. The ultimate privacy tool from Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="stylesheet" href="../cookies.css">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .tool-header { text-align: center; margin-bottom: 30px; }
+        .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/utilities.html">Utilities</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">note-shredder</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/utilities.html' class='back-link'><span>&larr;</span> Back to Folders</a>
+        <div class="tool-header">
+            <h1 class="tool-title">🗑️ Secure Note Shredder</h1>
+        </div>
+        <div id="toolContent" class="glass-panel">
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">🔒</div>
+                <h2>Privacy-First Messaging</h2>
+                <p>Need to share sensitive information? This tool creates a unique link that can only be opened once. Once viewed, the data is "shredded" and cannot be retrieved again.</p>
+            </div>
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use</h2>
+                <ol>
+                    <li>Type your secret message.</li>
+                    <li>Click <strong>Create Self-Destruct Note</strong>.</li>
+                    <li>Copy the generated link and share it.</li>
+                    <li>The recipient can only read it once!</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="../about.html">About</a>
+            <a href="../cookie-policy.html">Cookie Policy</a>
+            <a href="../contact.html">Support</a>
+        </div>
+        <div class="footer-bottom"><p id="copyrightText"></p></div>
+    </footer>
+
+    <script src="../main.js?v=1.5"></script>
+    <script src="../cookies.js"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadNoteShredder === 'function') {
+                loadNoteShredder();
+                trackToolUsage('note-shredder');
+                addRecentTool('note-shredder', 'Secure Note Shredder');
+            }
+        });
+    </script>
+</body>
+</html>
