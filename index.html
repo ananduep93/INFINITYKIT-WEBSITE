@@ -60,7 +60,29 @@
     <link rel="stylesheet" href="app.css?v=1.5">
     <link rel="manifest" href="manifest.json?v=1.5">
     <meta name="theme-color" content="#667eea">
-    <link rel="apple-touch-icon" href="icon-192.png?v=1.5">
+    <link rel="apple-touch-icon" href="icon-192.png?v=1.6">
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* Transparent Layout for Background Animation (Light Theme) */
+        body { background: #F8FAFC !important; color: #1E293B !important; }
+        .hero-section, .folders-container, .why-choose-section, .blog-section {
+            background: transparent !important;
+        }
+        .glass-panel, .folder-card, .tool-card, .bento-card {
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
+        }
+        .hero-title, .section-heading, .tool-title { color: #0F172A !important; }
+        .nav-logo { color: #0145F2 !important; }
+    </style>
 
     <!-- Anti-flicker Theme Script -->
     <script>
@@ -460,22 +482,23 @@
     
     <script src="notifications.js?v=1.5"></script>
     <!-- Quick Search Modal -->
-    <div id="quickSearchModal" class="modal" style="display:none; align-items:flex-start; padding-top:100px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
-        <div class="modal-content glass-panel" style="max-width:600px; border-radius:24px; padding:20px; border: 2px solid var(--primary-color); box-shadow: 0 0 30px rgba(1, 69, 242, 0.3);">
-            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px; background: white; padding: 10px 20px; border-radius: 15px;">
+    <div id="quickSearchModal" class="modal" style="display:none; align-items:flex-start; padding-top:100px; background: rgba(255,255,255,0.8); backdrop-filter: blur(15px);">
+        <div class="modal-content glass-panel" style="max-width:600px; border-radius:24px; padding:20px; border: 2px solid var(--primary-color); box-shadow: 0 20px 50px rgba(0,0,0,0.1);">
+            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px; background: #F1F5F9; padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(0,0,0,0.05);">
                 <span style="font-size:1.5rem; color: var(--primary-color);">🔍</span>
                 <input type="text" id="quickSearchInput" placeholder="Search any tool... (Esc to close)" style="flex:1; background:transparent; border:none; font-size:1.2rem; outline:none; color: #1E293B;">
             </div>
             <div id="quickSearchResults" style="max-height:400px; overflow-y:auto;">
-                <p style="color: white; opacity:0.8; font-size:0.9rem; text-align: center; padding: 20px;">Start typing to find tools instantly...</p>
+                <p style="color: #64748B; opacity:0.8; font-size:0.9rem; text-align: center; padding: 20px;">Start typing to find tools instantly...</p>
             </div>
-            <div style="margin-top:20px; font-size:0.75rem; color: white; opacity:0.6; text-align:right;">
+            <div style="margin-top:20px; font-size:0.75rem; color: #64748B; opacity:0.6; text-align:right;">
                 Press <kbd style="background: var(--primary-color); color: white; padding:2px 8px; border-radius:4px; border: none;">Esc</kbd> to close
             </div>
         </div>
     </div>
 
-    <script src="main.js?v=1.6"></script>
+    <script src="main.js?v=1.7"></script>
+    <script src="background.js?v=1.0"></script>
     <script src="expense-tracker.js?v=1.5"></script>
     <script type="module" src="auth-ui.js?v=1.5"></script>
     <script type="module" src="updates-popup.js?v=1.5"></script>

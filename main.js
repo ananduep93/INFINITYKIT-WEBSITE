@@ -6672,13 +6672,13 @@ quickSearchInput.addEventListener('input', (e) => {
         return;
     }
     quickSearchResults.innerHTML = matches.map(t => `
-        <div class="search-result-item" onclick="navigateToTool('${t.id}')" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:12px; cursor:pointer; margin-bottom:5px; transition:background 0.2s; background: rgba(255,255,255,0.05);">
+        <div class="search-result-item" onclick="navigateToTool('${t.id}')" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:12px; cursor:pointer; margin-bottom:5px; transition:background 0.2s; background: rgba(0,0,0,0.02);">
             <div style="font-size:1.5rem;">${t.icon}</div>
             <div style="flex:1;">
-                <div style="font-weight:bold; font-size:0.9rem; color: white;">${t.name}</div>
-                <div style="font-size:0.75rem; opacity:0.8; color: white;">${t.description}</div>
+                <div style="font-weight:bold; font-size:0.9rem; color: #1E293B;">${t.name}</div>
+                <div style="font-size:0.75rem; opacity:0.8; color: #475569;">${t.description}</div>
             </div>
-            <div style="font-size:0.8rem; opacity:0.6; color: white;">Enter &rarr;</div>
+            <div style="font-size:0.8rem; opacity:0.6; color: #1E293B;">Enter &rarr;</div>
         </div>
     `).join('');
 });
@@ -6785,11 +6785,74 @@ function initToolOfTheDay() {
     if (blogSection) blogSection.after(banner);
 }
 
+// ==================== UNIVERSAL PREMIUM BACKGROUND ====================
+function injectPremiumBackground() {
+    // Avoid double injection
+    if (document.getElementById('infinity-bg-canvas')) return;
+    
+    const prefix = typeof PathManager !== 'undefined' ? PathManager.getPrefix() : './';
+    
+    // 1. Inject Premium Light Styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+        body { background: #F8FAFC !important; color: #1E293B !important; transition: background 0.5s ease; }
+        .navbar, .hero-section, .folders-container, .why-choose-section, .blog-section, .footer, .tool-page-container, .tool-header, .page-header {
+            background: transparent !important;
+        }
+        .navbar { background: rgba(255, 255, 255, 0.8) !important; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        .glass-panel, .folder-card, .tool-card, .bento-card, .info-card, .bento-grid .bento-card {
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
+            border-radius: 24px !important;
+        }
+        .hero-title, .section-heading, .tool-title, .page-title { color: #0F172A !important; text-shadow: none !important; }
+        .footer { background: #1E293B !important; color: white !important; margin-top: 80px; }
+        .footer-links a { color: rgba(255,255,255,0.7) !important; }
+        .footer-links a:hover { color: white !important; }
+    `;
+    document.head.appendChild(style);
+
+    // 2. Load Animation Libraries on Demand
+    const scripts = [
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
+        prefix + 'background.js'
+    ];
+
+    function loadScript(idx) {
+        if (idx >= scripts.length) return;
+        
+        // Skip if library already exists
+        const src = scripts[idx];
+        if (document.querySelector(`script[src*="${src.split('/').pop()}"]`)) {
+            loadScript(idx + 1);
+            return;
+        }
+
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = () => loadScript(idx + 1);
+        document.body.appendChild(s);
+    }
+    
+    loadScript(0);
+}
+
 // Run on start
 document.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('inf_lang');
     if (savedLang) applyLanguage(savedLang);
-    initToolOfTheDay();
+    
+    // Initialize Tool of the Day if on home page
+    if (document.querySelector('.blog-section')) initToolOfTheDay();
+    
+    // Global background injection for all pages (Home, Tools, Folders)
+    injectPremiumBackground();
 });
 
 

@@ -10,77 +10,21 @@
     <link rel="canonical" href="https://infinitykit.online/whatsnew">
     <link rel="stylesheet" href="app.css?v=1.0">
     <style>
-        .updates-container {
-            max-width: 800px;
-            margin: 100px auto 50px;
-            padding: 0 20px;
+        /* Transparent Layout for Background Animation (Light Theme) */
+        body { background: #F8FAFC !important; color: #1E293B !important; transition: background 0.5s ease; }
+        .navbar, .updates-container, .updates-header, .footer {
+            background: transparent !important;
         }
-
-        .updates-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .updates-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .update-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
         .update-card {
-            background: white;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
+            border-radius: 24px !important;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
         }
-
-        [data-theme="light"] .update-card {
-            background: white;
-            border-color: #eee;
-        }
-
-        .update-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .update-date {
-            font-size: 0.85rem;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .update-message {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .loading-updates {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
-            opacity: 0.7;
-        }
-
-        @media (max-width: 600px) {
-            .updates-header h1 {
-                font-size: 2rem;
-            }
-        }
+        .updates-header h1 { color: #0F172A !important; background: none !important; -webkit-text-fill-color: initial !important; }
     </style>
 </head>
 <body>
@@ -158,6 +102,11 @@
             } catch (e) {}
         })();
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="main.js?v=1.7"></script>
+    <script src="background.js?v=1.0"></script>
 </body>
 </html>
 
