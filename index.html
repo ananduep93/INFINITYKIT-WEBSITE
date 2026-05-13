@@ -139,6 +139,7 @@
                 <a href="about.html">About</a>
                 <a href="contact.html">Contact</a>
             </div>
+            <button onclick="openSettings()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer; margin-left:15px;" title="Settings">⚙️</button>
         </div>
     </nav>
 
@@ -423,7 +424,15 @@
             
             <div class="settings-content">
 
+                <!-- Language Support -->
+                <div class="settings-section">
+                    <h3>🌍 Language / ഭാഷ</h3>
+                    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 10px;">Select your preferred language.</p>
+                    <button id="langToggle" class="btn-lang" onclick="toggleLanguage()" style="width:100%; background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold;">EN | മലയാളം</button>
+                </div>
 
+                <!-- Preferences -->
+                <div class="settings-section">
 
                 <!-- App Install -->
                 <div class="settings-section">
@@ -450,7 +459,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script src="notifications.js?v=1.5"></script>
-    <script src="main.js?v=1.5"></script>
+    <!-- Quick Search Modal -->
+    <div id="quickSearchModal" class="modal" style="display:none; align-items:flex-start; padding-top:100px; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
+        <div class="modal-content glass-panel" style="max-width:600px; border-radius:24px; padding:20px; border: 2px solid var(--primary-color); box-shadow: 0 0 30px rgba(1, 69, 242, 0.3);">
+            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px; background: white; padding: 10px 20px; border-radius: 15px;">
+                <span style="font-size:1.5rem; color: var(--primary-color);">🔍</span>
+                <input type="text" id="quickSearchInput" placeholder="Search any tool... (Esc to close)" style="flex:1; background:transparent; border:none; font-size:1.2rem; outline:none; color: #1E293B;">
+            </div>
+            <div id="quickSearchResults" style="max-height:400px; overflow-y:auto;">
+                <p style="color: white; opacity:0.8; font-size:0.9rem; text-align: center; padding: 20px;">Start typing to find tools instantly...</p>
+            </div>
+            <div style="margin-top:20px; font-size:0.75rem; color: white; opacity:0.6; text-align:right;">
+                Press <kbd style="background: var(--primary-color); color: white; padding:2px 8px; border-radius:4px; border: none;">Esc</kbd> to close
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js?v=1.6"></script>
     <script src="expense-tracker.js?v=1.5"></script>
     <script type="module" src="auth-ui.js?v=1.5"></script>
     <script type="module" src="updates-popup.js?v=1.5"></script>

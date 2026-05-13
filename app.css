@@ -4799,3 +4799,21 @@ section { padding: 40px 20px !important; }
 .search-results::-webkit-scrollbar-thumb:hover {
     background: #86868b;
 }
+
+/* Quick Search Premium Styles */
+.search-result-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+[data-theme="dark"] .search-result-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+kbd {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.8rem;
+    background: #f9f9f9;
+    color: #333;
+}

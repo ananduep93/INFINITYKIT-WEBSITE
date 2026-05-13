@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity Beam - Direct P2P File Share⚡</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/p2p-share">
+    <meta name="description" content="Send files directly to another device with end-to-end P2P sharing. Fast, private, and secure file transfer from Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="stylesheet" href="../cookies.css">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .tool-header { text-align: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links"><a href="../index.html">Home</a><a href="../about.html">About</a><a href="../contact.html">Contact</a></div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="../index.html">Home</a> <span class="separator">&rsaquo;</span>
+        <a href="../folder/social-tools.html">Social Media</a> <span class="separator">&rsaquo;</span>
+        <span class="current">p2p-share</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/social-tools.html' class='back-link'><span>&larr;</span> Back to Folders</a>
+        <div class="tool-header"><h1 class="tool-title">📤 Infinity Beam ⚡</h1></div>
+        <div id="toolContent" class="glass-panel"><div class="loading-placeholder">Loading Infinity Beam...</div></div>
+
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">🔒</div>
+                <h2>Direct & Private</h2>
+                <p>Infinity Beam uses WebRTC technology to send files directly between devices. Your data never touches our servers, ensuring 100% privacy and maximum transfer speed.</p>
+            </div>
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use</h2>
+                <ol>
+                    <li>Open this page on <strong>both</strong> devices.</li>
+                    <li>Copy the <strong>Beam ID</strong> from the first device.</li>
+                    <li>Paste it into the <strong>Recipient ID</strong> box on the second device and click Connect.</li>
+                    <li>Once connected, select your file and watch it "beam" across!</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-links"><a href="../about.html">About</a><a href="../cookie-policy.html">Cookie Policy</a><a href="../contact.html">Support</a></div>
+        <div class="footer-bottom"><p id="copyrightText"></p></div>
+    </footer>
+
+    <script src="../main.js?v=1.5"></script>
+    <script src="../cookies.js"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadP2pShare === 'function') {
+                loadP2pShare();
+                trackToolUsage('p2p-share');
+                addRecentTool('p2p-share', 'Infinity Beam');
+            }
+        });
+    </script>
+</body>
+</html>

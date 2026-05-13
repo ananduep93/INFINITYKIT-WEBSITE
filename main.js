@@ -43,7 +43,7 @@ const baseFolders = [
         name: 'Utilities',
         icon: '🛠️',
         emoji: '🛠️',
-        tools: ['unitconverter', 'passwordgen', 'passwordsaver', 'passwordstrength', 'randomnamepicker', 'qrcode-gen', 'note-shredder', 'speed-test']
+        tools: ['unitconverter', 'passwordgen', 'passwordsaver', 'passwordstrength', 'randomnamepicker', 'qrcode-gen', 'note-shredder', 'speed-test', 'morse-flash']
     },
     {
         id: 'pdf-toolkit',
@@ -103,7 +103,7 @@ const baseFolders = [
         name: 'Data Tools',
         icon: '📊',
         emoji: '📊',
-        tools: ['graphmaker', 'averagecalculator', 'numbersorter', 'csvviewer']
+        tools: ['graphmaker', 'averagecalculator', 'numbersorter', 'csvviewer', 'json-code']
     },
     {
         id: 'decision-tools',
@@ -124,7 +124,7 @@ const baseFolders = [
         name: 'Web Tools',
         icon: '🌐',
         emoji: '🌐',
-        tools: ['urlencoder', 'urlextractor', 'metatagviewer', 'svg-optimizer']
+        tools: ['urlencoder', 'urlextractor', 'metatagviewer', 'svg-optimizer', 'glass-gen']
     },
     {
         id: 'health-utility-hub',
@@ -138,14 +138,14 @@ const baseFolders = [
         name: 'Social Media',
         icon: '📱',
         emoji: '📱',
-        tools: ['link-bio']
+        tools: ['link-bio', 'p2p-share']
     },
     {
         id: 'ai-tools',
         name: 'AI Tools',
         icon: '🤖',
         emoji: '🤖',
-        tools: ['chatbot', 'text-improver', 'summarizer', 'image-generator']
+        tools: ['chatbot', 'text-improver', 'summarizer', 'image-generator', 'voice-text']
     }
 ];
 
@@ -660,6 +660,36 @@ const tools = [
         name: 'Link-in-Bio Builder',
         icon: '🔗',
         description: 'Create a beautiful landing page for your social media links.'
+    },
+    {
+        id: 'p2p-share',
+        name: 'Infinity Beam ⚡',
+        icon: '📤',
+        description: 'Send files directly to another device with end-to-end P2P sharing.'
+    },
+    {
+        id: 'glass-gen',
+        name: 'Glassmorphism Generator',
+        icon: '💎',
+        description: 'Design beautiful frosted-glass CSS effects for your web projects.'
+    },
+    {
+        id: 'json-code',
+        name: 'JSON to Code',
+        icon: '💻',
+        description: 'Convert JSON to TypeScript, Java, or C# classes instantly.'
+    },
+    {
+        id: 'morse-flash',
+        name: 'Morse Code Flash',
+        icon: '🔦',
+        description: 'Convert text to Morse code and transmit it using your screen.'
+    },
+    {
+        id: 'voice-text',
+        name: 'AI Voice Transcriber',
+        icon: '🎙️',
+        description: 'Turn your speech into text instantly using browser AI.'
     }
 ];
 
@@ -702,7 +732,7 @@ const PathManager = {
 
     getToolPath(toolId) {
         const prefix = this.getPrefix();
-        const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker'];
+        const aiTools = ['chatbot', 'text-improver', 'summarizer', 'code-helper', 'image-generator', 'translator', 'voice-assistant', 'document-checker', 'voice-text'];
         if (aiTools.includes(toolId)) {
             return `${prefix}ai-tools/${toolId}.html`;
         }
@@ -6387,6 +6417,380 @@ function renderBioPage(data) {
 }
 
 window.loadLinkBio = loadLinkInBioBuilder;
+
+// ==================== GLASSMORPHISM GENERATOR ====================
+function loadGlassGenerator() {
+    let html = `
+        <div class="tool-form">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;" class="glass-gen-layout">
+                <div class="controls-panel">
+                    <div class="form-group">
+                        <label>Blur Intensity: <span id="blurVal">10</span>px</label>
+                        <input type="range" id="glassBlur" min="0" max="20" value="10" oninput="updateGlass()">
+                    </div>
+                    <div class="form-group">
+                        <label>Transparency: <span id="transVal">0.2</span></label>
+                        <input type="range" id="glassTrans" min="0" max="1" step="0.05" value="0.2" oninput="updateGlass()">
+                    </div>
+                    <div class="form-group">
+                        <label>Color:</label>
+                        <input type="color" id="glassColor" value="#ffffff" oninput="updateGlass()">
+                    </div>
+                    <div class="form-group">
+                        <label>Outline / Border: <span id="borderVal">0.1</span></label>
+                        <input type="range" id="glassBorder" min="0" max="1" step="0.05" value="0.1" oninput="updateGlass()">
+                    </div>
+                </div>
+                <div style="background:linear-gradient(45deg, #f06, #4a90e2); border-radius:12px; padding:40px; display:flex; align-items:center; justify-content:center;">
+                    <div id="glassPreview" style="width:100%; height:150px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; text-shadow:0 2px 4px rgba(0,0,0,0.2);">Preview</div>
+                </div>
+            </div>
+            <div id="glassResult" style="margin-top:20px;">
+                <div style="font-size:0.8rem; margin-bottom:5px;">CSS Code:</div>
+                <textarea id="glassCss" readonly style="min-height:120px; font-family:monospace; background:#f5f7fa;"></textarea>
+                <button onclick="copyGlassCss()" style="width:100%; margin-top:10px;">Copy CSS</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+    updateGlass();
+}
+
+function updateGlass() {
+    const blur = document.getElementById('glassBlur').value;
+    const trans = document.getElementById('glassTrans').value;
+    const color = document.getElementById('glassColor').value;
+    const border = document.getElementById('glassBorder').value;
+    document.getElementById('blurVal').textContent = blur;
+    document.getElementById('transVal').textContent = trans;
+    document.getElementById('borderVal').textContent = border;
+    const r = parseInt(color.slice(1, 3), 16), g = parseInt(color.slice(3, 5), 16), b = parseInt(color.slice(5, 7), 16);
+    const css = `background: rgba(${r}, ${g}, ${b}, ${trans});\\nbackdrop-filter: blur(${blur}px);\\n-webkit-backdrop-filter: blur(${blur}px);\\nborder: 1px solid rgba(${r}, ${g}, ${b}, ${border});\\nborder-radius: 20px;`;
+    const preview = document.getElementById('glassPreview');
+    preview.style.cssText = css;
+    document.getElementById('glassCss').value = css;
+}
+
+function copyGlassCss() { copyToClipboard(document.getElementById('glassCss').value); showToast('CSS Copied!'); }
+
+// ==================== JSON TO CODE ====================
+function loadJSONToCode() {
+    let html = `
+        <div class="tool-form">
+            <div class="form-group">
+                <label>Paste JSON:</label>
+                <textarea id="jsonInput" placeholder='{"name": "John", "age": 30}' style="min-height:150px; font-family:monospace;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Target Language:</label>
+                <select id="jsonLang" onchange="convertJSON()">
+                    <option value="ts">TypeScript Interface</option>
+                    <option value="java">Java Class</option>
+                    <option value="cs">C# Class</option>
+                </select>
+            </div>
+            <button onclick="convertJSON()" style="width:100%;">Convert JSON to Code</button>
+            <div id="jsonResult" style="margin-top:20px; display:none;">
+                <textarea id="jsonOutput" readonly style="min-height:200px; font-family:monospace; background:#f5f7fa;"></textarea>
+                <button onclick="copyToClipboard(document.getElementById('jsonOutput').value); showToast('Code Copied!')" style="width:100%; margin-top:10px;">Copy Code</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+function convertJSON() {
+    const input = document.getElementById('jsonInput').value;
+    const lang = document.getElementById('jsonLang').value;
+    if (!input) return;
+    try {
+        const obj = JSON.parse(input);
+        let output = '';
+        if (lang === 'ts') {
+            output = 'interface RootObject {\\n';
+            for (let key in obj) { output += `  ${key}: ${typeof obj[key] === 'object' ? 'any' : typeof obj[key]};\\n`; }
+            output += '}';
+        } else if (lang === 'java') {
+            output = 'public class RootObject {\\n';
+            for (let key in obj) { output += `  public ${typeof obj[key] === 'number' ? 'double' : 'String'} ${key};\\n`; }
+            output += '}';
+        } else if (lang === 'cs') {
+            output = 'public class RootObject {\\n';
+            for (let key in obj) { output += `  public ${typeof obj[key] === 'number' ? 'double' : 'string'} ${key} { get; set; }\\n`; }
+            output += '}';
+        }
+        document.getElementById('jsonOutput').value = output;
+        document.getElementById('jsonResult').style.display = 'block';
+    } catch(e) { showToast('Invalid JSON', 'error'); }
+}
+
+// ==================== MORSE CODE FLASH ====================
+function loadMorseFlash() {
+    let html = `
+        <div class="tool-form">
+            <div class="form-group">
+                <label>Text to Transmit:</label>
+                <input type="text" id="morseInput" placeholder="SOS" oninput="updateMorsePreview()">
+            </div>
+            <div id="morseCode" style="font-family:monospace; font-size:1.5rem; letter-spacing:5px; text-align:center; margin-bottom:20px; color:var(--primary-color);">... --- ...</div>
+            <button onclick="startMorseFlash()" id="flashBtn" style="width:100%;">Transmit Morse Flash</button>
+            <div id="flashScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; display:none; z-index:99999; align-items:center; justify-content:center; flex-direction:column; color:white;">
+                <div id="flashCircle" style="width:200px; height:200px; border-radius:50%; background:white; opacity:0; transition:opacity: 0.05s;"></div>
+                <p id="flashStatus" style="margin-top:40px; font-size:1.5rem; font-weight:bold;"></p>
+                <button onclick="stopMorseFlash()" style="position:absolute; bottom:50px; background:rgba(255,0,0,0.5);">STOP</button>
+            </div>
+        </div>
+    `;
+    toolContent.innerHTML = html;
+}
+
+const MORSE_MAP = { 'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----', ' ': ' ' };
+
+function updateMorsePreview() {
+    const input = document.getElementById('morseInput').value.toUpperCase();
+    const code = input.split('').map(c => MORSE_MAP[c] || '').join(' ');
+    document.getElementById('morseCode').textContent = code;
+}
+
+async function startMorseFlash() {
+    const input = document.getElementById('morseInput').value.toUpperCase();
+    if (!input) return;
+    const screen = document.getElementById('flashScreen'), circle = document.getElementById('flashCircle'), status = document.getElementById('flashStatus');
+    screen.style.display = 'flex'; window.isFlashing = true;
+    const unit = 200;
+    for (let char of input) {
+        if (!window.isFlashing) break;
+        const code = MORSE_MAP[char]; if (!code) continue;
+        status.textContent = `Transmitting: ${char}`;
+        for (let symbol of code) {
+            if (!window.isFlashing) break;
+            circle.style.opacity = '1'; await new Promise(r => setTimeout(r, symbol === '.' ? unit : unit * 3));
+            circle.style.opacity = '0'; await new Promise(r => setTimeout(r, unit));
+        }
+        await new Promise(r => setTimeout(r, unit * 2));
+    }
+    stopMorseFlash();
+}
+
+function stopMorseFlash() { window.isFlashing = false; document.getElementById('flashScreen').style.display = 'none'; }
+
+// ==================== VOICE TRANSCRIBER ====================
+function loadVoiceText() {
+    let html = `<div class="tool-form" style="text-align:center;"><div id="micStatus" style="width:80px; height:80px; background:rgba(1, 69, 242, 0.1); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; color:var(--primary-color); font-size:2rem; transition:all 0.3s;">🎤</div><h3 id="voiceStatus">Click "Start Recording"</h3><div class="form-group" style="margin-top:20px;"><textarea id="voiceOutput" placeholder="Your speech will appear here..." style="min-height:200px; border-radius:15px; font-size:1.1rem; padding:20px;"></textarea></div><div style="display:flex; gap:10px;"><button id="recordBtn" onclick="toggleRecording()" style="flex:2;">Start Recording</button><button onclick="copyToClipboard(document.getElementById('voiceOutput').value); showToast('Copied!')" class="btn-secondary" style="flex:1;">Copy</button></div></div>`;
+    toolContent.innerHTML = html;
+}
+
+function toggleRecording() {
+    const btn = document.getElementById('recordBtn'), status = document.getElementById('voiceStatus'), mic = document.getElementById('micStatus'), output = document.getElementById('voiceOutput');
+    if (window.isRecording) { window.recognition.stop(); window.isRecording = false; btn.textContent = 'Start Recording'; status.textContent = 'Stopped.'; mic.style.background = 'rgba(1, 69, 242, 0.1)'; return; }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return showToast('Not supported', 'error');
+    window.recognition = new SR(); window.recognition.continuous = true; window.recognition.interimResults = true;
+    window.recognition.onstart = () => { window.isRecording = true; btn.textContent = 'Stop'; status.textContent = 'Listening...'; mic.style.background = 'var(--primary-color)'; mic.style.color = 'white'; };
+    window.recognition.onresult = (e) => { let transcript = ''; for (let i = e.resultIndex; i < e.results.length; i++) transcript += e.results[i][0].transcript; output.value = transcript; };
+    window.recognition.start();
+}
+
+// ==================== INFINITY BEAM (P2P SHARE) ====================
+function loadP2PShare() {
+    let html = `<div class="tool-form" style="text-align:center;"><div id="peerStatus" style="font-size:0.8rem; margin-bottom:20px;">Initializing Beam...</div><div id="beamConnect"><div class="form-group"><label>Your Beam ID:</label><div style="display:flex; gap:10px;"><input type="text" id="myPeerId" readonly style="flex:1; font-family:monospace; text-align:center;"><button onclick="copyToClipboard(document.getElementById('myPeerId').value); showToast('ID Copied!')">Copy</button></div></div><div class="form-group" style="margin-top:20px;"><label>Enter Recipient ID:</label><input type="text" id="targetPeerId"><button onclick="connectToPeer()" style="width:100%; margin-top:10px;">Connect Beam ⚡</button></div></div><div id="beamActive" style="display:none;"><div class="glass-panel" style="padding:20px; border:2px solid var(--primary-color);"><h3>Connected!</h3><input type="file" id="beamFile" onchange="sendBeamFile(this.files[0])"><div id="beamProgress" style="margin-top:20px; display:none;"><div style="height:8px; background:#eee; border-radius:4px; overflow:hidden;"><div id="beamBar" style="width:0%; height:100%; background:var(--primary-color);"></div></div></div></div></div></div>`;
+    toolContent.innerHTML = html;
+    if (typeof Peer === 'undefined') {
+        const s = document.createElement('script'); s.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js'; s.onload = () => initPeer(); document.head.appendChild(s);
+    } else initPeer();
+}
+
+function initPeer() {
+    window.peer = new Peer();
+    window.peer.on('open', (id) => { document.getElementById('myPeerId').value = id; document.getElementById('peerStatus').textContent = 'Ready!'; });
+    window.peer.on('connection', (conn) => { window.currentConn = conn; setupPeerListeners(); document.getElementById('beamConnect').style.display = 'none'; document.getElementById('beamActive').style.display = 'block'; });
+}
+
+function connectToPeer() {
+    const id = document.getElementById('targetPeerId').value; if (!id) return;
+    window.currentConn = window.peer.connect(id); setupPeerListeners();
+    document.getElementById('beamConnect').style.display = 'none'; document.getElementById('beamActive').style.display = 'block';
+}
+
+function setupPeerListeners() {
+    window.currentConn.on('data', (d) => {
+        if (d.type === 'file') {
+            const b = new Blob([d.file], { type: d.fileType }), u = URL.createObjectURL(b), a = document.createElement('a');
+            a.href = u; a.download = d.fileName; a.click(); showToast('File received! ⚡');
+        }
+    });
+}
+
+function sendBeamFile(f) {
+    if (!f || !window.currentConn) return;
+    document.getElementById('beamProgress').style.display = 'block';
+    window.currentConn.send({ type: 'file', file: f, fileName: f.name, fileType: f.type });
+    document.getElementById('beamBar').style.width = '100%'; showToast('File sent! ⚡');
+}
+
+window.loadGlassGen = loadGlassGenerator;
+window.loadJsonCode = loadJSONToCode;
+window.loadMorseFlash = loadMorseFlash;
+window.loadVoiceText = loadVoiceText;
+window.loadP2pShare = loadP2PShare;
+
+// ==================== QUICK SEARCH (Ctrl+K) ====================
+const quickSearchModal = document.getElementById('quickSearchModal');
+const quickSearchInput = document.getElementById('quickSearchInput');
+const quickSearchResults = document.getElementById('quickSearchResults');
+
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openQuickSearch();
+    }
+    if (e.key === 'Escape' && quickSearchModal.style.display === 'flex') {
+        closeQuickSearch();
+    }
+});
+
+function openQuickSearch() {
+    quickSearchModal.style.display = 'flex';
+    quickSearchInput.focus();
+    triggerHaptic('light');
+}
+
+function closeQuickSearch() {
+    quickSearchModal.style.display = 'none';
+    quickSearchInput.value = '';
+}
+
+quickSearchInput.addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    if (!q) {
+        quickSearchResults.innerHTML = '<p style="opacity:0.5; font-size:0.9rem;">Start typing to find tools instantly...</p>';
+        return;
+    }
+    const matches = tools.filter(t => t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q)).slice(0, 5);
+    if (matches.length === 0) {
+        quickSearchResults.innerHTML = '<p style="text-align:center; padding:20px;">No tools found.</p>';
+        return;
+    }
+    quickSearchResults.innerHTML = matches.map(t => `
+        <div class="search-result-item" onclick="navigateToTool('${t.id}')" style="display:flex; align-items:center; gap:15px; padding:12px; border-radius:12px; cursor:pointer; margin-bottom:5px; transition:background 0.2s; background: rgba(255,255,255,0.05);">
+            <div style="font-size:1.5rem;">${t.icon}</div>
+            <div style="flex:1;">
+                <div style="font-weight:bold; font-size:0.9rem; color: white;">${t.name}</div>
+                <div style="font-size:0.75rem; opacity:0.8; color: white;">${t.description}</div>
+            </div>
+            <div style="font-size:0.8rem; opacity:0.6; color: white;">Enter &rarr;</div>
+        </div>
+    `).join('');
+});
+
+function navigateToTool(id) {
+    const tool = tools.find(t => t.id === id);
+    if (tool) {
+        closeQuickSearch();
+        openTool(tool.id, tool.name, tool.icon);
+    }
+}
+
+// ==================== MULTI-LANGUAGE SUPPORT ====================
+const translations = {
+    ml: {
+        'Home': 'ഹോം', 'About': 'വിവരങ്ങൾ', 'Contact': 'ബന്ധപ്പെടുക', 'Features': 'സവിശേഷതകൾ',
+        'Search any tool...': 'ടൂൾ തിരയുക...', 'Popular Categories': 'പ്രധാന വിഭാഗങ്ങൾ',
+        'Essential Tools': 'അത്യാവശ്യ ടൂളുകൾ', 'Quick Tools': 'ക്വിക്ക് ടൂളുകൾ', 'Data Tools': 'ഡാറ്റ ടൂളുകൾ',
+        'Text Tools': 'ടെക്സ്റ്റ് ടൂളുകൾ', 'Daily Utilities': 'നിത്യോപയോഗ ടൂളുകൾ', 'Image Tools': 'ഇമേജ് ടൂളുകൾ',
+        'Download App': 'ആപ്പ് ഡൗൺലോഡ്', 'Start for Free': 'സൗജന്യമായി തുടങ്ങൂ', 'The Infinity Ecosystem': 'ഇൻഫിനിറ്റി ഇക്കോസിസ്റ്റം',
+        'Latest Insights': 'പുതിയ വിശേഷങ്ങൾ', 'TOOL OF THE DAY': 'ഇന്നത്തെ പ്രത്യേക ടൂൾ', 'Try Now': 'ഉപയോഗിച്ചു നോക്കൂ',
+        'PDF Toolkit': 'PDF ടൂൾകിറ്റ്', 'Social Media': 'സോഷ്യൽ മീഡിയ',
+        // Tool Names
+        'QR Code Generator': 'ക്യുആർ കോഡ് ജനറേറ്റർ', 'Color Palette Architect': 'കളർ പാലറ്റ് ആർക്കിടെക്റ്റ്',
+        'Secure Note Shredder': 'സെക്യുർ നോട്ട് ഷ്രെഡർ', 'Internet Speed Test': 'ഇന്റർനെറ്റ് സ്പീഡ് ടെസ്റ്റ്',
+        'SVG Path Optimizer': 'SVG പാത്ത് ഒപ്റ്റിമൈസർ', 'Link-in-Bio Builder': 'ലിങ്ക്-ഇൻ-ബയോ ബിൽഡർ',
+        'Glassmorphism Generator': 'ഗ്ലാസ്മോർഫിസം ജനറേറ്റർ', 'JSON to Code': 'JSON ടു കോഡ്',
+        'Morse Code Flash': 'മോഴ്സ് കോഡ് ഫ്ലാഷ്', 'AI Voice Transcriber': 'AI വോയ്സ് ട്രാൻസ്ക്രൈബർ',
+        'Infinity Beam': 'ഇൻഫിനിറ്റി ബീം', 'Case Converter': 'കേസ് കൺവെർട്ടർ'
+    },
+    en: {
+        'Home': 'Home', 'About': 'About', 'Contact': 'Contact', 'Features': 'Features',
+        'Search any tool...': 'Search any tool...', 'Popular Categories': 'Popular Categories',
+        'Essential Tools': 'Essential Tools', 'Quick Tools': 'Quick Tools', 'Data Tools': 'Data Tools',
+        'Text Tools': 'Text Tools', 'Daily Utilities': 'Daily Utilities', 'Image Tools': 'Image Tools',
+        'Download App': 'Download App', 'Start for Free': 'Start for Free', 'The Infinity Ecosystem': 'The Infinity Ecosystem',
+        'Latest Insights': 'Latest Insights', 'TOOL OF THE DAY': 'TOOL OF THE DAY', 'Try Now': 'Try Now',
+        'PDF Toolkit': 'PDF Toolkit', 'Social Media': 'Social Media',
+        // Tool Names
+        'QR Code Generator': 'QR Code Generator', 'Color Palette Architect': 'Color Palette Architect',
+        'Secure Note Shredder': 'Secure Note Shredder', 'Internet Speed Test': 'Internet Speed Test',
+        'SVG Path Optimizer': 'SVG Path Optimizer', 'Link-in-Bio Builder': 'Link-in-Bio Builder',
+        'Glassmorphism Generator': 'Glassmorphism Generator', 'JSON to Code': 'JSON to Code',
+        'Morse Code Flash': 'Morse Code Flash', 'AI Voice Transcriber': 'AI Voice Transcriber',
+        'Infinity Beam': 'Infinity Beam', 'Case Converter': 'Case Converter'
+    }
+};
+
+function toggleLanguage() {
+    const currentLang = localStorage.getItem('inf_lang') || 'en';
+    const nextLang = currentLang === 'en' ? 'ml' : 'en';
+    localStorage.setItem('inf_lang', nextLang);
+    applyLanguage(nextLang);
+    showToast(nextLang === 'ml' ? 'ഭാഷ മാറ്റി: മലയാളം' : 'Language changed to English');
+    triggerHaptic('medium');
+}
+
+function applyLanguage(lang) {
+    const t = translations[lang];
+    if (!t) return;
+    
+    // Update all text nodes that match keys
+    const elements = document.querySelectorAll('h1, h2, h3, h4, a, button, span, p, label');
+    elements.forEach(el => {
+        const text = el.childNodes[0]?.nodeValue?.trim();
+        if (text) {
+            for (let key in translations.en) {
+                if (translations.en[key] === text || translations.ml[key] === text) {
+                    if (el.childNodes[0]) el.childNodes[0].nodeValue = t[key];
+                    break;
+                }
+            }
+        }
+    });
+
+    // Specific UI Fixes
+    if (searchBar) searchBar.placeholder = t['Search any tool...'] || searchBar.placeholder;
+    if (quickSearchInput) quickSearchInput.placeholder = t['Search any tool...'] || quickSearchInput.placeholder;
+    document.getElementById('langToggle').textContent = lang === 'en' ? 'EN | മലയാളം' : 'ML | English';
+}
+
+// ==================== TOOL OF THE DAY (Compact & Centered) ====================
+function initToolOfTheDay() {
+    const today = new Date().toDateString();
+    let seed = 0;
+    for(let i=0; i<today.length; i++) seed += today.charCodeAt(i);
+    const tool = tools[seed % tools.length];
+    
+    const banner = document.createElement('div');
+    banner.className = 'glass-panel tool-day-banner';
+    banner.style = 'margin:30px auto; padding:15px 20px; display:flex; align-items:center; gap:15px; border:1px solid var(--primary-color); position:relative; overflow:hidden; transition:all 0.3s; cursor:pointer; max-width:450px; border-radius:20px; text-align:left;';
+    banner.onclick = () => openTool(tool.id, tool.name, tool.icon);
+
+    banner.innerHTML = `
+        <div style="font-size:2rem; background: rgba(1, 69, 242, 0.05); width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center;">${tool.icon}</div>
+        <div style="flex:1;">
+            <div style="font-size:0.6rem; color:var(--primary-color); font-weight:900; letter-spacing:1px; text-transform:uppercase;">${translations[localStorage.getItem('inf_lang') || 'en']['TOOL OF THE DAY']}</div>
+            <div style="font-weight:700; font-size:1rem;">${tool.name}</div>
+        </div>
+        <div style="background:var(--primary-color); color:white; padding:8px 15px; border-radius:10px; font-weight:bold; font-size:0.75rem;">Try &rarr;</div>
+    `;
+    
+    const blogSection = document.querySelector('.blog-section');
+    if (blogSection) blogSection.after(banner);
+}
+
+// Run on start
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('inf_lang');
+    if (savedLang) applyLanguage(savedLang);
+    initToolOfTheDay();
+});
 
 
 
