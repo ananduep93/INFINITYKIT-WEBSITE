@@ -162,7 +162,7 @@ function renderQuestionPreview(q) {
         case 'checkbox': return q.options.map(opt => `<div class="preview-option"><input type="checkbox" disabled> ${opt}</div>`).join('');
         case 'dropdown': return `<select disabled class="preview-input"><option>${q.options[0] || 'Select option'}</option></select>`;
         case 'image-mcq': return `
-            <div class="image-options-preview">${(q.imageOptions || []).map(url => `<img src="${url}" class="preview-img">`).join('')}</div>
+            <div class="image-options-preview">${(q.imageOptions || []).map(url => `<img src="${url}" class="preview-img" loading="lazy">`).join('')}</div>
             <p class="preview-hint">(Respondent picks one image)</p>
         `;
         case 'file': return '<input type="file" disabled class="preview-input">';
@@ -205,7 +205,7 @@ function showQuestionModal(q = null) {
             <div id="imageOptionsContainer" style="display:${q?.type === 'image-mcq' ? 'block' : 'none'};">
                 <p id="imageUploadLabel">Upload images for options:</p>
                 <input type="file" id="qImageFiles" multiple accept="image/*">
-                ${q?.imageOptions ? `<div class="image-options-preview">${q.imageOptions.map(url => `<img src="${url}" class="preview-img">`).join('')}</div>` : ''}
+                ${q?.imageOptions ? `<div class="image-options-preview">${q.imageOptions.map(url => `<img src="${url}" class="preview-img" loading="lazy">`).join('')}</div>` : ''}
             </div>
             <label><input type="checkbox" id="qRequired" ${q?.required ? 'checked' : ''}> Required</label>
             <div class="modal-buttons">
@@ -516,7 +516,7 @@ function renderPublicQuestionInput(q) {
             <label class="image-option">
                 <input type="radio" name="${q.id}" value="${url}" ${q.required ? 'required' : ''}>
                 <div class="radio-indicator"></div>
-                <img src="${url}">
+                <img src="${url}" loading="lazy">
             </label>
         `).join('')}</div>`;
         case 'file': return `<input type="file" name="${q.id}" ${q.required ? 'required' : ''}>`;
@@ -705,9 +705,9 @@ function renderIndividual(survey, responses) {
                 let display = ans || '<i>No answer</i>';
                 if (q.type === 'file' && ans) {
                     const isImg = ans.match(/\.(jpeg|jpg|gif|png|webp)/i) || ans.includes('imgbb.com');
-                    display = isImg ? `<img src="${ans}" class="preview-img">` : `<a href="${ans}" target="_blank">View File</a>`;
+                    display = isImg ? `<img src="${ans}" class="preview-img" loading="lazy">` : `<a href="${ans}" target="_blank">View File</a>`;
                 }
-                if (q.type === 'image-mcq' && ans) display = `<img src="${ans}" class="preview-img">`;
+                if (q.type === 'image-mcq' && ans) display = `<img src="${ans}" class="preview-img" loading="lazy">`;
                 return `<div class="ans-row"><strong>${q.text}</strong> <span class="ans-value">${display}</span></div>`;
             }).join('')}
         </div>

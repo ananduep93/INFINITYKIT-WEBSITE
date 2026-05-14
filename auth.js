@@ -12,6 +12,8 @@ import {
     updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { auth, googleProvider, db, doc, setDoc } from './firebase-config.js';
+// SecurityUtils is now loaded as a global script in index.html
+
 
 export const authService = {
     async loginWithGoogle() {
@@ -84,10 +86,14 @@ export const authService = {
     },
 
     async signUpWithEmail(email, password, name) {
+        if (window.SecurityUtils && !window.SecurityUtils.rateLimit('signup', 3, 300000)) { // 3 attempts / 5 min
+            throw new Error("Too many sign-up attempts. Please wait 5 minutes.");
+        }
         try {
+            const cleanName = window.SecurityUtils ? window.SecurityUtils.sanitize(name) : name;
             const result = await createUserWithEmailAndPassword(auth, email, password);
-            if (name) {
-                await updateProfile(result.user, { displayName: name });
+            if (cleanName) {
+                await updateProfile(result.user, { displayName: cleanName });
             }
             await this.saveUserProfile(result.user);
             localStorage.setItem('isLoggedIn', 'true');
@@ -100,6 +106,9 @@ export const authService = {
     },
 
     async loginWithEmail(email, password) {
+        if (window.SecurityUtils && !window.SecurityUtils.rateLimit('login', 5, 600000)) { // 5 attempts / 10 min
+            throw new Error("Too many login attempts. Please wait 10 minutes.");
+        }
         try {
             const result = await signInWithEmailAndPassword(auth, email, password);
             await this.saveUserProfile(result.user);
@@ -168,28 +177,27 @@ export const authService = {
     async saveUserProfile(user) {
         if (!user) return;
         try {
-            console.log("Saving user profile to Firestore...");
-            // Store profile in users/{uid}/profile/info subcollection
-            const profileRef = doc(db, 'users', user.uid, 'profile', 'info');
-            await setDoc(profileRef, {
+            // Check if user already has a role to avoid overwriting admin status
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+            
+            const profileData = {
                 uid: user.uid,
                 email: user.email,
-                displayName: user.displayName || 'Infinity User',
-                photoURL: user.photoURL || null,
-                lastLogin: new Date().toISOString(),
-                version: '1.0',
-                platform: 'web'
-            }, { merge: true });
+                displayName: user.displayName || 'User',
+                photoURL: user.photoURL || '',
+                lastLogin: new Date().toISOString()
+            };
 
-            // Also update basic info on root for legacy support/rules
-            const userRef = doc(db, 'users', user.uid);
-            await setDoc(userRef, {
-                lastActive: new Date().toISOString()
-            }, { merge: true });
+            // Only set default role if user document doesn't exist
+            if (!userSnap.exists()) {
+                profileData.role = 'user';
+            }
 
-            console.log("User profile saved successfully.");
+            await setDoc(userRef, profileData, { merge: true });
+            console.log("User profile updated successfully.");
         } catch (error) {
-            console.warn("Non-critical: Error saving user profile to Firestore:", error.message);
+            console.warn("Non-critical: Error saving user profile:", error.message);
         }
     }
 };

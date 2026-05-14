@@ -1,5 +1,10 @@
-console.log('Infinity Kit Version 1.0 Loaded - Script-Based Path Resolver Active (Failsafe Fix)');
-// Tip: If links fail, try a hard refresh (Ctrl + Shift + R) to clear browser cache.
+console.log('Infinity Kit Version 2.1 Loaded - Production Ready');
+
+// Initialize Monitoring from Global Script
+if (window.Monitoring) {
+    window.Monitoring.init();
+    window.Monitoring.logEvent('app_initialized');
+}
 
 // Folders with Tools Data
 const baseFolders = [
@@ -2695,7 +2700,7 @@ async function handleImageFiles(files) {
             if (item) {
                 item.id = id;
                 item.innerHTML = `
-                    <img src="${imageData}" alt="${file.name}">
+                    <img src="${imageData}" alt="${file.name}" loading="lazy">
                     <button class="image-preview-remove" onclick="removeSelectedImage('${id}')">×</button>
                 `;
             }
@@ -2905,7 +2910,7 @@ async function startPDFToImageConversion() {
             previewItem.style.cursor = 'pointer';
             previewItem.title = 'Click to download this page';
             previewItem.innerHTML = `
-                <img src="${imgData}">
+                <img src="${imgData}" loading="lazy">
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 2px; text-align: center;">Page ${i}</div>
             `;
             previewItem.onclick = () => downloadFile(imgData, `page-${i}.${format}`, `image/${format}`);
