@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Stripper - Infinity Kit⚡</title>
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+</head>
+<body>
+    <nav class="navbar"><div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div></nav>
+    <div class="breadcrumb"><a href="/">Home</a><span class="separator">&rsaquo;</span><a href="../folder/advanced-suite.html">Advanced Suite</a><span class="separator">&rsaquo;</span><span class="current">Metadata Stripper</span></div>
+    
+    <main class="tool-page-container">
+        <a href='../folder/advanced-suite.html' class='back-link'><span>&larr;</span> Back to Advanced Suite</a>
+        <div class="tool-header"><h1 class="tool-title">🕵️‍♂️ Metadata Stripper</h1></div>
+        <div id="toolContent" class="glass-panel"></div>
+    </main>
+
+    <script src="../main.js?v=2.1"></script>
+    <script src="../advanced-tools.js?v=1.0"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadMetadataStripper === 'function') loadMetadataStripper();
+        });
+    </script>
+</body>
+</html>

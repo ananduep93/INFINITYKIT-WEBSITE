@@ -424,9 +424,7 @@ async function renderMySurveys(surveys) {
 
 window.copySurveyLink = function(surveyId) {
     const url = `${window.location.origin}/survey/?id=${surveyId}`;
-    navigator.clipboard.writeText(url).then(() => {
-        showToast('Survey link copied!', 'success');
-    });
+    copyToClipboard(url);
 };
 
 window.deleteSurveyPrompt = async function(surveyId) {
@@ -817,7 +815,5 @@ window.loadResponseViewer = loadResponseViewer;
 window.copySurveyLink = function(surveyId) {
     const userId = localStorage.getItem('userId');
     const url = `${window.location.origin}/survey/?id=${surveyId}&u=${userId}`;
-    navigator.clipboard.writeText(url).then(() => {
-        showToast('Survey link copied!', 'success');
-    });
+    copyToClipboard(url);
 };

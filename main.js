@@ -151,6 +151,13 @@ const baseFolders = [
         icon: '🤖',
         emoji: '🤖',
         tools: ['chatbot', 'text-improver', 'summarizer', 'image-generator', 'voice-text']
+    },
+    {
+        id: 'advanced-suite',
+        name: 'Advanced Suite ⚡',
+        icon: '💎',
+        emoji: '💎',
+        tools: ['metadata-stripper', 'focus-soundscape', 'json-to-ts', 'bulk-renamer', 'e-signature', 'dynamic-qr', 'svg-optimizer', 'password-leak', 'encrypted-note', 'focus-timer']
     }
 ];
 
@@ -605,9 +612,34 @@ const tools = [
     },
     {
         id: 'image-generator',
-        name: 'Image Generator',
+        name: 'AI Image Gen',
         icon: '🎨',
         description: 'Generate images from text prompts'
+    },
+    // Advanced Suite Tools
+    {
+        id: 'metadata-stripper',
+        name: 'Metadata Stripper',
+        icon: '🕵️‍♂️',
+        description: 'Remove EXIF data and private tags from images'
+    },
+    {
+        id: 'focus-soundscape',
+        name: 'Focus Soundscape',
+        icon: '🎧',
+        description: 'Premium ambient sounds for deep work'
+    },
+    {
+        id: 'json-to-ts',
+        name: 'JSON to TypeScript',
+        icon: '⌨️',
+        description: 'Convert JSON objects to TypeScript interfaces'
+    },
+    {
+        id: 'bulk-renamer',
+        name: 'Bulk File Renamer',
+        icon: '📁',
+        description: 'Rename multiple files instantly using patterns'
     },
     {
         id: 'translator',
@@ -643,10 +675,28 @@ const tools = [
         description: 'Extract professional color palettes from any image instantly.'
     },
     {
-        id: 'note-shredder',
-        name: 'Secure Note Shredder',
-        icon: '🗑️',
-        description: 'Create encrypted notes that self-destruct after being read.'
+        id: 'svg-optimizer',
+        name: 'SVG Optimizer',
+        icon: '⚡',
+        description: 'Clean and minify SVG path data for web performance'
+    },
+    {
+        id: 'password-leak',
+        name: 'Leak Scanner',
+        icon: '🔓',
+        description: 'Check if your password has been exposed in data breaches'
+    },
+    {
+        id: 'encrypted-note',
+        name: 'Dead Drop Note',
+        icon: '🔐',
+        description: 'Create encrypted, self-destructing notes'
+    },
+    {
+        id: 'focus-timer',
+        name: 'Infinity Timer',
+        icon: '⏲️',
+        description: 'Cinematic Pomodoro timer for deep work sessions'
     },
     {
         id: 'speed-test',
@@ -765,6 +815,38 @@ const PathManager = {
         return url;
     }
 };
+
+// Global Copy to Clipboard Helper
+window.copyToClipboard = function(text) {
+    if (!text) return;
+    
+    // Modern Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied to clipboard! 📋', 'success');
+        }).catch(err => {
+            console.error('Clipboard error:', err);
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+};
+
+function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showToast('Copied to clipboard! 📋', 'success');
+    } catch (err) {
+        showToast('Copy failed. Please copy manually.', 'error');
+    }
+    document.body.removeChild(textArea);
+}
+
 
 // App State
 let calcDisplay = '';
@@ -1504,6 +1586,41 @@ function doOpenTool(toolId, toolName, toolIcon, fromHistory = false) {
         case 'responseviewer':
             if (typeof loadResponseViewer === 'function') loadResponseViewer();
             break;
+            
+        // Advanced Suite
+        case 'metadata-stripper':
+            loadMetadataStripper();
+            break;
+        case 'focus-soundscape':
+            loadFocusSoundscape();
+            break;
+        case 'json-to-ts':
+            loadJSONToTS();
+            break;
+        case 'bulk-renamer':
+            loadBulkRenamer();
+            break;
+        case 'e-signature':
+            loadESignature();
+            break;
+        case 'dynamic-qr':
+            loadDynamicQR();
+            break;
+        case 'svg-optimizer':
+            loadSVGOptimizer();
+            break;
+        case 'password-leak':
+            loadPasswordLeak();
+            break;
+        case 'encrypted-note':
+            loadEncryptedNote();
+            break;
+        case 'focus-timer':
+            loadFocusTimer();
+            break;
+            
+        default:
+            toolContent.innerHTML = `<div style="text-align:center; padding:40px; opacity:0.7;">Tool "${toolId}" is coming soon! ✨</div>`;
     }
 
     // Track recent tool usage
@@ -2143,8 +2260,7 @@ function copyPassword() {
         showToast('Generate a password first', 'error');
         return;
     }
-    navigator.clipboard.writeText(pwd);
-    showToast('Password copied!', 'success');
+    copyToClipboard(pwd);
 }
 
 async function savePwd() {
@@ -2256,8 +2372,7 @@ async function saveSinglePassword() {
 
 async function copyPasswordItem(index) {
     const passwords = await window.syncService.getData('savedPasswords', true) || [];
-    navigator.clipboard.writeText(passwords[index].password);
-    showToast('Password copied!', 'success');
+    copyToClipboard(passwords[index].password);
 }
 
 async function deletePasswordItem(index) {
@@ -3652,9 +3767,7 @@ function showNextUsernames() {
 }
 
 function copyToClip(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('✓ Copied: ' + text, 'success');
-    });
+    copyToClipboard(text);
 }
 
 
@@ -4081,9 +4194,7 @@ function reverseText() {
 function copyReverseText() {
     const text = document.getElementById('reverseOutput').textContent;
     if (text !== '-') {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast('✓ Copied!', 'success');
-        });
+        copyToClipboard(text);
     }
 }
 
@@ -4139,11 +4250,7 @@ function convertCase(type) {
 
 function copyCaseText() {
     const text = document.getElementById('caseOutput').value;
-    if (text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast('✓ Copied!', 'success');
-        });
-    }
+    copyToClipboard(text);
 }
 
 // ========== REMOVE DUPLICATE WORDS ==========
@@ -4178,11 +4285,7 @@ function removeDuplicates() {
 
 function copyDuplicateText() {
     const text = document.getElementById('duplicateOutput').value;
-    if (text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast('✓ Copied!', 'success');
-        });
-    }
+    copyToClipboard(text);
 }
 
 // ========== SETTINGS SYSTEM ==========

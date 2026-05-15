@@ -227,9 +227,24 @@
         };
 
         copyBtn.onclick = () => {
-            navigator.clipboard.writeText(resultContent.textContent);
-            copyBtn.textContent = '✅ Copied!';
-            setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
+            const text = resultContent.textContent;
+            if (!text) return;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.textContent = '✅ Copied!';
+                    setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
+                });
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                copyBtn.textContent = '✅ Copied!';
+                setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
+            }
         };
     </script>
 </body>
