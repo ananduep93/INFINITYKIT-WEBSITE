@@ -880,6 +880,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Inject footer on all pages except index.html
         if (typeof injectGlobalFooter === 'function') injectGlobalFooter();
         if (typeof injectNavigationLinks === 'function') injectNavigationLinks();
+        if (typeof injectRelatedTools === 'function') injectRelatedTools();
 
         // Initialize Notification System
         if (window.NotificationManager) {
@@ -4556,6 +4557,48 @@ function injectNavigationLinks() {
     } else {
         main.appendChild(navDiv);
     }
+}
+
+// Inject Related Tools section for better internal linking
+function injectRelatedTools() {
+    const isToolPage = window.location.pathname.includes('/tools/');
+    if (!isToolPage) return;
+
+    const path = window.location.pathname;
+    const toolId = path.split('/').pop().replace('.html', '');
+    const folder = baseFolders.find(f => f.tools.includes(toolId));
+    
+    if (!folder) return;
+
+    const prefix = PathManager.getPrefix();
+    const relatedTools = folder.tools.filter(t => t !== toolId).slice(0, 4); // Get up to 4 other tools
+
+    if (relatedTools.length === 0) return;
+
+    const infoSection = document.querySelector('.tool-info-section');
+    if (!infoSection) return;
+
+    const card = document.createElement('div');
+    card.className = 'info-card related-tools-card';
+    card.innerHTML = `
+        <div class="card-icon">🔗</div>
+        <h2>Related Tools</h2>
+        <ul style="list-style: none; padding: 0; margin: 15px 0 0 0;">
+            ${relatedTools.map(tId => {
+                const tool = tools.find(t => t.id === tId);
+                if (!tool) return '';
+                return `
+                    <li style="margin-bottom: 10px;">
+                        <a href="${PathManager.getToolPath(tool.id)}" style="color: var(--primary-color); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.2rem;">${tool.icon}</span> ${tool.name}
+                        </a>
+                    </li>
+                `;
+            }).join('')}
+        </ul>
+    `;
+
+    infoSection.appendChild(card);
 }
 
 
