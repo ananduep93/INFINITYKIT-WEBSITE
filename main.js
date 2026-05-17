@@ -879,6 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Inject footer on all pages except index.html
         if (typeof injectGlobalFooter === 'function') injectGlobalFooter();
+        if (typeof injectNavigationLinks === 'function') injectNavigationLinks();
 
         // Initialize Notification System
         if (window.NotificationManager) {
@@ -4470,17 +4471,36 @@ function injectGlobalFooter() {
     const currentYear = new Date().getFullYear();
 
     const footerHTML = `
-        <div class="footer-links">
-            <a href="${prefix}index.html#about-page">About</a>
-            <a href="${prefix}index.html#privacy-page">Privacy Policy</a>
-            <a href="${prefix}index.html#terms-page">Terms & Conditions</a>
-            <a href="${prefix}index.html#contact-page">Contact</a>
-            <a href="${prefix}index.html#disclaimer-page">Disclaimer</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="${prefix}index.html">Home</a></li>
+                    <li><a href="${prefix}about.html">About</a></li>
+                    <li><a href="${prefix}privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="${prefix}terms-conditions.html">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
 
         <div class="footer-bottom">
-            <p class="footer-brand">Made for everyday tools ⚡</p>
-            <p class="footer-tagline">Built to simplify your digital life ⚡</p>
             <p id="copyrightText" class="copyright-text">© ${currentYear} Infinity Kit. All rights reserved.</p>
         </div>
     `;
@@ -4492,6 +4512,49 @@ function injectGlobalFooter() {
         footer.className = 'footer';
         footer.innerHTML = footerHTML;
         document.body.appendChild(footer);
+    }
+}
+
+// Inject Back to Home and Back to Folder links
+function injectNavigationLinks() {
+    const isToolPage = window.location.pathname.includes('/tools/');
+    const isFolderPage = window.location.pathname.includes('/folder/');
+    
+    if (!isToolPage && !isFolderPage) return;
+
+    const prefix = PathManager.getPrefix();
+    const navDiv = document.createElement('div');
+    navDiv.className = 'custom-nav-links';
+    navDiv.style = 'margin: 15px 0; padding: 0 20px; display: flex; gap: 15px; font-size: 0.9rem; justify-content: flex-start;';
+    
+    const homeLink = document.createElement('a');
+    homeLink.href = `${prefix}index.html`;
+    homeLink.innerHTML = '<i class="fas fa-home"></i> Back to Home';
+    homeLink.style = 'color: var(--primary-color); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 5px;';
+    navDiv.appendChild(homeLink);
+
+    // Check if page already has a hardcoded back link (like todolist.html)
+    const hasExistingBackLink = document.querySelector('.back-link') || document.querySelector('#backToFolders');
+
+    if (isToolPage && !hasExistingBackLink) {
+        const path = window.location.pathname;
+        const toolId = path.split('/').pop().replace('.html', '');
+        const folder = baseFolders.find(f => f.tools.includes(toolId));
+        if (folder) {
+            const folderLink = document.createElement('a');
+            folderLink.href = `${prefix}folder/${folder.id}.html`;
+            folderLink.innerHTML = '<i class="fas fa-folder"></i> Back to Folder';
+            folderLink.style = 'color: var(--primary-color); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 5px;';
+            navDiv.appendChild(folderLink);
+        }
+    }
+
+    // Insert at the top of the body or main container
+    const main = document.querySelector('main') || document.body;
+    if (main.firstChild) {
+        main.insertBefore(navDiv, main.firstChild);
+    } else {
+        main.appendChild(navDiv);
     }
 }
 
@@ -6878,7 +6941,9 @@ function initToolOfTheDay() {
     const banner = document.createElement('div');
     banner.className = 'glass-panel tool-day-banner';
     banner.style = 'margin:30px auto; padding:15px 20px; display:flex; align-items:center; gap:15px; border:1px solid var(--primary-color); position:relative; overflow:hidden; transition:all 0.3s; cursor:pointer; max-width:450px; border-radius:20px; text-align:left;';
-    banner.onclick = () => openTool(tool.id, tool.name, tool.icon);
+    banner.onclick = () => {
+        window.location.href = PathManager.getToolPath(tool.id);
+    };
 
     banner.innerHTML = `
         <div style="font-size:2rem; background: rgba(1, 69, 242, 0.05); width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center;">${tool.icon}</div>

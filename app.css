@@ -1049,7 +1049,9 @@ main, #main-content, .tool-page-container {
 }
 
 .modal-content {
-    background-color: var(--text-color);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     margin: 5% auto;
     padding: 20px;
     border-radius: 15px;
@@ -4825,4 +4827,115 @@ kbd {
 }
 .navbar {
     border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Berry Bills Style Footer for Infinity Kit */
+.footer {
+    background: #1a1a2e !important;
+    color: var(--white, #ffffff) !important;
+    padding-top: 80px;
+    text-align: left !important;
+}
+
+.footer .container.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 50px;
+    margin-bottom: 50px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.footer-brand, .footer-links, .footer-contact {
+    text-align: left !important;
+    display: block !important;
+}
+
+.footer-brand p {
+    color: #a0a0b5 !important;
+    margin-bottom: 25px;
+    max-width: 300px;
+    text-align: left !important;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    color: var(--white, #ffffff) !important;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.social-links a:hover {
+    background: var(--primary-color, #0145F2) !important;
+    transform: translateY(-3px);
+    color: white !important;
+}
+
+.footer h3 {
+    color: var(--white, #ffffff) !important;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: left !important;
+}
+
+.footer-links ul, .footer-contact ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    align-items: flex-start !important;
+}
+
+.footer-links a, .footer-contact li {
+    color: #a0a0b5 !important;
+    text-decoration: none;
+    transition: all 0.3s;
+    text-align: left !important;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color, #0145F2) !important;
+    padding-left: 5px;
+}
+
+.footer-contact li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start !important;
+}
+
+.footer-contact i {
+    color: var(--primary-color, #0145F2) !important;
+}
+
+.footer-bottom {
+    background: #151525 !important;
+    padding: 20px 0;
+    text-align: center !important;
+    color: #a0a0b5 !important;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .footer .container.footer-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
 }

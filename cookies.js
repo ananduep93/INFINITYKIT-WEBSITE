@@ -252,8 +252,9 @@
 
         setupFooterLink() {
             // Check if footer exists and add link
-            const footerLinks = document.querySelector('.footer-links');
-            if (footerLinks) {
+            const footerLinksList = document.querySelector('.footer-links ul');
+            if (footerLinksList) {
+                const li = document.createElement('li');
                 const cookieLink = document.createElement('a');
                 cookieLink.href = '#';
                 cookieLink.innerText = 'Cookie Settings';
@@ -261,7 +262,20 @@
                     e.preventDefault();
                     this.showModal();
                 };
-                footerLinks.appendChild(cookieLink);
+                li.appendChild(cookieLink);
+                footerLinksList.appendChild(li);
+            } else {
+                const footerLinks = document.querySelector('.footer-links');
+                if (footerLinks) {
+                    const cookieLink = document.createElement('a');
+                    cookieLink.href = '#';
+                    cookieLink.innerText = 'Cookie Settings';
+                    cookieLink.onclick = (e) => {
+                        e.preventDefault();
+                        this.showModal();
+                    };
+                    footerLinks.appendChild(cookieLink);
+                }
             }
         }
     }
