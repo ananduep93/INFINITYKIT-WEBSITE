@@ -1971,6 +1971,14 @@ function handleCalcKeyPress(event) {
     }
 }
 
+// Helper to escape HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // ==================== TO-DO LIST ====================
 async function loadToDoList() {
     // Wait for sync service
@@ -1980,9 +1988,14 @@ async function loadToDoList() {
     }
 
     let todos = [];
-    if (window.syncService) {
-        todos = await window.syncService.getData('todos', true) || [];
-    } else {
+    try {
+        if (window.syncService) {
+            todos = await window.syncService.getData('todos', true) || [];
+        } else {
+            todos = JSON.parse(localStorage.getItem('todos')) || [];
+        }
+    } catch (error) {
+        console.warn("Sync service failed, falling back to local storage:", error);
         todos = JSON.parse(localStorage.getItem('todos')) || [];
     }
     
@@ -3218,6 +3231,93 @@ function loadCompressImage() {
     `;
     toolContent.innerHTML = html;
     setupCompressImageUpload();
+}
+
+let currentCompressFile = null;
+let currentCompressionQuality = 0.6;
+
+function setupCompressImageUpload() {
+    const input = document.getElementById('compressImageInput');
+    const area = document.querySelector('.image-upload-area');
+    
+    if (!area || !input) return;
+
+    area.addEventListener('click', () => input.click());
+    
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) handleImageForCompress(file);
+    });
+}
+
+function handleImageDropForCompress(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+        handleImageForCompress(file);
+    }
+}
+
+function handleImageForCompress(file) {
+    currentCompressFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('imagePreviewSection').style.display = 'block';
+        document.getElementById('originalPreview').src = e.target.result;
+        document.getElementById('originalSize').textContent = `Size: ${(file.size / 1024).toFixed(2)} KB`;
+        compressImage(e.target.result, currentCompressionQuality);
+    };
+    reader.readAsDataURL(file);
+}
+
+function setCompressionLevel(val) {
+    currentCompressionQuality = parseFloat(val);
+    if (currentCompressFile) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            compressImage(e.target.result, currentCompressionQuality);
+        };
+        reader.readAsDataURL(currentCompressFile);
+    }
+}
+
+function compressImage(base64Str, quality) {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        
+        const preview = document.getElementById('compressedPreview');
+        preview.src = compressedBase64;
+        preview.style.display = 'block';
+        
+        // Estimate size
+        const head = 'data:image/jpeg;base64,'.length;
+        const sizeInBytes = Math.round((compressedBase64.length - head) * 3 / 4);
+        
+        document.getElementById('compressedSize').textContent = `Size: ${(sizeInBytes / 1024).toFixed(2)} KB`;
+        
+        const reduction = ((currentCompressFile.size - sizeInBytes) / currentCompressFile.size * 100).toFixed(2);
+        document.getElementById('sizeReduction').textContent = `${reduction}%`;
+        
+        const downloadBtn = document.getElementById('downloadCompressedBtn');
+        downloadBtn.style.display = 'block';
+    };
+}
+
+function downloadCompressedImage() {
+    const preview = document.getElementById('compressedPreview');
+    const link = document.createElement('a');
+    link.href = preview.src;
+    link.download = `compressed_\${currentCompressFile.name.split('.')[0]}.jpg`;
+    link.click();
 }
 
 let imageState = {

@@ -11,7 +11,7 @@ import {
     signInAnonymously,
     updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { auth, googleProvider, db, doc, setDoc } from './firebase-config.js';
+import { auth, googleProvider, db, doc, getDoc, setDoc } from './firebase-config.js';
 // SecurityUtils is now loaded as a global script in index.html
 
 

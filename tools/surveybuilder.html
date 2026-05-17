@@ -114,14 +114,32 @@
         window.toolContent = document.getElementById('toolContent');
         window.toolTitle = { textContent: '' };
         document.addEventListener('DOMContentLoaded', () => {
+            let attempts = 0;
             const pollSync = setInterval(() => {
+                attempts++;
                 if (typeof loadSurveyBuilder === 'function') {
                     clearInterval(pollSync);
                     loadSurveyBuilder();
+                } else if (attempts > 50) { // 5 seconds
+                    clearInterval(pollSync);
+                    window.toolContent.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #ff4d4d;">
+                            <h3>⚠️ Failed to load Survey Builder</h3>
+                            <p>This usually happens if the database connection is blocked (e.g., if you are on Port 5501 instead of 5500).</p>
+                            <p>Please try opening the site on <strong>Port 5500</strong> or check your Firebase Console Authorized Domains.</p>
+                        </div>
+                    `;
                 }
             }, 100);
         });
     </script>
+
+    <!-- Background Animation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="../background.js"></script>
+
 </body>
 </html>
 
