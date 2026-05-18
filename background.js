@@ -1,181 +1,167 @@
 /**
  * Infinity Kit Premium Background Engine
- * Futuristic Neural Network & Gradient Mesh Animation
- * Powered by Three.js & GSAP
+ * Highly Interactive Constellation Web Effect
+ * Optimized for Light Theme
  */
 
-class InfinityBackground {
+class InteractiveBackground {
     constructor() {
-        this.container = document.createElement('div');
-        this.container.id = 'infinity-bg-canvas';
-        this.container.style.position = 'fixed';
-        this.container.style.top = '0';
-        this.container.style.left = '0';
-        this.container.style.width = '100%';
-        this.container.style.height = '100%';
-        this.container.style.zIndex = '-1';
-        this.container.style.pointerEvents = 'none';
-        this.container.style.background = '#F8FAFC'; // Soft Slate White
-        document.body.prepend(this.container);
-
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
         
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.container.appendChild(this.renderer.domElement);
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.zIndex = '-1';
+        this.canvas.style.pointerEvents = 'none';
+        this.canvas.style.background = '#F8FAFC'; // Soft Slate White
+        
+        document.body.prepend(this.canvas);
 
         this.particles = [];
-        this.particleCount = window.innerWidth < 768 ? 40 : 100;
-        this.mouse = { x: 0, y: 0 };
-        this.targetMouse = { x: 0, y: 0 };
-
+        this.mouse = { x: null, y: null, radius: 150 };
+        
+        this.resize();
         this.init();
         this.animate();
         this.addEventListeners();
     }
 
-    init() {
-        // 1. Create Neural Network Particles
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(this.particleCount * 3);
-        
-        for (let i = 0; i < this.particleCount; i++) {
-            positions[i * 3] = (Math.random() - 0.5) * 1000;
-            positions[i * 3 + 1] = (Math.random() - 0.5) * 1000;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
-            
-            this.particles.push({
-                velocity: new THREE.Vector3(
-                    (Math.random() - 0.5) * 0.4,
-                    (Math.random() - 0.5) * 0.4,
-                    (Math.random() - 0.5) * 0.4
-                )
-            });
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        
-        const material = new THREE.PointsMaterial({
-            size: 4,
-            color: 0x0145F2, // Primary Blue
-            transparent: true,
-            opacity: 0.4,
-            blending: THREE.NormalBlending
-        });
-
-        this.points = new THREE.Points(geometry, material);
-        this.scene.add(this.points);
-
-        // 2. Lines Connecting Particles
-        this.lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x0145F2,
-            transparent: true,
-            opacity: 0.1,
-        });
-
-        // 3. Ambient Glowing Blobs (Mesh)
-        this.createGlowBlobs();
-
-        this.camera.position.z = 400;
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.particleCount = Math.min(Math.floor((this.canvas.width * this.canvas.height) / 9000), 150);
     }
 
-    createGlowBlobs() {
-        const blobGeo = new THREE.SphereGeometry(150, 32, 32);
-        const blobMat1 = new THREE.MeshBasicMaterial({
-            color: 0x0145F2,
-            transparent: true,
-            opacity: 0.05,
-        });
-        
-        this.blob1 = new THREE.Mesh(blobGeo, blobMat1);
-        this.blob1.position.set(-200, 100, -200);
-        this.scene.add(this.blob1);
-
-        const blobMat2 = new THREE.MeshBasicMaterial({
-            color: 0x7C3AED,
-            transparent: true,
-            opacity: 0.04,
-        });
-        this.blob2 = new THREE.Mesh(blobGeo, blobMat2);
-        this.blob2.position.set(200, -100, -300);
-        this.scene.add(this.blob2);
+    init() {
+        this.particles = [];
+        for (let i = 0; i < this.particleCount; i++) {
+            const size = Math.random() * 2 + 1;
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: size,
+                color: Math.random() > 0.5 ? '#0145F2' : '#7C3AED'
+            });
+        }
     }
 
     addEventListeners() {
         window.addEventListener('mousemove', (e) => {
-            this.targetMouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
-            this.targetMouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
         });
 
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            gsap.to(this.scene.position, {
-                y: scrollY * 0.2,
-                duration: 1,
-                ease: 'power2.out'
-            });
+        window.addEventListener('mouseout', () => {
+            this.mouse.x = null;
+            this.mouse.y = null;
         });
 
         window.addEventListener('resize', () => {
-            this.camera.aspect = window.innerWidth / window.innerHeight;
-            this.camera.updateProjectionMatrix();
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.resize();
+            this.init();
         });
-        
-        // Mobile Interactions
+
+        // Mobile touch support
         window.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
-                this.targetMouse.x = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
-                this.targetMouse.y = -(e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+                this.mouse.x = e.touches[0].clientX;
+                this.mouse.y = e.touches[0].clientY;
             }
+        });
+
+        window.addEventListener('touchend', () => {
+            this.mouse.x = null;
+            this.mouse.y = null;
         });
     }
 
     animate() {
-        requestAnimationFrame(() => this.animate());
-
-        // Smooth Mouse Follow
-        this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
-        this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
-
-        this.scene.rotation.y = this.mouse.x * 0.1;
-        this.scene.rotation.x = this.mouse.y * 0.1;
-
-        // Animate Particles
-        const positions = this.points.geometry.attributes.position.array;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        for (let i = 0; i < this.particleCount; i++) {
-            positions[i * 3] += this.particles[i].velocity.x;
-            positions[i * 3 + 1] += this.particles[i].velocity.y;
-            positions[i * 3 + 2] += this.particles[i].velocity.z;
+        // Draw background color (redundant but ensures consistency)
+        this.ctx.fillStyle = '#F8FAFC';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            // Bounce back
-            if (Math.abs(positions[i * 3]) > 500) this.particles[i].velocity.x *= -1;
-            if (Math.abs(positions[i * 3 + 1]) > 500) this.particles[i].velocity.y *= -1;
-            if (Math.abs(positions[i * 3 + 2]) > 500) this.particles[i].velocity.z *= -1;
+        for (let i = 0; i < this.particles.length; i++) {
+            const p = this.particles[i];
+            
+            // Move
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Bounce
+            if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+
+            // Mouse interaction (push away)
+            if (this.mouse.x !== null && this.mouse.y !== null) {
+                const dx = p.x - this.mouse.x;
+                const dy = p.y - this.mouse.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < this.mouse.radius) {
+                    const force = (this.mouse.radius - distance) / this.mouse.radius;
+                    p.x += dx / distance * force * 2;
+                    p.y += dy / distance * force * 2;
+                }
+            }
+
+            // Draw particle
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.globalAlpha = 0.6;
+            this.ctx.fill();
+            this.ctx.globalAlpha = 1.0;
+
+            // Connect lines
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const p2 = this.particles[j];
+                const dx = p.x - p2.x;
+                const dy = p.y - p2.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 120) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(p.x, p.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.strokeStyle = '#0145F2';
+                    this.ctx.globalAlpha = (120 - distance) / 120 * 0.15; // Fade out
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.stroke();
+                    this.ctx.globalAlpha = 1.0;
+                }
+            }
+
+            // Connect to mouse
+            if (this.mouse.x !== null && this.mouse.y !== null) {
+                const dx = p.x - this.mouse.x;
+                const dy = p.y - this.mouse.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < this.mouse.radius) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(p.x, p.y);
+                    this.ctx.lineTo(this.mouse.x, this.mouse.y);
+                    this.ctx.strokeStyle = '#7C3AED'; // Purple for mouse connections
+                    this.ctx.globalAlpha = (this.mouse.radius - distance) / this.mouse.radius * 0.3;
+                    this.ctx.lineWidth = 0.8;
+                    this.ctx.stroke();
+                    this.ctx.globalAlpha = 1.0;
+                }
+            }
         }
-        
-        this.points.geometry.attributes.position.needsUpdate = true;
 
-        // Animate Blobs
-        const time = Date.now() * 0.001;
-        this.blob1.position.x += Math.sin(time) * 0.2;
-        this.blob1.position.y += Math.cos(time) * 0.2;
-        this.blob2.position.x -= Math.sin(time) * 0.1;
-        
-        this.renderer.render(this.scene, this.camera);
+        requestAnimationFrame(() => this.animate());
     }
 }
 
-// Initialize when libraries are loaded
-function initInfinityBackground() {
-    if (typeof THREE !== 'undefined' && typeof gsap !== 'undefined') {
-        new InfinityBackground();
-    } else {
-        setTimeout(initInfinityBackground, 100);
-    }
-}
-
-initInfinityBackground();
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    new InteractiveBackground();
+});
