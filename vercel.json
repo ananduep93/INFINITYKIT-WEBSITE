@@ -3,6 +3,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/signin",
+      "destination": "/signin.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/signup.html"
+    },
+    {
       "source": "/folder/:id",
       "destination": "/folder/:id.html"
     },
