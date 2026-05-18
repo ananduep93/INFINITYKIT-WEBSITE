@@ -1,167 +1,174 @@
 /**
  * Infinity Kit Premium Background Engine
- * Highly Interactive Constellation Web Effect
- * Optimized for Light Theme
+ * Option 1: 3D Interactive Constellation Network
+ * Powered by Three.js
  */
 
-class InteractiveBackground {
+class Infinity3DBackground {
     constructor() {
-        this.canvas = document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.container = document.createElement('div');
+        this.container.id = 'infinity-bg-canvas';
+        this.container.style.position = 'fixed';
+        this.container.style.top = '0';
+        this.container.style.left = '0';
+        this.container.style.width = '100%';
+        this.container.style.height = '100%';
+        this.container.style.zIndex = '-1';
+        this.container.style.pointerEvents = 'none';
+        this.container.style.background = '#F8FAFC'; // Soft Slate White
+        document.body.prepend(this.container);
+
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         
-        this.canvas.style.position = 'fixed';
-        this.canvas.style.top = '0';
-        this.canvas.style.left = '0';
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
-        this.canvas.style.zIndex = '-1';
-        this.canvas.style.pointerEvents = 'none';
-        this.canvas.style.background = '#F8FAFC'; // Soft Slate White
-        
-        document.body.prepend(this.canvas);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.container.appendChild(this.renderer.domElement);
 
         this.particles = [];
-        this.mouse = { x: null, y: null, radius: 150 };
-        
-        this.resize();
+        this.particleCount = window.innerWidth < 768 ? 60 : 120;
+        this.maxDistance = 150;
+        this.mouse = { x: 0, y: 0 };
+        this.targetMouse = { x: 0, y: 0 };
+
         this.init();
         this.animate();
         this.addEventListeners();
     }
 
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.particleCount = Math.min(Math.floor((this.canvas.width * this.canvas.height) / 9000), 150);
-    }
-
     init() {
-        this.particles = [];
+        // 1. Create Particles
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(this.particleCount * 3);
+        
         for (let i = 0; i < this.particleCount; i++) {
-            const size = Math.random() * 2 + 1;
+            positions[i * 3] = (Math.random() - 0.5) * 800;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 800;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 800;
+            
             this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                size: size,
-                color: Math.random() > 0.5 ? '#0145F2' : '#7C3AED'
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.5,
+                    (Math.random() - 0.5) * 0.5,
+                    (Math.random() - 0.5) * 0.5
+                )
             });
         }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        const material = new THREE.PointsMaterial({
+            size: 4,
+            color: 0x0145F2, // Primary Blue
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.NormalBlending
+        });
+
+        this.points = new THREE.Points(geometry, material);
+        this.scene.add(this.points);
+
+        // 2. Create Lines Geometry
+        this.lineGeometry = new THREE.BufferGeometry();
+        this.lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x7C3AED, // Purple lines for contrast
+            transparent: true,
+            opacity: 0.2,
+            blending: THREE.NormalBlending
+        });
+        
+        this.lines = new THREE.LineSegments(this.lineGeometry, this.lineMaterial);
+        this.scene.add(this.lines);
+
+        this.camera.position.z = 400;
     }
 
     addEventListeners() {
         window.addEventListener('mousemove', (e) => {
-            this.mouse.x = e.clientX;
-            this.mouse.y = e.clientY;
-        });
-
-        window.addEventListener('mouseout', () => {
-            this.mouse.x = null;
-            this.mouse.y = null;
+            this.targetMouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+            this.targetMouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
         });
 
         window.addEventListener('resize', () => {
-            this.resize();
-            this.init();
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
         // Mobile touch support
         window.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
-                this.mouse.x = e.touches[0].clientX;
-                this.mouse.y = e.touches[0].clientY;
+                this.targetMouse.x = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+                this.targetMouse.y = -(e.touches[0].clientY / window.innerHeight - 0.5) * 2;
             }
-        });
-
-        window.addEventListener('touchend', () => {
-            this.mouse.x = null;
-            this.mouse.y = null;
         });
     }
 
     animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        requestAnimationFrame(() => this.animate());
+
+        // Smooth Mouse Follow (Parallax)
+        this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
+        this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
+
+        this.scene.rotation.y = this.mouse.x * 0.2;
+        this.scene.rotation.x = this.mouse.y * 0.2;
+
+        // Auto-rotation
+        this.scene.rotation.y += 0.001;
+
+        // Move Particles
+        const positions = this.points.geometry.attributes.position.array;
         
-        // Draw background color (redundant but ensures consistency)
-        this.ctx.fillStyle = '#F8FAFC';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        for (let i = 0; i < this.particleCount; i++) {
+            positions[i * 3] += this.particles[i].velocity.x;
+            positions[i * 3 + 1] += this.particles[i].velocity.y;
+            positions[i * 3 + 2] += this.particles[i].velocity.z;
 
-        for (let i = 0; i < this.particles.length; i++) {
-            const p = this.particles[i];
-            
-            // Move
-            p.x += p.vx;
-            p.y += p.vy;
+            // Bounce back if they go too far
+            if (Math.abs(positions[i * 3]) > 400) this.particles[i].velocity.x *= -1;
+            if (Math.abs(positions[i * 3 + 1]) > 400) this.particles[i].velocity.y *= -1;
+            if (Math.abs(positions[i * 3 + 2]) > 400) this.particles[i].velocity.z *= -1;
+        }
+        
+        this.points.geometry.attributes.position.needsUpdate = true;
 
-            // Bounce
-            if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
-            if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+        // Update Lines
+        const linePositions = [];
+        let lineCount = 0;
 
-            // Mouse interaction (push away)
-            if (this.mouse.x !== null && this.mouse.y !== null) {
-                const dx = p.x - this.mouse.x;
-                const dy = p.y - this.mouse.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < this.mouse.radius) {
-                    const force = (this.mouse.radius - distance) / this.mouse.radius;
-                    p.x += dx / distance * force * 2;
-                    p.y += dy / distance * force * 2;
-                }
-            }
+        for (let i = 0; i < this.particleCount; i++) {
+            for (let j = i + 1; j < this.particleCount; j++) {
+                const dx = positions[i * 3] - positions[j * 3];
+                const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+                const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+                const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-            // Draw particle
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = p.color;
-            this.ctx.globalAlpha = 0.6;
-            this.ctx.fill();
-            this.ctx.globalAlpha = 1.0;
-
-            // Connect lines
-            for (let j = i + 1; j < this.particles.length; j++) {
-                const p2 = this.particles[j];
-                const dx = p.x - p2.x;
-                const dy = p.y - p2.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 120) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(p.x, p.y);
-                    this.ctx.lineTo(p2.x, p2.y);
-                    this.ctx.strokeStyle = '#0145F2';
-                    this.ctx.globalAlpha = (120 - distance) / 120 * 0.15; // Fade out
-                    this.ctx.lineWidth = 0.5;
-                    this.ctx.stroke();
-                    this.ctx.globalAlpha = 1.0;
-                }
-            }
-
-            // Connect to mouse
-            if (this.mouse.x !== null && this.mouse.y !== null) {
-                const dx = p.x - this.mouse.x;
-                const dy = p.y - this.mouse.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < this.mouse.radius) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(p.x, p.y);
-                    this.ctx.lineTo(this.mouse.x, this.mouse.y);
-                    this.ctx.strokeStyle = '#7C3AED'; // Purple for mouse connections
-                    this.ctx.globalAlpha = (this.mouse.radius - distance) / this.mouse.radius * 0.3;
-                    this.ctx.lineWidth = 0.8;
-                    this.ctx.stroke();
-                    this.ctx.globalAlpha = 1.0;
+                if (distance < this.maxDistance) {
+                    linePositions.push(
+                        positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
+                        positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
+                    );
+                    lineCount++;
                 }
             }
         }
 
-        requestAnimationFrame(() => this.animate());
+        this.lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePositions), 3));
+        this.lineGeometry.computeBoundingSphere(); // Required for rendering updates
+
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    new InteractiveBackground();
-});
+// Initialize when libraries are loaded
+function initInfinity3DBackground() {
+    if (typeof THREE !== 'undefined') {
+        new Infinity3DBackground();
+    } else {
+        setTimeout(initInfinity3DBackground, 100);
+    }
+}
+
+initInfinity3DBackground();
