@@ -2008,6 +2008,11 @@ async function loadToDoList() {
             <ul class="todo-list" id="todoList">
     `;
 
+    if (!Array.isArray(todos)) {
+        console.warn("Todos data is not an array, resetting to empty array.");
+        todos = [];
+    }
+
     if (todos.length === 0) {
         html += '<li class="empty-message">No tasks yet. Add one to get started!</li>';
     } else {
@@ -2024,7 +2029,7 @@ async function loadToDoList() {
     }
 
     html += '</ul></div>';
-    toolContent.innerHTML = html;
+    window.toolContent.innerHTML = html;
 
     document.getElementById('todoInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTodo();
@@ -3040,7 +3045,7 @@ async function startPDFToImageConversion() {
             previewItem.style.cursor = 'pointer';
             previewItem.title = 'Click to download this page';
             previewItem.innerHTML = `
-                <img src="${imgData}" loading="lazy">
+                <img src="${imgData}" loading="lazy" alt="PDF Page Preview">
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 2px; text-align: center;">Page ${i}</div>
             `;
             previewItem.onclick = () => downloadFile(imgData, `page-${i}.${format}`, `image/${format}`);
@@ -3199,12 +3204,12 @@ function loadCompressImage() {
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 200px;">
                         <label style="font-weight: bold; display: block; margin-bottom: 8px;">Original Image:</label>
-                        <img id="originalPreview" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;" />
+                        <img id="originalPreview" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;" alt="Original image preview" />
                         <div id="originalSize" style="margin-top: 8px; font-size: 0.9rem; color: #666;"></div>
                     </div>
                     <div style="flex: 1; min-width: 200px;">
                         <label style="font-weight: bold; display: block; margin-bottom: 8px;">Compressed Preview:</label>
-                        <img id="compressedPreview" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px; display: none;" />
+                        <img id="compressedPreview" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px; display: none;" alt="Compressed image preview" />
                         <div id="compressedSize" style="margin-top: 8px; font-size: 0.9rem; color: #666;"></div>
                     </div>
                 </div>
@@ -3229,8 +3234,8 @@ function loadCompressImage() {
             </div>
         </div>
     `;
-    toolContent.innerHTML = html;
-    setupCompressImageUpload();
+    window.toolContent.innerHTML = html;
+    setTimeout(setupCompressImageUpload, 0);
 }
 
 let currentCompressFile = null;

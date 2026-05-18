@@ -6,9 +6,9 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link-in-Bio Builder - Free Online Tool | Infinity Kit</title>
+    <title>link-bio - Free Online Tool | Infinity Kit</title>
     <link rel="canonical" href="https://infinitykit.online/tools/link-bio">
-    <meta name="description" content="Use our free online Link-in-Bio Builder to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online link-bio to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
     <link rel="stylesheet" href="../app.css?v=1.5">
     <link rel="stylesheet" href="../cookies.css">
     <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
@@ -18,6 +18,9 @@
         .tool-header { text-align: center; margin-bottom: 30px; }
         .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
         .bio-link-entry input { margin-bottom: 0 !important; }
+        .seo-content { margin-top: 40px; line-height: 1.6; color: var(--text-color, #333); }
+        .seo-content h2 { margin-top: 25px; margin-bottom: 15px; }
+        [data-theme="dark"] .seo-content { color: #ccc; }
     </style>
 
     <!-- Schema Markup -->
@@ -40,7 +43,24 @@
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why use a Link-in-Bio tool?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Social media platforms usually limit you to one link. This tool creates a landing page to host all your links."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to create a permanent shareable link or to view click analytics for your profile."
+      }
+    }
+  ]
 }
     </script>
 
@@ -78,17 +98,17 @@
         <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
         <div class="nav-right" id="navRight">
             <div class="nav-links">
-                <a href="../index.html">Home</a>
-                <a href="../about.html">About</a>
-                <a href="../contact.html">Contact</a>
+                <a href="/">Home</a>
+                <a href="../about">About</a>
+                <a href="../contact">Contact</a>
             </div>
         </div>
     </nav>
 
     <div class="breadcrumb">
-        <a href="../index.html">Home</a>
+        <a href="/">Home</a>
         <span class="separator">&rsaquo;</span>
-        <a href="../folder/social-tools.html">Social Media</a>
+        <a href="../folder/social-tools">Social Media</a>
         <span class="separator">&rsaquo;</span>
         <span class="current">link-bio</span>
     </div>
@@ -102,32 +122,130 @@
             <div class="loading-placeholder">Loading tool...</div>
         </div>
 
+        <!-- SEO Content Area -->
         <section class="tool-info-section">
             <div class="info-card">
-                <div class="card-icon">📱</div>
-                <h2>Your Personal Portal</h2>
-                <p>Social media platforms like Instagram only allow one link in your bio. Use this tool to create a custom landing page that hosts all your important links in one beautiful, mobile-friendly place.</p>
+                <div class="card-icon">📖</div>
+                <h2>Maximizing Your Social Media Real Estate</h2>
+                <p>Social media platforms like Instagram and TikTok only allow a single clickable link in your profile bio. This is a massive limitation for creators, businesses, and influencers who want to direct followers to their website, YouTube channel, online store, and latest blog post simultaneously.</p>
+                <p>Use this tool to create a custom, mobile-optimized landing page that hosts all your important links in one beautiful place. Instead of constantly changing your bio link, you just update your Infinity Kit hub.</p>
             </div>
+            
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Link-in-Bio Builder</h2>
                 <ol>
-                    <li>Enter your name and a short bio.</li>
-                    <li>Add your social media links (Instagram, Twitter, etc.).</li>
-                    <li>Watch the live preview as you build.</li>
-                    <li>Generate the link and paste it into your social profile!</li>
+                    <li><strong>Log In:</strong> To create a permanent shareable link or to view click analytics for your profile, please log in.</li>
+                    <li>Enter your name, profile picture, and a short bio.</li>
+                    <li>Add your links by typing the title and pasting the URL.</li>
+                    <li>Choose a theme or customize the colors to match your brand.</li>
+                    <li>Generate your short link and paste it into your Instagram profile.</li>
                 </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Live Preview:</strong> See exactly what your page looks like on a mobile screen as you build it.</li>
+                    <li><strong>Drag-and-Drop Sorting:</strong> Rearrange your links easily to highlight your most important content.</li>
+                    <li><strong>Click Analytics:</strong> Logged-in users can track how many people clicked each link.</li>
+                    <li><strong>Custom Branding:</strong> Remove the Infinity Kit branding and use your own colors.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Who Needs a Link-in-Bio Page?</h2>
+                <p>This tool is essential for anyone building an online presence:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🎬 Content Creators</h3>
+                        <p>Link to your latest YouTube video, your Twitch stream, and your Patreon support page all at once.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🛍️ E-commerce Stores</h3>
+                        <p>Direct followers to specific product collections, your return policy, and customer reviews.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>💼 Freelancers</h3>
+                        <p>Host links to your portfolio, your resume, and your Calendly booking page for potential clients.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Hosting</h2>
+                <p>Building a temporary preview page in your browser is free. However, making that page accessible to the public via a short URL requires a hosted web server and database storage. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Reserve Your Username:</strong> Claim your unique URL (e.g., infinitykit.online/u/yourname) so no one else can use it.</li>
+                    <li><strong>Track Your Audience:</strong> We collect anonymized data on link clicks to show you which of your social posts are driving the most traffic.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Why use a Link-in-Bio tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Social media platforms usually limit you to one link. This tool creates a landing page to host all your links.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to create a permanent shareable link or to view click analytics for your profile. Local building is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Can I add video embeds? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, logged-in users can embed YouTube videos or Spotify tracks directly onto their bio page.</div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links">
-            <a href="../about.html">About</a>
-            <a href="../cookie-policy.html">Cookie Policy</a>
-            <a href="../contact.html">Support</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-bottom"><p id="copyrightText"></p></div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="../main.js?v=1.5"></script>

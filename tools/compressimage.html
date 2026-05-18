@@ -46,6 +46,8 @@
         [data-theme="dark"] .seo-content {
             color: #ccc;
         }
+    </style>
+
     <!-- Schema Markup -->
     <script type="application/ld+json">
     {
@@ -77,10 +79,10 @@
         },
         {
           "@type": "Question",
-          "name": "Is it free?",
+          "name": "Is login required?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, this tool is completely free and processes your images securely on your own device."
+            "text": "Yes, a free account is required to save your compression history and batch process images."
           }
         }
       ]
@@ -122,7 +124,7 @@
         <div class="nav-right" id="navRight">
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="../index.html#about-page">About</a>
+                <a href="/about">About</a>
                 <a href="../index.html#contact-page">Contact</a>
             </div>
         </div>
@@ -130,7 +132,7 @@
     <div class="breadcrumb">
         <a href="/">Home</a>
         <span class="separator">&rsaquo;</span>
-        <a href="../folder/image.html">Image</a>
+        <a href="../folder/image">Image</a>
         <span class="separator">&rsaquo;</span>
         <span class="current">compressimage</span>
     </div>
@@ -155,15 +157,18 @@
         <section class="tool-info-section">
             <div class="info-card">
                 <div class="card-icon">📖</div>
-                <h2>Introduction</h2>
-                <p>This tool helps you reduce the file size of your images efficiently without sacrificing significant visual quality, perfect for saving storage space.</p>
+                <h2>The Importance of Image Optimization</h2>
+                <p>This tool helps you reduce the file size of your images efficiently without sacrificing significant visual quality, perfect for saving storage space. In the modern web, speed is everything. Large images can slow down websites, consume excessive mobile data, and fill up your device's storage quickly. Compressing images is the most effective way to solve these problems.</p>
+                <p>Our Image Compressor uses advanced algorithms to remove unnecessary data from image files while keeping the visual appearance almost identical to the original. We support JPG, PNG, and WebP formats, ensuring you can optimize any image you have.</p>
             </div>
             
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Image Compressor</h2>
                 <ol>
-                    <li>Upload the image you want to compress from your device.</li>
+                    <li><strong>Log In:</strong> To save your compression history or process multiple images at once (batch processing), please log in or create a free account.</li>
+                    <li>Upload the image you want to compress from your device by clicking the upload area or dragging and dropping.</li>
+                    <li>Adjust the compression quality slider if available to balance size and quality.</li>
                     <li>Click the <strong>Compress</strong> button to start the process.</li>
                     <li>Download your newly optimized and smaller image instantly.</li>
                 </ol>
@@ -171,53 +176,111 @@
 
             <div class="info-card">
                 <div class="card-icon">✨</div>
-                <h2>Features</h2>
+                <h2>Key Features & Benefits</h2>
                 <ul>
-                    <li><strong>Reduce file size:</strong> Significantly shrink image data for easier sharing.</li>
-                    <li><strong>Fast processing:</strong> Quick compression logic that works right in your browser.</li>
-                    <li><strong>Easy to use:</strong> A simple, one-click solution for all your image optimization needs.</li>
-                    <li><strong>Keeps good quality:</strong> Advanced algorithms maintain visual clarity while reducing bytes.</li>
+                    <li><strong>Lossy and Lossless Compression:</strong> Choose the best method for your needs.</li>
+                    <li><strong>Batch Processing:</strong> Log in to compress multiple images at the same time, saving you valuable hours.</li>
+                    <li><strong>History Log:</strong> Access your previously compressed images from your account dashboard.</li>
+                    <li><strong>Format Support:</strong> Works with JPG, PNG, and modern WebP formats.</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">💡</div>
-                <h2>Example</h2>
-                <p>A large <strong>5MB image</strong> can be compressed down to just <strong>1MB</strong> while still looking great on any screen.</p>
+                <h2>Practical Use Cases</h2>
+                <p>Why should you compress your images? Here are some of the most common scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🌐 For Web Developers</h3>
+                        <p>Optimize images for faster website load times, which improves user experience and SEO rankings. Google loves fast pages!</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📧 For Emailing</h3>
+                        <p>Reduce image sizes before attaching them to emails to avoid hitting attachment size limits and ensure faster delivery.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📱 For Phone Storage</h3>
+                        <p>Compress photos before saving them to your cloud storage or device to save gigabytes of space over time.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">🚀</div>
-                <h2>Why Use This Tool?</h2>
-                <p>It is perfect for optimizing website assets, saving storage space on your phone, and ensuring your images upload faster to social media.</p>
+                <h2>Why a Login is Required for History</h2>
+                <p>To provide advanced features like history and batch processing, we require a secure user profile. Here is why logging in makes sense:</p>
+                <ul>
+                    <li><strong>Server Storage:</strong> We can temporarily store your compressed files in the cloud for easy downloading later.</li>
+                    <li><strong>Preferences:</strong> Save your favorite compression settings so you don't have to adjust them every time.</li>
+                    <li><strong>Security:</strong> Only you can access your uploaded and compressed images.</li>
+                </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">❓</div>
-                <h2>FAQ</h2>
+                <h2>Frequently Asked Questions (FAQ)</h2>
                 <div class="faq-container">
                     <div class="faq-item">
                         <div class="faq-question">Q: Will quality reduce? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">While some data is removed to reduce size, the visual quality remains high and suitable for most uses.</div>
+                        <div class="faq-answer">While some data is removed to reduce size, the visual quality remains high and suitable for most uses. For web and screen use, the difference is usually invisible.</div>
                     </div>
                     <div class="faq-item">
                         <div class="faq-question">Q: Is it free? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">Yes, this tool is completely free and processes your images securely on your own device.</div>
+                        <div class="faq-answer">Yes, this tool is completely free. We monetize through non-intrusive ads to keep the service available for everyone.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required if you want to save your compression history or process images in batches. One-off compressions can be done without login.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What file formats are supported? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">We support the most common web formats: JPEG/JPG, PNG, and WebP.</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links">
-            <a href="../index.html#about-page">About</a>
-            <a href="../index.html#privacy-page">Privacy Policy</a>
-            <a href="../index.html#terms-page">Terms & Conditions</a>
-            <a href="../index.html#contact-page">Contact</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
         <div class="footer-bottom">
-            <p id="copyrightText"></p>
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
         </div>
     </footer>
 
@@ -226,7 +289,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script src="../notifications.js?v=1.5"></script>
     <script src="../main.js?v=1.5"></script>
@@ -237,7 +301,7 @@
         window.toolContent = document.getElementById('toolContent');
         window.toolTitle = { textContent: '' }; // Dummy to prevent errors
         
-        document.addEventListener('DOMContentLoaded', () => {
+        function initTool() {
             if (typeof loadCompressImage === 'function') {
                 loadCompressImage();
                 trackToolUsage('compressimage');
@@ -245,7 +309,13 @@
             } else {
                 window.toolContent.innerHTML = '<div class="error">Tool logic failed to load. Please refresh the page.</div>';
             }
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTool);
+        } else {
+            initTool();
+        }
     </script>
 
     <!-- Background Animation Scripts -->
@@ -256,6 +326,3 @@
 
 </body>
 </html>
-
-
-

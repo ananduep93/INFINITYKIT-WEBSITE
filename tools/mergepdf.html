@@ -18,6 +18,18 @@
         .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
         .tool-header { text-align: center; margin-bottom: 30px; }
         .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
+        .seo-content {
+            margin-top: 40px;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+        }
+        .seo-content h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        [data-theme="dark"] .seo-content {
+            color: #ccc;
+        }
     </style>
 
     <!-- Schema Markup -->
@@ -40,7 +52,24 @@
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I merge password-protected PDFs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, you must remove the password protection before merging files."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to process files larger than 50MB or save your merge history."
+      }
+    }
+  ]
 }
     </script>
 
@@ -79,7 +108,7 @@
         <div class="nav-right" id="navRight">
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="../index.html#about-page">About</a>
+                <a href="/about">About</a>
                 <a href="../index.html#contact-page">Contact</a>
             </div>
         </div>
@@ -87,7 +116,7 @@
     <div class="breadcrumb">
         <a href="/">Home</a>
         <span class="separator">&rsaquo;</span>
-        <a href="../folder/pdf-toolkit.html">PDF Toolkit</a>
+        <a href="../folder/pdf-toolkit">PDF Toolkit</a>
         <span class="separator">&rsaquo;</span>
         <span class="current">mergepdf</span>
     </div>
@@ -105,22 +134,130 @@
             <div class="loading-placeholder">Loading tool...</div>
         </div>
 
+        <!-- SEO Content Area -->
         <section class="tool-info-section">
             <div class="info-card">
-                <h2>Introduction</h2>
-                <p>Combine multiple PDF files into one easily.</p>
+                <div class="card-icon">📖</div>
+                <h2>Streamlining Your Documents with PDF Merging</h2>
+                <p>Combine multiple PDF files into one easily. In both professional and personal environments, dealing with multiple scattered documents can be overwhelming. Whether you are compiling a monthly report, gathering receipts for taxes, or putting together a portfolio, having everything in a single file makes sharing and reading much simpler.</p>
+                <p>Our Merge PDF tool allows you to upload several files and combine them into a single, cohesive document in seconds. You can arrange the files in the exact order you need them to appear, ensuring a smooth reading experience for your recipient.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the PDF Merger</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To process files larger than 50MB or save your merge history, please log in or create a free account.</li>
+                    <li>Upload the PDF files you want to combine by clicking the upload area or dragging and dropping.</li>
+                    <li>Drag the files to arrange them in the desired order.</li>
+                    <li>Click the <strong>Merge</strong> button to combine the documents.</li>
+                    <li>Download your newly created single PDF file.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Drag-and-Drop Ordering:</strong> Easily change the sequence of files before merging.</li>
+                    <li><strong>Large File Support:</strong> Logged-in users can process massive files up to 50MB.</li>
+                    <li><strong>Secure Processing:</strong> Your files are processed locally in your browser when possible, or deleted immediately after processing on our servers.</li>
+                    <li><strong>Fast result:</strong> Get your merged file in a split second.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Practical Use Cases</h2>
+                <p>When should you use a PDF merger? Here are some common scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>📄 Job Applications</h3>
+                        <p>Combine your resume, cover letter, and reference letters into a single PDF to send to employers.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🧾 Financial Audits</h3>
+                        <p>Merge all your monthly bank statements into one file for your accountant or for archiving.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📚 E-Book Creation</h3>
+                        <p>Combine separate chapters written in different documents into one complete digital book.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Large Files</h2>
+                <p>Processing large PDF files, especially those with high-resolution images, requires significant server resources. We require a login for files over 50MB to:</p>
+                <ul>
+                    <li><strong>Manage Server Load:</strong> Ensure the service remains fast for all users by preventing abuse.</li>
+                    <li><strong>Provide Cloud History:</strong> Access your merged files from any device for a limited time.</li>
+                    <li><strong>Advanced Features:</strong> Access tools like page rotation and deletion within the merge interface.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Can I merge password-protected PDFs? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">No, you must remove the password protection using a separate tool or your PDF viewer before merging the files.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to process files larger than 50MB or save your merge history. Basic merging for smaller files is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is there a limit to how many files I can merge? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Free users can merge up to 5 files at a time. Logged-in users can merge up to 20 files in a single operation.</div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links">
-            <a href="../index.html#about-page">About</a>
-            <a href="../index.html#privacy-page">Privacy Policy</a>
-            <a href="../index.html#contact-page">Contact</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
         <div class="footer-bottom">
-            <p id="copyrightText"></p>
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
         </div>
     </footer>
 

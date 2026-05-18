@@ -6,9 +6,9 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glassmorphism Generator - Free Online Tool | Infinity Kit</title>
+    <title>glass-gen - Free Online Tool | Infinity Kit</title>
     <link rel="canonical" href="https://infinitykit.online/tools/glass-gen">
-    <meta name="description" content="Use our free online Glassmorphism Generator to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online glass-gen to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
     <link rel="stylesheet" href="../app.css?v=1.5">
     <link rel="stylesheet" href="../cookies.css">
     <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
@@ -19,6 +19,9 @@
         .controls-panel { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         input[type="range"] { width: 100%; margin-top: 10px; }
         .glass-gen-layout { grid-template-columns: 1fr 1fr; }
+        .seo-content { margin-top: 40px; line-height: 1.6; color: var(--text-color, #333); }
+        .seo-content h2 { margin-top: 25px; margin-bottom: 15px; }
+        [data-theme="dark"] .seo-content { color: #ccc; }
         @media (max-width: 768px) { .glass-gen-layout { grid-template-columns: 1fr; } }
     </style>
 
@@ -42,7 +45,24 @@
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Glassmorphism?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Glassmorphism is a design trend that mimics the look of frosted glass using background blur and transparency."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to save your glassmorphism presets to your profile or to generate ready-to-use React and Vue components."
+      }
+    }
+  ]
 }
     </script>
 
@@ -79,13 +99,13 @@
         <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
         <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
         <div class="nav-right" id="navRight">
-            <div class="nav-links"><a href="../index.html">Home</a><a href="../about.html">About</a><a href="../contact.html">Contact</a></div>
+            <div class="nav-links"><a href="/">Home</a><a href="../about">About</a><a href="../contact">Contact</a></div>
         </div>
     </nav>
 
     <div class="breadcrumb">
-        <a href="../index.html">Home</a> <span class="separator">&rsaquo;</span>
-        <a href="../folder/web-tools.html">Web Tools</a> <span class="separator">&rsaquo;</span>
+        <a href="/">Home</a> <span class="separator">&rsaquo;</span>
+        <a href="../folder/web-tools">Web Tools</a> <span class="separator">&rsaquo;</span>
         <span class="current">glass-gen</span>
     </div>
 
@@ -94,28 +114,130 @@
         <div class="tool-header"><h1 class="tool-title">💎 Glassmorphism Generator</h1></div>
         <div id="toolContent" class="glass-panel"><div class="loading-placeholder">Loading tool...</div></div>
 
+        <!-- SEO Content Area -->
         <section class="tool-info-section">
             <div class="info-card">
-                <div class="card-icon">🎨</div>
-                <h2>What is Glassmorphism?</h2>
-                <p>Glassmorphism is a design trend that mimics the look of frosted glass. It uses background blur, transparency, and subtle borders to create depth and a premium feel.</p>
+                <div class="card-icon">📖</div>
+                <h2>The Aesthetics of Glassmorphism</h2>
+                <p>Glassmorphism is a UI design trend that mimics the look of frosted glass. It relies on a combination of background blur, transparency, and subtle borders to create a sense of depth and a premium, modern feel. It became highly popular with the release of iOS 7 and later Windows 11.</p>
+                <p>By using the CSS `backdrop-filter` property, developers can blur whatever is behind an element, making the interface feel alive and integrated with the background. This tool allows you to tweak those values visually and copy the code instantly.</p>
             </div>
+            
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Glass Generator</h2>
                 <ol>
-                    <li>Adjust the <strong>Blur</strong> and <strong>Transparency</strong> sliders.</li>
-                    <li>Choose a base <strong>Color</strong> (usually white or light gray).</li>
-                    <li>Adjust the <strong>Border</strong> intensity for a sharper look.</li>
-                    <li>Copy the <strong>CSS Code</strong> and paste it into your project!</li>
+                    <li><strong>Log In:</strong> To save your glassmorphism presets or generate ready-to-use React/Vue components, please log in.</li>
+                    <li>Adjust the <strong>Blur</strong> slider to increase or decrease the frosted effect.</li>
+                    <li>Adjust the <strong>Transparency</strong> slider to control the opacity of the glass.</li>
+                    <li>Choose a base background color (white works best for light mode, dark gray for dark mode).</li>
+                    <li>Copy the generated CSS code and paste it into your stylesheet.</li>
                 </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Live Interactive Preview:</strong> See your changes in real-time on a colorful background.</li>
+                    <li><strong>Cross-Browser CSS:</strong> Generates code with necessary vendor prefixes for maximum compatibility.</li>
+                    <li><strong>Component Export:</strong> Logged-in users can export directly as styled-components or Tailwind classes.</li>
+                    <li><strong>Accessibility Guard:</strong> Warns you if the text contrast on your glass element becomes too low.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Best Practices for Glass UI</h2>
+                <p>To make glassmorphism look good, follow these design rules:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🌈 Use Vivid Backgrounds</h3>
+                        <p>The glass effect is invisible on a solid white or black background. Use it over gradients or colorful images.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📏 Keep Borders Subtle</h3>
+                        <p>A 1px semi-transparent white border mimics the edge of a pane of glass and helps the card stand out.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🔤 Prioritize Readability</h3>
+                        <p>Don't put small body text on a highly transparent glass card. Use glass effects for headers, modals, and sidebars instead.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Component Generation</h2>
+                <p>Generating standard CSS box-shadows and filters is easy. However, converting those values into functional UI components for frameworks like React, Vue, or Angular requires a specialized templating engine. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Save Your Theme Library:</strong> Build a collection of glass presets (e.g., "Dark Glass", "Ultra Blur") and access them across all your projects.</li>
+                    <li><strong>Access the Component Generator:</strong> Download full `.jsx` or `.vue` files with the styles already applied and responsive design built-in.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What is Glassmorphism? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Glassmorphism is a design trend that mimics the look of frosted glass using background blur and transparency.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to save your glassmorphism presets to your profile or to generate ready-to-use React and Vue components. Basic CSS generation is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Does it work on Firefox? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, though older versions of Firefox required users to enable `layout.css.backdrop-filter.enabled` in `about:config`. Modern versions support it by default.</div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links"><a href="../about.html">About</a><a href="../cookie-policy.html">Cookie Policy</a><a href="../contact.html">Support</a></div>
-        <div class="footer-bottom"><p id="copyrightText"></p></div>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="../main.js?v=1.5"></script>

@@ -3,9 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metadata Stripper - Free Online Tool | Infinity Kit</title>
+    <title>metadata-stripper - Free Online Tool | Infinity Kit</title>
     <link rel="stylesheet" href="../app.css?v=1.5">
     <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    
+    <!-- Shared Tool Logic -->
+    <script src="../shared-tool.js?v=1.5"></script>
+
+    <style>
+        .tool-page-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tool-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .seo-content {
+            margin-top: 40px;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+        }
+        .seo-content h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        [data-theme="dark"] .seo-content {
+            color: #ccc;
+        }
+    </style>
 
     <!-- Schema Markup -->
     <script type="application/ld+json">
@@ -27,7 +59,24 @@
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does it reduce image quality?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, removing metadata only removes the hidden text data and does not compress or alter the visual pixels of the image."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to process files larger than 10MB or batch process multiple files."
+      }
+    }
+  ]
 }
     </script>
 
@@ -58,17 +107,165 @@
   ]
 }
     </script>
-    <meta name="description" content="Use our free online Metadata Stripper to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online metadata-stripper to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
 </head>
 <body>
-    <nav class="navbar"><div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div></nav>
-    <div class="breadcrumb"><a href="/">Home</a><span class="separator">&rsaquo;</span><a href="../folder/advanced-suite.html">Advanced Suite</a><span class="separator">&rsaquo;</span><span class="current">Metadata Stripper</span></div>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="../index.html#contact-page">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/advanced-suite">Advanced Suite</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">Metadata Stripper</span>
+    </div>
     
     <main class="tool-page-container">
         <a href='../folder/advanced-suite.html' class='back-link'><span>&larr;</span> Back to Advanced Suite</a>
-        <div class="tool-header"><h1 class="tool-title">🕵️‍♂️ Metadata Stripper</h1></div>
-        <div id="toolContent" class="glass-panel"></div>
+        <div class="tool-header">
+            <h1 class="tool-title">🕵️‍♂️ Metadata Stripper</h1>
+        </div>
+
+        <!-- Tool Content Area -->
+        <div id="toolContent" class="glass-panel">
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>Protecting Your Privacy by Stripping Metadata</h2>
+                <p>This tool helps you remove hidden metadata from your files and images before sharing them online. Every photo you take with a smartphone or digital camera contains hidden information called Exif data. This can include the exact GPS coordinates of where the photo was taken, the date and time, and the device model.</p>
+                <p>While this data is useful for photographers, it poses a significant privacy risk when sharing photos on social media or public marketplaces. Our Metadata Stripper removes all this hidden information, leaving you with a clean file that is safe to share.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Metadata Stripper</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To process files larger than 10MB or batch process multiple files at once, please log in or create a free account.</li>
+                    <li>Upload the image or file you want to clean by clicking the upload area.</li>
+                    <li>The tool will automatically detect and list the metadata found in the file.</li>
+                    <li>Click <strong>Strip Metadata</strong> to create a clean copy of the file.</li>
+                    <li>Download your privacy-protected file.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Zero Quality Loss:</strong> Stripping metadata does not affect the visual quality of your images.</li>
+                    <li><strong>Batch Processing:</strong> Logged-in users can upload and clean up to 10 files simultaneously.</li>
+                    <li><strong>Secure & Private:</strong> Files are processed directly in your browser and are never uploaded to our servers (for standard files).</li>
+                <li><strong>Supports Multiple Formats:</strong> Works with JPG, PNG, WEBP, and more.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Practical Use Cases</h2>
+                <p>When should you strip metadata? Here are some common scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🏠 Online Marketplaces</h3>
+                        <p>Remove location data from photos of items you are selling from your home before posting them on Craigslist or Facebook Marketplace.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🏢 Professional Portfolios</h3>
+                        <p>Clean files before sending them to clients to ensure no personal device information or editing history is shared.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📱 Social Media</h3>
+                        <p>Protect your children's privacy by removing location tags from photos before sharing them with friends online.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Large Files</h2>
+                <p>Processing large files (over 10MB) or handling multiple files at once requires server-side processing to ensure a smooth experience. We require a login for these advanced features to:</p>
+                <ul>
+                    <li><strong>Support High-Resolution Files:</strong> Access server infrastructure that can handle massive RAW images without crashing.</li>
+                    <li><strong>Enable Batch Mode:</strong> Clean entire folders of images at once, saving you time.</li>
+                    <li><strong>Provide Download History:</strong> Access your cleaned files for a limited time from any device.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Does it reduce image quality? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">No, removing metadata only removes the hidden text data and does not compress or alter the visual pixels of the image.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to process files larger than 10MB or batch process multiple files. Basic stripping for small files is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What specific data is removed? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">We remove Exif data (camera settings), IPTC data (copyright and keywords), and XMP data (editing history), including GPS coordinates.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="../main.js?v=2.1"></script>
     <script src="../advanced-tools.js?v=1.0"></script>

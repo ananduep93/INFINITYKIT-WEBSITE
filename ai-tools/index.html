@@ -276,7 +276,8 @@
     <script type="module">
         import { authService } from '../auth.js';
         authService.onAuthChange((user) => {
-            if (!user) window.location.href = '/signin.html';
+            // Removed mandatory redirect so Google can index the page content
+            // if (!user) window.location.href = '/signin.html';
         });
 
         // Search filter

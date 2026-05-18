@@ -6,9 +6,9 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drug Dosage Calculator - Free Online Tool | Infinity Kit</title>
+    <title>drugdosage - Free Online Tool | Infinity Kit</title>
     <link rel="canonical" href="https://infinitykit.online/tools/drugdosage">
-    <meta name="description" content="Use our free online Drug Dosage Calculator to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online drugdosage to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515" crossorigin="anonymous"></script>
@@ -46,6 +46,19 @@
         [data-theme="dark"] .seo-content {
             color: #ccc;
         }
+        .warning-box {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+        }
+        [data-theme="dark"] .warning-box {
+            background-color: #2c2515;
+            color: #ffeeba;
+            border-color: #4c3e1e;
+        }
     </style>
 
     <!-- Schema Markup -->
@@ -74,15 +87,15 @@
       "name": "Is it for medical use?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "This tool is for educational purposes and provides basic guidance only."
+        "text": "No. This tool is strictly for educational purposes and should not be used to determine actual medical dosages."
       }
     },
     {
       "@type": "Question",
-      "name": "Should I consult a doctor?",
+      "name": "Is login required?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, always consult a medical professional before administering any medication."
+        "text": "Yes, a free account is required to save your calculation history for study purposes."
       }
     }
   ]
@@ -124,7 +137,7 @@
         <div class="nav-right" id="navRight">
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="../index.html#about-page">About</a>
+                <a href="/about">About</a>
                 <a href="../index.html#contact-page">Contact</a>
             </div>
         </div>
@@ -132,7 +145,7 @@
     <div class="breadcrumb">
         <a href="/">Home</a>
         <span class="separator">&rsaquo;</span>
-        <a href="../folder/health-utility-hub.html">Health Utility Hub</a>
+        <a href="../folder/health-utility-hub">Health Utility Hub</a>
         <span class="separator">&rsaquo;</span>
         <span class="current">drugdosage</span>
     </div>
@@ -155,70 +168,131 @@
 
         <!-- SEO Content Area -->
         <section class="tool-info-section">
+            <div class="warning-box">
+                <strong>⚠️ IMPORTANT MEDICAL DISCLAIMER:</strong> This tool is designed strictly for <strong>educational purposes</strong> and should be used by students or professionals for practice calculations only. It is <strong>NOT</strong> a substitute for professional medical advice, diagnosis, or treatment. Never use this tool to determine actual medication dosages for yourself or others. Always consult a qualified physician or pharmacist for clinical decisions.
+            </div>
+
             <div class="info-card">
                 <div class="card-icon">📖</div>
-                <h2>Introduction</h2>
-                <p>This tool helps calculate the correct medicine dosage based on weight or age, ensuring you have a basic guideline for administration.</p>
+                <h2>Understanding Drug Dosage Calculations</h2>
+                <p>This tool helps calculate medicine dosages based on weight or age, providing a basic guideline for educational and training administration. In the medical field, precision is paramount. Dosage calculations are a critical skill for nurses, pharmacists, and doctors to ensure patient safety and therapeutic effectiveness.</p>
+                <p>Our calculator implements standard formulas used in medical training to help students practice and verify their manual calculations. Understanding the relationship between body weight, drug concentration, and total dose is essential for anyone entering the healthcare sector.</p>
             </div>
             
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Calculator (For Study)</h2>
                 <ol>
-                    <li>Enter the weight or age of the individual.</li>
-                    <li>Enter the specific dosage information required.</li>
-                    <li>Click to get the calculated result immediately.</li>
+                    <li><strong>Log In:</strong> To save your calculation history and practice logs, please log in or create a free account.</li>
+                    <li>Enter the weight or age of the hypothetical patient.</li>
+                    <li>Enter the required dose per unit of weight (e.g., mg/kg) or the total desired dose.</li>
+                    <li>Enter the drug concentration available (e.g., mg per mL).</li>
+                    <li>Click <strong>Calculate</strong> to see the volume or quantity to be administered.</li>
                 </ol>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">✨</div>
-                <h2>Features</h2>
+                <h2>Key Features & Benefits</h2>
                 <ul>
-                    <li><strong>Quick calculation:</strong> Get results in an instant.</li>
-                    <li><strong>Easy input:</strong> Simple forms for fast data entry.</li>
-                    <li><strong>Helpful for basics:</strong> Perfect for initial estimations and basic guidance.</li>
+                    <li><strong>Practice Mode:</strong> Perfect for nursing students preparing for exams or dosage calculation tests.</li>
+                    <li><strong>History Tracking:</strong> Log in to save your calculations and review them later to track your learning progress.</li>
+                    <li><strong>Formula Verification:</strong> Check your manual math against the computer-generated result to find errors in your logic.</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">💡</div>
-                <h2>Example</h2>
-                <p>By entering the weight of a patient, the tool can provide a weight-based dose calculation tailored to the input provided.</p>
+                <h2>Educational Use Cases</h2>
+                <p>How can students make the most of this tool? Here are some scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>📚 Exam Preparation</h3>
+                        <p>Practice dosage problems from textbooks and use the tool to verify your answers instantly.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🩺 Clinical Simulation</h3>
+                        <p>Use the calculator during simulation lab scenarios to practice determining correct volumes for administration.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🧪 Formula Mastery</h3>
+                        <p>Understand how changing a patient's weight or a drug's concentration affects the final volume required.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">🚀</div>
-                <h2>Why Use This Tool?</h2>
-                <p>It helps you avoid calculation errors and provides a starting point for determining the correct dosage.</p>
+                <h2>Why a Login is Required for History</h2>
+                <p>To help students track their learning journey, we offer a history feature that requires a secure account. Logging in allows you to:</p>
+                <ul>
+                    <li><strong>Save Practice Logs:</strong> Keep a record of all calculations you have performed for review.</li>
+                    <li><strong>Identify Weaknesses:</strong> See which types of calculations you perform most often and where you might need more study.</li>
+                    <li><strong>Privacy:</strong> Your study records are private and secure.</li>
+                </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">❓</div>
-                <h2>FAQ</h2>
+                <h2>Frequently Asked Questions (FAQ)</h2>
                 <div class="faq-container">
                     <div class="faq-item">
-                        <div class="faq-question">Q: Is it for medical use? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">This tool is for educational purposes and provides basic guidance only.</div>
+                        <div class="faq-question">Q: Is this tool for medical use? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">No. This tool is strictly for educational purposes and should not be used to determine actual medical dosages for real patients.</div>
                     </div>
                     <div class="faq-item">
-                        <div class="faq-question">Q: Should I consult a doctor? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">Yes, always consult a medical professional before administering any medication.</div>
+                        <div class="faq-question">Q: What formulas are used? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">The tool uses standard weight-based calculation formulas commonly taught in nursing and pharmacy schools (Dose = Weight x Rate).</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to save your calculation history and practice logs. Basic one-off calculations can be done without login.</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links">
-            <a href="../index.html#about-page">About</a>
-            <a href="../index.html#privacy-page">Privacy Policy</a>
-            <a href="../index.html#terms-page">Terms & Conditions</a>
-            <a href="../index.html#contact-page">Contact</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
         <div class="footer-bottom">
-            <p id="copyrightText"></p>
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
         </div>
     </footer>
 
@@ -257,6 +331,3 @@
 
 </body>
 </html>
-
-
-

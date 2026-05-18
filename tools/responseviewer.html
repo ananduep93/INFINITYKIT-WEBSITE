@@ -6,15 +6,16 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Response Viewer - Free Online Tool | Infinity Kit</title>
+    <title>responseviewer - Free Online Tool | Infinity Kit</title>
     <link rel="canonical" href="https://infinitykit.online/tools/responseviewer">
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515"
      crossorigin="anonymous"></script>
 
-    <meta name="description" content="Use our free online Response Viewer to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online responseviewer to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
     <link rel="stylesheet" href="../app.css?v=1.5">
     <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
     <style>
         .tool-page-container { max-width: 1000px; margin: 20px auto; padding: 20px; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
@@ -37,6 +38,9 @@
         .submitted-at { font-size: 0.8rem; color: #888; margin-bottom: 12px; display: block; }
         .preview-img { height: 120px; width: auto; max-width: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); margin-top: 5px; display: block; cursor: pointer; transition: transform 0.2s; }
         .preview-img:hover { transform: scale(1.05); }
+        .seo-content { margin-top: 40px; line-height: 1.6; color: var(--text-color, #333); }
+        .seo-content h2 { margin-top: 25px; margin-bottom: 15px; }
+        [data-theme="dark"] .seo-content { color: #ccc; }
     </style>
 
     <!-- Schema Markup -->
@@ -59,7 +63,24 @@
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I view responses?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Go to My Surveys, click 'View Responses' on the desired survey. This page will display the data."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to access this viewer and see the private answers submitted to your surveys."
+      }
+    }
+  ]
 }
     </script>
 
@@ -92,10 +113,20 @@
     </script>
 </head>
 <body>
-    <nav class="navbar"><div class="nav-logo" onclick="location.href='/'">⚡INFINITY KIT</div></nav>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='/'">⚡INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="../index.html#contact-page">Contact</a>
+            </div>
+        </div>
+    </nav>
     <div class="breadcrumb">
         <a href="/">Home</a><span class="separator">&rsaquo;</span>
-        <a href="../folder/survey-hub.html">Survey Hub</a><span class="separator">&rsaquo;</span>
+        <a href="../folder/survey-hub">Survey Hub</a><span class="separator">&rsaquo;</span>
         <span class="current">Response Viewer</span>
     </div>
     <main class="tool-page-container">
@@ -103,8 +134,116 @@
         <div id="toolContent">
             <div class="loading-placeholder">Loading responses...</div>
         </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>Analyzing Your Survey Data</h2>
+                <p>This tool allows you to view and analyze the responses collected by your surveys. Raw data is useless without analysis. This viewer automatically aggregates your data into visual charts and lists, making it easy to spot trends.</p>
+                <p>Whether you are looking at a summary of multiple-choice questions or reading individual text responses, this interface provides the tools you need to make sense of the feedback you have received.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Response Viewer</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To access this viewer and see private survey responses, please log in.</li>
+                    <li>Select a survey from your dashboard to view its data.</li>
+                    <li>Toggle between the <strong>Summary</strong> tab (charts) and the <strong>Individual</strong> tab (raw list).</li>
+                    <li>Click <strong>Export</strong> to download the data as a CSV or PDF file.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Automated Charts:</strong> Multiple-choice questions are instantly visualized as bar charts.</li>
+                    <li><strong>Real-Time Updates:</strong> As new responses come in, the charts update automatically.</li>
+                    <li><strong>Filter & Search:</strong> Search through text responses to find specific keywords.</li>
+                    <li><strong>Secure Access:</strong> Only the survey creator can view this page.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Why a Login is Required for Data Access</h2>
+                <p>Survey responses often contain private opinions or personal information submitted by the public. We take data privacy seriously. We require a login for this viewer to:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🔒 Prevent Unauthorized Access</h3>
+                        <p>Without authentication, anyone with the survey ID could view the results. Login locks the data to your account.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📈 Generate Custom Reports</h3>
+                        <p>We use your account profile to customize the export headers and branding on downloaded PDF reports.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: How do I view responses? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Go to My Surveys, click 'View Responses' on the desired survey. This page will display the data.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to access this viewer and see the private answers submitted to your surveys.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Can I delete individual responses? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, in the 'Individual' tab, click the delete icon next to any specific response to remove it from the stats.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
-    <footer class="footer"><div class="footer-links"><a href="/">Home</a></div></footer>
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -132,6 +271,3 @@
 
 </body>
 </html>
-
-
-

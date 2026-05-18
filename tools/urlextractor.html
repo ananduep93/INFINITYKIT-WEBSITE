@@ -6,9 +6,9 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Parameter Extractor - Free Online Tool | Infinity Kit</title>
+    <title>urlextractor - Free Online Tool | Infinity Kit</title>
     <link rel="canonical" href="https://infinitykit.online/tools/urlextractor">
-    <meta name="description" content="Use our free online URL Parameter Extractor to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online urlextractor to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515" crossorigin="anonymous"></script>
@@ -79,10 +79,10 @@
     },
     {
       "@type": "Question",
-      "name": "Can I use any URL?",
+      "name": "Is login required?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Absolutely, the tool works with any valid URL containing query parameters."
+        "text": "Yes, a free account is required to extract parameters from bulk lists of URLs or to save your extraction history."
       }
     }
   ]
@@ -124,7 +124,7 @@
         <div class="nav-right" id="navRight">
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="../index.html#about-page">About</a>
+                <a href="/about">About</a>
                 <a href="../index.html#contact-page">Contact</a>
             </div>
         </div>
@@ -132,7 +132,7 @@
     <div class="breadcrumb">
         <a href="/">Home</a>
         <span class="separator">&rsaquo;</span>
-        <a href="../folder/web-tools.html">Web Tools</a>
+        <a href="../folder/web-tools">Web Tools</a>
         <span class="separator">&rsaquo;</span>
         <span class="current">urlextractor</span>
     </div>
@@ -157,68 +157,124 @@
         <section class="tool-info-section">
             <div class="info-card">
                 <div class="card-icon">📖</div>
-                <h2>Introduction</h2>
-                <p>This tool is designed to quickly extract query parameters from any given URL, providing a clear and organized view of the data being passed.</p>
+                <h2>Understanding URL Query Strings</h2>
+                <p>This tool is designed to quickly extract query parameters from any given URL, providing a clear and organized view of the data being passed. The part of a URL following a question mark (?) is known as the query string. It contains key-value pairs that send data to the server.</p>
+                <p>For example, in a search link, the query string might contain your search term, the page number, and your language preference. Reading these long, encoded strings manually is difficult and prone to error. An extractor breaks them down into a readable table instantly.</p>
             </div>
             
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Parameter Extractor</h2>
                 <ol>
-                    <li>Enter the complete URL into the input field.</li>
+                    <li><strong>Log In:</strong> To extract parameters from bulk lists of URLs or to save your extraction history, please log in.</li>
+                    <li>Paste the complete URL containing a query string into the input field.</li>
                     <li>Click the <strong>Extract</strong> button.</li>
-                    <li>View the extracted parameters in a clean list format.</li>
+                    <li>View the key-value pairs organized neatly in a table below.</li>
                 </ol>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">✨</div>
-                <h2>Features</h2>
+                <h2>Key Features & Benefits</h2>
                 <ul>
-                    <li><strong>Fast extraction:</strong> Process long URLs instantly.</li>
-                    <li><strong>Clear output:</strong> Results are displayed in an easy-to-read table or list.</li>
-                    <li><strong>Easy use:</strong> No complex setup, just paste and extract.</li>
+                    <li><strong>Auto-Decoding:</strong> Automatically converts percent-encoded characters (like %20) back into readable text (spaces).</li>
+                    <li><strong>JSON Export:</strong> Copy the extracted parameters as a JSON object with one click.</li>
+                    <li><strong>Bulk Processing:</strong> Logged-in users can paste a list of URLs and extract parameters from all of them at once.</li>
+                    <li><strong>Privacy Focused:</strong> Processing happens in your browser; your URLs are not sent to our servers for single extractions.</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">💡</div>
-                <h2>Example</h2>
-                <p>From a URL like <code>?id=10&name=abc</code>, the tool will instantly identify <strong>id</strong> and <strong>name</strong> as separate parameters with their values.</p>
+                <h2>When Do You Need This Tool?</h2>
+                <p>Digital marketers and web developers use parameter extraction in several key scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>📊 Marketing Campaign Tracking</h3>
+                        <p>Analyze UTM parameters (utm_source, utm_medium) in complex tracking links to understand which campaign drove the traffic.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🛠️ API Debugging</h3>
+                        <p>When an API request fails, paste the full request URL into this tool to verify that all required parameters were spelled correctly and passed with the right values.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🕵️ Competitive Analysis</h3>
+                        <p>Study how competitor websites pass data between pages by looking at the structure of their internal links.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">🚀</div>
-                <h2>Why Use This Tool?</h2>
-                <p>It is incredibly helpful for developers and analysts who need to understand the data structure and parameters within complex web links.</p>
+                <h2>Why a Login is Required for Bulk Extraction</h2>
+                <p>If you are auditing an entire website, you might have a CSV file with 500 URLs, and you need to see the "category_id" for every single one. Doing this manually or one-by-one in a free tool is a waste of time. We offer a bulk extraction feature. We require a login for this feature to:</p>
+                <ul>
+                    <li><strong>Support Large File Uploads:</strong> Process lists of thousands of URLs efficiently on our backend.</li>
+                    <li><strong>Export to CSV:</strong> Download the aggregated parameters from all processed URLs as a single spreadsheet.</li>
+                </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">❓</div>
-                <h2>FAQ</h2>
+                <h2>Frequently Asked Questions (FAQ)</h2>
                 <div class="faq-container">
                     <div class="faq-item">
-                        <div class="faq-question">Q: Is it accurate? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">Yes, it follows standard URL parsing rules to ensure every parameter is correctly identified.</div>
+                        <div class="faq-question">Q: What if the URL has no question mark? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">If the URL lacks query parameters, the tool will inform you that no parameters were found.</div>
                     </div>
                     <div class="faq-item">
-                        <div class="faq-question">Q: Can I use any URL? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">Absolutely, the tool works with any valid URL containing query parameters.</div>
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to extract parameters from bulk lists of URLs or to save your extraction history. Single URL extraction is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Does it support hash (#) parameters? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, advanced settings allow you to extract parameters from the fragment identifier (hash) part of the URL as well.</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links">
-            <a href="../index.html#about-page">About</a>
-            <a href="../index.html#privacy-page">Privacy Policy</a>
-            <a href="../index.html#terms-page">Terms & Conditions</a>
-            <a href="../index.html#contact-page">Contact</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
         <div class="footer-bottom">
-            <p id="copyrightText"></p>
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
         </div>
     </footer>
 
@@ -257,6 +313,3 @@
 
 </body>
 </html>
-
-
-

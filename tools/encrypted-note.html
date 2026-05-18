@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encrypted Note - Free Online Tool | Infinity Kit</title>
+    <title>encrypted-note - Free Online Tool | Infinity Kit</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/encrypted-note">
+    <meta name="description" content="Use our free online encrypted-note to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    
+    <!-- Shared Tool Logic -->
+    <script src="../shared-tool.js?v=1.5"></script>
+    
+    <style>
+        .tool-page-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tool-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .seo-content {
+            margin-top: 40px;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+        }
+        .seo-content h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        [data-theme="dark"] .seo-content {
+            color: #ccc;
+        }
+    </style>
 
     <!-- Schema Markup -->
     <script type="application/ld+json">
@@ -19,14 +61,31 @@
     "price": "0",
     "priceCurrency": "USD"
   },
-  "description": "Free online tool from Infinity Kit."
+  "description": "Create encrypted notes. Free online tool from Infinity Kit for daily productivity."
 }
     </script>
     <script type="application/ld+json">
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How secure is it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool uses AES-256 encryption in your browser, meaning the server never sees your password or the unencrypted content."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to generate shareable 'burn-after-reading' links or to save your encrypted notes to the cloud."
+      }
+    }
+  ]
 }
     </script>
 
@@ -57,20 +116,193 @@
   ]
 }
     </script>
-    <meta name="description" content="Use our free online Encrypted Note to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
 </head>
 <body>
-    <nav class="navbar"><div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div></nav>
-    <div class="breadcrumb"><a href="/">Home</a><span class="separator">&rsaquo;</span><a href="../folder/advanced-suite.html">Advanced Suite</a><span class="separator">&rsaquo;</span><span class="current">Dead Drop Note</span></div>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="../index.html#contact-page">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/advanced-suite">Advanced Suite</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">Dead Drop Note</span>
+    </div>
+
     <main class="tool-page-container">
-        <a href='../folder/advanced-suite.html' class='back-link'>&larr; Back</a>
-        <div id="toolContent" class="glass-panel" style="margin-top:20px;"></div>
+        <a href='../folder/advanced-suite.html' class='back-link'>
+            <span>&larr;</span> Back to Folders
+        </a>
+
+        <div class="tool-header">
+            <h1 class="tool-title">🔐 Dead Drop Encrypted Note</h1>
+            
+        </div>
+
+        <!-- Tool Content Area -->
+        <div id="toolContent" class="glass-panel" style="margin-top:20px;">
+            <!-- Tool will be loaded here -->
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>The Importance of Zero-Knowledge Privacy</h2>
+                <p>This tool allows you to create notes that are encrypted in your browser before ever reaching our servers. In an era of mass surveillance and data breaches, sending sensitive information (like passwords or credit card details) over standard chat apps is risky.</p>
+                <p>By using AES-256 encryption, this tool ensures that only someone with the correct password can read the note. Even if our database were hacked, the attackers would only see scrambled gibberish.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Encrypted Note Tool</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To generate shareable 'burn-after-reading' links or to save your encrypted notes to the cloud, please log in.</li>
+                    <li>Type your sensitive message in the text area.</li>
+                    <li>Enter a strong password. Do not forget it; we cannot recover it.</li>
+                    <li>Click <strong>Encrypt</strong> and copy the resulting link or raw text to send to your recipient.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Client-Side Encryption:</strong> Your password never leaves your computer. We cannot read your notes.</li>
+                    <li><strong>Burn-After-Reading:</strong> Logged-in users can create links that self-destruct after being opened once.</li>
+                    <li><strong>Password Protection:</strong> Add an extra layer of security to prevent unauthorized access.</li>
+                    <li><strong>Expiry Timers:</strong> Set notes to automatically delete after 1 hour, 1 day, or 1 week.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>When to Use Dead Drop Notes</h2>
+                <p>This tool is ideal for sending sensitive data securely:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🔑 Password Sharing</h3>
+                        <p>Send a temporary password to a client or team member securely without leaving a permanent record in your chat history.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>💳 Credit Card Details</h3>
+                        <p>If you must share payment information with a trusted person, use a self-destructing note to minimize risk.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🕵️ Whistleblowing</h3>
+                        <p>Journalists and sources use zero-knowledge tools to exchange information without revealing their identity.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Cloud Storage</h2>
+                <p>Generating a random encryption key and scrambling text in your browser is free and requires no account. However, if you want to store that encrypted note on our servers so you can send a link to a friend, we must host that data. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Manage the Database:</strong> We need to link the encrypted payload to your account so you can delete it or change the expiration time.</li>
+                    <li><strong>Enforce the "Burn" Logic:</strong> Our server must track whether the link has been clicked yet to know when to delete the data forever.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Can you recover my password? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">No. Because the encryption happens locally, we never see your password. If you lose it, the note is gone forever.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to generate shareable 'burn-after-reading' links or to save your encrypted notes to the cloud. Local encryption is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What happens when a note "burns"? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">The database record is completely erased. Anyone visiting the link after that will see a 404 error.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
-    <script src="../main.js?v=2.1"></script>
-    <script src="../advanced-tools.js?v=1.0"></script>
+
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script src="../notifications.js?v=1.5"></script>
+    <script src="../main.js?v=1.5"></script>
+    <script src="../expense-tracker.js?v=1.5"></script>
+    
     <script>
+        // Mock the modal content target for main.js
         window.toolContent = document.getElementById('toolContent');
-        document.addEventListener('DOMContentLoaded', () => { if (typeof loadEncryptedNote === 'function') loadEncryptedNote(); });
+        window.toolTitle = { textContent: '' }; // Dummy to prevent errors
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadEncryptedNote === 'function') {
+                loadEncryptedNote();
+                trackToolUsage('encrypted-note');
+                addRecentTool('encrypted-note', 'Dead Drop Note');
+            } else {
+                window.toolContent.innerHTML = '<div class="error">Tool logic failed to load. Please refresh the page.</div>';
+            }
+        });
     </script>
 
     <!-- Background Animation Scripts -->

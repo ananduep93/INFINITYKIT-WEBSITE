@@ -1,24 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Media Tools - Infinity Kit⚡</title>
-    <link rel="stylesheet" href="../app.css?v=1.5">
-    <link rel="stylesheet" href="../cookies.css">
-    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
-</head>
-<body>
-    <nav class="navbar"><div class="nav-logo" onclick="location.href='../index.html'">⚡INFINITY KIT</div></nav>
-    <div class="breadcrumb"><a href="/">Home</a><span class="separator">&rsaquo;</span><span class="current">Social Media</span></div>
-    <main class="tool-page-container category-layout">
-        <div class="tool-header"><h1 class="tool-title">📱 Social Media</h1></div>
-        <div class="tools-grid" id="toolsGrid"></div>
-    </main>
-        <!-- Global Footer -->
+const fs = require('fs');
+const path = require('path');
+
+const baseDir = 'c:\\Users\\anand\\OneDrive\\Documents\\INFINITY KIT';
+const toolsDir = path.join(baseDir, 'tools');
+const folderDir = path.join(baseDir, 'folder');
+const aiToolsDir = path.join(baseDir, 'ai-tools');
+
+const newFooter = `    <!-- Global Footer -->
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-brand">
@@ -59,22 +47,55 @@
         <div class="footer-bottom">
             <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
         </div>
-    </footer>
-    <script src="../main.js?v=1.5"></script>
-    <script src="../cookies.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const folderId = 'social-tools';
-            const folder = folders.find(f => f.id === folderId);
-            if (folder) renderToolsInFolder(folder);
-        });
-    </script>
+    </footer>`;
 
-    <!-- Background Animation Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="../background.js"></script>
+function processFile(filePath) {
+    let content = fs.readFileSync(filePath, 'utf8');
+    
+    // Find footer block
+    const footerRegex = /<footer class="footer">([\s\S]*?)<\/footer>/;
+    
+    if (footerRegex.test(content)) {
+        content = content.replace(footerRegex, newFooter);
+        fs.writeFileSync(filePath, content, 'utf8');
+        console.log(`Updated footer in: ${filePath}`);
+    } else {
+        console.log(`No footer found in: ${filePath}`);
+    }
+}
 
-</body>
-</html>
+// Process root HTML files
+fs.readdirSync(baseDir).forEach(file => {
+    if (file.endsWith('.html')) {
+        processFile(path.join(baseDir, file));
+    }
+});
+
+// Process tools
+if (fs.existsSync(toolsDir)) {
+    fs.readdirSync(toolsDir).forEach(file => {
+        if (file.endsWith('.html')) {
+            processFile(path.join(toolsDir, file));
+        }
+    });
+}
+
+// Process folder
+if (fs.existsSync(folderDir)) {
+    fs.readdirSync(folderDir).forEach(file => {
+        if (file.endsWith('.html')) {
+            processFile(path.join(folderDir, file));
+        }
+    });
+}
+
+// Process ai-tools
+if (fs.existsSync(aiToolsDir)) {
+    fs.readdirSync(aiToolsDir).forEach(file => {
+        if (file.endsWith('.html')) {
+            processFile(path.join(aiToolsDir, file));
+        }
+    });
+}
+
+console.log('All footers updated successfully!');

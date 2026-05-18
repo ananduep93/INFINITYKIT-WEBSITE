@@ -6,9 +6,9 @@
     <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Expenses - Free Online Tool | Infinity Kit</title>
+    <title>searchexpenses - Free Online Tool | Infinity Kit</title>
     <link rel="canonical" href="https://infinitykit.online/tools/searchexpenses">
-    <meta name="description" content="Use our free online Search Expenses to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <meta name="description" content="Use our free online searchexpenses to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515" crossorigin="anonymous"></script>
@@ -74,15 +74,15 @@
       "name": "Can I search by date?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, date-based searching is often supported depending on the specific search parameters available."
+        "text": "Yes, date-based searching is supported for all users."
       }
     },
     {
       "@type": "Question",
-      "name": "Is search fast?",
+      "name": "Is login required?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, the search process is optimized to provide results almost instantly as you type."
+        "text": "Yes, a free account is required to search across all synced devices or use advanced filters like amount ranges."
       }
     }
   ]
@@ -124,7 +124,7 @@
         <div class="nav-right" id="navRight">
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="../index.html#about-page">About</a>
+                <a href="/about">About</a>
                 <a href="../index.html#contact-page">Contact</a>
             </div>
         </div>
@@ -132,7 +132,7 @@
     <div class="breadcrumb">
         <a href="/">Home</a>
         <span class="separator">&rsaquo;</span>
-        <a href="../folder/expense-tracker.html">Expense Tracker</a>
+        <a href="../folder/expense-tracker">Expense Tracker</a>
         <span class="separator">&rsaquo;</span>
         <span class="current">searchexpenses</span>
     </div>
@@ -157,68 +157,124 @@
         <section class="tool-info-section">
             <div class="info-card">
                 <div class="card-icon">📖</div>
-                <h2>Introduction</h2>
-                <p>This tool allows you to quickly locate specific expense entries from your history using keywords, categories, or other identifying information.</p>
+                <h2>The Power of Quick Retrieval</h2>
+                <p>This tool allows you to quickly locate specific expense entries from your history using keywords, categories, or other identifying information. As your financial ledger grows over months and years, finding a specific receipt or transaction becomes like looking for a needle in a haystack.</p>
+                <p>Manual scrolling is inefficient and frustrating. A powerful search function turns your massive list of numbers into a searchable database, allowing you to answer questions like "How much did I spend at that specific restaurant last March?" in seconds.</p>
             </div>
             
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Search Tool</h2>
                 <ol>
-                    <li>Enter a keyword or category name into the search bar.</li>
-                    <li>Review the matching results that appear instantly.</li>
+                    <li><strong>Log In:</strong> To search across all synced devices or use advanced filters (like amount ranges), please log in.</li>
+                    <li>Enter a keyword, store name, or category into the search bar.</li>
+                    <li>The list below will filter automatically as you type.</li>
+                    <li>Click on a result to see the full details of that transaction.</li>
                 </ol>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">✨</div>
-                <h2>Features</h2>
+                <h2>Key Features & Benefits</h2>
                 <ul>
-                    <li><strong>Fast search:</strong> Find what you're looking for in a split second.</li>
-                    <li><strong>Easy filter:</strong> Narrow down your records effortlessly to find specific data.</li>
-                    <li><strong>Accurate results:</strong> Precise matching ensures you find the exact record you need.</li>
-                    <li><strong>Simple use:</strong> A clean and straightforward search interface for maximum efficiency.</li>
+                    <li><strong>Real-Time Filtering:</strong> Results update instantly with every letter you type.</li>
+                    <li><strong>Multi-Field Search:</strong> Searches through notes, categories, and tags simultaneously.</li>
+                    <li><strong>Date Range Picker:</strong> Narrow down results to a specific week or month.</li>
+                    <li><strong>Export Results:</strong> Logged-in users can export the search results as a separate CSV file.</li>
                 </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">💡</div>
-                <h2>Example</h2>
-                <p>Search for <strong>"Food"</strong> and the tool will instantly show every expense you have logged under that category.</p>
+                <h2>When is Expense Search Useful?</h2>
+                <p>Consider these common scenarios where searching saves time:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🧾 Tax Season</h3>
+                        <p>Search for "Donation" or "Business Expense" to quickly find all tax-deductible receipts from the past year.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🔄 Subscription Audit</h3>
+                        <p>Search for terms like "Netflix" or "Spotify" to see exactly how much you are spending on digital services monthly.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🛡️ Warranty Claims</h3>
+                        <p>Find the exact date you purchased an electronic item by searching for the product name to see if it is still under warranty.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">🚀</div>
-                <h2>Why Use This Tool?</h2>
-                <p>It saves you the time and effort of manually scrolling through long lists when you need to find a specific past transaction.</p>
+                <h2>Why a Login is Required for Advanced Search</h2>
+                <p>Basic keyword search runs locally on the data stored in your current browser. However, if you want to find an expense you logged on your phone while looking at your laptop, that data must be queried from our servers. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Enable Cross-Device Queries:</strong> Search the unified cloud database rather than just the local machine.</li>
+                    <li><strong>Run Complex Filters:</strong> Server-side processing handles heavy calculations like "expenses between $50 and $100 in the groceries category" efficiently.</li>
+                </ul>
             </div>
 
             <div class="info-card">
                 <div class="card-icon">❓</div>
-                <h2>FAQ</h2>
+                <h2>Frequently Asked Questions (FAQ)</h2>
                 <div class="faq-container">
                     <div class="faq-item">
-                        <div class="faq-question">Q: Can I search by date? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">Yes, date-based searching is often supported depending on the specific search parameters available.</div>
+                        <div class="faq-question">Q: Is search fast? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, the search process is optimized to provide results almost instantly as you type for local data.</div>
                     </div>
                     <div class="faq-item">
-                        <div class="faq-question">Q: Is search fast? <span class="faq-arrow">▼</span></div>
-                        <div class="faq-answer">Yes, the search process is optimized to provide results almost instantly as you type.</div>
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to search across all synced devices or use advanced filters like amount ranges. Basic search is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Can I search by exact amount? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, logged-in users can use the amount filter to find transactions that cost an exact dollar value.</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links">
-            <a href="../index.html#about-page">About</a>
-            <a href="../index.html#privacy-page">Privacy Policy</a>
-            <a href="../index.html#terms-page">Terms & Conditions</a>
-            <a href="../index.html#contact-page">Contact</a>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
         </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
         <div class="footer-bottom">
-            <p id="copyrightText"></p>
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
         </div>
     </footer>
 
@@ -257,6 +313,3 @@
 
 </body>
 </html>
-
-
-

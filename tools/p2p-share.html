@@ -16,6 +16,18 @@
     <style>
         .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
         .tool-header { text-align: center; margin-bottom: 30px; }
+        .seo-content {
+            margin-top: 40px;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+        }
+        .seo-content h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        [data-theme="dark"] .seo-content {
+            color: #ccc;
+        }
     </style>
 
     <!-- Schema Markup -->
@@ -38,7 +50,24 @@
     {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is it secure?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, transfers are end-to-end encrypted and files never touch our servers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to share files larger than 100MB or save your transfer history."
+      }
+    }
+  ]
 }
     </script>
 
@@ -75,13 +104,13 @@
         <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
         <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
         <div class="nav-right" id="navRight">
-            <div class="nav-links"><a href="../index.html">Home</a><a href="../about.html">About</a><a href="../contact.html">Contact</a></div>
+            <div class="nav-links"><a href="/">Home</a><a href="../about">About</a><a href="../contact">Contact</a></div>
         </div>
     </nav>
 
     <div class="breadcrumb">
-        <a href="../index.html">Home</a> <span class="separator">&rsaquo;</span>
-        <a href="../folder/social-tools.html">Social Media</a> <span class="separator">&rsaquo;</span>
+        <a href="/">Home</a> <span class="separator">&rsaquo;</span>
+        <a href="../folder/social-tools">Social Media</a> <span class="separator">&rsaquo;</span>
         <span class="current">p2p-share</span>
     </div>
 
@@ -90,28 +119,130 @@
         <div class="tool-header"><h1 class="tool-title">📤 Infinity Beam ⚡</h1></div>
         <div id="toolContent" class="glass-panel"><div class="loading-placeholder">Loading Infinity Beam...</div></div>
 
+        <!-- SEO Content Area -->
         <section class="tool-info-section">
             <div class="info-card">
                 <div class="card-icon">🔒</div>
-                <h2>Direct & Private</h2>
-                <p>Infinity Beam uses WebRTC technology to send files directly between devices. Your data never touches our servers, ensuring 100% privacy and maximum transfer speed.</p>
+                <h2>Direct & Private Peer-to-Peer Sharing</h2>
+                <p>Infinity Beam uses WebRTC technology to send files directly between devices. Your data never touches our servers, ensuring 100% privacy and maximum transfer speed. Traditional file sharing often involves uploading your file to a cloud server, where it is stored and then downloaded by the recipient. This process takes double the time and introduces privacy concerns.</p>
+                <p>With P2P (Peer-to-Peer) sharing, a direct encrypted tunnel is created between the sender and the receiver. The file streams directly from one device's memory to the other's, bypassing the cloud entirely. This makes it the fastest and most secure way to move files between devices on the same desk or across the globe.</p>
             </div>
+            
             <div class="info-card">
                 <div class="card-icon">🛠️</div>
-                <h2>How to Use</h2>
+                <h2>How to Use the Infinity Beam</h2>
                 <ol>
-                    <li>Open this page on <strong>both</strong> devices.</li>
-                    <li>Copy the <strong>Beam ID</strong> from the first device.</li>
-                    <li>Paste it into the <strong>Recipient ID</strong> box on the second device and click Connect.</li>
-                    <li>Once connected, select your file and watch it "beam" across!</li>
+                    <li><strong>Log In:</strong> To share files larger than 100MB or save your transfer history, please log in or create a free account.</li>
+                    <li>Open this page on <strong>both</strong> the sending and receiving devices.</li>
+                    <li>Copy the unique <strong>Beam ID</strong> generated on the receiving device.</li>
+                    <li>Paste it into the <strong>Recipient ID</strong> box on the sending device and click Connect.</li>
+                    <li>Once the status shows "Connected," drag and drop your file to send it instantly.</li>
                 </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>No Server Storage:</strong> Your files are never stored in the cloud, protecting your intellectual property.</li>
+                    <li><strong>End-to-End Encrypted:</strong> The WebRTC data channel is encrypted using DTLS and SRTP.</li>
+                    <li><strong>Cross-Platform:</strong> Works seamlessly between Android, iOS, Windows, and Mac without apps.</li>
+                    <li><strong>Large File Support:</strong> Logged-in users can beam massive video files and archives.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Practical Use Cases</h2>
+                <p>When is Infinity Beam the best choice? Here are some common scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>📱 Phone to Laptop</h3>
+                        <p>Move high-resolution photos or videos from your smartphone to your computer without messing with cables or waiting for cloud sync.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🏢 Office File Drops</h3>
+                        <p>Send a large presentation to a coworker sitting across the room instantly, without emailing it to the whole company.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🔒 Sensitive Documents</h3>
+                        <p>Share tax documents or legal contracts with a client securely, knowing the file is not being stored on any server.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Large Files</h2>
+                <p>While the transfer itself is P2P, establishing the initial connection (signaling) requires server infrastructure (STUN/TURN servers) to help devices find each other behind firewalls. We require a login for large files to:</p>
+                <ul>
+                    <li><strong>Maintain TURN Servers:</strong> Large file signaling can sometimes require relaying through our servers if a direct connection fails. This bandwidth is costly.</li>
+                    <li><strong>Save Transfer History:</strong> Keep a record of the filenames and sizes you have transferred for your records.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is it secure? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, transfers are end-to-end encrypted using the WebRTC protocol. Files stream directly from browser to browser and never touch our servers.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to share files larger than 100MB or save your transfer history. Basic transfers for smaller files are free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What happens if the connection breaks? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Since there is no server storage, you will need to restart the transfer from the beginning if the connection is lost.</div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
+        <!-- Global Footer -->
     <footer class="footer">
-        <div class="footer-links"><a href="../about.html">About</a><a href="../cookie-policy.html">Cookie Policy</a><a href="../contact.html">Support</a></div>
-        <div class="footer-bottom"><p id="copyrightText"></p></div>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
     </footer>
 
     <script src="../main.js?v=1.5"></script>
