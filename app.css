@@ -4942,22 +4942,28 @@ kbd {
 
 
 /* =========================================
-   Drill Navigation Transition (Global)
+   Drill Navigation Transition (GPU-optimised)
+   Only uses transform + opacity — composited on GPU, zero-lag.
+   No filter:blur which is expensive on mobile.
    ========================================= */
 @keyframes drillOut {
-    0%   { transform: scale(1) translateZ(0); opacity: 1; filter: blur(0px); }
-    100% { transform: scale(0.86) translateZ(0); opacity: 0; filter: blur(4px); }
+    0%   { transform: scale(1)    translateZ(0); opacity: 1; }
+    100% { transform: scale(0.88) translateZ(0); opacity: 0; }
 }
 @keyframes drillIn {
-    0%   { transform: scale(1.12) translateZ(0); opacity: 0; filter: blur(4px); }
-    100% { transform: scale(1) translateZ(0); opacity: 1; filter: blur(0px); }
+    0%   { transform: scale(1.08) translateZ(0); opacity: 0; }
+    100% { transform: scale(1)    translateZ(0); opacity: 1; }
 }
 body.drilling-out {
-    animation: drillOut 0.3s cubic-bezier(0.4,0,1,1) forwards;
+    animation: drillOut 0.3s cubic-bezier(0.4, 0, 1, 1) both;
     pointer-events: none;
     transform-origin: center center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 body.drilling-in {
-    animation: drillIn 0.32s cubic-bezier(0,0,0.2,1) forwards;
+    animation: drillIn 0.3s cubic-bezier(0, 0, 0.2, 1) both;
     transform-origin: center center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }

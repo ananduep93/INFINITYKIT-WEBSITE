@@ -836,30 +836,69 @@ const PathManager = {
 };
 
 // ============================================================
-//  Drill Navigation — iOS-style page transition
+//  Drill Navigation — iOS-style page transition (GPU-optimised)
 // ============================================================
 function drillNavigate(href) {
     if (!href) return;
-    // Play exit animation
-    document.body.classList.add('drilling-out');
-    // Flag for the next page to know it should play the enter animation
-    sessionStorage.setItem('ik_drill_in', '1');
+
+    const body = document.body;
+
+    // Prime the GPU layer BEFORE the animation starts (eliminates first-frame lag)
+    body.style.willChange = 'transform, opacity, filter';
+
+    // Use rAF to ensure the will-change hint is committed to a GPU layer
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            body.classList.add('drilling-out');
+            // Flag for the next page to trigger drill-in
+            sessionStorage.setItem('ik_drill_in', '1');
+        });
+    });
+
+    // Navigate after animation completes (300ms) + small buffer
     setTimeout(() => {
         window.location.href = href;
-    }, 290); // Matches drillOut animation duration
+    }, 310);
 }
 
-// On every page load: if flagged, play the drill-in animation
+// On every page load: play drill-in if flagged (GPU-optimised)
 (function() {
     if (sessionStorage.getItem('ik_drill_in')) {
         sessionStorage.removeItem('ik_drill_in');
-        document.body.classList.add('drilling-in');
-        // Remove class after animation so nothing gets stuck
-        setTimeout(() => {
-            document.body.classList.remove('drilling-in');
-        }, 400);
+
+        const body = document.body;
+        body.style.willChange = 'transform, opacity, filter';
+
+        requestAnimationFrame(() => {
+            body.classList.add('drilling-in');
+            setTimeout(() => {
+                body.classList.remove('drilling-in');
+                body.style.willChange = 'auto';
+            }, 400);
+        });
     }
 })();
+
+// ============================================================
+//  FIX: Mobile back-button white screen (bfcache restore)
+//  When the user presses the phone's back button, the browser
+//  may restore the page from bfcache while it's still in the
+//  "drilling-out" state (scaled down, invisible). We reset all
+//  drill state immediately on bfcache restore.
+// ============================================================
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+        // Page restored from back-forward cache — reset drill state
+        const body = document.body;
+        body.classList.remove('drilling-out', 'drilling-in');
+        body.style.willChange = 'auto';
+        body.style.opacity   = '';
+        body.style.transform = '';
+        body.style.filter    = '';
+        body.style.animation = '';
+        sessionStorage.removeItem('ik_drill_in');
+    }
+});
 
 // Global Copy to Clipboard Helper
 window.copyToClipboard = function(text) {

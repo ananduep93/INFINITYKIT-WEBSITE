@@ -94,8 +94,37 @@
             margin: 0 auto;
             padding: 0 16px 40px;
         }
+
+        /* Desktop: CSS column-count layout — tools flow one by one,
+           categories are never split, zero blank spaces */
+        @media (min-width: 900px) {
+            .grouped-tools-list {
+                max-width: 1100px;
+                column-count: 2;
+                column-gap: 32px;
+            }
+            .tool-group {
+                break-inside: avoid;
+                -webkit-column-break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            /* Small gap between individual tool items */
+            .tool-list-item {
+                margin-bottom: 0;
+            }
+        }
+        @media (min-width: 1300px) {
+            .grouped-tools-list {
+                max-width: 1260px;
+                column-count: 3;
+                column-gap: 36px;
+            }
+        }
         .tool-group {
-            margin-bottom: 28px;
+            margin-bottom: 20px;
+        }
+        .tool-list-item + .tool-list-item {
+            margin-top: 0;
         }
         .tool-group-header {
             display: flex;
@@ -135,9 +164,9 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 14px 16px;
+            padding: 13px 16px;
             cursor: pointer;
-            transition: background 0.18s ease;
+            transition: background 0.18s ease, transform 0.15s ease;
             border-bottom: 1px solid rgba(100,116,139,0.09);
             text-decoration: none;
             color: inherit;
