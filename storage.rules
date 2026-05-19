@@ -32,6 +32,12 @@ service firebase.storage {
       allow read: if true;
     }
 
+    // AI Prompts
+    match /aiPrompts/{category}/{fileName} {
+      allow write: if isAdmin() && isImage() && isSmallFile();
+      allow read: if true;
+    }
+
     // Default: Deny everything else
     match /{allPaths=**} {
       allow read: if isAdmin();

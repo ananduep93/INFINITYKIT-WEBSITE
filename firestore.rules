@@ -51,6 +51,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // AI Prompts - Protected
+    match /aiPrompts/{promptId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Generic rule for any other collection (Deny by default)
     match /{document=**} {
       allow read, write: if isAdmin();

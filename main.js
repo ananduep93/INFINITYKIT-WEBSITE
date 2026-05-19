@@ -158,6 +158,13 @@ const baseFolders = [
         icon: '💎',
         emoji: '💎',
         tools: ['metadata-stripper', 'focus-soundscape', 'json-to-ts', 'bulk-renamer', 'e-signature', 'dynamic-qr', 'svg-optimizer', 'password-leak', 'encrypted-note', 'focus-timer']
+    },
+    {
+        id: 'ai-prompts',
+        name: 'AI Prompts',
+        icon: '✨',
+        emoji: '✨',
+        tools: ['men-prompts', 'women-prompts']
     }
 ];
 
@@ -185,6 +192,18 @@ function updateFolders() {
 // Tools Data
 const tools = [
 
+    {
+        id: 'men-prompts',
+        name: 'Men Prompts',
+        icon: '👨',
+        description: 'AI Prompts for Men'
+    },
+    {
+        id: 'women-prompts',
+        name: 'Women Prompts',
+        icon: '👩',
+        description: 'AI Prompts for Women'
+    },
     {
         id: 'todolist',
         name: 'To-Do List',
