@@ -35,8 +35,7 @@
         }
         .prompt-img {
             width: 100%;
-            height: 250px;
-            object-fit: cover;
+            height: auto;
             display: block;
         }
         .prompt-content {
@@ -66,6 +65,67 @@
         }
         [data-theme="dark"] .prompt-card {
             background: #1e293b;
+        }
+        .prompt-img {
+            cursor: pointer;
+        }
+        /* Modal Lightbox styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 20, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: #fff;
+            font-size: 38px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+        }
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
         }
     </style>
 </head>
@@ -122,7 +182,8 @@
             
             try {
                 const promptsRef = collection(db, 'aiPrompts');
-                const q = query(promptsRef, where("category", "==", "women"), orderBy("timestamp", "desc"));
+                // Querying with category but without orderBy to avoid needing a Firestore Composite Index
+                const q = query(promptsRef, where("category", "==", "women"));
                 const querySnapshot = await getDocs(q);
                 
                 loading.style.display = 'none';
@@ -131,9 +192,20 @@
                     container.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No prompts found for this category yet.</p>';
                     return;
                 }
-                
+
+                // Convert to array and sort in memory by timestamp descending
+                const prompts = [];
                 querySnapshot.forEach((doc) => {
-                    const data = doc.data();
+                    prompts.push({ id: doc.id, ...doc.data() });
+                });
+
+                prompts.sort((a, b) => {
+                    const t1 = a.timestamp ? (a.timestamp.seconds || 0) : 0;
+                    const t2 = b.timestamp ? (b.timestamp.seconds || 0) : 0;
+                    return t2 - t1;
+                });
+                
+                prompts.forEach((data) => {
                     const card = document.createElement('div');
                     card.className = 'prompt-card';
                     
@@ -172,8 +244,44 @@
             
             if (typeof trackToolUsage === 'function') trackToolUsage('women-prompts');
             if (typeof addRecentTool === 'function') addRecentTool('women-prompts', 'Women Prompts');
+
+            // Modal logic for viewing full size image
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeBtn = document.querySelector('.close-btn');
+
+            document.getElementById('promptsContainer').addEventListener('click', (e) => {
+                if (e.target.classList.contains('prompt-img')) {
+                    modal.style.display = "flex";
+                    setTimeout(() => {
+                        modal.classList.add('show');
+                        modalImg.src = e.target.src;
+                    }, 10);
+                }
+            });
+
+            function closeModal() {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    modalImg.src = "";
+                }, 300);
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
         });
     </script>
+
+    <!-- Image Viewer Modal Lightbox -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="modalImage" alt="Full size preview">
+    </div>
 
     <script src="../main.js?v=1.5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

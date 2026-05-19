@@ -473,6 +473,46 @@
         const promptText = document.getElementById('promptText');
         const promptSuccessMsg = document.getElementById('promptSuccessMsg');
 
+        // Helper function to compress image to Base64
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const MAX_HEIGHT = 600;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(compressedBase64);
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
         submitPromptBtn.addEventListener('click', async () => {
             const category = promptCategory.value;
             const text = promptText.value.trim();
@@ -483,26 +523,18 @@
                 return;
             }
 
-            // Check file size (5MB limit)
-            if (file.size > 5 * 1024 * 1024) {
-                alert("Image size must be less than 5MB");
-                return;
-            }
-
             submitPromptBtn.disabled = true;
-            submitPromptBtn.textContent = 'Uploading...';
+            submitPromptBtn.textContent = 'Uploading & Compressing...';
             promptSuccessMsg.style.display = 'none';
 
             try {
-                // Upload Image to Firebase Storage
-                const storageRef = ref(storage, `aiPrompts/${category}/${Date.now()}_${file.name}`);
-                const snapshot = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
+                // Compress image to Base64 directly on the client side (bypasses CORS completely!)
+                const base64Image = await compressImage(file);
 
-                // Save Metadata to Firestore
+                // Save Metadata + Base64 image to Firestore
                 await addDoc(collection(db, 'aiPrompts'), {
                     category: category,
-                    imageUrl: downloadURL,
+                    imageUrl: base64Image,
                     prompt: text,
                     timestamp: serverTimestamp()
                 });
