@@ -835,6 +835,32 @@ const PathManager = {
     }
 };
 
+// ============================================================
+//  Drill Navigation — iOS-style page transition
+// ============================================================
+function drillNavigate(href) {
+    if (!href) return;
+    // Play exit animation
+    document.body.classList.add('drilling-out');
+    // Flag for the next page to know it should play the enter animation
+    sessionStorage.setItem('ik_drill_in', '1');
+    setTimeout(() => {
+        window.location.href = href;
+    }, 290); // Matches drillOut animation duration
+}
+
+// On every page load: if flagged, play the drill-in animation
+(function() {
+    if (sessionStorage.getItem('ik_drill_in')) {
+        sessionStorage.removeItem('ik_drill_in');
+        document.body.classList.add('drilling-in');
+        // Remove class after animation so nothing gets stuck
+        setTimeout(() => {
+            document.body.classList.remove('drilling-in');
+        }, 400);
+    }
+})();
+
 // Global Copy to Clipboard Helper
 window.copyToClipboard = function(text) {
     if (!text) return;
@@ -1122,36 +1148,123 @@ async function handleInstallApp() {
 
 // Render folder cards
 function renderFolders() {
-    if (!foldersGrid) return;
-    foldersGrid.innerHTML = '';
+    const groupedList = document.getElementById('groupedToolsList');
+    if (!groupedList) return;
 
-    // Only show top-level folders on home
-    folders.filter(f => !f.parent).forEach(folder => {
-        const card = document.createElement('div');
-        card.className = 'folder-card';
-        
-        // Sum up tools if it's a parent folder
-        let count = 0;
-        if (folder.tools) {
-            folder.tools.forEach(tid => {
-                const sub = baseFolders.find(f => f.id === tid);
-                if (sub && sub.tools) count += sub.tools.length;
-                else count++;
-            });
-        }
-        
-        card.innerHTML = `
-            <div class="folder-icon">${folder.emoji || '📁'}</div>
-            <div class="folder-name">${folder.name}</div>
-            <div class="folder-count">${count} tools</div>
+    groupedList.innerHTML = '';
+
+    // Unique vibrant gradients per folder category
+    const categoryColors = {
+        'daily-essentials':     { bg: 'linear-gradient(135deg,#FF6B6B,#FF8E53)', accent: '#FF6B6B' },
+        'expense-tracker':      { bg: 'linear-gradient(135deg,#11998e,#38ef7d)', accent: '#11998e' },
+        'survey-hub':           { bg: 'linear-gradient(135deg,#FC5C7D,#6A3093)', accent: '#FC5C7D' },
+        'pdf-toolkit':          { bg: 'linear-gradient(135deg,#f7971e,#ffd200)', accent: '#f7971e' },
+        'utilities':            { bg: 'linear-gradient(135deg,#4776E6,#8E54E9)', accent: '#4776E6' },
+        'image':                { bg: 'linear-gradient(135deg,#f953c6,#b91d73)', accent: '#f953c6' },
+        'math-tools':           { bg: 'linear-gradient(135deg,#56CCF2,#2F80ED)', accent: '#2F80ED' },
+        'time-tools':           { bg: 'linear-gradient(135deg,#F2994A,#F2C94C)', accent: '#F2994A' },
+        'text-tools':           { bg: 'linear-gradient(135deg,#6FCF97,#2D9CDB)', accent: '#6FCF97' },
+        'student-tools':        { bg: 'linear-gradient(135deg,#FDDB92,#D1FDFF)', accent: '#c08619' },
+        'quick-tools':          { bg: 'linear-gradient(135deg,#667eea,#764ba2)', accent: '#667eea' },
+        'data-tools':           { bg: 'linear-gradient(135deg,#f093fb,#f5576c)', accent: '#f093fb' },
+        'decision-tools':       { bg: 'linear-gradient(135deg,#4facfe,#00f2fe)', accent: '#4facfe' },
+        'planner-tools':        { bg: 'linear-gradient(135deg,#43e97b,#38f9d7)', accent: '#43e97b' },
+        'web-tools':            { bg: 'linear-gradient(135deg,#fa709a,#fee140)', accent: '#fa709a' },
+        'health-utility-hub':   { bg: 'linear-gradient(135deg,#FF416C,#FF4B2B)', accent: '#FF416C' },
+        'social-tools':         { bg: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', accent: '#a18cd1' },
+        'ai-tools':             { bg: 'linear-gradient(135deg,#0145F2,#764ba2)', accent: '#0145F2' },
+        'advanced-suite':       { bg: 'linear-gradient(135deg,#1a1a2e,#16213e)', accent: '#667eea' },
+        'ai-prompts':           { bg: 'linear-gradient(135deg,#FFD700,#FF8C00)', accent: '#FF8C00' },
+    };
+
+    // Cycling palette for individual tool icons
+    const iconPalettes = [
+        'linear-gradient(135deg,#FF6B6B,#FF8E53)',
+        'linear-gradient(135deg,#4facfe,#00f2fe)',
+        'linear-gradient(135deg,#43e97b,#38f9d7)',
+        'linear-gradient(135deg,#f093fb,#f5576c)',
+        'linear-gradient(135deg,#fa709a,#fee140)',
+        'linear-gradient(135deg,#667eea,#764ba2)',
+        'linear-gradient(135deg,#56CCF2,#2F80ED)',
+        'linear-gradient(135deg,#11998e,#38ef7d)',
+        'linear-gradient(135deg,#F2994A,#F2C94C)',
+        'linear-gradient(135deg,#FC5C7D,#6A3093)',
+        'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+        'linear-gradient(135deg,#0145F2,#6A3093)',
+    ];
+
+    const topFolders = folders.filter(f => !f.parent);
+
+    topFolders.forEach(folder => {
+        const color = categoryColors[folder.id] || { bg: 'linear-gradient(135deg,#667eea,#764ba2)', accent: '#667eea' };
+
+        const group = document.createElement('div');
+        group.className = 'tool-group';
+
+        // Group header with category accent color
+        const header = document.createElement('div');
+        header.className = 'tool-group-header';
+        header.innerHTML = `
+            <div class="tool-group-icon" style="background: ${color.bg}; color: white; box-shadow: 0 4px 12px ${color.accent}44;">${folder.emoji || '📁'}</div>
+            <div class="tool-group-name" style="color: ${color.accent};">${folder.name}</div>
         `;
+        group.appendChild(header);
 
-        card.addEventListener('click', () => {
-            triggerHaptic('light');
-            window.location.href = PathManager.getFolderPath(folder.id);
+        const itemsWrap = document.createElement('div');
+        itemsWrap.className = 'tool-group-items';
+
+        const folderItems = Array.isArray(folder.tools) ? folder.tools : [];
+        let hasItems = false;
+        let iconIndex = 0;
+
+        folderItems.forEach(itemId => {
+            const tool = tools.find(t => t.id === itemId);
+            const subFolder = baseFolders.find(f => f.id === itemId);
+
+            let name, icon, desc, href;
+
+            if (tool) {
+                name = tool.name;
+                icon = tool.icon || '🛠️';
+                desc = tool.description || '';
+                href = PathManager.getToolPath(tool.id);
+            } else if (subFolder) {
+                name = subFolder.name;
+                icon = subFolder.emoji || '📁';
+                desc = `${subFolder.tools ? subFolder.tools.length : 0} tools`;
+                href = PathManager.getFolderPath(subFolder.id);
+            } else {
+                return;
+            }
+
+            hasItems = true;
+            // Use a unique color per icon, cycling through palettes
+            const iconBg = iconPalettes[iconIndex % iconPalettes.length];
+            iconIndex++;
+
+            const item = document.createElement('a');
+            item.className = 'tool-list-item';
+            item.href = href;
+            item.innerHTML = `
+                <div class="tool-list-icon" style="background: ${iconBg};">${icon}</div>
+                <div class="tool-list-info">
+                    <div class="tool-list-name">${name}</div>
+                    <div class="tool-list-desc">${desc}</div>
+                </div>
+                <div class="tool-list-chevron" style="color: ${color.accent}; font-size: 1.1rem; font-weight: 700;">›</div>
+            `;
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                triggerHaptic('light');
+                drillNavigate(href);
+            });
+            itemsWrap.appendChild(item);
         });
 
-        foldersGrid.appendChild(card);
+        if (hasItems) {
+            group.appendChild(itemsWrap);
+            groupedList.appendChild(group);
+        }
     });
 }
 
@@ -1200,7 +1313,7 @@ function renderToolsInFolder(folder) {
             `;
             card.addEventListener('click', () => {
                 triggerHaptic('light');
-                window.location.href = PathManager.getToolPath(tool.id);
+                drillNavigate(PathManager.getToolPath(tool.id));
             });
             toolsGrid.appendChild(card);
         } else if (subFolder) {
@@ -1213,7 +1326,7 @@ function renderToolsInFolder(folder) {
             `;
             card.addEventListener('click', () => {
                 triggerHaptic('light');
-                window.location.href = PathManager.getFolderPath(subFolder.id);
+                drillNavigate(PathManager.getFolderPath(subFolder.id));
             });
             toolsGrid.appendChild(card);
         }
@@ -4804,9 +4917,9 @@ function displaySearchResults(results, query) {
             addToRecentSearches(item.name);
             triggerHaptic('light');
             if (result.type === 'folder') {
-                window.location.href = PathManager.getFolderPath(item.id);
+                drillNavigate(PathManager.getFolderPath(item.id));
             } else {
-                window.location.href = PathManager.getToolPath(item.id);
+                drillNavigate(PathManager.getToolPath(item.id));
             }
         };
         
