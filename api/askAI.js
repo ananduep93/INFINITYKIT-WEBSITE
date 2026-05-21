@@ -1,8 +1,11 @@
+const AIService = require("./lib/ai.js");
+
 module.exports = async (req, res) => {
     const allowedOrigins = ['https://infinitykit.online', 'http://localhost:3000'];
     const origin = req.headers.origin;
+    const isLocal = origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'));
 
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || isLocal) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     
@@ -26,14 +29,14 @@ module.exports = async (req, res) => {
     try {
         const { type, message, text, prompt, context } = req.body;
 
-        // 1. IMAGE GENERATION
+        // 1. IMAGE GENERATION (Using pollinations free URL)
         if (type === 'image') {
             const seed = Math.floor(Math.random() * 1000000);
             const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=1024&height=1024&nologo=true&enhance=true`;
             return res.status(200).json({ result: imageUrl });
         }
 
-        // 2. TEXT GENERATION (Matching Flutter Logic)
+        // 2. TEXT GENERATION (Matching Flutter/Original backend structure)
         let systemPrompt = "You are Infinity AI, a premium and highly intelligent assistant. Provide detailed, helpful, and professional answers.";
         let userPrompt = "";
 
@@ -58,7 +61,7 @@ module.exports = async (req, res) => {
                 userPrompt = `Please explain this code:\n\n${text}`;
                 break;
             case 'translate':
-                systemPrompt = "Translate the following text accurately. Provide only the translated result.";
+                systemPrompt = "Translate the following text accurately. Provide only the translated result without introductory or explanatory text.";
                 userPrompt = text || "";
                 break;
             default:
@@ -69,14 +72,19 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Please provide more text for the AI to process.' });
         }
 
-        // Call Pollinations Text API
-        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(userPrompt)}?system=${encodeURIComponent(systemPrompt)}&model=openai`;
-        
-        const response = await fetch(apiUrl);
-        const resultText = await response.text();
+        // Invoke central AI Service wrapping @google/genai
+        const apiResponse = await AIService.generate({
+            model: "gemini-2.5-flash",
+            systemInstruction: systemPrompt,
+            prompt: userPrompt,
+            identifier: authHeader
+        });
 
-        if (resultText) {
-            return res.status(200).json({ result: resultText });
+        if (apiResponse && apiResponse.text) {
+            return res.status(200).json({ 
+                result: apiResponse.text,
+                analytics: apiResponse.analytics
+            });
         } else {
             throw new Error('AI was unable to generate a response.');
         }

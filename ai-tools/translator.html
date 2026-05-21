@@ -26,6 +26,12 @@
             padding: 0;
         }
         .navbar {
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            right: auto !important;
+            width: 100% !important;
+            box-sizing: border-box;
             background: white;
             padding: 15px 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -55,7 +61,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             margin-bottom: 30px;
         }
-        .input-card h2 {
+        .input-card h1 {
             font-size: 1.5rem;
             font-weight: 800;
             margin: 0 0 10px;
@@ -190,7 +196,7 @@
         </div>
 
         <div class="input-card">
-            <h2>🌍 AI Translator</h2>
+            <h1>🌍 AI Translator</h1>
             <p>Enter text and tell Infinity AI which language you want it translated to.</p>
             
             <textarea id="textInput" class="text-area" placeholder="e.g. Translate 'Hello how are you' to Spanish..."></textarea>
@@ -212,59 +218,13 @@
     <script type="module" src="script.js?v=1.1"></script>
     <script type="module">
         import { authService } from '../auth.js';
-        
-        const processBtn = document.getElementById('processBtn');
-        const textInput = document.getElementById('textInput');
-        const resultCard = document.getElementById('resultCard');
-        const resultContent = document.getElementById('resultContent');
-        const copyBtn = document.getElementById('copyBtn');
-
         authService.onAuthChange((user) => { 
-            if (!user) window.location.href = '/signin.html'; 
-        });
-
-        processBtn.onclick = async () => {
-            const text = textInput.value.trim();
-            if (!text) return;
-
-            processBtn.disabled = true;
-            processBtn.textContent = 'Translating...';
-            resultCard.style.display = 'none';
-
-            try {
-                if (window.askAI) {
-                    const response = await window.askAI('translate', text);
-                    resultCard.style.display = 'block';
-                    resultContent.textContent = response;
-                }
-            } catch (err) {
-                alert("Failed to translate.");
-            } finally {
-                processBtn.disabled = false;
-                processBtn.textContent = 'Translate with AI ⚡';
-            }
-        };
-
-        copyBtn.onclick = () => {
-            const text = resultContent.textContent;
-            if (!text) return;
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    copyBtn.textContent = '✅ Copied!';
-                    setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
+            if (!user) {
+                authService.loginAnonymously().catch(err => {
+                    console.error("Anonymous sign-in failed:", err);
                 });
-            } else {
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                copyBtn.textContent = '✅ Copied!';
-                setTimeout(() => copyBtn.innerHTML = '📋 Copy', 2000);
             }
-        };
+        });
     </script>
 </body>
 </html>
