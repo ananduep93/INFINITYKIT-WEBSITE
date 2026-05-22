@@ -1,10 +1,36 @@
 {
   "name": "infinity-kit",
-  "version": "1.0",
-  "description": "Infinity Kit Web Tools",
-  "main": "main.js",
+  "version": "2.0.0",
+  "description": "Infinity Kit - Scalable Multi-Page AI Tools Platform",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
     "@google/genai": "^2.4.0",
-    "@google/generative-ai": "latest"
+    "@google/generative-ai": "^0.21.0",
+    "canvas-confetti": "^1.9.3",
+    "firebase": "^10.8.0",
+    "framer-motion": "^12.40.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.344.0",
+    "next": "^14.1.0",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.6.4",
+    "@types/node": "^20.11.24",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "typescript": "^5.3.3"
   }
 }

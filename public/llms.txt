@@ -1,0 +1,55 @@
+# InfinityKit - 100% Client-Side Web Utilities Suite
+
+InfinityKit is a premium suite of secure, high-performance web applications and digital utilities executed completely client-side in the browser. By leveraging local browser calculations, InfinityKit guarantees absolute user privacy, zero data uploads, and complete serverless security.
+
+## Core Features & Philosophy
+- **100% Client-Side Privacy:** All files, PDF operations, images, audio, video, calculations, and conversions are computed in-memory in the browser. Zero user data is uploaded to external servers.
+- **Microsecond Speeds:** High-performance, lightweight browser-based algorithms render calculations instantly.
+- **Zero Tracker Intrusion:** Open-access ecosystem with absolute zero telemetry, cookie payloads, or analytical monitoring.
+- **Premium Apple + Linear UI:** Beautiful White-Theme glassmorphic cards, diagonal ambient glows, and responsive typography optimized for all desktop and mobile displays.
+
+---
+
+## Tool Categories & Route Catalog
+
+### 🛠️ Utility & Health Tools
+- **BMI Calculator:** `/tools/bmicalculator` - Instant weight-to-height screening assessments.
+- **Drug Dosage Calculator:** `/tools/drugdosage` - Pediatric & clinical mg/ml dosage estimations.
+- **IV Drip Rate Calculator:** `/tools/ivdripcalc` - Calculate drops/minute (gtt) for medical infusions.
+- **Password Generator:** `/tools/passwordgen` - Generate cryptographically secure passwords locally.
+- **Medicine Reminder:** `/tools/medicinereminder` - Secure alarm system for medicine tracking.
+- **To-Do List:** `/tools/todolist` - Task list and micro-schedules with local storage syncing.
+- **Notes Manager:** `/tools/notes` - Quick text pads and markdown logs stored locally.
+- **Timer & Stopwatch:** `/tools/timer` - Precision timers and split chronometers.
+
+### ✍️ AI-Powered Writing Utilities
+*Driven by Gemini Flash client-side APIs with custom parameter adjustments.*
+- **AI Chatbot Console:** `/tools/chatbot` - Client-side AI conversation partner.
+- **AI Text Improver:** `/tools/text-improver` - Refine flow, grammar, and voice of draft pages.
+- **AI Document Summarizer:** `/tools/summarizer` - Condense large articles and papers into bullet points.
+- **AI Image Generator:** `/tools/image-generator` - Text-to-image prompts rendered locally.
+- **AI Essay Writer:** `/tools/essay-writer` - Draft research essays, outlines, and thesis statements.
+- **AI Article Writer:** `/tools/article-writer` - Construct long-form blog content and articles.
+- **AI FAQ Generator:** `/tools/faq-generator` - Compile structural SEO FAQs from target text.
+- **AI Rewriter:** `/tools/ai-rewriter` - Rephrase text drafts for alternative formats.
+- **AI Humanizer:** `/tools/ai-humanizer` - Adjust AI-written articles for standard human readability.
+- **AI Grammar Fixer:** `/tools/grammar-fixer` - Instant spell check and text correction.
+
+### 📊 Expense & Financial Hub
+- **Add Expense:** `/tools/expenseadd` - Record daily expenditures under custom labels.
+- **Expense History List:** `/tools/expenselist` - View and search chronological transactions.
+- **Budget Tracker:** `/tools/budgettracker` - Allocate monthly limits and check safety thresholds.
+- **Expense Analytics Charts:** `/tools/expenseanalytics` - Radial graphs displaying spending breakdowns.
+- **Daily/Monthly Report Builder:** `/tools/dailymonthlyreport` - Compile structured cashflow balance statements.
+- **Top Spending Insights:** `/tools/topspendinginsights` - Check major category leaks.
+- **Search Expenses Engine:** `/tools/searchexpenses` - Filter transactions by name, label, or price.
+- **Reset Financial Session:** `/tools/resetexpenses` - Purge local records for safety.
+
+---
+
+## Technical Specifications
+- **Framework:** Next.js (App Router React v18)
+- **Deployment Endpoint:** Standard NextJS build compiled to statically optimized client page pathways
+- **Asset Base Url:** `https://infinitykit.online`
+- **Sitemap Location:** `https://infinitykit.online/sitemap.xml`
+- **Robots Rules:** Direct crawl permission granted to all bots (`*`, `GPTBot`, `ClaudeBot`, `Google-Extended`, `PerplexityBot`)
