@@ -259,20 +259,80 @@
 
     <!-- SEO Structured Data -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Infinity Kit",
-      "url": "https://infinitykit.online/",
-      "description": "All-in-one digital utility hub with 60+ free tools.",
-      "applicationCategory": "ProductivityApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "@id": "https://infinitykit.online/#webapp",
+        "name": "Infinity Kit",
+        "url": "https://infinitykit.online/",
+        "description": "All-in-one digital utility hub. Access 80+ free online tools for math, text, unit conversion, security, and document productivity.",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires HTML5 compatible browser",
+        "softwareVersion": "2.1.0",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Client-side PDF and image manipulation for absolute privacy",
+          "Firebase-backed cloud synchronization for workflows, budgets, and text notes",
+          "Offline-first PWA architecture for continuous on-the-go utility",
+          "Cinematic fluid UI with full dark mode support"
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://infinitykit.online/#organization",
+        "name": "Infinity Kit",
+        "url": "https://infinitykit.online/",
+        "logo": "https://infinitykit.online/icon-512.png",
+        "sameAs": [
+          "https://www.instagram.com/infinitykit.online"
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Are my files uploaded to any server when using Infinity Kit PDF and Image tools?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. All PDF and image manipulation tasks run 100% client-side inside your browser sandbox using secure libraries like pdf-lib.js. Your documents never touch our servers, ensuring absolute privacy."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the benefit of signing up with Firebase on Infinity Kit?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Creating a free account lets you sync your cross-device settings, track your expenses/budgets in the Expense Tracker, create cloud-saved notes, and save custom configurations across desktop and mobile."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use Infinity Kit without creating an account?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! All basic tools, including text converters, mathematical calculators, unit converters, and PDF/image processors are completely accessible without any registration or login."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does Infinity Kit compare to other tools like Smallpdf or TinyWow?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Unlike Smallpdf or TinyWow which impose daily task limits, upload size restrictions, or require expensive subscriptions, Infinity Kit is completely free with no usage caps, processes files securely on your device, and offers lightweight Firebase sync."
+            }
+          }
+        ]
       }
-    }
+    ]
     </script>
 
 </head>
@@ -550,6 +610,472 @@
                     <div style="text-align: center; width: 100%; opacity: 0.7; padding: 40px 0;">Loading latest updates...</div>
                 </div>
             </section>
+
+            <!-- START OF NEW SAAS & SEO SECTIONS -->
+            <style>
+                /* Premium Appended Sections Namespace */
+                .ik-appended-container {
+                    margin: 60px auto 40px;
+                    max-width: 1200px;
+                    padding: 0 20px;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                }
+                
+                .ik-section-title {
+                    font-size: clamp(1.8rem, 3vw, 2.5rem);
+                    font-weight: 800;
+                    color: #0F172A;
+                    text-align: center;
+                    margin-bottom: 12px;
+                    letter-spacing: -0.02em;
+                }
+                
+                .ik-section-subtitle {
+                    font-size: 1.05rem;
+                    color: #64748B;
+                    text-align: center;
+                    margin-bottom: 45px;
+                    max-width: 700px;
+                    margin-left: auto;
+                    margin-right: auto;
+                    line-height: 1.6;
+                }
+
+                /* SaaS Firebase Sync Showcase */
+                .ik-showcase-grid {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 30px;
+                    margin-bottom: 50px;
+                }
+                @media (min-width: 768px) {
+                    .ik-showcase-grid {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                }
+                
+                .ik-showcase-card {
+                    background: rgba(255, 255, 255, 0.7);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+                    backdrop-filter: blur(15px);
+                    -webkit-backdrop-filter: blur(15px);
+                    border-radius: 24px;
+                    padding: 35px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .ik-showcase-card:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.1);
+                }
+                
+                .ik-showcase-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 20px;
+                }
+                
+                .ik-showcase-icon {
+                    font-size: 2rem;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .ik-icon-blue {
+                    background: linear-gradient(135deg, rgba(1, 69, 242, 0.1), rgba(1, 69, 242, 0.2));
+                    color: #0145F2;
+                }
+                
+                .ik-icon-green {
+                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+                    color: #10B981;
+                }
+                
+                .ik-showcase-title {
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    color: #1E293B;
+                }
+                
+                .ik-showcase-body {
+                    font-size: 0.95rem;
+                    color: #475569;
+                    line-height: 1.7;
+                    margin-bottom: 25px;
+                }
+                
+                .ik-showcase-list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                
+                .ik-showcase-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 10px;
+                    font-size: 0.9rem;
+                    color: #475569;
+                }
+                
+                .ik-showcase-check {
+                    font-weight: bold;
+                    flex-shrink: 0;
+                }
+                .ik-check-blue { color: #0145F2; }
+                .ik-check-green { color: #10B981; }
+
+                /* Sandbox Badge Section */
+                .ik-sandbox-banner {
+                    background: linear-gradient(135deg, rgba(1, 69, 242, 0.03) 0%, rgba(102, 126, 234, 0.05) 100%);
+                    border: 2px dashed rgba(1, 69, 242, 0.2);
+                    border-radius: 20px;
+                    padding: 30px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    gap: 15px;
+                    margin-bottom: 60px;
+                }
+                
+                .ik-sandbox-badge {
+                    background: #10B981;
+                    color: white;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    padding: 6px 14px;
+                    border-radius: 50px;
+                    letter-spacing: 0.05em;
+                }
+                
+                .ik-sandbox-text {
+                    font-size: 1rem;
+                    color: #1E293B;
+                    font-weight: 600;
+                    max-width: 800px;
+                    line-height: 1.6;
+                }
+
+                /* AI Discoverability Crawler Index */
+                .ik-index-section {
+                    background: rgba(255, 255, 255, 0.4);
+                    border-radius: 24px;
+                    padding: 35px;
+                    margin-bottom: 60px;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                }
+                
+                .ik-index-heading {
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    color: #0F172A;
+                    margin-bottom: 25px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                
+                .ik-index-grid {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 25px;
+                }
+                @media (min-width: 600px) {
+                    .ik-index-grid {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                }
+                @media (min-width: 992px) {
+                    .ik-index-grid {
+                        grid-template-columns: 1fr 1fr 1fr 1fr;
+                    }
+                }
+                
+                .ik-index-col h4 {
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    color: #0145F2;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 12px;
+                    font-weight: 700;
+                }
+                
+                .ik-index-links {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                
+                .ik-index-links a {
+                    font-size: 0.85rem;
+                    color: #475569;
+                    text-decoration: none;
+                    transition: color 0.2s ease, padding-left 0.2s ease;
+                    display: inline-flex;
+                    align-items: center;
+                }
+                
+                .ik-index-links a:hover {
+                    color: #0145F2;
+                    padding-left: 4px;
+                }
+
+                /* SaaS Accordion FAQs */
+                .ik-faq-accordion {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    margin-bottom: 40px;
+                }
+                
+                .ik-faq-item {
+                    background: rgba(255, 255, 255, 0.7);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 4px 20px rgba(31, 38, 135, 0.03);
+                    border-radius: 16px;
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                }
+                
+                .ik-faq-item[open] {
+                    box-shadow: 0 8px 30px rgba(31, 38, 135, 0.06);
+                    border-color: rgba(1, 69, 242, 0.15);
+                }
+                
+                .ik-faq-summary {
+                    font-size: 1.05rem;
+                    font-weight: 600;
+                    color: #1E293B;
+                    padding: 22px 28px;
+                    cursor: pointer;
+                    list-style: none;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    user-select: none;
+                }
+                .ik-faq-summary::-webkit-details-marker {
+                    display: none;
+                }
+                .ik-faq-summary::after {
+                    content: '+';
+                    font-size: 1.4rem;
+                    font-weight: 400;
+                    color: #64748B;
+                    transition: transform 0.3s ease;
+                }
+                .ik-faq-item[open] .ik-faq-summary::after {
+                    content: '−';
+                    transform: rotate(180deg);
+                    color: #0145F2;
+                }
+                
+                .ik-faq-content {
+                    padding: 0 28px 22px;
+                    font-size: 0.95rem;
+                    color: #475569;
+                    line-height: 1.7;
+                }
+
+                /* Dark Theme Support (Namespace Protected) */
+                [data-theme="dark"] .ik-section-title { color: #F1F5F9; }
+                [data-theme="dark"] .ik-section-subtitle { color: #94A3B8; }
+                [data-theme="dark"] .ik-showcase-card {
+                    background: rgba(30, 41, 59, 0.7);
+                    border-color: rgba(255, 255, 255, 0.05);
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                }
+                [data-theme="dark"] .ik-showcase-title { color: #E2E8F0; }
+                [data-theme="dark"] .ik-showcase-body { color: #94A3B8; }
+                [data-theme="dark"] .ik-showcase-item { color: #94A3B8; }
+                [data-theme="dark"] .ik-sandbox-banner {
+                    background: linear-gradient(135deg, rgba(1, 69, 242, 0.05) 0%, rgba(102, 126, 234, 0.08) 100%);
+                    border-color: rgba(1, 69, 242, 0.3);
+                }
+                [data-theme="dark"] .ik-sandbox-text { color: #E2E8F0; }
+                [data-theme="dark"] .ik-index-section {
+                    background: rgba(30, 41, 59, 0.4);
+                    border-color: rgba(255, 255, 255, 0.05);
+                }
+                [data-theme="dark"] .ik-index-heading { color: #E2E8F0; }
+                [data-theme="dark"] .ik-index-links a { color: #94A3B8; }
+                [data-theme="dark"] .ik-index-links a:hover { color: #667eea; }
+                [data-theme="dark"] .ik-faq-item {
+                    background: rgba(30, 41, 59, 0.7);
+                    border-color: rgba(255, 255, 255, 0.05);
+                }
+                [data-theme="dark"] .ik-faq-summary { color: #E2E8F0; }
+                [data-theme="dark"] .ik-faq-content { color: #94A3B8; }
+            </style>
+
+            <div class="ik-appended-container">
+                
+                <!-- Section 1: SaaS Firebase Cloud vs Local Privacy Showcase -->
+                <section class="ik-showcase-section">
+                    <h2 class="ik-section-title">Next-Gen SaaS Cloud Sync & Privacy Sandbox</h2>
+                    <p class="ik-section-subtitle">
+                        Experience the ultimate balance of utility. Sync your notes, lists, and budgets securely using Firebase cloud integration, while keeping private documents entirely client-side.
+                    </p>
+                    
+                    <div class="ik-showcase-grid">
+                        <!-- Cloud Sync Card -->
+                        <div class="ik-showcase-card">
+                            <div>
+                                <div class="ik-showcase-header">
+                                    <div class="ik-showcase-icon ik-icon-blue">☁️</div>
+                                    <h3 class="ik-showcase-title">Firebase Cloud Integration</h3>
+                                </div>
+                                <p class="ik-showcase-body">
+                                    Unlock persistent workspaces by creating a free account. Your settings, finance data, and daily notes are safely saved in the cloud, allowing fluid access on any device.
+                                </p>
+                            </div>
+                            <ul class="ik-showcase-list">
+                                <li class="ik-showcase-item">
+                                    <span class="ik-showcase-check ik-check-blue">✓</span>
+                                    <span>Sync Expense Tracker budgets across desktop and mobile</span>
+                                </li>
+                                <li class="ik-showcase-item">
+                                    <span class="ik-showcase-check ik-check-blue">✓</span>
+                                    <span>Save encrypted sticky notes & draft documents securely</span>
+                                </li>
+                                <li class="ik-showcase-item">
+                                    <span class="ik-showcase-check ik-check-blue">✓</span>
+                                    <span>Keep custom theme, language, and tool layout configurations</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Local Privacy Sandbox Card -->
+                        <div class="ik-showcase-card">
+                            <div>
+                                <div class="ik-showcase-header">
+                                    <div class="ik-showcase-icon ik-icon-green">🛡️</div>
+                                    <h3 class="ik-showcase-title">Client-Side Privacy Sandbox</h3>
+                                </div>
+                                <p class="ik-showcase-body">
+                                    Your confidentiality is our blueprint. All PDF, Image, and sensitive utility tools execute directly in your web browser's RAM sandbox. No file uploads. No server access.
+                                </p>
+                            </div>
+                            <ul class="ik-showcase-list">
+                                <li class="ik-showcase-item">
+                                    <span class="ik-showcase-check ik-check-green">✓</span>
+                                    <span>Merge, compress, and rotate PDFs without remote uploads</span>
+                                </li>
+                                <li class="ik-showcase-item">
+                                    <span class="ik-showcase-check ik-check-green">✓</span>
+                                    <span>Local OCR & image format conversion keeps files offline</span>
+                                </li>
+                                <li class="ik-showcase-item">
+                                    <span class="ik-showcase-check ik-check-green">✓</span>
+                                    <span>100% GDPR-compliant browser-level processing sandbox</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Local Sandbox Security Banner -->
+                <div class="ik-sandbox-banner">
+                    <div class="ik-sandbox-badge">🔒 Privacy Guarantee</div>
+                    <p class="ik-sandbox-text">
+                        "Your files never leave your browser sandbox. Infinity Kit utilizes advanced client-side processing, ensuring your confidential invoices, school assignments, and digital documents stay 100% private."
+                    </p>
+                </div>
+
+                <!-- Section 3: Semantic AI-Crawler Tag Directory -->
+                <section class="ik-index-section">
+                    <h3 class="ik-index-heading">🤖 AI & Crawler Discoverability Index</h3>
+                    <div class="ik-index-grid">
+                        <div class="ik-index-col">
+                            <h4>PDF Utilities</h4>
+                            <div class="ik-index-links">
+                                <a href="landing/privacy-focused-pdf-tools.html">Privacy PDF Tools</a>
+                                <a href="landing/smallpdf-alternative.html">Smallpdf Free Alternative</a>
+                                <a href="landing/tinywow-alternative.html">TinyWow Free Alternative</a>
+                                <a href="folder/pdf-toolkit">PDF Merger & Editor</a>
+                            </div>
+                        </div>
+                        <div class="ik-index-col">
+                            <h4>Daily Productivity</h4>
+                            <div class="ik-index-links">
+                                <a href="landing/browser-based-productivity-tools.html">Productivity Tools</a>
+                                <a href="landing/best-free-tools-for-students.html">Tools for Students</a>
+                                <a href="folder/utilities">Browser Utilities</a>
+                                <a href="folder/expense-tracker">Personal Finance Suite</a>
+                            </div>
+                        </div>
+                        <div class="ik-index-col">
+                            <h4>Creators & Devs</h4>
+                            <div class="ik-index-links">
+                                <a href="landing/free-tools-for-creators-developers.html">Creator & Developer Tools</a>
+                                <a href="folder/text-tools">Writing & Text Tools</a>
+                                <a href="folder/data-tools">JSON & Formatting Tools</a>
+                                <a href="folder/social-tools">Social Media Toolsets</a>
+                            </div>
+                        </div>
+                        <div class="ik-index-col">
+                            <h4>About & Safety</h4>
+                            <div class="ik-index-links">
+                                <a href="about">Platform Overview</a>
+                                <a href="contact">Support Hub</a>
+                                <a href="privacy-policy">Privacy Policy</a>
+                                <a href="terms-conditions">Terms of Use</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Premium SaaS Accordion FAQs -->
+                <section class="ik-faq-section">
+                    <h2 class="ik-section-title">Frequently Asked Questions</h2>
+                    <p class="ik-section-subtitle">Got questions? Find clear, direct answers about security, accounts, and offline functionality.</p>
+                    
+                    <div class="ik-faq-accordion">
+                        <details class="ik-faq-item">
+                            <summary class="ik-faq-summary">How does Infinity Kit keep my files private?</summary>
+                            <div class="ik-faq-content">
+                                Unlike typical cloud document manipulation tools, Infinity Kit uses your browser's local sandbox to process PDFs and images. Secure libraries like pdf-lib.js run entirely in your local system memory, meaning your files are never transmitted to any external server.
+                            </div>
+                        </details>
+                        
+                        <details class="ik-faq-item">
+                            <summary class="ik-faq-summary">Is creating a Firebase account mandatory?</summary>
+                            <div class="ik-faq-content">
+                                No, it is completely optional. You can use the vast majority of our 80+ tools completely unregistered. Signing up is simple and free, unlocking cloud features like expense reports synchronization, multi-device note backups, and custom workspace preferences.
+                            </div>
+                        </details>
+                        
+                        <details class="ik-faq-item">
+                            <summary class="ik-faq-summary">Can Infinity Kit be used without an internet connection?</summary>
+                            <div class="ik-faq-content">
+                                Yes. Infinity Kit is engineered with progressive offline capabilities. Once the application loads initially, many daily text manipulation utilities, math calculators, and client-side converters can function perfectly without active internet access.
+                            </div>
+                        </details>
+                        
+                        <details class="ik-faq-item">
+                            <summary class="ik-faq-summary">How is Infinity Kit different from Smallpdf or TinyWow?</summary>
+                            <div class="ik-faq-content">
+                                Most alternative sites put strong daily limits on how many documents you can edit or charge steep monthly subscriptions. Infinity Kit is 100% free with unlimited tasks, doesn't force registration for PDF processing, and uses a client-side execution layout to prioritize your privacy.
+                            </div>
+                        </details>
+                    </div>
+                </section>
+
+            </div>
+            <!-- END OF NEW SAAS & SEO SECTIONS -->
 
         </div> <!-- End Home Page View -->
 

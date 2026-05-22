@@ -4,11 +4,20 @@ import { authService } from '../auth.js';
 // Dynamic API Endpoint router helper for local static servers
 function getApiEndpoint(path) {
     const hostname = window.location.hostname;
-    const port = window.location.port;
-    if ((hostname === 'localhost' || hostname === '127.0.0.1') && port !== '3000' && port !== '') {
+    if (hostname !== 'infinitykit.online' && hostname !== 'www.infinitykit.online') {
         return `https://infinitykit.online${path}`;
     }
     return path;
+}
+
+// Generate or retrieve persistent guest session ID
+function getOrCreateGuestId() {
+    let guestId = localStorage.getItem('infinity_guest_id');
+    if (!guestId) {
+        guestId = 'guest_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('infinity_guest_id', guestId);
+    }
+    return guestId;
 }
 
 
@@ -205,7 +214,7 @@ const AITools = {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': idToken ? `Bearer ${idToken}` : ''
+                    'Authorization': idToken ? `Bearer ${idToken}` : `Bearer ${getOrCreateGuestId()}`
                 },
                 body: JSON.stringify(requestBody),
             });
@@ -283,7 +292,7 @@ const AITools = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': idToken ? `Bearer ${idToken}` : ''
+                    'Authorization': idToken ? `Bearer ${idToken}` : `Bearer ${getOrCreateGuestId()}`
                 },
                 body: JSON.stringify(requestBody)
             });

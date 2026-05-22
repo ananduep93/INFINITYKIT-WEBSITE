@@ -2,7 +2,14 @@ module.exports = async (req, res) => {
     // CORS headers
     const allowedOrigins = ['https://infinitykit.online', 'http://localhost:3000'];
     const origin = req.headers.origin;
-    const isLocal = origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'));
+    const isLocal = origin && (
+        origin.startsWith('http://localhost:') || 
+        origin.startsWith('http://127.0.0.1:') || 
+        origin.startsWith('http://192.168.') || 
+        origin.startsWith('http://10.') || 
+        origin.startsWith('http://172.') || 
+        origin === 'null'
+    );
     if (allowedOrigins.includes(origin) || isLocal) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
