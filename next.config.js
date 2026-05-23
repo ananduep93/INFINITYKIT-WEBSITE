@@ -28,6 +28,66 @@ const nextConfig = {
       '@google/generative-ai',
     ],
   },
+  // ─── Legacy SEO Redirects (301 Permanent Redirects for Google Index) ─────
+  async redirects() {
+    return [
+      {
+        source: '/index.html',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/about.html',
+        destination: '/about',
+        permanent: true,
+      },
+      {
+        source: '/contact.html',
+        destination: '/contact',
+        permanent: true,
+      },
+      {
+        source: '/privacy-policy.html',
+        destination: '/privacy-policy',
+        permanent: true,
+      },
+      {
+        source: '/terms-conditions.html',
+        destination: '/terms-conditions',
+        permanent: true,
+      },
+      {
+        source: '/cookie-policy.html',
+        destination: '/cookie-policy',
+        permanent: true,
+      },
+      {
+        source: '/disclaimer.html',
+        destination: '/disclaimer',
+        permanent: true,
+      },
+      {
+        source: '/whatsnew.html',
+        destination: '/whatsnew',
+        permanent: true,
+      },
+      {
+        source: '/login.html',
+        destination: '/login',
+        permanent: true,
+      },
+      {
+        source: '/signup.html',
+        destination: '/signup',
+        permanent: true,
+      },
+      {
+        source: '/:toolId.html',
+        destination: '/tools/:toolId',
+        permanent: true,
+      },
+    ];
+  },
 
   // ─── HTTP Headers (CDN Caching + Security) ────────────────────────────────
   async headers() {

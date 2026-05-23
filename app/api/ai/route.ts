@@ -11,8 +11,13 @@ export const dynamic = 'force-dynamic';
 const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 
 export async function POST(request: Request) {
+  let prompt = '';
+  let taskType = '';
   try {
-    const { prompt, taskType, context } = await request.json();
+    const body = await request.json();
+    prompt = body.prompt || '';
+    taskType = body.taskType || '';
+    const context = body.context;
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
@@ -56,6 +61,31 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Gemini API Error:', error);
+    const errMessage = error.message || '';
+    const isApiKeyError = errMessage.includes('API key') ||
+      errMessage.includes('leaked') ||
+      errMessage.includes('API_KEY') ||
+      errMessage.includes('403') ||
+      errMessage.includes('404') ||
+      errMessage.includes('not found');
+
+    if (isApiKeyError) {
+      console.warn('[Gemini API Key Warning] Leaked, invalid, or revoked API key detected. Falling back to Demo Mode.');
+      let dummyResponse = '';
+      if (taskType === 'chat') {
+        dummyResponse = `⚠️ [DEMO MODE FALLBACK - API KEY ISSUE]\nThe configured Gemini API key has been reported as leaked or revoked by Google.\n\nTo restore full capabilities, please set a valid GEMINI_API_KEY. Here is a simulated response:\n\n"Hello! Since the API key is not currently active, I am running in local offline demo mode to showcase my interface. How can I assist you with your project today?"`;
+      } else if (taskType === 'improve') {
+        dummyResponse = `⚠️ [DEMO MODE FALLBACK - API KEY ISSUE]\nThe configured Gemini API key has been reported as leaked or revoked by Google.\n\nSimulated output:\n"${prompt}" -> Polished perfectly for clarity, tone, and grammar.`;
+      } else {
+        dummyResponse = `⚠️ [DEMO MODE FALLBACK - API KEY ISSUE]\nThe configured Gemini API key has been reported as leaked or revoked by Google.\n\nSimulated bullet points:\n• Distilled core summary item 1\n• Distilled core summary item 2\n• Distilled core summary item 3`;
+      }
+      return NextResponse.json({
+        text: dummyResponse,
+        demo: true,
+        warning: 'The configured Gemini API key is leaked or invalid. Running in Demo Mode.'
+      });
+    }
+
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
       { status: 500 }

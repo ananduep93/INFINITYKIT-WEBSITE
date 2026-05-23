@@ -76,6 +76,9 @@ const AIService = {
         const startTime = Date.now();
         console.log(`[AI Request] User: ${identifier} | Model: ${model} | Prompt Length: ${prompt ? prompt.length : 0}`);
         
+        let resultText = "";
+        let isDemo = false;
+
         const response = await retryWithBackoff(async () => {
             const config = {};
             if (systemInstruction) {
@@ -87,10 +90,27 @@ const AIService = {
                 contents: prompt,
                 config
             });
+        }).catch(err => {
+            const errMessage = err.message || '';
+            const isApiKeyError = errMessage.includes('API key') ||
+              errMessage.includes('leaked') ||
+              errMessage.includes('API_KEY') ||
+              errMessage.includes('403') ||
+              errMessage.includes('404') ||
+              errMessage.includes('not found');
+            
+            if (isApiKeyError) {
+                console.warn("[AI Graceful Catch] API key is leaked, invalid, or revoked. Returning fallback demo response.");
+                isDemo = true;
+                return {
+                    text: `⚠️ [DEMO MODE FALLBACK - API KEY ISSUE]\nThe configured Gemini API key has been reported as leaked or revoked by Google.\n\nTo restore full capabilities, please set a valid GEMINI_API_KEY. Here is a simulated response:\n\n"Hello! Since the API key is not currently active, I am running in local offline demo mode to showcase my interface. How can I assist you with your project today?"`
+                };
+            }
+            throw err;
         });
         
         const duration = Date.now() - startTime;
-        const resultText = response.text || "";
+        resultText = response.text || "";
         
         // Log analytics & tokens
         const inputTokens = estimateTokens(prompt) + estimateTokens(systemInstruction);
@@ -99,6 +119,7 @@ const AIService = {
         
         return {
             text: resultText,
+            demo: isDemo,
             analytics: {
                 durationMs: duration,
                 inputTokens,
@@ -123,11 +144,29 @@ const AIService = {
             config.systemInstruction = systemInstruction;
         }
         
-        const responseStream = await ai.models.generateContentStream({
-            model,
-            contents: prompt,
-            config
-        });
+        let responseStream;
+        try {
+            responseStream = await ai.models.generateContentStream({
+                model,
+                contents: prompt,
+                config
+            });
+        } catch (err) {
+            const errMessage = err.message || '';
+            const isApiKeyError = errMessage.includes('API key') ||
+              errMessage.includes('leaked') ||
+              errMessage.includes('API_KEY') ||
+              errMessage.includes('403') ||
+              errMessage.includes('404') ||
+              errMessage.includes('not found');
+            
+            if (isApiKeyError) {
+                console.warn("[AI Graceful Stream Catch] API key is leaked, invalid, or revoked. Yielding fallback demo response.");
+                yield `⚠️ [DEMO MODE STREAM - API KEY ISSUE]\nThe configured Gemini API key has been reported as leaked or revoked by Google.\n\nTo restore full capabilities, please set a valid GEMINI_API_KEY. Here is a simulated response stream chunk.`;
+                return;
+            }
+            throw err;
+        }
         
         for await (const chunk of responseStream) {
             yield chunk.text || "";

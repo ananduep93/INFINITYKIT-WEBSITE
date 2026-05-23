@@ -89,6 +89,81 @@ const SubtitlesGenerator = dynamic(() => import('./SubtitlesGenerator'),{ ssr: f
 const VideoTranscription = dynamic(() => import('./VideoTranscription'),{ ssr: false, loading: LoadingSkeleton });
 const JSONFormatter      = dynamic(() => import('./JSONFormatter'),      { ssr: false, loading: LoadingSkeleton });
 const SchemaGenerator    = dynamic(() => import('./SchemaGenerator'),   { ssr: false, loading: LoadingSkeleton });
+const PublicSurvey       = dynamic(() => import('./PublicSurvey'),      { ssr: false, loading: LoadingSkeleton });
+const PasswordLeakScanner  = dynamic(() => import('./PasswordLeakScanner'), { ssr: false, loading: LoadingSkeleton });
+
+const ResetExpenses        = dynamic(() => import('./ResetExpenses'), { ssr: false, loading: LoadingSkeleton });
+
+const TopSpendingInsights  = dynamic(() => import('./TopSpendingInsights'), { ssr: false, loading: LoadingSkeleton });
+
+const ResponseViewer       = dynamic(() => import('./ResponseViewer'), { ssr: false, loading: LoadingSkeleton });
+
+const MySurveys            = dynamic(() => import('./MySurveys'), { ssr: false, loading: LoadingSkeleton });
+
+const SurveyBuilder        = dynamic(() => import('./SurveyBuilder'), { ssr: false, loading: LoadingSkeleton });
+
+const ColorPaletteGenerator = dynamic(() => import('./ColorPaletteGenerator'), { ssr: false, loading: LoadingSkeleton });
+
+const PDFToImage           = dynamic(() => import('./PDFToImage'), { ssr: false, loading: LoadingSkeleton });
+
+const URLExtractor         = dynamic(() => import('./URLExtractor'), { ssr: false, loading: LoadingSkeleton });
+
+const PersonaPromptsMen    = dynamic(() => import('./PersonaPromptsMen'),   { ssr: false, loading: LoadingSkeleton });
+const PersonaPromptsWomen  = dynamic(() => import('./PersonaPromptsWomen'), { ssr: false, loading: LoadingSkeleton });
+const SmartPromptEditor    = dynamic(() => import('./SmartPromptEditor'),   { ssr: false, loading: LoadingSkeleton });
+
+
+const TextToSpeech         = dynamic(() => import('./TextToSpeech'), { ssr: false, loading: LoadingSkeleton });
+
+const SVGOptimizer         = dynamic(() => import('./SVGOptimizer'), { ssr: false, loading: LoadingSkeleton });
+
+const SpinWheel            = dynamic(() => import('./SpinWheel'), { ssr: false, loading: LoadingSkeleton });
+
+const SearchExpenses       = dynamic(() => import('./SearchExpenses'), { ssr: false, loading: LoadingSkeleton });
+
+const RotatePDF            = dynamic(() => import('./RotatePDF'), { ssr: false, loading: LoadingSkeleton });
+
+const PasswordVault        = dynamic(() => import('./PasswordVault'), { ssr: false, loading: LoadingSkeleton });
+
+const P2PFileShare         = dynamic(() => import('./P2PFileShare'), { ssr: false, loading: LoadingSkeleton });
+
+const NotificationScheduler = dynamic(() => import('./NotificationScheduler'), { ssr: false, loading: LoadingSkeleton });
+
+const MorseCodeTranslator  = dynamic(() => import('./MorseCodeTranslator'), { ssr: false, loading: LoadingSkeleton });
+
+const MetaTagViewer        = dynamic(() => import('./MetaTagViewer'), { ssr: false, loading: LoadingSkeleton });
+
+const LinkInBio            = dynamic(() => import('./LinkInBio'), { ssr: false, loading: LoadingSkeleton });
+
+const InternetSpeedTest    = dynamic(() => import('./InternetSpeedTest'), { ssr: false, loading: LoadingSkeleton });
+
+const InteractiveCalendar  = dynamic(() => import('./InteractiveCalendar'), { ssr: false, loading: LoadingSkeleton });
+
+const ImageToPDF           = dynamic(() => import('./ImageToPDF'), { ssr: false, loading: LoadingSkeleton });
+
+const ImageInfo            = dynamic(() => import('./ImageInfo'), { ssr: false, loading: LoadingSkeleton });
+
+const GlassmorphicGenerator = dynamic(() => import('./GlassmorphicGenerator'), { ssr: false, loading: LoadingSkeleton });
+
+const ExamGradeCalc        = dynamic(() => import('./ExamGradeCalc'), { ssr: false, loading: LoadingSkeleton });
+
+const DistanceCalculator   = dynamic(() => import('./DistanceCalculator'), { ssr: false, loading: LoadingSkeleton });
+
+const DailyPlanner         = dynamic(() => import('./DailyPlanner'), { ssr: false, loading: LoadingSkeleton });
+
+const DailyMonthlyReport   = dynamic(() => import('./DailyMonthlyReport'), { ssr: false, loading: LoadingSkeleton });
+
+const CSVViewer            = dynamic(() => import('./CSVViewer'), { ssr: false, loading: LoadingSkeleton });
+
+const ChoiceComparator     = dynamic(() => import('./ChoiceComparator'), { ssr: false, loading: LoadingSkeleton });
+const RandomNamePicker     = dynamic(() => import('./RandomNamePicker'),     { ssr: false, loading: LoadingSkeleton });
+const NoteShredder         = dynamic(() => import('./NoteShredder'),         { ssr: false, loading: LoadingSkeleton });
+const AmbientNoisePlayer   = dynamic(() => import('./AmbientNoisePlayer'),   { ssr: false, loading: LoadingSkeleton });
+const CategorySummary      = dynamic(() => import('./CategorySummary'),      { ssr: false, loading: LoadingSkeleton });
+const QuadraticSolver      = dynamic(() => import('./QuadraticSolver'),      { ssr: false, loading: LoadingSkeleton });
+const PasswordStrength     = dynamic(() => import('./PasswordStrength'),     { ssr: false, loading: LoadingSkeleton });
+
+
 
 // ─── Named exports (backwards compatibility) ──────────────────────────────────
 export {
@@ -134,6 +209,20 @@ export {
   VideoTranscription,
   JSONFormatter,
   SchemaGenerator,
+  PublicSurvey,
+  ChoiceComparator,
+  PersonaPromptsMen,
+  PersonaPromptsWomen,
+  SmartPromptEditor,
+  RandomNamePicker,
+  NoteShredder,
+  AmbientNoisePlayer,
+  CategorySummary,
+  QuadraticSolver,
+  PasswordStrength,
+  TopSpendingInsights,
+  ResetExpenses,
+  PasswordLeakScanner,
 };
 
 // ─── Registry map for dynamic ToolClient lookup ───────────────────────────────
@@ -180,4 +269,18 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   VideoTranscription,
   JSONFormatter,
   SchemaGenerator,
+  PublicSurvey,
+  ChoiceComparator,
+  PersonaPromptsMen,
+  PersonaPromptsWomen,
+  SmartPromptEditor,
+  RandomNamePicker,
+  NoteShredder,
+  AmbientNoisePlayer,
+  CategorySummary,
+  QuadraticSolver,
+  PasswordStrength,
+  TopSpendingInsights,
+  ResetExpenses,
+  PasswordLeakScanner,
 };
