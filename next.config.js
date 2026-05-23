@@ -80,6 +80,31 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/admin.html',
+        destination: '/admin',
+        permanent: true,
+      },
+      {
+        source: '/blog.html',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/ai-tools/:toolId.html',
+        destination: '/tools/:toolId',
+        permanent: true,
+      },
+      {
+        source: '/ai-tools',
+        destination: '/tools',
+        permanent: true,
+      },
+      {
+        source: '/ai-tools/index.html',
+        destination: '/tools',
+        permanent: true,
+      },
+      {
         source: '/:toolId.html',
         destination: '/tools/:toolId',
         permanent: true,
@@ -139,7 +164,7 @@ const nextConfig = {
           },
           // Security headers
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },

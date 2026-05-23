@@ -1,8 +1,8 @@
-# InfinityKit - 100% Client-Side Web Utilities Suite
+# InfinityKit - Dynamic AI-Readable Web Utilities Catalog
 
 InfinityKit is a premium suite of secure, high-performance web applications and digital utilities executed completely client-side in the browser. By leveraging local browser calculations, InfinityKit guarantees absolute user privacy, zero data uploads, and complete serverless security.
 
-## Core Features & Philosophy
+## Core Features & Core Values
 - **100% Client-Side Privacy:** All files, PDF operations, images, audio, video, calculations, and conversions are computed in-memory in the browser. Zero user data is uploaded to external servers.
 - **Microsecond Speeds:** High-performance, lightweight browser-based algorithms render calculations instantly.
 - **Zero Tracker Intrusion:** Open-access ecosystem with absolute zero telemetry, cookie payloads, or analytical monitoring.
@@ -12,42 +12,85 @@ InfinityKit is a premium suite of secure, high-performance web applications and 
 
 ## Tool Categories & Route Catalog
 
-### 🛠️ Utility & Health Tools
-- **BMI Calculator:** `/tools/bmicalculator` - Instant weight-to-height screening assessments.
-- **Drug Dosage Calculator:** `/tools/drugdosage` - Pediatric & clinical mg/ml dosage estimations.
-- **IV Drip Rate Calculator:** `/tools/ivdripcalc` - Calculate drops/minute (gtt) for medical infusions.
-- **Password Generator:** `/tools/passwordgen` - Generate cryptographically secure passwords locally.
-- **Medicine Reminder:** `/tools/medicinereminder` - Secure alarm system for medicine tracking.
-- **To-Do List:** `/tools/todolist` - Task list and micro-schedules with local storage syncing.
-- **Notes Manager:** `/tools/notes` - Quick text pads and markdown logs stored locally.
-- **Timer & Stopwatch:** `/tools/timer` - Precision timers and split chronometers.
+### 📄 Document & PDF Utilities
+- **Add Custom Text Watermarks to PDFs:** `/tools/watermarkpdf` - Stamp diagonal custom watermarks locally in browser.
+- **Combine Multiple PDFs into One:** `/tools/mergepdf` - Merge PDF file buffers instantly.
+- **Split PDF Pages & Extract Ranges:** `/tools/splitpdf` - Slice and extract pages from target PDFs.
+- **Lock PDF Files with Secure Password:** `/tools/protect-pdf` - Client-side AES encryption for PDF vaults.
+- **Unlock & Decrypt Protected PDFs:** `/tools/unlock-pdf` - Decrypt and unlock password-gated documents.
+- **Convert PDF Pages to Images:** `/tools/pdftoimage` - Render PDF documents into JPG/PNG sheets.
+- **Convert Images & Photos into PDF:** `/tools/imagetopdf` - Pack screenshots and layouts into a single PDF.
+- **Spin & Rotate PDF Pages:** `/tools/rotatepdf` - Correct orientation on rotated document pages.
+- **AI PDF Key Highlights Summarizer:** `/tools/ai-summarize-pdf` - Fast in-browser overview summaries of documents.
+- **AI Chat & Discuss with PDF:** `/tools/ai-chat-pdf` - Local context Q&A with dynamic file uploads.
 
-### ✍️ AI-Powered Writing Utilities
-*Driven by Gemini Flash client-side APIs with custom parameter adjustments.*
-- **AI Chatbot Console:** `/tools/chatbot` - Client-side AI conversation partner.
-- **AI Text Improver:** `/tools/text-improver` - Refine flow, grammar, and voice of draft pages.
-- **AI Document Summarizer:** `/tools/summarizer` - Condense large articles and papers into bullet points.
-- **AI Image Generator:** `/tools/image-generator` - Text-to-image prompts rendered locally.
-- **AI Essay Writer:** `/tools/essay-writer` - Draft research essays, outlines, and thesis statements.
-- **AI Article Writer:** `/tools/article-writer` - Construct long-form blog content and articles.
-- **AI FAQ Generator:** `/tools/faq-generator` - Compile structural SEO FAQs from target text.
-- **AI Rewriter:** `/tools/ai-rewriter` - Rephrase text drafts for alternative formats.
-- **AI Humanizer:** `/tools/ai-humanizer` - Adjust AI-written articles for standard human readability.
-- **AI Grammar Fixer:** `/tools/grammar-fixer` - Instant spell check and text correction.
+### 🖼️ Graphic & Photo Utilities
+- **Reduce Image File Size (Compressor):** `/tools/compressimage` - High-fidelity in-browser compression.
+- **Resize Image Boundaries (Height & Width):** `/tools/resizeimage` - Set specific resolutions and bounds.
+- **AI Background Stripper:** `/tools/bg-remover` - Auto background deletion.
+- **DSLR Portrait Background Blur:** `/tools/blur-background` - Dynamic portrait blur effects.
+- **Extract Text from Images (OCR):** `/tools/ocrimage` - In-browser optical character recognition.
+- **Image Dimension & Detail Checker:** `/tools/imageinfo` - Audit image dimensions, file sizes, and properties.
+- **Image Color Palette & Code Extractor:** `/tools/color-palette` - Pull color palettes and HEX/RGBA codes.
+- **e-Signature Studio:** `/tools/e-signature` - Draw, save, and download signature png files.
+- **Remove Secret Data from Photos (EXIF Stripper):** `/tools/metadata-stripper` - Scrub EXIF locations and camera metadata.
 
-### 📊 Expense & Financial Hub
-- **Add Expense:** `/tools/expenseadd` - Record daily expenditures under custom labels.
-- **Expense History List:** `/tools/expenselist` - View and search chronological transactions.
-- **Budget Tracker:** `/tools/budgettracker` - Allocate monthly limits and check safety thresholds.
-- **Expense Analytics Charts:** `/tools/expenseanalytics` - Radial graphs displaying spending breakdowns.
-- **Daily/Monthly Report Builder:** `/tools/dailymonthlyreport` - Compile structured cashflow balance statements.
-- **Top Spending Insights:** `/tools/topspendinginsights` - Check major category leaks.
-- **Search Expenses Engine:** `/tools/searchexpenses` - Filter transactions by name, label, or price.
-- **Reset Financial Session:** `/tools/resetexpenses` - Purge local records for safety.
+### 🎥 Multi-Media, Audio, & Video Utilities
+- **Extract High-Quality Audio from Video:** `/tools/extract-audio` - Strip audio tracks directly.
+- **Convert Video into Animated GIF:** `/tools/video-to-gif` - Render custom timing GIF clips.
+- **Generate & Sync Video Subtitles:** `/tools/subtitles-generator` - Construct SRT files locally.
+- **Convert Video & Audio to Text Transcripts:** `/tools/video-transcription` - Dynamic transcription.
+- **Listen to Text Aloud (Voice Speaker):** `/tools/texttospeech` - Speech synthesis from text parameters.
+- **Focus Ambient Noise Mixer (Rain, Forest):** `/tools/focus-soundscape` - Ambient white/brown noise generator.
+
+### ✍️ Intelligent AI Writing Assistants
+- **Infinity AI Chat & Assistant:** `/tools/chatbot` - Full conversational companion.
+- **AI Smart Text Improver:** `/tools/text-improver` - Optimize draft voice, grammar, and flow.
+- **AI Smart Text Summarizer:** `/tools/summarizer` - Condense draft layouts into highlights.
+- **AI Canvas Art Generator:** `/tools/image-generator` - Generate custom artwork from text prompts.
+- **Refine Prompts for AI Chatbots:** `/tools/smartsuggestions` - Enhance prompts for ChatGPT, Gemini, and Claude.
+
+### 📊 Personal Finance & Spending Ledgers
+- **Record Daily Expense:** `/tools/expenseadd` - Record daily expenditures under custom labels.
+- **View Expense Records History:** `/tools/expenselist` - View and search chronological transactions.
+- **Savings & Monthly Budget Planner:** `/tools/budgettracker` - Allocate monthly limits and thresholds.
+- **Spending Visual Graphs & Charts:** `/tools/expenseanalytics` - Radial visual breakdowns of cashflows.
+- **Printable Expense & Income Statements Builder:** `/tools/dailymonthlyreport` - Compile structured cashflow statements.
+- **Where Do I Spend Most? (Spending Chart):** `/tools/topspendinginsights` - Check major category leaks.
+- **Search & Filter Expenses:** `/tools/searchexpenses` - Filter transactions by name, label, or price.
+- **Reset & Delete Expense Records:** `/tools/resetexpenses` - Purge local records for safety.
+
+### 🛠️ Utilities & Calculations
+- **Body Weight & Health Analyzer (BMI):** `/tools/bmicalculator` - Instant weight-to-height screening assessments.
+- **Pediatric & Adult Medicine Dose Calculator:** `/tools/drugdosage` - Pediatric & clinical mg/ml dosage estimations.
+- **Saline & IV Fluid Drip Rate Calculator:** `/tools/ivdripcalc` - Calculate drops/minute (gtt) for medical infusions.
+- **Daily Medicine Schedule Alarm & Organizer:** `/tools/medicinereminder` - Secure alarm system for medicine tracking.
+- **Daily Tasks List & Progress Tracker:** `/tools/todolist` - Task list and micro-schedules with local storage syncing.
+- **Quick Secure Notebook Vault:** `/tools/notes` - Quick text pads and markdown logs stored locally.
+- **Pomodoro Study Focus Timer:** `/tools/timer` - Study focus timer.
+- **Random Strong Password Generator:** `/tools/passwordgen` - Generate secure passwords locally.
+- **Scan-to-Open QR Code Generator:** `/tools/qrcode-gen` - Create custom dynamic QR codes locally.
+- **All-in-One Measurement Units Converter:** `/tools/unitconverter` - High-precision conversions across metrics.
+- **Sales Discount & Final Price Calculator:** `/tools/discountcalc` - Estimate sales markdown savings.
+- **Simple Percentage Calculator:** `/tools/percentagecalc` - Evaluate percentage multipliers.
+- **LCM & HCF Finder (Lowest & Highest Factors):** `/tools/lcmhcf` - Find math factor limits.
+- **Count Days and Time Between Dates:** `/tools/daysbetween` - Dynamic calendaring duration counts.
+- **Decision Maker Spin-the-Wheel Picker:** `/tools/spinwheel` - Visual random selector.
+- **Pick Random Winner from Names List:** `/tools/randomnamepicker` - Pick a random winner from list parameters.
+- **Self-Destructing Secret Notes:** `/tools/note-shredder` - Destroy notes on reading timer limits.
+- **Password Data Breach Database Checker:** `/tools/password-leak` - Safely audit leak status via k-anonymity.
+
+### 💻 Developer Sandbox & SEO
+- **SEO JSON-LD Structured Data Schema Maker:** `/tools/schema-generator` - Generate search-engine schemas.
+- **JSON to TypeScript Code Converter:** `/tools/json-to-ts` - Autogenerate typings from payloads.
+- **JSON Code Formatter & Beautifier:** `/tools/json-code` - Formats payload codes.
+- **SVG Vector Image Compressor:** `/tools/svg-optimizer` - Sanitize and compress SVG path vectors.
+- **Bulk File Batch Renamer:** `/tools/bulk-renamer` - Batch rename files client-side.
+- **Website Search Engine Meta Tag Inspector:** `/tools/metatagviewer` - Inspect layout meta properties.
 
 ---
 
-## Technical Specifications
+## Technical Architecture specifications
 - **Framework:** Next.js (App Router React v18)
 - **Deployment Endpoint:** Standard NextJS build compiled to statically optimized client page pathways
 - **Asset Base Url:** `https://infinitykit.online`

@@ -25,6 +25,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  manifest: '/manifest.json',
   title: {
     default: 'InfinityKit | Premium Free Online Tools Suite',
     template: '%s | InfinityKit'

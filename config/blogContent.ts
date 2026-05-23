@@ -1,5 +1,5 @@
 export interface BlogSection {
-  type: 'p' | 'h2' | 'h3' | 'ul' | 'ol' | 'cta' | 'note';
+  type: 'p' | 'h2' | 'h3' | 'ul' | 'ol' | 'cta' | 'note' | 'code';
   content: string | string[];
   ctaLink?: string;
   ctaText?: string;
@@ -374,6 +374,136 @@ export const fullBlogPosts: Record<string, FullBlogPost> = {
       {
         type: 'note',
         content: 'Time is the currency of productivity, but focus is the multiplier. Spend them both wisely.'
+      }
+    ]
+  },
+  'how-to-watermark-pdf-offline-securely': {
+    slug: 'how-to-watermark-pdf-offline-securely',
+    title: 'How to Watermark PDF Documents Offline Safely',
+    excerpt: 'Protect your sensitive reports and visual mockups offline in your browser. A completely secure, client-side alternative to risky cloud services.',
+    date: 'May 20, 2026',
+    readTime: '4 min read',
+    category: 'PDF Utilities',
+    icon: '📄',
+    author: 'Infinity Kit Security Team',
+    sections: [
+      {
+        type: 'p',
+        content: 'When it comes to sharing draft agreements, financial statements, or design concepts, stamping a watermark is standard practice. Unfortunately, most online utilities require uploading your private files onto remote servers, exposing you to severe data privacy risks.'
+      },
+      {
+        type: 'p',
+        content: 'At Infinity Kit, we set out to solve this issue with serverless in-browser technology. Let us walk you through how offline client-side watermarking operates and how you can stamp documents with zero external tracking.'
+      },
+      {
+        type: 'h2',
+        content: 'Why Cloud PDF Tools Are a Major Liability'
+      },
+      {
+        type: 'p',
+        content: 'When you upload an invoice or draft document onto conventional converter sites, your document is processed in their cloud, cached on their disks, and subject to their logs. If their servers are breached, or if their cloud storage is compromised, your sensitive numbers and visuals could end up on the dark web.'
+      },
+      {
+        type: 'h2',
+        content: 'The 100% Secure In-Browser Solution'
+      },
+      {
+        type: 'p',
+        content: 'Infinity Kit runs using client-side JavaScript. Instead of sending files over HTTP APIs, we utilize the browser\'s internal memory (V8 engine sandboxing). Our watermarking tool embeds text overlays using WebAssembly and high-performance layout compilers, saving your stamped copy directly to your download directory.'
+      },
+      {
+        type: 'ul',
+        content: [
+          'No Network Uploads: Your file size and text content remain local.',
+          'Instant Generation: Process large, multi-page PDFs in microseconds without waiting for queue delays.',
+          'Zero Disk Footprint: Once you close the tab, the in-memory array buffers are completely destroyed.'
+        ]
+      },
+      {
+        type: 'cta',
+        content: 'Ready to secure your PDF documents local-first? Use our offline watermark utility instantly.',
+        ctaText: 'Add Watermark to PDF ⚡',
+        ctaLink: '/tools/watermarkpdf'
+      }
+    ]
+  },
+  'how-to-check-leaked-passwords-securely': {
+    slug: 'how-to-check-leaked-passwords-securely',
+    title: 'How to Check If Your Password Was Leaked Without Revealing It',
+    excerpt: 'Uncover the math behind data breaches. Learn how client-side SHA-1 hashing and k-anonymity let you scan your keys in complete privacy.',
+    date: 'May 20, 2026',
+    readTime: '5 min read',
+    category: 'Security',
+    icon: '🔒',
+    author: 'Infinity Kit Cryptography Labs',
+    sections: [
+      {
+        type: 'p',
+        content: 'Every month, millions of credentials are leaked in massive database breaches. Checking if your own password has been pwned is essential, but entering your active passkey into a search box on the web is incredibly dangerous.'
+      },
+      {
+        type: 'p',
+        content: 'In this article, we explain the brilliant cryptographic design known as k-anonymity that allows you to safely check passwords without ever letting third parties know what they are.'
+      },
+      {
+        type: 'h2',
+        content: 'What Is k-Anonymity Hashing?'
+      },
+      {
+        type: 'p',
+        content: 'Instead of sending your cleartext password over the wire, secure check engines use one-way hashing algorithms (SHA-1). But sending the full hash is still insecure, as the server could easily reverse it using lookup tables.'
+      },
+      {
+        type: 'p',
+        content: 'To prevent this, k-anonymity only queries the first 5 characters of your password\'s SHA-1 hash. The API returns a list of *every* leaked password hash in the world that starts with those identical 5 characters (usually a list of several hundred). The tool then matches the remainder of your hash locally inside your browser.'
+      },
+      {
+        type: 'note',
+        content: 'The remote server only knows 5 letters of a hash, making it mathematically impossible for them to infer your original password.'
+      },
+      {
+        type: 'cta',
+        content: 'Audit your password keys safely using our offline data breach scanner.',
+        ctaText: 'Scan for Password Leaks 🔍',
+        ctaLink: '/tools/password-leak'
+      }
+    ]
+  },
+  'understanding-medicine-pediatric-dosage-formulas': {
+    slug: 'understanding-medicine-pediatric-dosage-formulas',
+    title: 'Pediatric & Adult Medication Dosage Formulations Guide',
+    excerpt: 'An educational clinical outline of standard medical formulations, weight multipliers, and drip calculations.',
+    date: 'May 15, 2026',
+    readTime: '5 min read',
+    category: 'Health',
+    icon: '🩺',
+    author: 'Dr. Aisha Vance, Medical Advisory Lead',
+    sections: [
+      {
+        type: 'p',
+        content: 'Administering medicine requires absolute numerical precision. For pediatric cases, standard adult dosages are obsolete. Dosages must be calculated dynamically based on body weight (mg/kg) and liquid concentrations.'
+      },
+      {
+        type: 'h2',
+        content: 'The Core Body Weight Formula'
+      },
+      {
+        type: 'p',
+        content: 'Medical professionals evaluate dose requirements based on the following three-tier arithmetic:'
+      },
+      {
+        type: 'ol',
+        content: [
+          'Calculate total dose: Patient Weight (kg) * Prescribed Dose (mg/kg).',
+          'Evaluate available volume: Total Required Dose (mg) / Available Concentration (mg/mL).',
+          'Calculate flow rate (for IV infusions): Volume (mL) * Drop Factor (gtt/mL) / Time (Minutes).'
+        ]
+      },
+      {
+        type: 'cta',
+        content: 'Estimate fluid rates and pediatric quantities instantly with our precision health calculators.',
+        ctaText: 'Open Medicine Dose Calculator 💊',
+        ctaLink: '/tools/drugdosage'
       }
     ]
   }

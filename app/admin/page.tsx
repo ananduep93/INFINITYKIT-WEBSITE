@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { auth, db, googleProvider } from '../../lib/firebase';
-import { signInWithPopup, onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { signInWithPopup, onAuthStateChanged, signOut, User, signInWithEmailAndPassword } from 'firebase/auth';
 import { 
   collection, 
   addDoc, 
@@ -25,7 +25,8 @@ import {
   TrendingUp, 
   Layers, 
   ExternalLink,
-  CheckCircle
+  CheckCircle,
+  Settings
 } from 'lucide-react';
 
 interface UpdateItem {
@@ -54,6 +55,12 @@ export default function AdminPage() {
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'updates' | 'affiliates' | 'prompts'>('updates');
 
+  // Credentials input states
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginLoading, setLoginLoading] = useState(false);
+
   // Input states
   const [updateMsg, setUpdateMsg] = useState('');
   const [productTitle, setProductTitle] = useState('');
@@ -66,7 +73,7 @@ export default function AdminPage() {
   // Status lists
   const [updates, setUpdates] = useState<UpdateItem[]>([]);
   const [affiliates, setAffiliates] = useState<AffiliateItem[]>([]);
-  const [prompts, setPrompts] = useState<PromptItem[]>([]);
+  const [prompts, setPromptItem] = useState<PromptItem[]>([]);
 
   // Action loading states
   const [actionLoading, setActionLoading] = useState(false);
@@ -141,7 +148,7 @@ export default function AdminPage() {
           prompt: d.data().prompt || ''
         });
       });
-      setPrompts(pList);
+      setPromptItem(pList);
     } catch (err) {
       console.error("Error loading admin collections:", err);
     }
@@ -163,6 +170,35 @@ export default function AdminPage() {
     } catch (e) {
       console.error("Authentication failed:", e);
       alert("Sign in failed. Check console.");
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !password) return;
+    setLoginLoading(true);
+    setLoginError(null);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      
+      if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com') {
+        setUser(result.user);
+        setIsAdmin(true);
+        fetchAdminData();
+      } else {
+        await signOut(auth);
+        setLoginError("Access Denied: You do not possess administrator rights.");
+      }
+    } catch (err: any) {
+      console.error("Credentials sign in failed:", err);
+      let errMsg = "Authentication credentials rejected.";
+      if (err.code === 'auth/user-not-found') errMsg = "Admin account not found.";
+      else if (err.code === 'auth/wrong-password') errMsg = "Incorrect password.";
+      else if (err.message) errMsg = err.message;
+      setLoginError(errMsg);
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -327,20 +363,20 @@ export default function AdminPage() {
   // Not Logged in or Not Admin
   if (!isAdmin) {
     return (
-      <div style={{ maxWidth: '450px', margin: '120px auto 60px', padding: '0 20px' }}>
+      <div style={{ maxWidth: '450px', margin: '100px auto 60px', padding: '0 20px' }}>
         <div className="glass-panel" style={{
           padding: '40px 30px',
           background: 'var(--glass-bg)',
           border: '1px solid var(--glass-border)',
           borderRadius: 'var(--card-radius)',
           textAlign: 'center',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+          boxShadow: '0 20px 50px rgba(0,0,0,0.25)'
         }}>
           <div style={{
             width: '60px',
             height: '60px',
-            background: 'rgba(234, 67, 53, 0.08)',
-            color: '#EA4335',
+            background: 'rgba(0, 161, 155, 0.08)',
+            color: 'var(--primary-color)',
             borderRadius: '50%',
             display: 'inline-flex',
             alignItems: 'center',
@@ -355,6 +391,98 @@ export default function AdminPage() {
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '25px' }}>
             This system zone is highly protected. To perform database operations, please verify your credentials.
           </p>
+
+          {/* Email / Password credentials form fallback */}
+          <form onSubmit={handleEmailLogin} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '25px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Admin Email Address</label>
+              <input
+                type="email"
+                placeholder="admin@infinitykit.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '30px',
+                  border: '1px solid var(--glass-border)',
+                  background: 'rgba(0,0,0,0.15)',
+                  color: 'var(--text-color)',
+                  outline: 'none',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.2s'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '30px',
+                  border: '1px solid var(--glass-border)',
+                  background: 'rgba(0,0,0,0.15)',
+                  color: 'var(--text-color)',
+                  outline: 'none',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.2s'
+                }}
+              />
+            </div>
+
+            {loginError && (
+              <div style={{
+                backgroundColor: 'rgba(234, 67, 53, 0.08)',
+                border: '1px solid rgba(234, 67, 53, 0.15)',
+                color: '#EA4335',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                lineHeight: 1.4
+              }}>
+                {loginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #00A19B 0%, #00d2c7 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '30px',
+                padding: '12px 24px',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(0, 161, 155, 0.15)',
+                transition: 'all 0.2s',
+                marginTop: '5px'
+              }}
+            >
+              {loginLoading ? 'Authenticating...' : 'Sign in as Administrator'}
+            </button>
+          </form>
+
+          {/* Separator line */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '20px' }}>
+            <span style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></span>
+            <span>or single sign-on</span>
+            <span style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></span>
+          </div>
 
           <button
             onClick={handleGoogleLogin}
@@ -450,27 +578,52 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <button
-          onClick={handleLogout}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(234, 67, 53, 0.08)',
-            border: '1px solid rgba(234, 67, 53, 0.2)',
-            color: '#EA4335',
-            padding: '10px 20px',
-            borderRadius: '30px',
-            fontWeight: 700,
-            fontSize: '0.85rem',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(234, 67, 53, 0.15)'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(234, 67, 53, 0.08)'}
-        >
-          <LogOut size={14} /> Exit Admin Session
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <a
+            href="/admin/tool-tester"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(0, 161, 155, 0.08)',
+              border: '1px solid rgba(0, 161, 155, 0.2)',
+              color: 'var(--primary-color)',
+              padding: '10px 20px',
+              borderRadius: '30px',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 161, 155, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 161, 155, 0.08)'}
+          >
+            <Settings size={14} /> Open Tool Tester
+          </a>
+
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(234, 67, 53, 0.08)',
+              border: '1px solid rgba(234, 67, 53, 0.2)',
+              color: '#EA4335',
+              padding: '10px 20px',
+              borderRadius: '30px',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(234, 67, 53, 0.15)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(234, 67, 53, 0.08)'}
+          >
+            <LogOut size={14} /> Exit Admin Session
+          </button>
+        </div>
       </header>
 
       {/* Tabs Menu */}

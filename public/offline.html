@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline Mode - InfinityKit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #0b0d10;
+      color: #e1e1e1;
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 50px 30px;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #00A19B, #00d2c7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    p {
+      color: #8892b0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #00A19B, #00d2c7);
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 30px;
+      box-shadow: 0 8px 24px rgba(0, 161, 155, 0.3);
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 161, 155, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="font-size: 3.5rem; margin-bottom: 20px;">📡</div>
+    <h1>No Connection Found</h1>
+    <p>
+      InfinityKit operates client-side inside your browser sandbox, but you need an active internet connection to download and compile cache resources on initial setup. Please check your network and reload the session.
+    </p>
+    <a href="/" class="btn">Try Again</a>
+  </div>
+</body>
+</html>

@@ -96,6 +96,12 @@ export default function BackgroundRemover() {
     });
   };
 
+  const handleReset = () => {
+    setImageSrc(null);
+    setPickedColor(null);
+    setFileName('');
+  };
+
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas || !imageSrc) return;
@@ -135,6 +141,7 @@ export default function BackgroundRemover() {
         accept="image/*"
         maxFiles={1}
         onProcess={handleProcess}
+        onReset={handleReset}
         actionButtonText="Initialize Background Removal"
         instructions={[
           'Upload any image (PNG, JPEG, WebP).',

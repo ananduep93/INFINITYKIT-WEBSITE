@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
 import ToolWorkspace from '../ui/ToolWorkspace';
 
 export default function WatermarkPDF() {
@@ -28,7 +28,7 @@ export default function WatermarkPDF() {
         font: helveticaFont,
         color: rgb(0.7, 0.7, 0.7),
         opacity: 0.35,
-        rotate: { angle: 45 } as any,
+        rotate: degrees(45),
       });
     }
 

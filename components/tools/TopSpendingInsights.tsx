@@ -35,35 +35,15 @@ export default function TopSpendingInsights() {
   const [dateRange, setDateRange] = useState<'week' | 'month' | 'all'>('all');
   const [triggerRefresh, setTriggerRefresh] = useState(0);
 
-  // Read raw local storage if the user explicitly created 'infinitykit_expenses'
-  const localStorageExpenses = useMemo(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const raw = localStorage.getItem('infinitykit_expenses');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-        if (parsed && Array.isArray(parsed.expenses)) return parsed.expenses;
-      }
-    } catch (e) {
-      console.error('Error reading infinitykit_expenses key', e);
-    }
-    return [];
-  }, [triggerRefresh]);
-
-  // Combine or choose the best source
+  // Read database directly from syncData
   const expenses: Expense[] = useMemo(() => {
-    if (localStorageExpenses.length > 0) {
-      return localStorageExpenses;
-    }
-    if (syncData) {
-      if (Array.isArray(syncData.expenses)) return syncData.expenses;
-      if (Array.isArray(syncData)) return syncData;
-    }
+    if (!syncData) return [];
+    if (Array.isArray(syncData.expenses)) return syncData.expenses;
+    if (Array.isArray(syncData)) return syncData;
     return [];
-  }, [localStorageExpenses, syncData]);
+  }, [syncData]);
 
-  // Allow manual refreshing of localStorage key in case of background updates
+  // Allow manual refreshing in case of background updates
   const handleManualRefresh = () => {
     setTriggerRefresh(prev => prev + 1);
   };

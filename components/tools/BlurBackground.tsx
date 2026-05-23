@@ -155,6 +155,11 @@ export default function BlurBackground() {
     });
   };
 
+  const handleReset = () => {
+    setImageSrc(null);
+    setFileName('');
+  };
+
   return (
     <div className="glass-panel" style={{ margin: '0 auto', maxWidth: '850px' }}>
       <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px' }}>
@@ -169,6 +174,7 @@ export default function BlurBackground() {
         accept="image/*"
         maxFiles={1}
         onProcess={handleProcess}
+        onReset={handleReset}
         actionButtonText="Initialize Portrait Blur"
         instructions={[
           'Upload any image (PNG, JPEG, WebP).',

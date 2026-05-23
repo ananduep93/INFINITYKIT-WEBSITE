@@ -15,6 +15,7 @@ interface ToolWorkspaceProps {
   onProcess: (files: File[], textInput?: string) => Promise<{ downloadUrl?: string; fileName?: string; resultData?: any }>;
   instructions?: string[];
   actionButtonText?: string;
+  onReset?: () => void;
 }
 
 export default function ToolWorkspace({
@@ -31,7 +32,8 @@ export default function ToolWorkspace({
     'Wait for the file parsing checks to complete successfully.',
     'Trigger the processing action to compile the optimized outputs locally.'
   ],
-  actionButtonText = 'Process Utilities'
+  actionButtonText = 'Process Utilities',
+  onReset
 }: ToolWorkspaceProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [textInput, setTextInput] = useState('');
@@ -144,6 +146,7 @@ export default function ToolWorkspace({
     setErrorMsg('');
     setProgress(0);
     setPhase('upload');
+    onReset?.();
   };
 
   return (

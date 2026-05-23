@@ -68,5 +68,79 @@ export default function ToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
-  return <ToolClient toolId={params.toolId} />;
+  // 1. Google SoftwareApplication JSON-LD Schema
+  const softwareSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    'name': tool.name,
+    'operatingSystem': 'All',
+    'applicationCategory': 'UtilityApplication',
+    'browserRequirements': 'Requires HTML5 compatible browser',
+    'offers': {
+      '@type': 'Offer',
+      'price': '0',
+      'priceCurrency': 'USD'
+    },
+    'description': tool.description
+  };
+
+  // 2. Google BreadcrumbList JSON-LD Schema
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://infinitykit.online'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Tools',
+        'item': 'https://infinitykit.online/tools'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': tool.name,
+        'item': `https://infinitykit.online/tools/${tool.id}`
+      }
+    ]
+  };
+
+  // 3. Google FAQPage JSON-LD Schema
+  const faqSchema = tool.faq && tool.faq.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': tool.faq.map(item => ({
+      '@type': 'Question',
+      'name': item.question,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': item.answer
+      }
+    }))
+  } : null;
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+      <ToolClient toolId={params.toolId} />
+    </>
+  );
 }

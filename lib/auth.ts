@@ -119,10 +119,16 @@ export const authService = {
   },
 
   onAuthChange(callback: (user: User | null) => void) {
-    return onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(auth, async (user) => {
       if (user) {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userId', user.uid);
+        try {
+          const { syncService } = await import('./sync');
+          await syncService.syncCloudToLocal();
+        } catch (syncError) {
+          console.error('Error during automatic cloud to local sync on auth change:', syncError);
+        }
       } else {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userId');

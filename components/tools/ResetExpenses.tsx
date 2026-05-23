@@ -19,33 +19,13 @@ export default function ResetExpenses() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [triggerRefresh, setTriggerRefresh] = useState(0);
 
-  // Read local storage 'infinitykit_expenses'
-  const localStorageExpenses = useMemo(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const raw = localStorage.getItem('infinitykit_expenses');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-        if (parsed && Array.isArray(parsed.expenses)) return parsed.expenses;
-      }
-    } catch (e) {
-      console.error('Error reading infinitykit_expenses key', e);
-    }
-    return [];
-  }, [triggerRefresh]);
-
-  // Combine databases for calculations
+  // Read database directly from syncData
   const expenses: Expense[] = useMemo(() => {
-    if (localStorageExpenses.length > 0) {
-      return localStorageExpenses;
-    }
-    if (syncData) {
-      if (Array.isArray(syncData.expenses)) return syncData.expenses;
-      if (Array.isArray(syncData)) return syncData;
-    }
+    if (!syncData) return [];
+    if (Array.isArray(syncData.expenses)) return syncData.expenses;
+    if (Array.isArray(syncData)) return syncData;
     return [];
-  }, [localStorageExpenses, syncData]);
+  }, [syncData]);
 
   const handleManualRefresh = () => {
     setTriggerRefresh(prev => prev + 1);
@@ -54,8 +34,16 @@ export default function ResetExpenses() {
   // Export JSON Backup
   const handleExportBackup = () => {
     try {
+      const rawLegacy = typeof window !== 'undefined' ? localStorage.getItem('infinitykit_expenses') : null;
+      let legacyExpenses = null;
+      if (rawLegacy) {
+        try {
+          legacyExpenses = JSON.parse(rawLegacy);
+        } catch (e) {}
+      }
+
       const backupData = {
-        infinitykit_expenses: localStorageExpenses,
+        infinitykit_expenses: legacyExpenses,
         infinityKitExpenseDB: syncData || null,
         exportedAt: new Date().toISOString(),
         totalExpenses: expenses.length,
