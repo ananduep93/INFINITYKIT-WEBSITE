@@ -1111,7 +1111,8 @@ export const tools: ToolDefinition[] = [
     description: 'Write high-confidentiality notes that auto-delete completely on close or shredding.',
     category: 'utility-tools',
     icon: '🗑️',
-    type: 'custom'
+    type: 'custom',
+    componentName: 'NoteShredder'
   },
   {
     id: 'csvviewer',
@@ -1388,7 +1389,8 @@ export const tools: ToolDefinition[] = [
     description: 'Play soothing, customizable focus audio soundscapes like rain, white noise, and waves.',
     category: 'utility-tools',
     icon: '⏱️',
-    type: 'custom'
+    type: 'custom',
+    componentName: 'AmbientNoisePlayer'
   },
   {
     id: 'urlextractor',
