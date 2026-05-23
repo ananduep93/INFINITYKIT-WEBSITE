@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ─── Core Performance Flags ───────────────────────────────────────────────
+  // ─── Core Performance Flags (Trigger Vercel Build) ───────────────────────
   reactStrictMode: true,
   compress: true,                  // Enable gzip/brotli compression at the edge
   poweredByHeader: false,          // Remove X-Powered-By header (minor security + header savings)
