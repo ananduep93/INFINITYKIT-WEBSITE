@@ -24,8 +24,6 @@ const nextConfig = {
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',
-      '@google/genai',
-      '@google/generative-ai',
     ],
   },
   // ─── Legacy SEO Redirects (301 Permanent Redirects for Google Index) ─────
