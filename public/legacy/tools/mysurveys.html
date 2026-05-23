@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mysurveys - Free Online Tool | Infinity Kit</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/mysurveys">
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515"
+     crossorigin="anonymous"></script>
+
+    <meta name="description" content="Use our free online mysurveys to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 900px; margin: 20px auto; padding: 20px; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .surveys-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .survey-card { padding: 20px; border-radius: 15px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.2s; }
+        .survey-card:hover { transform: translateY(-5px); }
+        .survey-card h3 { margin: 0; font-size: 1.25rem; color: var(--primary-color, #667eea); }
+        .survey-date { font-size: 0.85rem; color: #666; }
+        .survey-stats { display: flex; align-items: center; gap: 10px; font-weight: bold; margin: 10px 0; }
+        .survey-actions { display: flex; gap: 10px; margin-top: auto; border-top: 1px solid #eee; pt: 10px; }
+        .survey-actions button { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; background: #f9f9f9; cursor: pointer; font-size: 1.1rem; }
+        .survey-actions button:hover { background: #eee; }
+        [data-theme="dark"] .survey-card { background: rgba(255,255,255,0.05); }
+        [data-theme="dark"] .survey-actions button { background: #3d3d3d; border-color: #555; }
+        .empty-state { text-align: center; padding: 50px; }
+        .empty-state button { margin-top: 15px; padding: 10px 20px; background: var(--primary-color, #667eea); color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .seo-content { margin-top: 40px; line-height: 1.6; color: var(--text-color, #333); }
+        .seo-content h2 { margin-top: 25px; margin-bottom: 15px; }
+        [data-theme="dark"] .seo-content { color: #ccc; }
+    </style>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "My Surveys",
+  "operatingSystem": "All",
+  "applicationCategory": "ProductivityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Manage your created surveys. View responses, edit, or delete surveys. Free online tool from Infinity Kit."
+}
+    </script>
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I create a survey?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Go to the Survey Hub and click 'Create Survey'. You can add questions, choices, and set a title."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to save your surveys, generate shareable links, and view response analytics."
+      }
+    }
+  ]
+}
+    </script>
+
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://infinitykit.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Survey Hub",
+      "item": "https://infinitykit.online/folder/survey-hub.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "My Surveys",
+      "item": "https://infinitykit.online/tools/mysurveys.html"
+    }
+  ]
+}
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='/'">⚡INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="../index.html#contact-page">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <div class="breadcrumb">
+        <a href="/">Home</a><span class="separator">&rsaquo;</span>
+        <a href="../folder/survey-hub">Survey Hub</a><span class="separator">&rsaquo;</span>
+        <span class="current">My Surveys</span>
+    </div>
+    <main class="tool-page-container">
+        <a href='../folder/survey-hub.html' class='back-link'><span>&larr;</span> Back to Hub</a>
+        <div id="toolContent">
+            <div class="loading-placeholder">Loading dashboard...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>The Power of Feedback in Decision Making</h2>
+                <p>This dashboard allows you to manage all the surveys you have created using the Infinity Kit Survey Hub. Gathering feedback is the most effective way to understand your audience, validate product ideas, or organize events.</p>
+                <p>Instead of guessing what your customers or users want, you can ask them directly. A well-designed survey provides structured data that can be analyzed to reveal trends and actionable insights. This page acts as your control center for those insights.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Manage Your Surveys</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To access this dashboard and view your created surveys, please log in.</li>
+                    <li>Browse your list of active and archived surveys.</li>
+                    <li>Click <strong>View Responses</strong> to see the data collected so far.</li>
+                    <li>Click <strong>Share</strong> to copy the public link to your clipboard.</li>
+                    <li>Use the <strong>Delete</strong> button to remove surveys you no longer need.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Real-Time Stats:</strong> See response counts and completion rates at a glance.</li>
+                    <li><strong>CSV Export:</strong> Download your response data to analyze in Excel or Google Sheets.</li>
+                    <li><strong>Link Management:</strong> Easily disable surveys when you have enough data.</li>
+                    <li><strong>Mobile Optimized:</strong> Manage your surveys on the go from your phone or tablet.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Why a Login is Required for Survey Management</h2>
+                <p>Collecting survey responses requires a centralized database to store the answers submitted by the public. We require a login for the survey creator to:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🔒 Protect Your Data</h3>
+                        <p>Only you should be able to see the private answers submitted to your survey. Login ensures data privacy.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📊 Enable Analytics</h3>
+                        <p>We need to associate surveys with your specific user ID to generate the charts and graphs in your dashboard.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📧 Notifications</h3>
+                        <p>Get email alerts when someone completes your survey or when you reach a specific response milestone.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: How do I create a survey? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Go to the Survey Hub and click 'Create Survey'. You can add questions, choices, and set a title.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to save your surveys, generate shareable links, and view response analytics.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: How many responses can I collect? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Free accounts can collect up to 100 responses per survey. Premium accounts have no limits.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="../notifications.js?v=1.5"></script>
+    <script src="../main.js?v=1.5"></script>
+    <script type="module" src="../survey-hub.js?v=1.5"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        document.addEventListener('DOMContentLoaded', () => {
+            const pollSync = setInterval(() => {
+                if (typeof loadMySurveys === 'function') {
+                    clearInterval(pollSync);
+                    loadMySurveys();
+                }
+            }, 100);
+        });
+    </script>
+
+    <!-- Background Animation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="../background.js"></script>
+
+</body>
+</html>

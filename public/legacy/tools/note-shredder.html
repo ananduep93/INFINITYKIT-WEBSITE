@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>note-shredder - Free Online Tool | Infinity Kit</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/note-shredder">
+    <meta name="description" content="Use our free online note-shredder to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="stylesheet" href="../cookies.css">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .tool-header { text-align: center; margin-bottom: 30px; }
+        .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
+        .seo-content { margin-top: 40px; line-height: 1.6; color: var(--text-color, #333); }
+        .seo-content h2 { margin-top: 25px; margin-bottom: 15px; }
+        [data-theme="dark"] .seo-content { color: #ccc; }
+    </style>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Secure Note Shredder",
+  "operatingSystem": "All",
+  "applicationCategory": "ProductivityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Create encrypted notes that self-destruct after being read. The ultimate privacy tool from Infinity Kit."
+}
+    </script>
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does it work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool creates a unique link that can only be opened once. Once viewed, the data is deleted from the database."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to receive read receipts or to set custom expiration timers (e.g., 24 hours)."
+      }
+    }
+  ]
+}
+    </script>
+
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://infinitykit.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Utilities",
+      "item": "https://infinitykit.online/folder/utilities.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "note-shredder",
+      "item": "https://infinitykit.online/tools/note-shredder.html"
+    }
+  ]
+}
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="../about">About</a>
+                <a href="../contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/utilities">Utilities</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">note-shredder</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/utilities.html' class='back-link'><span>&larr;</span> Back to Folders</a>
+        <div class="tool-header">
+            <h1 class="tool-title">🗑️ Secure Note Shredder</h1>
+        </div>
+        <div id="toolContent" class="glass-panel">
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>The Importance of Ephemeral Messaging</h2>
+                <p>Need to share sensitive information like a password, API key, or personal message? Sending these over standard email or chat apps leaves a permanent record that can be hacked later. This tool creates a unique link that can only be opened once.</p>
+                <p>Once the recipient clicks the link and views the message, the data is instantly "shredded" from our database. It cannot be retrieved again, ensuring that your secret remains a secret. It's the digital equivalent of burning a letter after reading it.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Note Shredder</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To receive read receipts or set custom expiration timers, please log in.</li>
+                    <li>Type or paste your secret message into the text area.</li>
+                    <li>Click <strong>Create Self-Destruct Note</strong>.</li>
+                    <li>Copy the generated unique link.</li>
+                    <li>Share the link with your recipient. Warn them they can only open it once!</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Zero-Knowledge Storage:</strong> We cannot read your message. It is encrypted in your browser before upload.</li>
+                    <li><strong>One-Time Read:</strong> The link becomes invalid the exact millisecond the data is loaded.</li>
+                    <li><strong>Read Receipts:</strong> Logged-in users get an email notification when the link is clicked.</li>
+                    <li><strong>Expiration Timers:</strong> Set notes to shred after 1 hour or 24 hours even if unread.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>When to Use a Note Shredder</h2>
+                <p>Protect your data in these common scenarios:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🔑 Sharing Passwords</h3>
+                        <p>Need to give a coworker access to an account? Don't slack it. Shred it.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>💳 Credit Card Details</h3>
+                        <p>If you must send payment details to a family member, use a self-destructing note.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🤫 Confessions</h3>
+                        <p>Share personal secrets or sensitive feedback without leaving a digital paper trail.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Read Receipts</h2>
+                <p>Creating a simple self-destructing link is handled by an automated database script. However, sending you an email or SMS notification when the recipient opens the link requires a background job worker and an authenticated user profile to know where to send the alert. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Verify Your Identity:</strong> Ensure alerts are sent to the correct creator of the note.</li>
+                    <li><strong>Access Custom Expirations:</strong> Store unread notes for longer than the default 24-hour window.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: How does it work? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">The tool creates a unique link that can only be opened once. Once viewed, the data is deleted from the database.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to receive read receipts or to set custom expiration timers (e.g., 24 hours). Basic shredding is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What happens if the recipient takes a screenshot? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">We cannot prevent screenshots. The tool ensures the link cannot be opened again, but it cannot control the recipient's device.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../main.js?v=1.5"></script>
+    <script src="../cookies.js"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadNoteShredder === 'function') {
+                loadNoteShredder();
+                trackToolUsage('note-shredder');
+                addRecentTool('note-shredder', 'Secure Note Shredder');
+            }
+        });
+    </script>
+
+    <!-- Background Animation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="../background.js"></script>
+
+</body>
+</html>

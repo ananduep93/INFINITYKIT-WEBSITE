@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>speed-test - Free Online Tool | Infinity Kit</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/speed-test">
+    <meta name="description" content="Use our free online speed-test to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="stylesheet" href="../cookies.css">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    <script src="../shared-tool.js?v=1.5"></script>
+    <style>
+        .tool-page-container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        .tool-header { text-align: center; margin-bottom: 30px; }
+        .tool-title { font-size: 2.5rem; margin-bottom: 10px; }
+        .seo-content { margin-top: 40px; line-height: 1.6; color: var(--text-color, #333); }
+        .seo-content h2 { margin-top: 25px; margin-bottom: 15px; }
+        [data-theme="dark"] .seo-content { color: #ccc; }
+    </style>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Internet Speed Test",
+  "operatingSystem": "All",
+  "applicationCategory": "ProductivityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Check your internet connection speed instantly with this lightweight, browser-based test. Free from Infinity Kit."
+}
+    </script>
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does it work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool downloads a small file from our servers and measures how long it takes to calculate your download speed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to save your speed test history or to run advanced tests like upload speed and packet loss."
+      }
+    }
+  ]
+}
+    </script>
+
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://infinitykit.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Utilities",
+      "item": "https://infinitykit.online/folder/utilities.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "speed-test",
+      "item": "https://infinitykit.online/tools/speed-test.html"
+    }
+  ]
+}
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='../index.html'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="../about">About</a>
+                <a href="../contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/utilities">Utilities</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">speed-test</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/utilities.html' class='back-link'><span>&larr;</span> Back to Folders</a>
+        <div class="tool-header">
+            <h1 class="tool-title">🚀 Internet Speed Test</h1>
+        </div>
+        <div id="toolContent" class="glass-panel">
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>Understanding Your Network Performance</h2>
+                <p>Internet speed is a critical factor in how we experience the digital world. Whether you are streaming high-definition video, playing online games, or working from home, a slow connection can cause immense frustration. This tool helps you measure your performance.</p>
+                <p>We measure speed in Mbps (Megabits per second). It's important to understand the difference between download speed (loading content) and upload speed (sending content), as well as latency (the delay in communication).</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Speed Test</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To save your speed test history or run advanced tests, please log in.</li>
+                    <li>Click the <strong>Start Speed Test</strong> button.</li>
+                    <li>The tool will first measure your ping (latency).</li>
+                    <li>It will then simulate downloading a file to calculate your download speed.</li>
+                    <li>View your final results on the gauge.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Instant Results:</strong> No waiting for minutes. Get results in seconds.</li>
+                    <li><strong>Ping Measurement:</strong> Crucial for gamers and video callers to know their delay.</li>
+                    <li><strong>History Tracking:</strong> Logged-in users can see if their ISP is providing consistent speeds over time.</li>
+                    <li><strong>Lightweight:</strong> No heavy flash players or Java applets required. Works on mobile.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>What Do the Numbers Mean?</h2>
+                <p>How to interpret your results:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>⬇️ Download Speed</h3>
+                        <p>1-5 Mbps is okay for basic browsing. 25+ Mbps is needed for 4K streaming. 100+ Mbps is excellent for families.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>⏱️ Ping (Latency)</h3>
+                        <p>Under 20ms is great for gaming. 20-50ms is good. Over 100ms will cause noticeable delays in calls.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for History</h2>
+                <p>Running a single speed test is a stateless action. However, tracking your speed over a week to prove to your ISP that they are throttling you requires a database to store those results tied to an account. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Generate Trend Reports:</strong> See graphs of your speed at different times of the day.</li>
+                    <li><strong>Test Upload Speed:</strong> Uploading test files requires secure server endpoints to prevent spam.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: How does it work? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">The tool downloads a small file from our servers and measures how long it takes to calculate your download speed.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to save your speed test history or to run advanced tests like upload speed and packet loss. Basic testing is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Why is my result different from Speedtest.net? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Different tools use different server locations. Our tool measures the speed to our specific content delivery network nodes.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../main.js?v=1.5"></script>
+    <script src="../cookies.js"></script>
+    <script>
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadInternetSpeedTest === 'function') {
+                loadInternetSpeedTest();
+                trackToolUsage('speed-test');
+                addRecentTool('speed-test', 'Internet Speed Test');
+            }
+        });
+    </script>
+
+    <!-- Background Animation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="../background.js"></script>
+
+</body>
+</html>

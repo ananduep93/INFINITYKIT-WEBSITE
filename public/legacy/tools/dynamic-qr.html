@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dynamic-qr - Free Online Tool | Infinity Kit</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/dynamic-qr">
+    <meta name="description" content="Use our free online dynamic-qr to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    
+    <!-- Shared Tool Logic -->
+    <script src="../shared-tool.js?v=1.5"></script>
+    
+    <style>
+        .tool-page-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tool-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .seo-content {
+            margin-top: 40px;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+        }
+        .seo-content h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        [data-theme="dark"] .seo-content {
+            color: #ccc;
+        }
+    </style>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Dynamic QR Gen",
+  "operatingSystem": "All",
+  "applicationCategory": "ProductivityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Generate dynamic QR codes. Free online tool from Infinity Kit for daily productivity."
+}
+    </script>
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a dynamic QR code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A dynamic QR code allows you to change the destination URL after the code has been generated and printed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to create and manage dynamic QR codes because we need to store the redirect links on our server."
+      }
+    }
+  ]
+}
+    </script>
+
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://infinitykit.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Advanced Suite",
+      "item": "https://infinitykit.online/folder/advanced-suite.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "QR Gen",
+      "item": "https://infinitykit.online/tools/dynamic-qr.html"
+    }
+  ]
+}
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="../index.html#contact-page">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span class="separator">&rsaquo;</span>
+        <a href="../folder/advanced-suite">Advanced Suite</a>
+        <span class="separator">&rsaquo;</span>
+        <span class="current">QR Gen</span>
+    </div>
+
+    <main class="tool-page-container">
+        <a href='../folder/advanced-suite.html' class='back-link'>
+            <span>&larr;</span> Back to Folders
+        </a>
+
+        <div class="tool-header">
+            <h1 class="tool-title">🔗 Dynamic QR Code Generator</h1>
+            
+        </div>
+
+        <!-- Tool Content Area -->
+        <div id="toolContent" class="glass-panel" style="margin-top:20px;">
+            <!-- Tool will be loaded here -->
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>The Difference Between Static and Dynamic QR Codes</h2>
+                <p>This tool allows you to create dynamic QR codes. A traditional (static) QR code encodes the destination URL directly into the pixel pattern. Once printed, that URL can never be changed. If you make a typo or change your website, the printed QR code becomes a useless doorstop.</p>
+                <p>Dynamic QR codes solve this problem by encoding a short redirect URL instead. When a user scans the code, they hit our server first, and we instantly forward them to your destination URL. This means you can change the target URL as many times as you want without ever changing the printed code!</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Dynamic QR Generator</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To create and manage dynamic QR codes, please log in. We need to store your redirect links on our database.</li>
+                    <li>Enter the initial target URL you want people to visit.</li>
+                    <li>Customize the design (colors, logo) of your QR code.</li>
+                    <li>Click <strong>Generate</strong> and download the image.</li>
+                    <li>To change the link later, log back in and edit the destination in your dashboard.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Link Editing:</strong> Change the destination URL at any time without changing the image.</li>
+                    <li><strong>Scan Analytics:</strong> Logged-in users can track how many people scanned the code and from which country.</li>
+                    <li><strong>Custom Branding:</strong> Add your company logo to the center of the QR code.</li>
+                    <li><strong>High Resolution:</strong> Download codes in SVG or high-res PNG format for print marketing.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>Marketing Use Cases</h2>
+                <p>Dynamic QR codes are the industry standard for modern marketing campaigns:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🍽️ Restaurant Menus</h3>
+                        <p>Print the QR code on your tables once. You can update the digital menu URL every day without reprinting the flyers.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>🎫 Event Ticketing</h3>
+                        <p>Use the same QR code on your poster to link to "Early Bird Tickets" in May, and "General Admission" in June.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📦 Product Packaging</h3>
+                        <p>Link to the user manual on the box. If the manual URL moves to a new domain, update the dynamic link instantly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Dynamic Links</h2>
+                <p>Static QR codes can be generated entirely in JavaScript without any server interaction. However, dynamic QR codes require a backend infrastructure to perform the redirection. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Identify Ownership:</strong> We need to know which QR code belongs to you so only you can edit its destination.</li>
+                    <li><strong>Prevent Phishing:</strong> To prevent bad actors from using our domain for malicious redirects, we require user authentication and link scanning.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: What is a dynamic QR code? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">A dynamic QR code allows you to change the destination URL after the code has been generated and printed.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to create and manage dynamic QR codes because we need to store the redirect links on our server.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Do the links ever expire? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">No, as long as your account is active, your dynamic QR codes will continue to redirect users forever.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script src="../notifications.js?v=1.5"></script>
+    <script src="../main.js?v=1.5"></script>
+    <script src="../expense-tracker.js?v=1.5"></script>
+    
+    <script>
+        // Mock the modal content target for main.js
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' }; // Dummy to prevent errors
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadDynamicQR === 'function') {
+                loadDynamicQR();
+                trackToolUsage('dynamic-qr');
+                addRecentTool('dynamic-qr', 'Dynamic QR Gen');
+            } else {
+                window.toolContent.innerHTML = '<div class="error">Tool logic failed to load. Please refresh the page.</div>';
+            }
+        });
+    </script>
+
+    <!-- Background Animation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="../background.js"></script>
+
+</body>
+</html>

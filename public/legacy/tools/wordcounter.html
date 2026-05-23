@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wordcounter - Free Online Tool | Infinity Kit</title>
+    <link rel="canonical" href="https://infinitykit.online/tools/wordcounter">
+    <meta name="description" content="Use our free online wordcounter to improve your daily productivity. Fast, secure, and easy to use with Infinity Kit.">
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8795968572402515" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="../app.css?v=1.5">
+    <link rel="shortcut icon" href="../icon-192.png?v=1.5" type="image/png">
+    
+    <!-- Shared Tool Logic -->
+    <script src="../shared-tool.js?v=1.5"></script>
+    
+    <style>
+        .tool-page-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tool-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .seo-content {
+            margin-top: 40px;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+        }
+        .seo-content h2 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        [data-theme="dark"] .seo-content {
+            color: #ccc;
+        }
+    </style>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Word Counter",
+  "operatingSystem": "All",
+  "applicationCategory": "ProductivityApplication",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "Count words and characters. Free online tool from Infinity Kit for daily productivity."
+}
+    </script>
+    <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is it real-time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, the tool counts words and characters instantly as you type."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is login required?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, a free account is required to save your text drafts or to unlock advanced readability statistics like reading time and grade level."
+      }
+    }
+  ]
+}
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='/'">&#9889;INFINITY KIT</div>
+        <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
+        <div class="nav-right" id="navRight">
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="../index.html#contact-page">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="tool-page-container">
+        <a href="../index.html#text-tools" class="back-link" id="backToFolders">
+            <span>&larr;</span> Back to Folders
+        </a>
+
+        <div class="tool-header">
+            <h1 class="tool-title">🔤 Word Counter & Text Analyzer</h1>
+            
+        </div>
+
+        <!-- Tool Content Area -->
+        <div id="toolContent" class="glass-panel">
+            <!-- Tool will be loaded here -->
+            <div class="loading-placeholder">Loading tool...</div>
+        </div>
+
+        <!-- SEO Content Area -->
+        <section class="tool-info-section">
+            <div class="info-card">
+                <div class="card-icon">📖</div>
+                <h2>The Art of Concise Writing</h2>
+                <p>This tool counts words and characters instantly as you type. Whether you are a student writing an essay with a strict limit, a copywriter drafting a social media post, or an author tracking your daily output, knowing your exact word count is essential.</p>
+                <p>However, modern text analysis goes beyond simple counting. Understanding readability scores, keyword density, and estimated reading time helps you tailor your content to your target audience effectively. This tool provides those deep insights.</p>
+            </div>
+            
+            <div class="info-card">
+                <div class="card-icon">🛠️</div>
+                <h2>How to Use the Word Counter</h2>
+                <ol>
+                    <li><strong>Log In:</strong> To save your text drafts or unlock advanced readability statistics, please log in.</li>
+                    <li>Type directly into the large text area or paste text from your clipboard.</li>
+                    <li>Watch the counters update in real-time at the bottom of the screen.</li>
+                    <li>Review the keyword density map to see which words you use most frequently.</li>
+                </ol>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">✨</div>
+                <h2>Key Features & Benefits</h2>
+                <ul>
+                    <li><strong>Real-Time Counting:</strong> No need to click a button; see your word and character count grow as you type.</li>
+                    <li><strong>Sentence & Paragraph Count:</strong> Get a detailed breakdown of your text structure.</li>
+                    <li><strong>Readability Scores:</strong> Logged-in users see the Flesch-Kincaid grade level of their writing.</li>
+                    <li><strong>Auto-Save:</strong> Never lose your work; drafts are saved automatically to your account.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">💡</div>
+                <h2>When Do You Need a Word Counter?</h2>
+                <p>Precise counting is required in many professional and academic fields:</p>
+                <div class="use-cases-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div class="use-case-item">
+                        <h3>🎓 Academic Essays</h3>
+                        <p>Professors often specify a word range (e.g., 1500-2000 words). This tool helps you hit the target without padding your text.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📱 Social Media</h3>
+                        <p>Twitter, LinkedIn, and Instagram have strict character limits. Paste your text here to ensure it fits before you post.</p>
+                    </div>
+                    <div class="use-case-item">
+                        <h3>📝 SEO Copywriting</h3>
+                        <p>Search engines prefer content of a certain length. Check your blog posts to ensure they meet the 1,000-word sweet spot.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">🚀</div>
+                <h2>Why a Login is Required for Drafts</h2>
+                <p>Counting characters happens instantly in your browser. However, analyzing readability requires processing complex linguistic formulas. Furthermore, saving your text so you can finish writing it later requires database storage. We require a login for these features to:</p>
+                <ul>
+                    <li><strong>Protect Your Work:</strong> An account ensures that your half-finished novel or essay is stored securely and cannot be seen by others.</li>
+                    <li><strong>Provide Long-Term Stats:</strong> Track your writing productivity over days and weeks to see your vocabulary improve.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <div class="card-icon">❓</div>
+                <h2>Frequently Asked Questions (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Does it count spaces? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">The tool provides both "Characters with spaces" and "Characters without spaces" so you can meet any specific requirement.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Is login required to use the tool? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, a free account is required to save your text drafts or to unlock advanced readability statistics like reading time and grade level. Basic counting is free.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Q: Can I check keyword density? <span class="faq-arrow">▼</span></div>
+                        <div class="faq-answer">Yes, the tool automatically lists the most common words and their percentage of the total text.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <!-- Global Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h2 style="font-family: 'Pacifico', cursive; font-size: 2.5rem; margin-bottom: 15px;">Infinity Kit</h2>
+                <p>Made for everyday tools ⚡ Your all-in-one digital utility hub to simplify your digital life.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/infinitykit.online" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-globe"></i> Online, Worldwide</li>
+                    <li><i class="fas fa-bolt"></i> 24/7 Availability</li>
+                    <li><i class="fas fa-envelope"></i> infinitykit24@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="footerPwaContainer" class="footer-pwa-container" style="display: none;">
+            <button id="footerInstallBtn" class="footer-install-btn">
+                <span id="footerDownloadText">📲 Download App</span>
+            </button>
+        </div>
+
+        <div class="footer-bottom">
+            <p id="copyrightText" class="copyright-text">&copy; 2026 Infinity Kit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script src="../notifications.js?v=1.5"></script>
+    <script src="../main.js?v=1.5"></script>
+    <script src="../expense-tracker.js?v=1.5"></script>
+    
+    <script>
+        // Mock the modal content target for main.js
+        window.toolContent = document.getElementById('toolContent');
+        window.toolTitle = { textContent: '' }; // Dummy to prevent errors
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadWordCounter === 'function') {
+                loadWordCounter();
+                trackToolUsage('wordcounter');
+                addRecentTool('wordcounter', 'Word Counter');
+            } else {
+                window.toolContent.innerHTML = '<div class="error">Tool logic failed to load. Please refresh the page.</div>';
+            }
+        });
+    </script>
+
+    <!-- Background Animation Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="../background.js"></script>
+
+</body>
+</html>
