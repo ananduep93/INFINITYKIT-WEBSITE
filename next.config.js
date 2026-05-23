@@ -131,7 +131,7 @@ const nextConfig = {
       },
       // ── HTML pages: short cache with stale-while-revalidate ───────────────
       {
-        source: '/((?!_next).*)',
+        source: '/:path((?!_next).*)',
         headers: [
           {
             key: 'Cache-Control',
