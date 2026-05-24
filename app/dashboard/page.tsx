@@ -324,10 +324,10 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Main Grid: Left Navigation / Tabs, Right Panels */}
-      <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '30px', alignItems: 'flex-start' }}>
+      <div className="dashboard-grid-container">
         
         {/* Navigation Sidebar Card */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="dashboard-sidebar">
           <button 
             onClick={() => setActiveTab('overview')}
             style={{
@@ -1065,6 +1065,46 @@ export default function DashboardPage() {
         </div>
 
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .dashboard-grid-container {
+          display: grid;
+          grid-template-columns: 250px 1fr;
+          gap: 30px;
+          align-items: flex-start;
+        }
+        .dashboard-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        @media (max-width: 991px) {
+          .dashboard-grid-container {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .dashboard-sidebar {
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            padding: 4px !important;
+            margin-bottom: 10px !important;
+            width: 100% !important;
+            white-space: nowrap !important;
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
+          .dashboard-sidebar::-webkit-scrollbar {
+            display: none !important;
+          }
+          .dashboard-sidebar button {
+            flex: 0 0 auto !important;
+            width: auto !important;
+          }
+          .dashboard-sidebar span {
+            display: none !important;
+          }
+        }
+      `}} />
 
     </div>
   );
