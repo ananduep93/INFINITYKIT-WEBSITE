@@ -128,7 +128,7 @@ export const syncService = {
       'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
       'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
       'budget', 'dailyPlanner', 'medreminders', 'medicineReminders',
-      'reminderAlerts', 'examMarks'
+      'reminderAlerts', 'examMarks', 'aichatbot_history'
     ];
 
     for (const key of toolKeys) {
@@ -164,7 +164,7 @@ export const syncService = {
       'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
       'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
       'budget', 'dailyPlanner', 'medreminders', 'medicineReminders',
-      'reminderAlerts', 'examMarks'
+      'reminderAlerts', 'examMarks', 'aichatbot_history'
     ];
 
     for (const key of toolKeys) {

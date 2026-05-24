@@ -97,10 +97,10 @@ export default function QuickNotes() {
   const activeNote = notes.find(n => n.id === activeNoteId);
 
   return (
-    <div className="glass-panel" style={{ margin: '0 auto', display: 'grid', gridTemplateColumns: '250px 1fr', gap: '20px', padding: '25px', minHeight: '500px' }}>
+    <div className="glass-panel quicknotes-container" style={{ margin: '0 auto', display: 'grid', gap: '20px', padding: '25px', minHeight: '500px' }}>
       
       {/* Sidebar - Note list */}
-      <div style={{ borderRight: '1px solid var(--glass-border)', paddingRight: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div className="quicknotes-sidebar" style={{ borderRight: '1px solid var(--glass-border)', paddingRight: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.1rem', fontWeight: 700 }}>Notes</h3>
           <button
@@ -226,6 +226,24 @@ export default function QuickNotes() {
           </div>
         )}
       </div>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .quicknotes-container {
+          grid-template-columns: 250px 1fr;
+        }
+        @media (max-width: 768px) {
+          .quicknotes-container {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+            min-height: auto !important;
+          }
+          .quicknotes-sidebar {
+            border-right: none !important;
+            border-bottom: 1px solid var(--glass-border) !important;
+            padding-right: 0 !important;
+            padding-bottom: 20px !important;
+          }
+        }
+      `}} />
     </div>
   );
 }

@@ -12,9 +12,11 @@ import {
   Mail, Key, UserCheck, Edit3, ArrowRight, Activity, Download
 } from 'lucide-react';
 import ReusableLoading from '../../components/ui/ReusableLoading';
+import { useTheme } from '../../components/ThemeProvider';
 import confetti from 'canvas-confetti';
 
 export default function DashboardPage() {
+  const { theme } = useTheme();
   const { user, logout, isLoggedIn, loginWithGoogle, loading: authLoading } = useAuth();
   const { favorites, recentTools, toggleFavorite } = useSync();
   
@@ -27,6 +29,14 @@ export default function DashboardPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [mockNotificationRead, setMockNotificationRead] = useState<string[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [geminiKey, setGeminiKey] = useState('');
+
+  // Load user API key from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setGeminiKey(localStorage.getItem('infinitykit_gemini_key') || '');
+    }
+  }, []);
 
   // PWA Install state
   const [installPrompt, setInstallPrompt] = useState<any>(null);
@@ -185,16 +195,21 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '320px', margin: '0 auto' }}>
             <button 
               onClick={loginWithGoogle}
-              className="btn" 
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '10px',
-                background: 'var(--text-color)',
-                color: 'var(--bg-color)',
-                border: 'none',
-                fontWeight: 600
+                background: theme === 'dark' ? '#1E222D' : '#FFFFFF',
+                color: theme === 'dark' ? '#FFFFFF' : '#1A1D26',
+                border: '1px solid var(--glass-border)',
+                fontWeight: 600,
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                transition: 'all 0.2s'
               }}
             >
               <svg width="18" height="18" viewBox="0 0 18 18">
@@ -880,6 +895,35 @@ export default function DashboardPage() {
                           cursor: 'not-allowed'
                         }}
                       />
+                    </div>
+
+                    {/* Google Gemini API Key Setting */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Key size={14} color="var(--primary-color)" /> Google Gemini API Key
+                      </label>
+                      <input 
+                        type="password" 
+                        value={geminiKey}
+                        onChange={(e) => {
+                          setGeminiKey(e.target.value);
+                          localStorage.setItem('infinitykit_gemini_key', e.target.value);
+                        }}
+                        placeholder="AI key (starts with AIzaSy...)"
+                        style={{
+                          width: '100%',
+                          padding: '12px 14px',
+                          borderRadius: '10px',
+                          border: '1px solid var(--glass-border)',
+                          background: 'rgba(0,0,0,0.01)',
+                          color: 'var(--text-color)',
+                          fontSize: '0.9rem',
+                          outline: 'none'
+                        }}
+                      />
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                        Optional. Paste your Gemini API Key to unlock guaranteed live AI responses across all AI workspace tools.
+                      </span>
                     </div>
 
                     {updateSuccess && (

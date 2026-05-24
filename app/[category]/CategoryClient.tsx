@@ -171,48 +171,67 @@ export default function CategoryClient({ categoryPath }: CategoryClientProps) {
 
       {filteredTools.length > 0 ? (
         <>
-          {/* Trending Section (Option B / options grouping) */}
+          {/* Trending Section */}
           {trendingTools.length > 0 && (
-            <div style={{ marginBottom: '40px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '20px' }}>
-                <Flame size={16} color="#EF4444" fill="#EF4444" /> Trending in {category.name}
+            <div style={{ marginBottom: '35px' }}>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '15px' }}>
+                <Flame size={14} color="#EF4444" fill="#EF4444" /> Trending in {category.name}
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {trendingTools.map((tool) => (
-                  <div key={tool.id} style={{ position: 'relative' }}>
-                    <Link href={`/${categoryPath}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div className="tool-card glass-panel" style={{ 
-                        padding: '28px', 
-                        border: '1px solid rgba(0, 161, 155, 0.15)', 
-                        background: 'linear-gradient(135deg, rgba(0, 161, 155, 0.03) 0%, rgba(255,255,255,0.01) 100%)',
-                        position: 'relative'
-                      }}>
-                        <div style={{ position: 'absolute', top: '16px', right: '48px', display: 'flex', gap: '6px' }}>
-                          <span style={{ background: '#EF4444', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>HOT</span>
+                  <div 
+                    key={tool.id} 
+                    className="glass-panel"
+                    style={{
+                      margin: 0,
+                      padding: '16px 24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '20px',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(0, 161, 155, 0.15)',
+                      background: 'linear-gradient(135deg, rgba(0, 161, 155, 0.03) 0%, rgba(255,255,255,0.01) 100%)',
+                      transition: 'var(--transition-smooth)'
+                    }}
+                  >
+                    <Link href={`/${categoryPath}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center', gap: '20px', minWidth: 0 }}>
+                      <span style={{ fontSize: '1.8rem', background: 'rgba(0,161,155,0.05)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {tool.icon}
+                      </span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-color)' }}>{tool.name}</h4>
+                          <span style={{ background: '#EF4444', color: 'white', fontSize: '0.6rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>HOT</span>
                         </div>
-                        <div className="tool-card-icon" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>{tool.icon}</div>
-                        <div className="tool-card-name" style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>{tool.name}</div>
-                        <div className="tool-card-desc" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{tool.description}</div>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {tool.description}
+                        </p>
                       </div>
                     </Link>
-                    <button
-                      onClick={() => toggleFavorite(tool.id)}
-                      style={{
-                        position: 'absolute',
-                        right: '16px',
-                        top: '16px',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: favorites.includes(tool.id) ? 'var(--primary-color)' : 'var(--text-secondary)',
-                        opacity: favorites.includes(tool.id) ? 1 : 0.4,
-                        zIndex: 10,
-                        padding: '4px'
-                      }}
-                      aria-label="Toggle favorite"
-                    >
-                      <Star size={16} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
-                    </button>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                      <button
+                        onClick={() => toggleFavorite(tool.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: favorites.includes(tool.id) ? 'var(--primary-color)' : 'var(--text-secondary)',
+                          opacity: favorites.includes(tool.id) ? 1 : 0.4,
+                          padding: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        aria-label="Toggle favorite"
+                      >
+                        <Star size={16} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
+                      </button>
+                      <Link href={`/${categoryPath}/${tool.id}`} className="btn" style={{ padding: '8px 16px', fontSize: '0.78rem', borderRadius: '8px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Launch <ChevronRight size={12} />
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -223,39 +242,61 @@ export default function CategoryClient({ categoryPath }: CategoryClientProps) {
           {standardTools.length > 0 && (
             <div style={{ marginBottom: '50px' }}>
               {trendingTools.length > 0 && (
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '15px' }}>
                   All {category.name} Utilities
                 </h3>
               )}
-              <div className="tools-grid">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {standardTools.map((tool) => (
-                  <div key={tool.id} style={{ position: 'relative' }}>
-                    <Link href={`/${categoryPath}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div className="tool-card">
-                        <div className="tool-card-icon">{tool.icon}</div>
-                        <div className="tool-card-info">
-                          <div className="tool-card-name">{tool.name}</div>
-                          <div className="tool-card-desc">{tool.description}</div>
-                        </div>
+                  <div 
+                    key={tool.id} 
+                    className="glass-panel"
+                    style={{
+                      margin: 0,
+                      padding: '16px 24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '20px',
+                      borderRadius: '16px',
+                      background: 'var(--glass-bg)',
+                      transition: 'var(--transition-smooth)'
+                    }}
+                  >
+                    <Link href={`/${categoryPath}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center', gap: '20px', minWidth: 0 }}>
+                      <span style={{ fontSize: '1.6rem', background: 'rgba(0,161,155,0.05)', width: '44px', height: '44px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {tool.icon}
+                      </span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-color)' }}>{tool.name}</h4>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {tool.description}
+                        </p>
                       </div>
                     </Link>
-                    <button
-                      onClick={() => toggleFavorite(tool.id)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        top: '12px',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: favorites.includes(tool.id) ? 'var(--primary-color)' : 'var(--text-secondary)',
-                        opacity: favorites.includes(tool.id) ? 1 : 0.4,
-                        zIndex: 10
-                      }}
-                      aria-label="Toggle favorite"
-                    >
-                      <Star size={16} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
-                    </button>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                      <button
+                        onClick={() => toggleFavorite(tool.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: favorites.includes(tool.id) ? 'var(--primary-color)' : 'var(--text-secondary)',
+                          opacity: favorites.includes(tool.id) ? 1 : 0.4,
+                          padding: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        aria-label="Toggle favorite"
+                      >
+                        <Star size={16} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
+                      </button>
+                      <Link href={`/${categoryPath}/${tool.id}`} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.78rem', borderRadius: '8px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Launch <ChevronRight size={12} />
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>

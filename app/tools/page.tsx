@@ -122,36 +122,64 @@ export default function ToolsPage() {
         </div>
       </div>
 
-      {/* Grid */}
+      {/* Sleek SaaS List View */}
       {filteredTools.length > 0 ? (
-        <div className="tools-grid">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {filteredTools.map((tool) => (
-            <div key={tool.id} style={{ position: 'relative' }}>
-              <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div className="tool-card">
-                  <div className="tool-card-icon">{tool.icon}</div>
-                  <div className="tool-card-info">
-                    <div className="tool-card-name">{tool.name}</div>
-                    <div className="tool-card-desc">{tool.description}</div>
+            <div 
+              key={tool.id} 
+              className="glass-panel"
+              style={{
+                margin: 0,
+                padding: '16px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '20px',
+                borderRadius: '16px',
+                background: 'var(--glass-bg)',
+                transition: 'var(--transition-smooth)'
+              }}
+            >
+              <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center', gap: '20px', minWidth: 0 }}>
+                <span style={{ fontSize: '1.8rem', background: 'rgba(0,161,155,0.05)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {tool.icon}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-color)' }}>{tool.name}</h3>
+                    <span style={{ fontSize: '0.65rem', background: 'rgba(0, 161, 155, 0.08)', color: 'var(--primary-color)', padding: '2px 8px', borderRadius: '50px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {tool.category.replace('-tools', '').replace('-', ' ')}
+                    </span>
                   </div>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {tool.description}
+                  </p>
                 </div>
               </Link>
-              <button
-                onClick={() => toggleFavorite(tool.id)}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '12px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: favorites.includes(tool.id) ? 'var(--primary-color)' : 'var(--text-secondary)',
-                  opacity: favorites.includes(tool.id) ? 1 : 0.4,
-                  zIndex: 10
-                }}
-              >
-                <Star size={16} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
-              </button>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <button
+                  onClick={() => toggleFavorite(tool.id)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: favorites.includes(tool.id) ? 'var(--primary-color)' : 'var(--text-secondary)',
+                    opacity: favorites.includes(tool.id) ? 1 : 0.4,
+                    padding: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="Toggle Bookmark"
+                >
+                  <Star size={16} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
+                </button>
+                <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.78rem', borderRadius: '8px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  Launch <ChevronRight size={12} />
+                </Link>
+              </div>
             </div>
           ))}
         </div>

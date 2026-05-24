@@ -16,9 +16,26 @@ import {
   Search, 
   Sparkles, 
   Bell, 
-  Laptop, 
   ChevronRight,
-  Download
+  ChevronDown,
+  Home,
+  LayoutDashboard,
+  Star,
+  Clock,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  Music,
+  Scan,
+  PenTool,
+  Code,
+  ClipboardList,
+  Activity,
+  Settings,
+  Folder,
+  FolderOpen,
+  Check,
+  ShieldAlert
 } from 'lucide-react';
 import { useTheme } from '../ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
@@ -36,72 +53,84 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Expandable folder states for ALL 9 categories
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    'pdf-tools': true,
+    'image-tools': false,
+    'ai-writing-tools': false,
+    'developer-tools': false,
+    'video-tools': false,
+    'audio-tools': false,
+    'ocr-tools': false,
+    'seo-tools': false,
+    'utility-tools': false
+  });
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // PWA & Notification states
+  // GDPR Consent & PWA states
+  const [cookieConsent, setCookieConsent] = useState<boolean | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<'default' | 'granted' | 'denied'>('default');
 
   // Command Palette states
   const [showPalette, setShowPalette] = useState(false);
   const [paletteSearch, setPaletteSearch] = useState('');
 
-  // Scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    setMounted(true);
+    if (typeof window !== 'undefined') {
+      const consent = localStorage.getItem('infinitykit_cookie_consent');
+      if (consent === 'true') setCookieConsent(true);
+      else if (consent === 'false') setCookieConsent(false);
+    }
   }, []);
 
-  // Close mobile menu on path changes
+  // Global fetch interceptor to inject x-gemini-key
   useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
+    if (typeof window !== 'undefined' && !(window as any).__fetchIntercepted) {
+      (window as any).__fetchIntercepted = true;
+      const originalFetch = window.fetch;
+      window.fetch = function (input, init) {
+        if (typeof input === 'string' && input.includes('/api/ai')) {
+          const userKey = localStorage.getItem('infinitykit_gemini_key');
+          if (userKey) {
+            init = init || {};
+            init.headers = init.headers || {};
+            if (init.headers instanceof Headers) {
+              init.headers.set('x-gemini-key', userKey);
+            } else if (Array.isArray(init.headers)) {
+              const hasKey = init.headers.some(([k]) => k.toLowerCase() === 'x-gemini-key');
+              if (!hasKey) {
+                init.headers.push(['x-gemini-key', userKey]);
+              }
+            } else {
+              init.headers['x-gemini-key'] = userKey;
+            }
+          }
+        }
+        return originalFetch.call(this, input, init);
+      };
+    }
+  }, []);
 
-  // Register PWA Service Worker & check notifications status
+  // PWA Service Worker
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Register service worker if supported
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
-          .then((reg) => {
-            console.log('PWA Service Worker registered successfully:', reg.scope);
-          })
-          .catch((err) => {
-            console.error('PWA Service Worker registration failed:', err);
-          });
+          .then((reg) => console.log('Service Worker synced successfully:', reg.scope))
+          .catch((err) => console.error('Service Worker registration failed:', err));
       }
-
-      // Check notification permission state
       if ('Notification' in window) {
         setNotificationStatus(Notification.permission);
       }
     }
   }, []);
 
-  // Listen for beforeinstallprompt event for PWA Installer
-  useEffect(() => {
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      (window as any).deferredPrompt = e;
-      window.dispatchEvent(new CustomEvent('infinitykit_pwa_installable'));
-      // Keep state in sync without showing floating banner
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
-  }, []);
-
-  // Listen for Ctrl+K global keyboard shortcut for Command Palette
+  // Keyboard Shortcuts Ctrl+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -116,45 +145,34 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // PWA Install Prompt
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      (window as any).deferredPrompt = e;
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
   const handleLogout = async () => {
-    if (confirm('Are you sure you want to log out? Your local sessions will be cleared for safety.')) {
+    if (confirm('Are you sure you want to log out? Your active cloud sync session will end.')) {
       await logout();
       router.push('/');
     }
   };
 
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`PWA Install choice: ${outcome}`);
-    setDeferredPrompt(null);
-    setShowInstallBanner(false);
+  const toggleFolder = (folderKey: string) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      [folderKey]: !prev[folderKey]
+    }));
   };
 
-  const requestNotificationPermission = async () => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      try {
-        const permission = await Notification.requestPermission();
-        setNotificationStatus(permission);
-        if (permission === 'granted') {
-          new Notification("InfinityKit Premium Push Active", {
-            body: "You will now receive instant push alerts for newly updated utilities! ✨",
-            icon: "/icon-192.png"
-          });
-        }
-      } catch (err) {
-        console.error("Failed to request push notification permission:", err);
-      }
-    } else {
-      alert("Push notifications are not supported in your current browser.");
-    }
-  };
-
-  // Filter tools list inside search palette
   const filteredPaletteTools = useMemo(() => {
     if (paletteSearch.trim() === '') {
-      return tools.slice(0, 8); // Show featured/top tools first when search is empty
+      return tools.slice(0, 8);
     }
     return tools.filter(t => 
       t.name.toLowerCase().includes(paletteSearch.toLowerCase()) ||
@@ -163,63 +181,121 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     );
   }, [paletteSearch]);
 
+  // Sidebar Folder Mappings - Normal, Understandable Names (All chevrons and children included)
+  const categoriesList = [
+    { id: 'pdf-tools', name: 'PDF Documents', icon: <FileText size={16} />, folderKey: 'pdf-tools', children: [
+      { name: 'Merge PDF files', path: '/pdf/mergepdf' },
+      { name: 'Split PDF pages', path: '/pdf/splitpdf' },
+      { name: 'Reduce PDF size', path: '/pdf/compresspdf' },
+      { name: 'Rotate PDF pages', path: '/pdf/rotatepdf' },
+      { name: 'Password Lock PDF', path: '/pdf/protectpdf' },
+      { name: 'Unlock PDF file', path: '/pdf/unlockpdf' },
+      { name: 'Export PDF to Images', path: '/pdf/pdftoimage' },
+      { name: 'Convert Images to PDF', path: '/pdf/imagetopdf' }
+    ]},
+    { id: 'image-tools', name: 'Photos & Images', icon: <ImageIcon size={16} />, folderKey: 'image-tools', children: [
+      { name: 'Remove Background', path: '/image/bg-remover' },
+      { name: 'Blur Background', path: '/image/blur-background' },
+      { name: 'Shrink Photo file', path: '/image/image-compressor' },
+      { name: 'Resize Dimensions', path: '/image/image-resizer' },
+      { name: 'Read Photo Details', path: '/image/imageinfo' },
+      { name: 'AI Image Generator', path: '/image/image-generator' }
+    ]},
+    { id: 'ai-writing-tools', name: 'AI Writing Assistant', icon: <PenTool size={16} />, folderKey: 'ai-writing-tools', children: [
+      { name: 'AI Essay Writer', path: '/ai-writing/essay-writer' },
+      { name: 'AI Text Humanizer', path: '/ai-writing/ai-humanizer' },
+      { name: 'AI Blog Planner', path: '/ai-writing/blog-generator' },
+      { name: 'AI Article Planner', path: '/ai-writing/article-writer' },
+      { name: 'AI FAQ Generator', path: '/ai-writing/faq-generator' },
+      { name: 'AI Grammar Checker', path: '/ai-writing/grammar-fixer' },
+      { name: 'AI Paragraph Paraphrase', path: '/ai-writing/ai-rewriter' },
+      { name: 'AI Chatbot Assistant', path: '/ai-writing/chatbot' }
+    ]},
+    { id: 'developer-tools', name: 'Code & Dev Tools', icon: <Code size={16} />, folderKey: 'developer-tools', children: [
+      { name: 'Format JSON code', path: '/developer-tools/json-code' },
+      { name: 'JSON to TypeScript class', path: '/developer-tools/json-to-ts' },
+      { name: 'Optimize SVG vector', path: '/developer-tools/svg-optimizer' },
+      { name: 'Structured SEO Schema Maker', path: '/developer-tools/schema-generator' },
+      { name: 'URL Link Encoder', path: '/developer-tools/urlencoder' },
+      { name: 'Extract Links from Text', path: '/developer-tools/urlextractor' }
+    ]},
+    { id: 'video-tools', name: 'Video Tools', icon: <Video size={16} />, folderKey: 'video-tools', children: [
+      { name: 'Convert Video to GIF', path: '/video/video-to-gif' },
+      { name: 'Create Video Subtitles', path: '/video/subtitles-generator' },
+      { name: 'Audio Speech to Text', path: '/video/video-transcription' }
+    ]},
+    { id: 'audio-tools', name: 'Audio & Music', icon: <Music size={16} />, folderKey: 'audio-tools', children: [
+      { name: 'Extract Video Audio', path: '/audio/extract-audio' },
+      { name: 'Convert Text to Voice', path: '/audio/texttospeech' },
+      { name: 'Focus Noise Soundscape', path: '/audio/focus-soundscape' }
+    ]},
+    { id: 'ocr-tools', name: 'Text Scanner (OCR)', icon: <Scan size={16} />, folderKey: 'ocr-tools', children: [
+      { name: 'Scan Image to Text', path: '/ocr/ocrimage' }
+    ]},
+    { id: 'seo-tools', name: 'SEO & Marketing', icon: <Search size={16} />, folderKey: 'seo-tools', children: [
+      { name: 'Audits Landing Meta Tags', path: '/seo/metatagviewer' },
+      { name: 'Sitemap Schema Builder', path: '/seo/schema-generator' }
+    ]},
+    { id: 'utility-tools', name: 'Everyday Tools', icon: <ClipboardList size={16} />, folderKey: 'utility-tools', children: [
+      { name: 'Body Weight Analyzer (BMI)', path: '/utility/bmicalculator' },
+      { name: 'Medicine Dose Calculator', path: '/utility/drugdosage' },
+      { name: 'IV Fluid Drip Rate', path: '/utility/ivdripcalc' },
+      { name: 'Daily Doses Reminder Alarm', path: '/utility/medicinereminder' },
+      { name: 'Pomodoro Study Timer', path: '/utility/timer' },
+      { name: 'Crypto Password Maker', path: '/utility/passwordgen' },
+      { name: 'Scan-to-Open QR Maker', path: '/utility/qrcode-gen' },
+      { name: 'Measurement Units Converter', path: '/utility/unitconverter' },
+      { name: 'Percentage Discount Calc', path: '/utility/percentagecalc' },
+      { name: 'Days Counter between Dates', path: '/utility/daysbetween' },
+      { name: 'Self-Destruct Notes', path: '/utility/note-shredder' },
+      { name: 'Breaches Leak Scanner', path: '/utility/password-leak' },
+      { name: 'Key Strength Entropy', path: '/utility/passwordstrength' },
+      { name: 'Parabola Math Solver', path: '/utility/equationsolver' },
+      { name: 'Daily To-Do Checklist', path: '/utility/todolist' },
+      { name: 'Quick Notebook Vault', path: '/utility/notes' },
+      { name: 'Outflow Purchases Recorder', path: '/utility/expenseadd' },
+      { name: 'Savings Limits Planner', path: '/utility/budgettracker' },
+      { name: 'Spending Visual Graphs', path: '/utility/expenseanalytics' },
+      { name: 'Printable Balance Statements', path: '/utility/dailymonthlyreport' },
+      { name: 'Where Do I Spend Most?', path: '/utility/topspendinginsights' },
+      { name: 'Erase Ledger History', path: '/utility/resetexpenses' }
+    ]}
+  ];
+
   return (
     <>
-      {/* 2px glowing top progress bar responding to route changes */}
       <PageProgressBar />
-      
-      {/* GPU Accelerated dynamic particle background */}
       <ThreeBackground />
-      
-      {/* Floating Header Navigation (Apple + Linear Inspired) */}
-      <header
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          padding: '20px 24px',
-          display: 'flex',
-          justifyContent: 'center',
-          transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}
-      >
-        <nav
+
+      <div style={{ display: 'flex', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+        
+        {/* ====================================================
+            DESKTOP LEFT SIDEBAR
+            ==================================================== */}
+        <aside
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            maxWidth: scrolled ? '1000px' : '1100px',
-            padding: scrolled ? '12px 24px' : '18px 32px',
-            background: theme === 'dark' ? 'rgba(10, 12, 16, 0.7)' : 'rgba(255, 255, 255, 0.75)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: sidebarExpanded ? '280px' : '76px',
+            background: theme === 'dark' ? 'rgba(10, 12, 18, 0.85)' : 'rgba(255, 255, 255, 0.88)',
+            borderRight: '1px solid var(--glass-border)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            borderRadius: scrolled ? '50px' : '20px',
-            border: theme === 'dark' 
-              ? scrolled ? '1px solid rgba(0, 240, 255, 0.15)' : '1px solid rgba(255, 255, 255, 0.04)'
-              : scrolled ? '1px solid rgba(0, 161, 155, 0.15)' : '1px solid rgba(0, 0, 0, 0.04)',
-            boxShadow: scrolled 
-              ? theme === 'dark' ? '0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 240, 255, 0.05)' : '0 12px 40px rgba(0, 161, 155, 0.06)'
-              : 'none',
-            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '24px 14px',
+            transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            overflowY: 'auto',
+            overflowX: 'hidden'
           }}
+          className="desktop-sidebar-aside"
         >
-          {/* Logo */}
-          <Link href="/" prefetch={true} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span
-              style={{
-                fontFamily: "var(--font-outfit), 'Outfit', sans-serif",
-                fontSize: '1.25rem',
-                fontWeight: 900,
-                color: 'var(--text-color)',
-                letterSpacing: '-0.5px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
+          {/* Logo Brand Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarExpanded ? 'space-between' : 'center', marginBottom: '30px', padding: '0 8px' }}>
+            <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 background: 'var(--primary-gradient)',
                 padding: '6px',
@@ -231,473 +307,606 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               }}>
                 <Zap size={16} color="white" fill="white" />
               </div>
-              INFINITYKIT
-            </span>
-          </Link>
- 
-          {/* Desktop Links (Linear-inspired minimalism) */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '30px',
-              marginLeft: 'auto'
-            }}
-            className="desktop-nav"
-          >
-            <Link
-              href="/"
-              prefetch={true}
-              style={{
-                color: 'var(--text-color)',
-                textDecoration: 'none',
-                fontSize: '0.88rem',
-                fontWeight: pathname === '/' ? 600 : 500,
-                opacity: pathname === '/' ? 1 : 0.6,
-                transition: 'opacity 0.2s',
-                letterSpacing: '-0.1px'
-              }}
-            >
-              Home
-            </Link>
-            <Link
-              href="/tools"
-              prefetch={true}
-              style={{
-                color: 'var(--text-color)',
-                textDecoration: 'none',
-                fontSize: '0.88rem',
-                fontWeight: pathname.startsWith('/tools') ? 600 : 500,
-                opacity: pathname.startsWith('/tools') ? 1 : 0.6,
-                transition: 'opacity 0.2s',
-                letterSpacing: '-0.1px'
-              }}
-            >
-              All Tools
-            </Link>
-            <Link
-              href="/blog"
-              prefetch={true}
-              style={{
-                color: 'var(--text-color)',
-                textDecoration: 'none',
-                fontSize: '0.88rem',
-                fontWeight: pathname.startsWith('/blog') ? 600 : 500,
-                opacity: pathname.startsWith('/blog') ? 1 : 0.6,
-                transition: 'opacity 0.2s',
-                letterSpacing: '-0.1px'
-              }}
-            >
-              Blog
-            </Link>
-            <Link
-              href="/about"
-              prefetch={true}
-              style={{
-                color: 'var(--text-color)',
-                textDecoration: 'none',
-                fontSize: '0.88rem',
-                fontWeight: pathname === '/about' ? 600 : 500,
-                opacity: pathname === '/about' ? 1 : 0.6,
-                transition: 'opacity 0.2s',
-                letterSpacing: '-0.1px'
-              }}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              prefetch={true}
-              style={{
-                color: 'var(--text-color)',
-                textDecoration: 'none',
-                fontSize: '0.88rem',
-                fontWeight: pathname === '/contact' ? 600 : 500,
-                opacity: pathname === '/contact' ? 1 : 0.6,
-                transition: 'opacity 0.2s',
-                letterSpacing: '-0.1px'
-              }}
-            >
-              Contact
+              {sidebarExpanded && (
+                <span style={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: '1.15rem',
+                  fontWeight: 900,
+                  color: 'var(--text-color)',
+                  letterSpacing: '-0.5px'
+                }}>
+                  INFINITYKIT
+                </span>
+              )}
             </Link>
 
-            {/* Divider line */}
-            <div style={{ width: '1px', height: '14px', background: 'var(--glass-border)' }} />
-
-            {/* Search Palette Toggle Trigger */}
-            <button
-              onClick={() => setShowPalette(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-color)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px',
-                borderRadius: '50%',
-                opacity: 0.8,
-                transition: 'all 0.2s',
-                marginRight: '-4px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '0.8';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-              aria-label="Open Command Palette"
-              title="Search Palette (Ctrl+K)"
-            >
-              <Search size={18} />
-            </button>
-
-            {/* Theme Switcher */}
-            <button
-              onClick={toggleTheme}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-color)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px',
-                borderRadius: '50%',
-                opacity: 0.8,
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '0.8';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-              aria-label="Toggle dark/light mode"
-            >
-              {mounted ? (theme === 'light' ? <Moon size={18} /> : <Sun size={18} />) : <Sun size={18} />}
-            </button>
-
-            {/* Auth Controls */}
-            {mounted && isLoggedIn ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-color)', textDecoration: 'none', fontWeight: 600 }}>
-                  <User size={16} color="var(--primary-color)" />
-                  <span style={{ fontSize: '0.85rem' }}>{user?.displayName || 'Dashboard'}</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--error-color)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '4px',
-                    opacity: 0.8,
-                    transition: 'opacity 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
-                  aria-label="Logout"
-                >
-                  <LogOut size={16} />
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Link
-                  href="/login"
-                  style={{ 
-                    color: 'var(--text-color)',
-                    textDecoration: 'none', 
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    opacity: 0.8,
-                    transition: 'opacity 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
-                  style={{ 
-                    padding: '8px 16px', 
-                    borderRadius: scrolled ? '30px' : '10px', 
-                    fontSize: '0.85rem', 
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    background: 'var(--primary-gradient)',
-                    color: 'white',
-                    boxShadow: '0 4px 15px rgba(0, 161, 155, 0.15)',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  Get Started
-                </Link>
-              </div>
+            {sidebarExpanded && (
+              <button 
+                onClick={() => setSidebarExpanded(false)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px', borderRadius: '6px'
+                }}
+                className="sidebar-collapse-btn"
+              >
+                <X size={16} />
+              </button>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-color)',
-              cursor: 'pointer',
-              padding: '6px',
-              display: 'none',
-              borderRadius: '8px'
-            }}
-            className="mobile-toggle"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </nav>
-      </header>
+          {!sidebarExpanded && (
+            <button 
+              onClick={() => setSidebarExpanded(true)}
+              style={{
+                background: 'var(--glass-bg)',
+                border: '1px solid var(--glass-border)',
+                cursor: 'pointer',
+                color: 'var(--text-color)',
+                padding: '8px',
+                borderRadius: '8px',
+                margin: '0 auto 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '36px',
+                height: '36px'
+              }}
+              title="Expand Sidebar"
+            >
+              <Menu size={16} />
+            </button>
+          )}
 
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: scrolled ? '65px' : '85px',
-            left: '20px',
-            right: '20px',
-            background: theme === 'dark' ? 'rgba(12, 14, 18, 0.96)' : 'rgba(255, 255, 255, 0.96)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            zIndex: 999,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '15px',
-            padding: '24px',
-            borderRadius: '20px',
-            border: '1px solid var(--glass-border)',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-            animation: 'slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
-        >
-          <Link href="/" style={{ color: 'var(--text-color)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600 }}>
-            Home
-          </Link>
-          <Link href="/tools" style={{ color: 'var(--text-color)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600 }}>
-            All Tools
-          </Link>
-          <Link href="/blog" style={{ color: 'var(--text-color)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600 }}>
-            Blog
-          </Link>
-          <Link href="/about" style={{ color: 'var(--text-color)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600 }}>
-            About
-          </Link>
-          <Link href="/contact" style={{ color: 'var(--text-color)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600 }}>
-            Contact
-          </Link>
-          
-          <div style={{ height: '1px', background: 'var(--glass-border)', margin: '5px 0' }} />
-
-          {/* Mobile Search Button */}
+          {/* Quick Spotlight Search Palette Toggle */}
           <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setShowPalette(true);
-            }}
+            onClick={() => setShowPalette(true)}
             style={{
               width: '100%',
+              padding: sidebarExpanded ? '10px 14px' : '10px 0',
+              borderRadius: '10px',
+              border: '1px solid var(--glass-border)',
+              background: 'rgba(0,0,0,0.02)',
+              color: 'var(--text-secondary)',
+              fontSize: '0.82rem',
+              textAlign: sidebarExpanded ? 'left' : 'center',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              padding: '12px',
-              borderRadius: '12px',
-              border: '1px solid var(--glass-border)',
-              background: 'rgba(0, 161, 155, 0.06)',
-              color: 'var(--primary-color)',
-              fontWeight: 700,
-              fontSize: '0.88rem',
-              cursor: 'pointer'
+              justifyContent: sidebarExpanded ? 'space-between' : 'center',
+              marginBottom: '20px',
+              outline: 'none',
+              transition: 'var(--transition-smooth)'
             }}
+            title="Search Workspace (Ctrl+K)"
           >
-            <Search size={16} /> Search & Command Palette
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Search size={14} color="var(--primary-color)" />
+              {sidebarExpanded && <span>Search (Ctrl+K)</span>}
+            </div>
+            {sidebarExpanded && (
+              <span style={{ fontSize: '0.65rem', background: 'var(--glass-border)', padding: '2px 6px', borderRadius: '4px' }}>⌘K</span>
+            )}
           </button>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px' }}>
-            <span style={{ fontSize: '0.95rem', fontWeight: 500 }}>Theme</span>
+
+          {/* Navigation Items */}
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+            
+            {sidebarExpanded && (
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-secondary)', letterSpacing: '0.8px', textTransform: 'uppercase', padding: '10px 8px 4px' }}>
+                General
+              </span>
+            )}
+
+            <Link href="/" className={`sidebar-nav-link ${pathname === '/' ? 'active' : ''}`} style={sidebarLinkStyle(pathname === '/')}>
+              <Home size={16} />
+              {sidebarExpanded && <span>Home Workspace</span>}
+            </Link>
+
+            <Link href="/dashboard" className={`sidebar-nav-link ${pathname.startsWith('/dashboard') ? 'active' : ''}`} style={sidebarLinkStyle(pathname.startsWith('/dashboard'))}>
+              <LayoutDashboard size={16} />
+              {sidebarExpanded && <span>User Dashboard</span>}
+            </Link>
+
+            <Link href="/tools" className={`sidebar-nav-link ${pathname === '/tools' ? 'active' : ''}`} style={sidebarLinkStyle(pathname === '/tools')}>
+              <Activity size={16} />
+              {sidebarExpanded && <span>Productivity Catalog</span>}
+            </Link>
+
+            {sidebarExpanded && (
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-secondary)', letterSpacing: '0.8px', textTransform: 'uppercase', padding: '15px 8px 4px' }}>
+                Tool Folders
+              </span>
+            )}
+
+            {/* Folder categories section - ALL chevrons and dropdown tools included */}
+            {categoriesList.map((folder) => {
+              const isFolderOpen = expandedFolders[folder.folderKey];
+              const categoryPath = mapCategoryToPath(folder.id);
+              const isActiveRoute = pathname.startsWith(`/${categoryPath}`);
+
+              if (sidebarExpanded) {
+                return (
+                  <div key={folder.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <button
+                      onClick={() => toggleFolder(folder.folderKey)}
+                      style={{
+                        ...sidebarLinkStyle(isActiveRoute),
+                        background: 'none',
+                        border: 'none',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        width: '100%'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {isFolderOpen ? <FolderOpen size={16} color="var(--primary-color)" /> : <Folder size={16} />}
+                        <span>{folder.name}</span>
+                      </div>
+                      <ChevronDown size={14} style={{ transform: isFolderOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+                    </button>
+
+                    {/* Children elements list */}
+                    {isFolderOpen && (
+                      <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '28px', borderLeft: '1px solid var(--glass-border)', marginLeft: '16px', marginTop: '2px', gap: '2px' }}>
+                        {folder.children.map((child, cIdx) => {
+                          const isChildActive = pathname === child.path;
+                          return (
+                            <Link 
+                              key={cIdx} 
+                              href={child.path}
+                              style={{
+                                color: isChildActive ? 'var(--primary-color)' : 'var(--text-secondary)',
+                                textDecoration: 'none',
+                                fontSize: '0.8rem',
+                                padding: '6px 8px',
+                                borderRadius: '6px',
+                                fontWeight: isChildActive ? 600 : 500,
+                                display: 'block',
+                                transition: 'color 0.2s'
+                              }}
+                              onMouseEnter={(e) => { if (!isChildActive) e.currentTarget.style.color = 'var(--text-color)'; }}
+                              onMouseLeave={(e) => { if (!isChildActive) e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                            >
+                              {child.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Simple folder icon item (collapsed sidebar)
+              return (
+                <Link
+                  key={folder.id}
+                  href={`/${categoryPath}`}
+                  className={`sidebar-nav-link ${isActiveRoute ? 'active' : ''}`}
+                  style={sidebarLinkStyle(isActiveRoute)}
+                  title={folder.name}
+                >
+                  {folder.icon}
+                  {sidebarExpanded && <span>{folder.name}</span>}
+                </Link>
+              );
+            })}
+
+          </nav>
+
+          {/* Sidebar Footer Controls */}
+          <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '15px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <Link 
+              href="/dashboard?tab=profile" 
+              className={`sidebar-nav-link ${pathname.includes('profile') ? 'active' : ''}`}
+              style={sidebarLinkStyle(pathname.includes('profile'))}
+              title="Settings"
+            >
+              <Settings size={16} />
+              {sidebarExpanded && <span>Workspace Settings</span>}
+            </Link>
+
             <button
               onClick={toggleTheme}
               style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-color)',
-                padding: '6px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(0,161,155,0.06)'
+                ...sidebarLinkStyle(false),
+                background: 'none', border: 'none', cursor: 'pointer', width: '100%'
               }}
-              aria-label="Toggle theme"
+              title="Toggle Theme"
             >
-              {mounted ? (theme === 'light' ? <Moon size={18} /> : <Sun size={18} />) : <Sun size={18} />}
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              {sidebarExpanded && <span>{theme === 'dark' ? 'Light Workspace' : 'Dark Workspace'}</span>}
             </button>
-          </div>
 
-          {mounted && isLoggedIn ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
-              <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-color)', textDecoration: 'none', fontWeight: 600 }}>
-                <User size={18} color="var(--primary-color)" />
-                <span>Dashboard</span>
-              </Link>
+            {isLoggedIn && (
               <button
                 onClick={handleLogout}
-                className="btn btn-secondary"
-                style={{ width: '100%', padding: '10px', justifyContent: 'center' }}
+                style={{
+                  ...sidebarLinkStyle(false),
+                  background: 'none', border: 'none', cursor: 'pointer', width: '100%', color: 'var(--error-color)'
+                }}
+                title="Sign Out"
               >
-                Logout
+                <LogOut size={16} />
+                {sidebarExpanded && <span>Logout</span>}
               </button>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
-              <Link href="/login" style={{ width: '100%', textAlign: 'center', textDecoration: 'none', color: 'var(--text-color)', fontWeight: 500, padding: '10px' }}>
-                Sign In
-              </Link>
-              <Link href="/signup" className="btn" style={{ width: '100%', textAlign: 'center', textDecoration: 'none' }}>
-                Register
-              </Link>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        </aside>
 
-      {/* Main Content Area using semantic HTML */}
-      <main style={{ minHeight: 'calc(100vh - 120px)', paddingTop: '100px' }}>
-        {children}
-      </main>
-
-      {/* Global Futuristic SaaS Footer */}
-      <footer
-        style={{
-          background: theme === 'dark' ? '#07090C' : '#FAFBFD',
-          color: 'var(--text-color)',
-          padding: '80px 40px 40px',
-          marginTop: '80px',
-          borderTop: '1px solid var(--glass-border)',
-          fontSize: '0.9rem',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Neon glow inside footer background */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '500px',
-          height: '100px',
-          background: 'radial-gradient(circle, rgba(0, 161, 155, 0.04), transparent 70%)',
-          zIndex: 0,
-          pointerEvents: 'none'
-        }} />
-
-        <div
+        {/* ====================================================
+            MOBILE HEADER NAVBAR
+            ==================================================== */}
+        <header
           style={{
-            maxWidth: '1100px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '50px',
-            marginBottom: '60px',
-            position: 'relative',
-            zIndex: 1
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '64px',
+            background: theme === 'dark' ? 'rgba(10, 12, 18, 0.8)' : 'rgba(255, 255, 255, 0.85)',
+            borderBottom: '1px solid var(--glass-border)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            zIndex: 1000,
+            display: 'none',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '0 20px'
           }}
+          className="mobile-header-navbar"
         >
-          <div>
-            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.25rem', fontWeight: 900, marginBottom: '15px', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Zap size={18} color="var(--primary-color)" fill="var(--primary-color)" />
-              INFINITYKIT
-            </h3>
-            <p style={{ lineHeight: 1.6, opacity: 0.7, fontSize: '0.85rem' }}>
-              An elegant utility suite engineered completely client-side for total privacy and lightning speed. Open, secure, and tracker-free.
-            </p>
-            <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
-              <a href="https://github.com/ananduep93/Infinity_Kit" aria-label="GitHub Repository" style={{ color: 'var(--text-secondary)' }}><Github size={18} /></a>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              background: 'var(--primary-gradient)',
+              padding: '6px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <Zap size={14} color="white" fill="white" />
             </div>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', color: 'var(--primary-color)' }}>Navigation</h4>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Link href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>Home</Link>
-              <Link href="/tools" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>All Utilities</Link>
-              <Link href="/blog" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>Resource Blog</Link>
-              <Link href="/about" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>About Us</Link>
-              <Link href="/contact" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>Contact</Link>
-            </nav>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', color: 'var(--primary-color)' }}>Legal & Security</h4>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Link href="/privacy-policy" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Privacy Policy</Link>
-              <Link href="/terms-conditions" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Terms & Conditions</Link>
-              <Link href="/cookie-policy" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Cookie Policy</Link>
-              <Link href="/disclaimer" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Disclaimer</Link>
-            </nav>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', color: 'var(--primary-color)' }}>Direct Contact</h4>
-            <p style={{ opacity: 0.7, fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '12px' }}>
-              For support, integration inquiries, or suggestion tickets:
-            </p>
-            <a 
-              href="mailto:infinitykit24@gmail.com" 
-              style={{ 
-                color: 'var(--text-color)', 
-                textDecoration: 'none', 
-                fontWeight: 600,
-                fontSize: '0.88rem',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px'
+            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1rem', fontWeight: 900, color: 'var(--text-color)' }}>
+              INFINITYKIT
+            </span>
+          </Link>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              onClick={() => setShowPalette(true)}
+              style={{
+                background: 'none', border: 'none', color: 'var(--text-color)', padding: '6px'
               }}
             >
-              infinitykit24@gmail.com
-              <ArrowRight size={14} color="var(--primary-color)" />
-            </a>
+              <Search size={18} />
+            </button>
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              style={{
+                background: 'none', border: 'none', color: 'var(--text-color)', padding: '6px'
+              }}
+            >
+              <Menu size={18} />
+            </button>
           </div>
-        </div>
+        </header>
 
+        {/* ====================================================
+            MOBILE SLIDE-OUT DRAWER PANEL
+            ==================================================== */}
+        {mobileMenuOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.4)',
+              backdropFilter: 'blur(10px)',
+              zIndex: 1100,
+              display: 'flex',
+              justifyContent: 'flex-end',
+              animation: 'drawer-fade 0.25s ease'
+            }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <div
+              style={{
+                width: '300px',
+                height: '100%',
+                background: theme === 'dark' ? 'rgba(10,12,18,0.96)' : 'rgba(255,255,255,0.96)',
+                padding: '24px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
+                animation: 'drawer-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-color)' }}>Workspace Menu</span>
+                <button 
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-color)' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Mobile Drawer Navigation links */}
+              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Link href="/" className="sidebar-nav-link" style={sidebarLinkStyle(pathname === '/')} onClick={() => setMobileMenuOpen(false)}>
+                  <Home size={16} /> <span>Home Workspace</span>
+                </Link>
+                <Link href="/dashboard" className="sidebar-nav-link" style={sidebarLinkStyle(pathname.startsWith('/dashboard'))} onClick={() => setMobileMenuOpen(false)}>
+                  <LayoutDashboard size={16} /> <span>User Dashboard</span>
+                </Link>
+                <Link href="/tools" className="sidebar-nav-link" style={sidebarLinkStyle(pathname === '/tools')} onClick={() => setMobileMenuOpen(false)}>
+                  <Activity size={16} /> <span>Productivity Catalog</span>
+                </Link>
+
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', margin: '15px 0 5px' }}>Folders</span>
+                {categoriesList.map((folder) => {
+                  const isFolderOpen = expandedFolders[folder.folderKey];
+                  const cleanPath = mapCategoryToPath(folder.id);
+                  const isActiveRoute = pathname.startsWith(`/${cleanPath}`);
+                  return (
+                    <div key={folder.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                      <button
+                        onClick={() => toggleFolder(folder.folderKey)}
+                        style={{
+                          ...sidebarLinkStyle(isActiveRoute),
+                          background: 'none',
+                          border: 'none',
+                          justifyContent: 'space-between',
+                          cursor: 'pointer',
+                          width: '100%'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {isFolderOpen ? <FolderOpen size={16} color="var(--primary-color)" /> : <Folder size={16} />}
+                          <span>{folder.name}</span>
+                        </div>
+                        <ChevronDown size={14} style={{ transform: isFolderOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+                      </button>
+
+                      {isFolderOpen && (
+                        <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '28px', borderLeft: '1px solid var(--glass-border)', marginLeft: '16px', marginTop: '2px', gap: '2px' }}>
+                          {folder.children.map((child, cIdx) => {
+                            const isChildActive = pathname === child.path;
+                            return (
+                              <Link 
+                                key={cIdx} 
+                                href={child.path}
+                                style={{
+                                  color: isChildActive ? 'var(--primary-color)' : 'var(--text-secondary)',
+                                  textDecoration: 'none',
+                                  fontSize: '0.8rem',
+                                  padding: '6px 8px',
+                                  borderRadius: '6px',
+                                  fontWeight: isChildActive ? 600 : 500,
+                                  display: 'block',
+                                  transition: 'color 0.2s'
+                                }}
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {child.name}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Mobile Drawer Footer */}
+              <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button
+                  onClick={() => {
+                    toggleTheme();
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{ ...sidebarLinkStyle(false), background: 'none', border: 'none', width: '100%' }}
+                >
+                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                  <span>{theme === 'dark' ? 'Light Workspace' : 'Dark Workspace'}</span>
+                </button>
+
+                <Link 
+                  href="/dashboard?tab=profile" 
+                  style={sidebarLinkStyle(false)}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Settings size={16} /> <span>Settings</span>
+                </Link>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================
+            MOBILE BOTTOM NAVIGATION BAR
+            ==================================================== */}
+        <nav
+          style={{
+            position: 'fixed',
+            left: '12px',
+            right: '12px',
+            bottom: '12px',
+            height: '60px',
+            background: theme === 'dark' ? 'rgba(12, 14, 20, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(25px)',
+            WebkitBackdropFilter: 'blur(25px)',
+            border: '1px solid var(--glass-border)',
+            borderRadius: '24px',
+            zIndex: 999,
+            display: 'none',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            padding: '0 10px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+          }}
+          className="mobile-bottom-bar"
+        >
+          <Link href="/" style={{ ...mobileBottomIconStyle(pathname === '/'), textDecoration: 'none' }}>
+            <Home size={20} />
+            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Home</span>
+          </Link>
+          <Link href="/dashboard" style={{ ...mobileBottomIconStyle(pathname.startsWith('/dashboard')), textDecoration: 'none' }}>
+            <LayoutDashboard size={20} />
+            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Workspace</span>
+          </Link>
+          <button onClick={() => setShowPalette(true)} style={mobileBottomIconStyle(showPalette)}>
+            <Search size={20} color="var(--primary-color)" />
+            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Search</span>
+          </button>
+          <Link href="/tools" style={{ ...mobileBottomIconStyle(pathname === '/tools'), textDecoration: 'none' }}>
+            <Activity size={20} />
+            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>All Tools</span>
+          </Link>
+        </nav>
+
+        {/* ====================================================
+            MAIN VIEWPORT CONTENT WRAPPER
+            ==================================================== */}
         <div
           style={{
-            maxWidth: '1100px',
-            margin: '0 auto',
-            borderTop: '1px solid var(--glass-border)',
-            paddingTop: '25px',
-            textAlign: 'center',
-            fontSize: '0.8rem',
-            color: 'var(--text-secondary)',
-            position: 'relative',
-            zIndex: 1
+            flex: 1,
+            paddingLeft: sidebarExpanded ? '280px' : '76px',
+            transition: 'padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            overflowX: 'hidden'
           }}
+          className="main-workspace-content-wrapper"
         >
-          &copy; 2026 InfinityKit. Zero-server computations. Absolute browser privacy.
+          <main style={{ flex: 1, padding: '40px', overflowX: 'hidden', width: '100%' }}>
+            {children}
+          </main>
+
+          {/* ====================================================
+              RESTORED GORGEOUS DYNAMIC MULTI-COLUMN FOOTER
+              ==================================================== */}
+          <footer
+            style={{
+              background: theme === 'dark' ? '#07090C' : '#FAFBFD',
+              color: 'var(--text-color)',
+              padding: '80px 40px 40px',
+              borderTop: '1px solid var(--glass-border)',
+              fontSize: '0.9rem',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Radial background glowing highlight */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '500px',
+              height: '100px',
+              background: 'radial-gradient(circle, rgba(0, 161, 155, 0.04), transparent 70%)',
+              zIndex: 0,
+              pointerEvents: 'none'
+            }} />
+
+            <div
+              style={{
+                maxWidth: '1100px',
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '50px',
+                marginBottom: '60px',
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              <div>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.25rem', fontWeight: 900, marginBottom: '15px', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Zap size={18} color="var(--primary-color)" fill="var(--primary-color)" />
+                  INFINITYKIT
+                </h3>
+                <p style={{ lineHeight: 1.6, opacity: 0.7, fontSize: '0.85rem' }}>
+                  An elegant utility suite engineered completely client-side for total privacy and lightning speed. Open, secure, and tracker-free.
+                </p>
+                <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+                  <a href="https://github.com/ananduep93/Infinity_Kit" aria-label="GitHub Repository" style={{ color: 'var(--text-secondary)' }}><Github size={18} /></a>
+                </div>
+              </div>
+              
+              <div>
+                <h4 style={{ fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', color: 'var(--primary-color)' }}>Navigation</h4>
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <Link href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>Home</Link>
+                  <Link href="/tools" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>All Utilities</Link>
+                  <Link href="/blog" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'color 0.2s' }}>Resource Blog</Link>
+                </nav>
+              </div>
+
+              <div>
+                <h4 style={{ fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', color: 'var(--primary-color)' }}>Legal & Security</h4>
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <Link href="/privacy-policy" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Privacy Policy</Link>
+                  <Link href="/terms-conditions" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Terms & Conditions</Link>
+                  <Link href="/cookie-policy" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Cookie Policy</Link>
+                  <Link href="/disclaimer" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem' }}>Disclaimer</Link>
+                </nav>
+              </div>
+
+              <div>
+                <h4 style={{ fontWeight: 700, fontSize: '0.88rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', color: 'var(--primary-color)' }}>Direct Contact</h4>
+                <p style={{ opacity: 0.7, fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '12px' }}>
+                  For support, integration inquiries, or suggestion tickets:
+                </p>
+                <a 
+                  href="mailto:infinitykit24@gmail.com" 
+                  style={{ 
+                    color: 'var(--text-color)', 
+                    textDecoration: 'none', 
+                    fontWeight: 600,
+                    fontSize: '0.88rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  infinitykit24@gmail.com
+                  <ArrowRight size={14} color="var(--primary-color)" />
+                </a>
+              </div>
+            </div>
+
+            <div
+              style={{
+                maxWidth: '1100px',
+                margin: '0 auto',
+                borderTop: '1px solid var(--glass-border)',
+                paddingTop: '25px',
+                textAlign: 'center',
+                fontSize: '0.8rem',
+                color: 'var(--text-secondary)',
+                position: 'relative',
+                zIndex: 1
+              }}
+            >
+              &copy; 2026 InfinityKit. Zero-server computations. Absolute browser privacy.
+            </div>
+          </footer>
         </div>
-      </footer>
 
-      {/* 3. PREMIUM FLOATING PWA INSTALL BANNER REMOVED (Relocated to Dashboard) */}
+      </div>
 
-      {/* 4. PREMIUM FLOATING COMMAND PALETTE & SEARCH DIALOG */}
+      {/* ====================================================
+          SPOTLIGHT COMMAND PALETTE & DIALOG
+          ==================================================== */}
       {showPalette && (
         <div style={{
           position: 'fixed',
@@ -731,7 +940,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Search Input Area */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '20px 24px', borderBottom: '1px solid var(--glass-border)' }}>
               <Search size={20} color="var(--primary-color)" />
               <input
@@ -754,33 +962,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               <span style={{ fontSize: '0.72rem', background: 'var(--glass-border)', padding: '4px 8px', borderRadius: '6px', color: 'var(--text-secondary)', fontWeight: 600 }}>ESC</span>
             </div>
 
-            {/* Quick Actions / Integration Toggles */}
-            <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', gap: '15px', alignItems: 'center', background: theme === 'dark' ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.01)', overflowX: 'auto' }}>
-              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, color: 'var(--text-secondary)', letterSpacing: '0.5px' }}>Quick Settings:</span>
-              
-              <button 
-                onClick={requestNotificationPermission}
-                style={{
-                  background: 'none', border: 'none', padding: '4px 10px', borderRadius: '15px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                  backgroundColor: notificationStatus === 'granted' ? 'rgba(46,204,113,0.08)' : 'rgba(0,161,155,0.05)',
-                  color: notificationStatus === 'granted' ? '#2ecc71' : 'var(--primary-color)',
-                  borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent'
-                }}
-              >
-                <Bell size={12} /> {notificationStatus === 'granted' ? 'Push Granted ✓' : 'Enable Push Alerts 🔔'}
-              </button>
-
-              <button
-                onClick={toggleTheme}
-                style={{
-                  background: 'none', border: '1px solid var(--glass-border)', padding: '4px 10px', borderRadius: '15px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text-color)', display: 'flex', alignItems: 'center', gap: '6px'
-                }}
-              >
-                {theme === 'dark' ? <Sun size={12} /> : <Moon size={12} />} Theme: {theme}
-              </button>
-            </div>
-
-            {/* Results Scroll list */}
             <div style={{ maxHeight: '350px', overflowY: 'auto', padding: '12px' }}>
               <div style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.5px', padding: '8px 12px' }}>
                 {paletteSearch.trim() === '' ? '⚡ FEATURED DYNAMIC TOOLS' : `🔎 SEARCH RESULTS (${filteredPaletteTools.length})`}
@@ -811,7 +992,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                       className="palette-item"
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{ fontSize: '1.4rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>{t.icon}</span>
+                        <span style={{ fontSize: '1.4rem' }}>{t.icon}</span>
                         <div>
                           <h4 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-color)' }}>{t.name}</h4>
                           <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '380px' }}>{t.description || 'Intelligent, ultra-private client calculations.'}</p>
@@ -828,59 +1009,118 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 </div>
               )}
             </div>
-
-            {/* Footer tips */}
-            <div style={{ padding: '15px 24px', borderTop: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: 'var(--text-secondary)', background: theme === 'dark' ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.01)' }}>
-              <span>Use ↑↓ to navigate & Enter to select</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Sparkles size={11} color="var(--primary-color)" /> Powered by Client-Side Edge Calculations</span>
-            </div>
-
           </div>
         </div>
       )}
 
-      {/* Embedded Styles for Responsive Controls */}
-      <style jsx global>{`
-        @media (max-width: 768px) {
-          .desktop-nav {
+      {/* ====================================================
+          GDPR COOKIE CONSENT BANNER
+          ==================================================== */}
+      {cookieConsent === null && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            maxWidth: '380px',
+            background: 'var(--glass-bg)',
+            border: '1px solid rgba(0, 161, 155, 0.2)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
+            backdropFilter: 'blur(25px)',
+            WebkitBackdropFilter: 'blur(25px)',
+            borderRadius: '20px',
+            padding: '24px',
+            zIndex: 10000,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '15px',
+            animation: 'gdpr-slide 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+          }}
+          className="gdpr-cookie-banner"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Zap size={18} color="var(--primary-color)" />
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 800, margin: 0, color: 'var(--text-color)' }}>Workspace Settings Preference</h3>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
+            We implement cookies consent packets and browser storage fallbacks to persist theme layouts, user bookmarks history, and offline workspace variables.
+          </p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => {
+                localStorage.setItem('infinitykit_cookie_consent', 'true');
+                setCookieConsent(true);
+              }}
+              className="btn"
+              style={{ flex: 1, padding: '8px 12px', fontSize: '0.78rem', borderRadius: '8px' }}
+            >
+              Accept All
+            </button>
+            <button
+              onClick={() => {
+                localStorage.setItem('infinitykit_cookie_consent', 'false');
+                setCookieConsent(false);
+              }}
+              className="btn btn-secondary"
+              style={{ flex: 1, padding: '8px 12px', fontSize: '0.78rem', borderRadius: '8px', border: '1px solid var(--glass-border)' }}
+            >
+              Preferences
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Global CSS overrides inside safe HTML style tags preventing styled-jsx panic checks */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .desktop-sidebar-aside {
+          display: flex !important;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+          .desktop-sidebar-aside {
             display: none !important;
           }
-          .mobile-toggle {
-            display: block !important;
+          .mobile-header-navbar {
+            display: flex !important;
           }
-        }
-        
-        @keyframes slideIn {
-          from {
-            transform: translateY(-10px);
-            opacity: 0;
+          .mobile-bottom-bar {
+            display: flex !important;
           }
-          to {
-            transform: translateY(0);
-            opacity: 1;
+          .main-workspace-content-wrapper {
+            padding-left: 0 !important;
+            padding-top: 64px !important;
+            padding-bottom: 72px !important;
+          }
+          .main-workspace-content-wrapper main {
+            padding: 20px 14px !important;
+          }
+          .gdpr-cookie-banner {
+            left: 12px !important;
+            right: 12px !important;
+            bottom: 84px !important;
+            max-width: none !important;
           }
         }
 
-        @keyframes pwa-slide-up {
-          from {
-            transform: translateY(30px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
+        @keyframes drawer-fade {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes drawer-slide {
+          from { transform: translateX(50px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes gdpr-slide {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
 
         @keyframes palette-zoom {
-          from {
-            transform: scale(0.97);
-            opacity: 0;
-          }
-          to {
-            transform: scale(1);
-            opacity: 1;
-          }
+          from { transform: scale(0.97); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
         }
 
         .palette-item:hover {
@@ -891,7 +1131,46 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           opacity: 1 !important;
           transform: translateX(0) !important;
         }
-      `}</style>
+
+        .sidebar-nav-link:hover {
+          background-color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)'} !important;
+        }
+      `}} />
     </>
   );
+}
+
+function sidebarLinkStyle(isActive: boolean): React.CSSProperties {
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 12px',
+    borderRadius: '10px',
+    color: isActive ? 'var(--primary-color)' : 'var(--text-color)',
+    background: isActive ? 'rgba(0, 161, 155, 0.08)' : 'transparent',
+    border: 'none',
+    fontWeight: isActive ? 700 : 500,
+    fontSize: '0.88rem',
+    textDecoration: 'none',
+    textAlign: 'left',
+    transition: 'all 0.25s ease-in-out',
+    cursor: 'pointer'
+  };
+}
+
+function mobileBottomIconStyle(isActive: boolean): React.CSSProperties {
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    color: isActive ? 'var(--primary-color)' : 'var(--text-secondary)',
+    textDecoration: 'none',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px'
+  };
 }

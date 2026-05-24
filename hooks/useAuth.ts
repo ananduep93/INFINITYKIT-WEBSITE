@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
 import { authService } from '../lib/auth';
+import { syncService } from '../lib/sync';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,9 +15,19 @@ export function useAuth() {
       }
     });
 
-    const unsubscribe = authService.onAuthChange((currentUser) => {
+    const unsubscribe = authService.onAuthChange(async (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+      
+      if (currentUser) {
+        try {
+          // Trigger automatic bidirectional cloud synchronization
+          await syncService.syncLocalToCloud();
+          await syncService.syncCloudToLocal();
+        } catch (error) {
+          console.error('Auto Firestore database synchronization failed:', error);
+        }
+      }
     });
 
     return () => unsubscribe();
