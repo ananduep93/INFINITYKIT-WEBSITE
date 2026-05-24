@@ -17,7 +17,7 @@ export default function VideoToGIF() {
         return;
       }
       const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.4.5/gifshot.min.js';
+      script.src = '/gifshot.min.js';
       script.onload = () => resolve((window as any).gifshot);
       script.onerror = () => reject(new Error('Failed to load gifshot compilation library.'));
       document.head.appendChild(script);

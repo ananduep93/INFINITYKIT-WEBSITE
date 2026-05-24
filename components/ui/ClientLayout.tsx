@@ -38,6 +38,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // PWA & Notification states
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -374,11 +379,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               }}
               aria-label="Toggle dark/light mode"
             >
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+              {mounted ? (theme === 'light' ? <Moon size={18} /> : <Sun size={18} />) : <Sun size={18} />}
             </button>
 
             {/* Auth Controls */}
-            {isLoggedIn ? (
+            {mounted && isLoggedIn ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-color)', textDecoration: 'none', fontWeight: 600 }}>
                   <User size={16} color="var(--primary-color)" />
@@ -543,11 +548,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               }}
               aria-label="Toggle theme"
             >
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+              {mounted ? (theme === 'light' ? <Moon size={18} /> : <Sun size={18} />) : <Sun size={18} />}
             </button>
           </div>
 
-          {isLoggedIn ? (
+          {mounted && isLoggedIn ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
               <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-color)', textDecoration: 'none', fontWeight: 600 }}>
                 <User size={18} color="var(--primary-color)" />
