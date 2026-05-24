@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronRight, Star, AlertTriangle, RefreshCw, HelpCircle, Check, ArrowRight, ShieldCheck, Cpu, KeyRound } from 'lucide-react';
-import { getToolById, getCategoryById, ToolDefinition, tools } from '../../../config/tools';
+import { getToolById, getCategoryById, ToolDefinition, tools, mapCategoryToPath } from '../../../config/tools';
 import { toolsRegistry } from '../../../components/tools';
 import { useSync } from '../../../hooks/useSync';
 import ReusableResult from '../../../components/ui/ReusableResult';
@@ -100,6 +100,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
   // Breadcrumb List Schema
   const breadcrumbSchema = useMemo(() => {
     if (!category) return null;
+    const categoryPath = mapCategoryToPath(category.id);
     return {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -114,13 +115,13 @@ export default function ToolClient({ toolId }: ToolClientProps) {
           '@type': 'ListItem',
           'position': 2,
           'name': category.name,
-          'item': `https://infinitykit.online/categories/${category.id}`
+          'item': `https://infinitykit.online/${categoryPath}`
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': tool.name,
-          'item': `https://infinitykit.online/tools/${tool.id}`
+          'item': `https://infinitykit.online/${categoryPath}/${tool.id}`
         }
       ]
     };
@@ -189,7 +190,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
         <ChevronRight size={12} />
         {category && (
           <>
-            <Link href={`/categories/${category.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Link href={`/${mapCategoryToPath(category.id)}`} style={{ color: 'inherit', textDecoration: 'none' }}>
               {category.name}
             </Link>
             <ChevronRight size={12} />
@@ -543,7 +544,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
             {relatedTools.map((t) => (
               <Link 
-                href={`/tools/${t.id}`} 
+                href={`/${mapCategoryToPath(t.category)}/${t.id}`} 
                 key={t.id}
                 style={{ textDecoration: 'none' }}
               >

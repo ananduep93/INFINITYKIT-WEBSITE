@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Compass, Heart, History, Award, ArrowRight, Star, Sparkles, Zap, TrendingUp, HelpCircle, ChevronDown, Check } from 'lucide-react';
-import { tools, categories } from '../config/tools';
+import { tools, categories, mapCategoryToPath } from '../config/tools';
 import { useSync } from '../hooks/useSync';
 
 export default function HomePage() {
@@ -462,7 +462,7 @@ export default function HomePage() {
               <div className="tools-grid">
                 {filteredTools.map((tool) => (
                   <div key={tool.id} style={{ position: 'relative' }}>
-                    <Link href={`/tools/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                       <div className="tool-card">
                         <div className="tool-card-icon">{tool.icon}</div>
                         <div className="tool-card-info">
@@ -508,7 +508,7 @@ export default function HomePage() {
           <div className="tools-grid">
             {favoriteToolsList.map((tool) => (
               <div key={tool.id} style={{ position: 'relative' }}>
-                <Link href={`/tools/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className="tool-card" style={{ borderLeft: '2.5px solid var(--primary-color)' }}>
                     <div className="tool-card-icon">{tool.icon}</div>
                     <div className="tool-card-info">
@@ -548,7 +548,7 @@ export default function HomePage() {
           </div>
           <div className="tools-grid">
             {trendingTools.map((tool) => (
-              <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className="tool-card">
                   <div className="tool-card-icon" style={{ background: 'rgba(0,161,155,0.08)' }}>{tool.icon}</div>
                   <div className="tool-card-info">
@@ -575,7 +575,7 @@ export default function HomePage() {
           </div>
           <div className="tools-grid">
             {aiTools.map((tool) => (
-              <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div 
                   className="tool-card" 
                   style={{ 
@@ -620,7 +620,7 @@ export default function HomePage() {
 
         <div className="bento-grid">
           {categories.map((cat) => (
-            <Link href={`/categories/${cat.id}`} key={cat.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`/${mapCategoryToPath(cat.id)}`} key={cat.id} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="category-card">
                 <div>
                   <div className="category-icon">{cat.emoji || cat.icon}</div>
@@ -655,7 +655,7 @@ export default function HomePage() {
               const tool = tools.find((t) => t.id === recent.id);
               if (!tool) return null;
               return (
-                <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className="tool-card" style={{ opacity: 0.9 }}>
                     <div className="tool-card-icon">{tool.icon}</div>
                     <div className="tool-card-info">

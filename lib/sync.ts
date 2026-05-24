@@ -125,9 +125,10 @@ export const syncService = {
 
     console.log('Starting local -> cloud sync...');
     const toolKeys = [
-      'todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB',
-      'infinityKitSettings', 'recentSearches', 'budget', 'dailyPlanner',
-      'medicineReminders', 'reminderAlerts', 'examMarks'
+      'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
+      'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
+      'budget', 'dailyPlanner', 'medreminders', 'medicineReminders',
+      'reminderAlerts', 'examMarks'
     ];
 
     for (const key of toolKeys) {
@@ -160,9 +161,10 @@ export const syncService = {
 
     console.log('Starting cloud -> local sync...');
     const toolKeys = [
-      'todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB',
-      'infinityKitSettings', 'recentSearches', 'budget', 'dailyPlanner',
-      'medicineReminders', 'reminderAlerts', 'examMarks'
+      'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
+      'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
+      'budget', 'dailyPlanner', 'medreminders', 'medicineReminders',
+      'reminderAlerts', 'examMarks'
     ];
 
     for (const key of toolKeys) {

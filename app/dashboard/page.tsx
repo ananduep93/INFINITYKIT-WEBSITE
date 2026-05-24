@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 import { useSync } from '../../hooks/useSync';
-import { tools } from '../../config/tools';
+import { tools, mapCategoryToPath } from '../../config/tools';
 import { 
   User, Cloud, Star, History, Settings, LogOut, CheckCircle, Trash2, 
   Award, Bell, BarChart2, Check, AlertCircle, Compass, Zap, Shield, 
-  Mail, Key, UserCheck, Edit3, ArrowRight, Activity
+  Mail, Key, UserCheck, Edit3, ArrowRight, Activity, Download
 } from 'lucide-react';
 import ReusableLoading from '../../components/ui/ReusableLoading';
 import confetti from 'canvas-confetti';
@@ -27,6 +27,34 @@ export default function DashboardPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [mockNotificationRead, setMockNotificationRead] = useState<string[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
+
+  // PWA Install state
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if ((window as any).deferredPrompt) {
+        setInstallPrompt((window as any).deferredPrompt);
+      }
+      const handleInstallable = () => {
+        setInstallPrompt((window as any).deferredPrompt);
+      };
+      window.addEventListener('infinitykit_pwa_installable', handleInstallable);
+      return () => window.removeEventListener('infinitykit_pwa_installable', handleInstallable);
+    }
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      console.log(`PWA Install choice from dashboard: ${outcome}`);
+      setInstallPrompt(null);
+      (window as any).deferredPrompt = null;
+    } else {
+      alert("To install InfinityKit, please use your browser's Share/Install Address Bar option.");
+    }
+  };
 
   // Sync profile display name when user object is loaded
   useEffect(() => {
@@ -433,6 +461,56 @@ export default function DashboardPage() {
                 transition={{ duration: 0.2 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}
               >
+                {/* Embedded PWA Install Banner */}
+                {installPrompt && (
+                  <div className="glass-panel" style={{ 
+                    margin: 0, 
+                    padding: '24px 30px', 
+                    borderRadius: '20px', 
+                    borderLeft: '5px solid var(--primary-color)',
+                    background: 'linear-gradient(135deg, rgba(0, 161, 155, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '20px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1, minWidth: '280px' }}>
+                      <div style={{ background: 'var(--primary-gradient)', padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Zap size={20} color="white" fill="white" />
+                      </div>
+                      <div>
+                        <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.15rem', fontWeight: 800, margin: 0, color: 'var(--text-color)' }}>
+                          Install InfinityKit App
+                        </h3>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                          Install the client-side utility suite directly on your device desktop for instantaneous offline access.
+                        </p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        onClick={handleInstallApp}
+                        style={{
+                          background: 'linear-gradient(135deg, #00A19B 0%, #00d2c7 100%)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '30px',
+                          padding: '10px 22px',
+                          fontWeight: 700,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          boxShadow: '0 4px 12px rgba(0,161,155,0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        <Download size={14} /> Install Web App
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {/* Analytics Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
                   <div className="glass-panel" style={{ margin: 0, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -512,7 +590,7 @@ export default function DashboardPage() {
                         const tool = tools.find((t) => t.id === item.id);
                         if (!tool) return null;
                         return (
-                          <Link href={`/tools/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                             <div className="tool-card" style={{ height: '100%', margin: 0 }}>
                               <div className="tool-card-icon">{tool.icon}</div>
                               <div className="tool-card-info">
@@ -555,7 +633,7 @@ export default function DashboardPage() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '15px' }}>
                       {favoriteToolsList.map((tool) => (
                         <div key={tool.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(0,0,0,0.02)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}>
-                          <Link href={`/tools/${tool.id}`} style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'var(--text-color)', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '1.1rem' }}>{tool.icon}</span> {tool.name}
                           </Link>
                           <button

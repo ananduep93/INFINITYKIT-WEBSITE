@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { tools, categories } from '../config/tools';
+import { tools, categories, mapCategoryToPath } from '../config/tools';
 import { fullBlogPosts } from '../config/blogContent';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // 2. Dynamic Categories pages
   const categoryPages = categories.map(cat => ({
-    url: `${baseUrl}/categories/${cat.id}`,
+    url: `${baseUrl}/${mapCategoryToPath(cat.id)}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.7
@@ -36,7 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // 3. Dynamic Tools pages (all 81+ tools)
   const toolPages = tools.map(tool => ({
-    url: `${baseUrl}/tools/${tool.id}`,
+    url: `${baseUrl}/${mapCategoryToPath(tool.category)}/${tool.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.9

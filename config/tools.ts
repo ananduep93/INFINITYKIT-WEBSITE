@@ -1577,3 +1577,39 @@ export function getCategoryById(id: string): CategoryDefinition | undefined {
 export function getToolsByCategory(catId: string): ToolDefinition[] {
   return tools.filter(t => t.category === catId);
 }
+
+export function mapCategoryToPath(catId: string): string {
+  const mapping: Record<string, string> = {
+    'pdf-tools': 'pdf',
+    'image-tools': 'image',
+    'video-tools': 'video',
+    'audio-tools': 'audio',
+    'ai-writing-tools': 'ai-writing',
+    'ocr-tools': 'ocr',
+    'file-conversion-tools': 'converters',
+    'developer-tools': 'developer-tools',
+    'seo-tools': 'seo',
+    'utility-tools': 'utility',
+    'social-media-tools': 'social',
+    'automation-tools': 'automation'
+  };
+  return mapping[catId] || catId;
+}
+
+export function mapPathToCategory(path: string): string {
+  const mapping: Record<string, string> = {
+    'pdf': 'pdf-tools',
+    'image': 'image-tools',
+    'video': 'video-tools',
+    'audio': 'audio-tools',
+    'ai-writing': 'ai-writing-tools',
+    'ocr': 'ocr-tools',
+    'converters': 'file-conversion-tools',
+    'developer-tools': 'developer-tools',
+    'seo': 'seo-tools',
+    'utility': 'utility-tools',
+    'social': 'social-media-tools',
+    'automation': 'automation-tools'
+  };
+  return mapping[path] || path;
+}

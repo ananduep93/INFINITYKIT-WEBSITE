@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, Compass, Star, ChevronRight } from 'lucide-react';
-import { tools, categories } from '../../config/tools';
+import { tools, categories, mapCategoryToPath } from '../../config/tools';
 import { useSync } from '../../hooks/useSync';
 
 export default function ToolsPage() {
@@ -127,7 +127,7 @@ export default function ToolsPage() {
         <div className="tools-grid">
           {filteredTools.map((tool) => (
             <div key={tool.id} style={{ position: 'relative' }}>
-              <Link href={`/tools/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className="tool-card">
                   <div className="tool-card-icon">{tool.icon}</div>
                   <div className="tool-card-info">

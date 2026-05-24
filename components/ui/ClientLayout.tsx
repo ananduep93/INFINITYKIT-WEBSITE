@@ -24,7 +24,7 @@ import { useTheme } from '../ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
 import { ThreeBackground } from './ThreeBackground';
 import PageProgressBar from './PageProgressBar';
-import { tools } from '../../config/tools';
+import { tools, mapCategoryToPath } from '../../config/tools';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -93,7 +93,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallBanner(true);
+      (window as any).deferredPrompt = e;
+      window.dispatchEvent(new CustomEvent('infinitykit_pwa_installable'));
+      // Keep state in sync without showing floating banner
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
@@ -693,83 +695,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
         </div>
       </footer>
 
-      {/* 3. PREMIUM FLOATING PWA INSTALL BANNER */}
-      {showInstallBanner && (
-        <div style={{
-          position: 'fixed',
-          bottom: '30px',
-          right: '30px',
-          zIndex: 1100,
-          maxWidth: '380px',
-          width: 'calc(100% - 60px)',
-          background: theme === 'dark' ? 'rgba(10, 15, 24, 0.85)' : 'rgba(255, 255, 255, 0.9)',
-          backdropFilter: 'blur(24px)',
-          border: '1px solid var(--primary-color)',
-          borderRadius: '20px',
-          padding: '20px 24px',
-          boxShadow: '0 20px 50px rgba(0, 161, 155, 0.15)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          animation: 'pwa-slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ background: 'var(--primary-gradient)', padding: '6px', borderRadius: '8px' }}>
-                <Zap size={14} color="white" fill="white" />
-              </div>
-              <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: '0.95rem', fontWeight: 800 }}>Install InfinityKit App</span>
-            </div>
-            <button
-              onClick={() => setShowInstallBanner(false)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '2px' }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-            Install the client-side utility suite directly on your device desktop for instantaneous offline access.
-          </p>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-            <button
-              onClick={handleInstallClick}
-              style={{
-                flex: 1,
-                background: 'linear-gradient(135deg, #00A19B 0%, #00d2c7 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '30px',
-                padding: '8px 16px',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,161,155,0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px'
-              }}
-            >
-              <Download size={12} /> Install Web App
-            </button>
-            <button
-              onClick={() => setShowInstallBanner(false)}
-              style={{
-                background: 'none',
-                border: '1px solid var(--glass-border)',
-                color: 'var(--text-secondary)',
-                borderRadius: '30px',
-                padding: '8px 16px',
-                fontWeight: 600,
-                fontSize: '0.8rem',
-                cursor: 'pointer'
-              }}
-            >
-              Later
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 3. PREMIUM FLOATING PWA INSTALL BANNER REMOVED (Relocated to Dashboard) */}
 
       {/* 4. PREMIUM FLOATING COMMAND PALETTE & SEARCH DIALOG */}
       {showPalette && (
@@ -867,7 +793,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                       key={t.id}
                       onClick={() => {
                         setShowPalette(false);
-                        router.push(`/tools/${t.id}`);
+                        router.push(`/${mapCategoryToPath(t.category)}/${t.id}`);
                       }}
                       style={{
                         width: '100%',

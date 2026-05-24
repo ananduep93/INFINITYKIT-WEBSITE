@@ -1,23 +1,23 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getToolById, tools } from '../../../config/tools';
+import { getToolById, tools, mapCategoryToPath } from '../../../config/tools';
 import ToolClient from './ToolClient';
 
 interface ToolPageProps {
   params: {
+    category: string;
     toolId: string;
   };
 }
 
-// Statically generate parameters for all tools at build time
 export async function generateStaticParams() {
   return tools.map((t) => ({
+    category: mapCategoryToPath(t.category),
     toolId: t.id
   }));
 }
 
-// Generate dynamic SEO metadata for each tool individually
 export async function generateMetadata({ params }: ToolPageProps): Promise<Metadata> {
   const tool = getToolById(params.toolId);
   if (!tool) {
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: ToolPageProps): Promise<Metad
 
   const title = tool.seoTitle || `${tool.name} | Free Client-Side Tool | InfinityKit`;
   const description = tool.seoDescription || `${tool.description} Use this lightweight, private, and 100% client-side web utility with absolute zero tracking.`;
-  const url = `https://infinitykit.online/tools/${params.toolId}`;
+  const url = `https://infinitykit.online/${params.category}/${params.toolId}`;
 
   return {
     title,
@@ -98,14 +98,14 @@ export default function ToolPage({ params }: ToolPageProps) {
       {
         '@type': 'ListItem',
         'position': 2,
-        'name': 'Tools',
-        'item': 'https://infinitykit.online/tools'
+        'name': params.category.charAt(0).toUpperCase() + params.category.slice(1),
+        'item': `https://infinitykit.online/${params.category}`
       },
       {
         '@type': 'ListItem',
         'position': 3,
         'name': tool.name,
-        'item': `https://infinitykit.online/tools/${tool.id}`
+        'item': `https://infinitykit.online/${params.category}/${tool.id}`
       }
     ]
   };
