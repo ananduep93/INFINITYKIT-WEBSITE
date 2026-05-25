@@ -88,7 +88,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     }
   }, []);
 
-  // Global fetch interceptor to inject x-gemini-key
+  // Global fetch interceptor to inject API Keys securely
   useEffect(() => {
     if (typeof window !== 'undefined' && !(window as any).__fetchIntercepted) {
       (window as any).__fetchIntercepted = true;
@@ -96,18 +96,27 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       window.fetch = function (input, init) {
         if (typeof input === 'string' && input.includes('/api/ai')) {
           const userKey = localStorage.getItem('infinitykit_gemini_key');
-          if (userKey) {
+          const openaiKey = localStorage.getItem('infinitykit_openai_key');
+          
+          if (userKey || openaiKey) {
             init = init || {};
             init.headers = init.headers || {};
+            
             if (init.headers instanceof Headers) {
-              init.headers.set('x-gemini-key', userKey);
+              if (userKey) init.headers.set('x-gemini-key', userKey);
+              if (openaiKey) init.headers.set('x-openai-key', openaiKey);
             } else if (Array.isArray(init.headers)) {
-              const hasKey = init.headers.some(([k]) => k.toLowerCase() === 'x-gemini-key');
-              if (!hasKey) {
-                init.headers.push(['x-gemini-key', userKey]);
+              if (userKey) {
+                const hasKey = init.headers.some(([k]) => k.toLowerCase() === 'x-gemini-key');
+                if (!hasKey) init.headers.push(['x-gemini-key', userKey]);
+              }
+              if (openaiKey) {
+                const hasKey = init.headers.some(([k]) => k.toLowerCase() === 'x-openai-key');
+                if (!hasKey) init.headers.push(['x-openai-key', openaiKey]);
               }
             } else {
-              init.headers['x-gemini-key'] = userKey;
+              if (userKey) init.headers['x-gemini-key'] = userKey;
+              if (openaiKey) init.headers['x-openai-key'] = openaiKey;
             }
           }
         }

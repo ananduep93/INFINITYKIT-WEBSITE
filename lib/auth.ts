@@ -107,8 +107,12 @@ export const authService = {
   async logout(): Promise<void> {
     try {
       await signOut(auth);
-      // Clean local storage
-      const toolKeys = ['todos', 'savedPasswords', 'quickNotes', 'infinityKitExpenseDB', 'infinityKitSettings', 'recentTools', 'recentSearches'];
+      // Clean all local storage tool keys & casing variations to secure user session transition
+      const toolKeys = [
+        'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
+        'infinityKitExpenseDB', 'infinityKitSettings', 'recentTools', 'recentSearches',
+        'favorites', 'aichatbot_history', 'passwords', 'notes', 'expenses', 'aiChats'
+      ];
       toolKeys.forEach(key => localStorage.removeItem(key));
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('userId');

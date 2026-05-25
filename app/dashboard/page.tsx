@@ -30,11 +30,13 @@ export default function DashboardPage() {
   const [mockNotificationRead, setMockNotificationRead] = useState<string[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [geminiKey, setGeminiKey] = useState('');
+  const [openaiKey, setOpenaiKey] = useState('');
 
   // Load user API key from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setGeminiKey(localStorage.getItem('infinitykit_gemini_key') || '');
+      setOpenaiKey(localStorage.getItem('infinitykit_openai_key') || '');
     }
   }, []);
 
@@ -923,6 +925,35 @@ export default function DashboardPage() {
                       />
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
                         Optional. Paste your Gemini API Key to unlock guaranteed live AI responses across all AI workspace tools.
+                      </span>
+                    </div>
+
+                    {/* OpenAI API Key Setting */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Key size={14} color="var(--primary-color)" /> OpenAI API Key
+                      </label>
+                      <input 
+                        type="password" 
+                        value={openaiKey}
+                        onChange={(e) => {
+                          setOpenaiKey(e.target.value);
+                          localStorage.setItem('infinitykit_openai_key', e.target.value);
+                        }}
+                        placeholder="OpenAI key (starts with sk-...)"
+                        style={{
+                          width: '100%',
+                          padding: '12px 14px',
+                          borderRadius: '10px',
+                          border: '1px solid var(--glass-border)',
+                          background: 'rgba(0,0,0,0.01)',
+                          color: 'var(--text-color)',
+                          fontSize: '0.9rem',
+                          outline: 'none'
+                        }}
+                      />
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                        Optional. Paste your OpenAI API Key (sk-...) to utilize premium GPT models across writing, summarizing, and editing tools.
                       </span>
                     </div>
 

@@ -4,6 +4,92 @@ import { db } from './firebase';
 const DEBOUNCE_DELAY = 1000;
 const debounceTimers: Record<string, NodeJS.Timeout> = {};
 
+// Unified Casing & Path Mapping Dictionary
+export const PATH_MAP: Record<string, string> = {
+  // Notes
+  quicknotes: 'notes',
+  quickNotes: 'notes',
+  notes: 'notes',
+
+  // Todos
+  todolist: 'todos',
+  todos: 'todos',
+
+  // Expenses
+  infinityKitExpenseDB: 'expenses',
+  expenses: 'expenses',
+
+  // Settings
+  infinityKitSettings: 'settings',
+  settings: 'settings',
+
+  // AI Chats
+  aichatbot_history: 'aiChats',
+  aiChats: 'aiChats',
+
+  // Passwords
+  savedPasswords: 'passwords',
+  passwords: 'passwords'
+};
+
+// Dynamic Auto-Migration & Firestore Reference Resolver
+async function getFirestoreRefAndMigrate(userId: string, toolName: string) {
+  const targetCol = PATH_MAP[toolName];
+  
+  if (!targetCol) {
+    // Default fallback path for dynamic unmapped tools
+    return doc(db, 'users', userId, 'tools', toolName);
+  }
+
+  const newDocRef = doc(db, 'users', userId, targetCol, 'data');
+  
+  try {
+    const newDocSnap = await getDoc(newDocRef);
+    if (newDocSnap.exists()) {
+      // New path exists, use it immediately
+      return newDocRef;
+    }
+
+    // New path does NOT exist. Search for legacy documents to migrate
+    const legacyKeys = Object.keys(PATH_MAP).filter(k => PATH_MAP[k] === targetCol);
+    let migratedPayload: any = null;
+    let foundLegacyRef = null;
+
+    for (const legacyKey of legacyKeys) {
+      const legacyRef = doc(db, 'users', userId, 'tools', legacyKey);
+      const legacySnap = await getDoc(legacyRef);
+      if (legacySnap.exists()) {
+        migratedPayload = legacySnap.data().data;
+        foundLegacyRef = legacyRef;
+        break;
+      }
+    }
+
+    if (migratedPayload !== null) {
+      console.log(`[Auto-Migration] Found legacy user data for "${toolName}". Restoring to subcollection "${targetCol}"...`);
+      // 1. Write legacy payload to the new path
+      await setDoc(newDocRef, {
+        data: migratedPayload,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+
+      // 2. Cleanly purge the legacy document to finalize migration
+      if (foundLegacyRef) {
+        try {
+          await deleteDoc(foundLegacyRef);
+          console.log(`[Auto-Migration] Cleanly deleted legacy document for "${toolName}".`);
+        } catch (e) {
+          console.warn('[Auto-Migration Warning] Could not delete legacy document:', e);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`[Auto-Migration Error] Failed to resolve migration check for "${toolName}":`, error);
+  }
+
+  return newDocRef;
+}
+
 export const syncService = {
   async getData(toolName: string, forceCloud = false): Promise<any> {
     if (typeof window === 'undefined') return null;
@@ -13,7 +99,7 @@ export const syncService = {
     if (isLoggedIn && userId) {
       try {
         if (forceCloud || !localStorage.getItem(toolName)) {
-          const docRef = doc(db, 'users', userId, 'tools', toolName);
+          const docRef = await getFirestoreRefAndMigrate(userId, toolName);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
@@ -46,7 +132,7 @@ export const syncService = {
 
       debounceTimers[toolName] = setTimeout(async () => {
         try {
-          const docRef = doc(db, 'users', userId, 'tools', toolName);
+          const docRef = await getFirestoreRefAndMigrate(userId, toolName);
           await setDoc(docRef, {
             data: data,
             updatedAt: new Date().toISOString()
@@ -136,7 +222,7 @@ export const syncService = {
       if (localData) {
         try {
           const data = JSON.parse(localData);
-          const docRef = doc(db, 'users', userId, 'tools', key);
+          const docRef = await getFirestoreRefAndMigrate(userId, key);
           const docSnap = await getDoc(docRef);
           if (!docSnap.exists()) {
             await setDoc(docRef, { data, updatedAt: new Date().toISOString() });
