@@ -26,11 +26,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             document.documentElement.setAttribute('data-theme', settings.theme);
           }
         } else {
-          // Check system preference
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const initialTheme = prefersDark ? 'dark' : 'light';
-          setTheme(initialTheme);
-          document.documentElement.setAttribute('data-theme', initialTheme);
+          // Force light (white) theme as default on first visit
+          setTheme('light');
+          document.documentElement.setAttribute('data-theme', 'light');
         }
       } catch (e) {
         console.error(e);
