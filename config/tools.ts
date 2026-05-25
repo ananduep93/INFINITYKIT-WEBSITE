@@ -1303,6 +1303,15 @@ export const tools: ToolDefinition[] = [
     componentName: 'MergePDF'
   },
   {
+    id: 'compresspdf',
+    name: 'Reduce PDF Document File Size',
+    description: 'Optimize and compress PDF document sizes local-first without quality loss.',
+    category: 'pdf-tools',
+    icon: '📉',
+    type: 'custom',
+    componentName: 'CompressPDF'
+  },
+  {
     id: 'splitpdf',
     name: 'Split PDF Pages & Extract Ranges',
     description: 'Extract specific pages or page ranges from a PDF document to form a new document locally.',

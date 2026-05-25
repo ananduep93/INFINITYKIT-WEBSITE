@@ -28,26 +28,23 @@ export default function ImageCompressor() {
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
 
-          // Get raw canvas WebP or JPEG compression URL
-          const format = file.type === 'image/png' ? 'image/jpeg' : file.type; // PNGs don't compress via quality unless converted to JPEG
-          const dataUrl = canvas.toDataURL(format, quality);
+          const format = file.type === 'image/png' ? 'image/jpeg' : file.type;
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error('Failed to compress image canvas.'));
+              return;
+            }
+            const downloadUrl = URL.createObjectURL(blob);
+            const originalSize = (file.size / 1024).toFixed(1);
+            const compressedSize = (blob.size / 1024).toFixed(1);
+            const ratio = ((1 - (blob.size / file.size)) * 100).toFixed(0);
 
-          // Convert to blob to measure size
-          fetch(dataUrl)
-            .then(res => res.blob())
-            .then(blob => {
-              const downloadUrl = URL.createObjectURL(blob);
-              const originalSize = (file.size / 1024).toFixed(1);
-              const compressedSize = (blob.size / 1024).toFixed(1);
-              const ratio = ((1 - (blob.size / file.size)) * 100).toFixed(0);
-
-              resolve({
-                downloadUrl,
-                fileName: `compressed_${file.name.substring(0, file.name.lastIndexOf('.'))}.${format.split('/')[1]}`,
-                resultData: `Original Size: ${originalSize} KB\nCompressed Size: ${compressedSize} KB\nSaved Size Ratio: ${ratio}%`
-              });
-            })
-            .catch(err => reject(err));
+            resolve({
+              downloadUrl,
+              fileName: `compressed_${file.name.substring(0, file.name.lastIndexOf('.'))}.${format.split('/')[1]}`,
+              resultData: `Original Size: ${originalSize} KB\nCompressed Size: ${compressedSize} KB\nSaved Size Ratio: ${ratio}%`
+            });
+          }, format, quality);
         };
         img.onerror = () => reject(new Error('Failed to load image structure.'));
         img.src = event.target?.result as string;

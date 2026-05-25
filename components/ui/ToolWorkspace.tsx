@@ -16,6 +16,7 @@ interface ToolWorkspaceProps {
   instructions?: string[];
   actionButtonText?: string;
   onReset?: () => void;
+  onFileChange?: (files: File[]) => void;
 }
 
 export default function ToolWorkspace({
@@ -33,7 +34,8 @@ export default function ToolWorkspace({
     'Trigger the processing action to compile the optimized outputs locally.'
   ],
   actionButtonText = 'Process Utilities',
-  onReset
+  onReset,
+  onFileChange
 }: ToolWorkspaceProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [textInput, setTextInput] = useState('');
@@ -44,6 +46,11 @@ export default function ToolWorkspace({
   const [errorMsg, setErrorMsg] = useState('');
   const [result, setResult] = useState<{ downloadUrl?: string; fileName?: string; resultData?: any } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync files state change to parent listener
+  useEffect(() => {
+    onFileChange?.(files);
+  }, [files, onFileChange]);
 
   // Drag over states
   const handleDrag = (e: React.DragEvent) => {

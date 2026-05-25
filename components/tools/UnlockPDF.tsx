@@ -6,7 +6,7 @@ import ToolWorkspace from '../ui/ToolWorkspace';
 export default function UnlockPDF() {
   const handleUnlock = async (files: File[], textInput?: string) => {
     if (files.length === 0) {
-      throw new Error('Please upload a locked PDF (.secured.pdf) file.');
+      throw new Error('Please upload a locked PDF (_secured.pdf) file.');
     }
     const password = textInput || '';
     if (!password.trim()) {
@@ -23,8 +23,9 @@ export default function UnlockPDF() {
     // 1. Verify header 'SPDF'
     const headerBytes = container.subarray(0, 4);
     const headerText = decoder.decode(headerBytes);
+    
     if (headerText !== 'SPDF') {
-      throw new Error('Invalid file format. Please upload a PDF secured by InfinityKit (.secured.pdf).');
+      throw new Error('Invalid file format. This tool is designed to unlock files encrypted on InfinityKit. Please upload a valid secured PDF (_secured.pdf) created on this platform.');
     }
 
     // 2. Extract Salt, IV, and Ciphertext
@@ -72,7 +73,7 @@ export default function UnlockPDF() {
 
       return {
         downloadUrl,
-        fileName: file.name.replace(/\.secured\.pdf$/i, '.pdf'),
+        fileName: file.name.replace(/(_secured|\.secured)\.pdf$/i, '.pdf'),
         resultData: `Successfully decrypted and unlocked standard PDF from "${file.name}" locally using matching AES key blocks.`
       };
     } catch (err) {

@@ -35,7 +35,8 @@ import {
   Folder,
   FolderOpen,
   Check,
-  ShieldAlert
+  ShieldAlert,
+  Share2
 } from 'lucide-react';
 import { useTheme } from '../ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
@@ -67,6 +68,8 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     'audio-tools': false,
     'ocr-tools': false,
     'seo-tools': false,
+    'social-media-tools': false,
+    'automation-tools': false,
     'utility-tools': false
   });
 
@@ -200,7 +203,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: 'Password Lock PDF', path: '/pdf/protectpdf' },
       { name: 'Unlock PDF file', path: '/pdf/unlockpdf' },
       { name: 'Export PDF to Images', path: '/pdf/pdftoimage' },
-      { name: 'Convert Images to PDF', path: '/pdf/imagetopdf' }
+      { name: 'Convert Images to PDF', path: '/pdf/imagetopdf' },
+      { name: 'Add PDF Watermark', path: '/pdf/watermarkpdf' },
+      { name: 'AI PDF Summarizer', path: '/pdf/ai-summarize-pdf' },
+      { name: 'AI Chat with PDF', path: '/pdf/ai-chat-pdf' }
     ]},
     { id: 'image-tools', name: 'Photos & Images', icon: <ImageIcon size={16} />, folderKey: 'image-tools', children: [
       { name: 'Remove Background', path: '/image/bg-remover' },
@@ -208,7 +214,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: 'Shrink Photo file', path: '/image/image-compressor' },
       { name: 'Resize Dimensions', path: '/image/image-resizer' },
       { name: 'Read Photo Details', path: '/image/imageinfo' },
-      { name: 'AI Image Generator', path: '/image/image-generator' }
+      { name: 'AI Image Generator', path: '/image/image-generator' },
+      { name: 'EXIF Metadata Stripper', path: '/image/metadata-stripper' },
+      { name: 'Color Palette Extractor', path: '/image/color-palette' }
     ]},
     { id: 'ai-writing-tools', name: 'AI Writing Assistant', icon: <PenTool size={16} />, folderKey: 'ai-writing-tools', children: [
       { name: 'AI Essay Writer', path: '/ai-writing/essay-writer' },
@@ -218,7 +226,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: 'AI FAQ Generator', path: '/ai-writing/faq-generator' },
       { name: 'AI Grammar Checker', path: '/ai-writing/grammar-fixer' },
       { name: 'AI Paragraph Paraphrase', path: '/ai-writing/ai-rewriter' },
-      { name: 'AI Chatbot Assistant', path: '/ai-writing/chatbot' }
+      { name: 'AI Chatbot Assistant', path: '/ai-writing/chatbot' },
+      { name: 'AI Smart Text Improver', path: '/ai-writing/text-improver' },
+      { name: 'AI Smart Text Summarizer', path: '/ai-writing/summarizer' },
+      { name: 'AI Prompts for Men', path: '/ai-writing/men-prompts' },
+      { name: 'AI Prompts for Women', path: '/ai-writing/women-prompts' },
+      { name: 'Refine Prompts Assistant', path: '/ai-writing/smartsuggestions' }
     ]},
     { id: 'developer-tools', name: 'Code & Dev Tools', icon: <Code size={16} />, folderKey: 'developer-tools', children: [
       { name: 'Format JSON code', path: '/developer-tools/json-code' },
@@ -226,7 +239,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: 'Optimize SVG vector', path: '/developer-tools/svg-optimizer' },
       { name: 'Structured SEO Schema Maker', path: '/developer-tools/schema-generator' },
       { name: 'URL Link Encoder', path: '/developer-tools/urlencoder' },
-      { name: 'Extract Links from Text', path: '/developer-tools/urlextractor' }
+      { name: 'Extract Links from Text', path: '/developer-tools/urlextractor' },
+      { name: 'Columns Data Summarizer', path: '/developer-tools/categorysummary' },
+      { name: 'E-Signatures Pad', path: '/developer-tools/e-signature' },
+      { name: 'Secured Vault Note', path: '/developer-tools/encrypted-note' },
+      { name: 'CSV Spreadsheet Viewer', path: '/developer-tools/csvviewer' },
+      { name: 'Frosty Glass CSS Maker', path: '/developer-tools/glass-gen' },
+      { name: 'Interactive Graph Maker', path: '/developer-tools/graphmaker' },
+      { name: 'Average & Mean Calculator', path: '/developer-tools/averagecalculator' },
+      { name: 'Sort Numbers in Order', path: '/developer-tools/numbersorter' }
     ]},
     { id: 'video-tools', name: 'Video Tools', icon: <Video size={16} />, folderKey: 'video-tools', children: [
       { name: 'Convert Video to GIF', path: '/video/video-to-gif' },
@@ -244,6 +265,16 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     { id: 'seo-tools', name: 'SEO & Marketing', icon: <Search size={16} />, folderKey: 'seo-tools', children: [
       { name: 'Audits Landing Meta Tags', path: '/seo/metatagviewer' },
       { name: 'Sitemap Schema Builder', path: '/seo/schema-generator' }
+    ]},
+    { id: 'social-media-tools', name: 'Social Media & Sharing', icon: <Share2 size={16} />, folderKey: 'social-media-tools', children: [
+      { name: 'Direct P2P File Transfer', path: '/social/p2p-share' },
+      { name: 'Link-In-Bio Page Builder', path: '/social/link-bio' }
+    ]},
+    { id: 'automation-tools', name: 'Schedules & Automation', icon: <Activity size={16} />, folderKey: 'automation-tools', children: [
+      { name: 'Batch File Renamer', path: '/automation/bulk-renamer' },
+      { name: 'Daily Schedule Planner', path: '/automation/dailyplanner' },
+      { name: 'Calendar Event Scheduler', path: '/automation/calendarviewer' },
+      { name: 'Alarm & Reminder Alerts', path: '/automation/reminderalert' }
     ]},
     { id: 'utility-tools', name: 'Everyday Tools', icon: <ClipboardList size={16} />, folderKey: 'utility-tools', children: [
       { name: 'Body Weight Analyzer (BMI)', path: '/utility/bmicalculator' },
@@ -267,7 +298,34 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: 'Spending Visual Graphs', path: '/utility/expenseanalytics' },
       { name: 'Printable Balance Statements', path: '/utility/dailymonthlyreport' },
       { name: 'Where Do I Spend Most?', path: '/utility/topspendinginsights' },
-      { name: 'Erase Ledger History', path: '/utility/resetexpenses' }
+      { name: 'Erase Ledger History', path: '/utility/resetexpenses' },
+      { name: 'View Expense Records', path: '/utility/expenselist' },
+      { name: 'Search & Filter Expenses', path: '/utility/searchexpenses' },
+      { name: 'Sales Discount Calculator', path: '/utility/discountcalc' },
+      { name: 'LCM & HCF Finder', path: '/utility/lcmhcf' },
+      { name: 'Convert Text Cases', path: '/utility/caseconverter' },
+      { name: 'Word & Character Counter', path: '/utility/wordcounter' },
+      { name: 'Generate Fibonacci Range', path: '/utility/fibonacci' },
+      { name: 'Factorial Calculator', path: '/utility/factorial' },
+      { name: 'Prime Number Checker', path: '/utility/primenumber' },
+      { name: 'Palindrome Checker', path: '/utility/palindrome' },
+      { name: 'Flip Text Backward', path: '/utility/textreverse' },
+      { name: 'Yes or No Decision Oracle', path: '/utility/yesnogerator' },
+      { name: 'Triangle Validity Inspector', path: '/utility/trianglechecker' },
+      { name: 'Remove Duplicate Words', path: '/utility/removeduplicates' },
+      { name: 'Creative Username Generator', path: '/utility/usernamegen' },
+      { name: 'Internet Speed Test', path: '/utility/speed-test' },
+      { name: 'Morse Code Converter', path: '/utility/morse-flash' },
+      { name: 'Distance Calc Coordinates', path: '/utility/distancecalc' },
+      { name: 'Class Grade Estimator', path: '/utility/examcalc' },
+      { name: 'Spin-the-Wheel Picker', path: '/utility/spinwheel' },
+      { name: 'Compare Choices Matrix', path: '/utility/choicecomparator' },
+      { name: 'Pick Random Winners', path: '/utility/randomnamepicker' },
+      { name: 'Encrypted Password Keeper', path: '/utility/passwordsaver' },
+      { name: 'Interactive Survey Builder', path: '/utility/surveybuilder' },
+      { name: 'My Surveys Dashboard', path: '/utility/mysurveys' },
+      { name: 'Survey Submissions Analyst', path: '/utility/responseviewer' },
+      { name: 'Fill Survey Form', path: '/utility/publicsurvey' }
     ]}
   ];
 

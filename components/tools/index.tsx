@@ -65,6 +65,7 @@ const JSONToTS           = dynamic(() => import('./JSONToTS'),          { ssr: f
 const EncryptedNote      = dynamic(() => import('./EncryptedNote'),     { ssr: false, loading: LoadingSkeleton });
 const LegacyToolBridge   = dynamic(() => import('./LegacyToolBridge'),  { ssr: false, loading: LoadingSkeleton });
 const MergePDF           = dynamic(() => import('./MergePDF'),          { ssr: false, loading: LoadingSkeleton });
+const CompressPDF        = dynamic(() => import('./CompressPDF'),       { ssr: false, loading: LoadingSkeleton });
 const SplitPDF           = dynamic(() => import('./SplitPDF'),          { ssr: false, loading: LoadingSkeleton });
 const WatermarkPDF       = dynamic(() => import('./WatermarkPDF'),      { ssr: false, loading: LoadingSkeleton });
 const ImageCompressor    = dynamic(() => import('./ImageCompressor'),   { ssr: false, loading: LoadingSkeleton });
@@ -185,6 +186,7 @@ export {
   EncryptedNote,
   LegacyToolBridge,
   MergePDF,
+  CompressPDF,
   SplitPDF,
   WatermarkPDF,
   ImageCompressor,
@@ -273,6 +275,7 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   EncryptedNote,
   LegacyToolBridge,
   MergePDF,
+  CompressPDF,
   SplitPDF,
   WatermarkPDF,
   ImageCompressor,
@@ -361,6 +364,8 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'encrypted-note': EncryptedNote,
   legacytoolbridge: LegacyToolBridge,
   mergepdf: MergePDF,
+  compresspdf: CompressPDF,
+  'compress-pdf': CompressPDF,
   splitpdf: SplitPDF,
   watermarkpdf: WatermarkPDF,
   compressimage: ImageCompressor,

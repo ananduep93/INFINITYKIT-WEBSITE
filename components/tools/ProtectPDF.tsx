@@ -74,7 +74,7 @@ export default function ProtectPDF() {
 
     return {
       downloadUrl,
-      fileName: `${file.name.replace(/\.pdf$/i, '')}.secured.pdf`,
+      fileName: `${file.name.replace(/\.pdf$/i, '')}_secured.pdf`,
       resultData: `Successfully encrypted "${file.name}" locally using military-grade AES-256-GCM browser sandboxing. Note down your password safely; it cannot be recovered.`
     };
   };

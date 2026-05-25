@@ -31,18 +31,18 @@ export default function ImageResizer() {
           canvas.height = height;
           ctx.drawImage(img, 0, 0, width, height);
 
-          const dataUrl = canvas.toDataURL(file.type);
-          fetch(dataUrl)
-            .then(res => res.blob())
-            .then(blob => {
-              const downloadUrl = URL.createObjectURL(blob);
-              resolve({
-                downloadUrl,
-                fileName: `resized_${file.name}`,
-                resultData: `Resized Image Dimensions: ${width}px x ${height}px\nAspect Ratio Mode: ${maintainAspect ? 'Locked' : 'Unlocked'}`
-              });
-            })
-            .catch(err => reject(err));
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              reject(new Error('Failed to resize image canvas.'));
+              return;
+            }
+            const downloadUrl = URL.createObjectURL(blob);
+            resolve({
+              downloadUrl,
+              fileName: `resized_${file.name}`,
+              resultData: `Resized Image Dimensions: ${width}px x ${height}px\nAspect Ratio Mode: ${maintainAspect ? 'Locked' : 'Unlocked'}`
+            });
+          }, file.type);
         };
         img.onerror = () => reject(new Error('Failed to load image structure.'));
         img.src = event.target?.result as string;
@@ -130,6 +130,12 @@ export default function ImageResizer() {
         accept="image/*"
         maxFiles={1}
         onProcess={handleResize}
+        onFileChange={handleFileLoaded}
+        onReset={() => {
+          setWidth(800);
+          setHeight(600);
+          setOriginalAspect(null);
+        }}
         actionButtonText="Resize Image"
         instructions={[
           'Upload your JPG, PNG, or WebP graphic file.',
