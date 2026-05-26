@@ -90,7 +90,7 @@ export default function AdminPage() {
             setUser(currentUser);
             setIsAdmin(true);
             fetchAdminData();
-          } else if (currentUser.email === 'admin@infinitykit.com') {
+          } else if (currentUser.email === 'admin@infinitykit.com' || currentUser.email === 'ananduep93@gmail.com') {
             setUser(currentUser);
             setIsAdmin(true);
             fetchAdminData();
@@ -159,7 +159,7 @@ export default function AdminPage() {
       const result = await signInWithPopup(auth, googleProvider);
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
-      if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com') {
+      if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com' || result.user.email === 'ananduep93@gmail.com') {
         setUser(result.user);
         setIsAdmin(true);
         fetchAdminData();
@@ -182,7 +182,7 @@ export default function AdminPage() {
       const result = await signInWithEmailAndPassword(auth, email.trim(), password);
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
-      if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com') {
+      if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com' || result.user.email === 'ananduep93@gmail.com') {
         setUser(result.user);
         setIsAdmin(true);
         fetchAdminData();

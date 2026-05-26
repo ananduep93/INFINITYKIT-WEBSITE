@@ -95,7 +95,7 @@ export default function ToolTesterPage() {
       if (currentUser) {
         try {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-          if ((userDoc.exists() && userDoc.data().role === 'admin') || currentUser.email === 'admin@infinitykit.com') {
+          if ((userDoc.exists() && userDoc.data().role === 'admin') || currentUser.email === 'admin@infinitykit.com' || currentUser.email === 'ananduep93@gmail.com') {
             setUser(currentUser);
             setIsAdmin(true);
             addLog('info', `Admin authentication verified for: ${currentUser.email}`);
