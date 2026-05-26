@@ -3,9 +3,47 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const dynamic = 'force-dynamic';
 
-const envGeminiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
-const envOpenaiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
-const envOpenrouterKey = process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || '';
+const envGeminiKey = process.env.GEMINI_API_KEY || '';
+const envOpenaiKey = process.env.OPENAI_API_KEY || '';
+const envOpenrouterKey = process.env.OPENROUTER_API_KEY || '';
+
+// ─── SERVER-SIDE SECURITY & RATE LIMITING ───────────────────────────────────
+
+interface RateLimitRecord {
+  timestamps: number[];
+}
+
+const rateLimitMap = new Map<string, RateLimitRecord>();
+const LIMIT_WINDOW_MS = 60 * 1000;      // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 60;    // 60 requests per minute limit
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { timestamps: [now] });
+    return false;
+  }
+
+  const record = rateLimitMap.get(ip)!;
+  // Filter timestamps keeping only those within the active 60-second window
+  record.timestamps = record.timestamps.filter(ts => now - ts < LIMIT_WINDOW_MS);
+
+  if (record.timestamps.length >= MAX_REQUESTS_PER_WINDOW) {
+    return true;
+  }
+
+  record.timestamps.push(now);
+  return false;
+}
+
+function sanitizeInput(text: string): string {
+  if (!text) return '';
+  // Strip potential script injections & dangerous tags
+  return text
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/<\/?[^>]+(>|$)/g, '')
+    .trim();
+}
 
 // Smart System Prompts Generator
 function getSystemPrompt(taskType: string, context?: string): string {
@@ -149,18 +187,35 @@ async function queryPollinationsFree(systemInstruction: string, userPrompt: stri
 }
 
 export async function POST(request: Request) {
+  // 1. IP-Based Sliding Window Rate Limiting Check
+  const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+  if (isRateLimited(clientIp)) {
+    return NextResponse.json({
+      error: 'Too many requests. Please slow down and try again in a minute.'
+    }, { 
+      status: 429,
+      headers: { 'Retry-After': '60' }
+    });
+  }
+
   let prompt = '';
   let taskType = '';
   let context = '';
   
   try {
     const body = await request.json();
-    prompt = body.prompt || '';
-    taskType = body.taskType || '';
-    context = body.context || '';
+    // 2. HTML sanitization of inputs to prevent script/tag injection
+    prompt = sanitizeInput(body.prompt || '');
+    taskType = sanitizeInput(body.taskType || '');
+    context = sanitizeInput(body.context || '');
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
+    }
+
+    // 3. Size boundaries check to prevent excessive payload attacks
+    if (prompt.length > 30000) {
+      return NextResponse.json({ error: 'Prompt exceeds the maximum allowed payload size (30,000 characters)' }, { status: 400 });
     }
 
     // Resolve client header keys & env keys

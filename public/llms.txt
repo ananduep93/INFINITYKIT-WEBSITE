@@ -1,98 +1,134 @@
-# InfinityKit - Dynamic AI-Readable Web Utilities Catalog
+# InfinityKit AI Tools Catalog
 
-InfinityKit is a premium suite of secure, high-performance web applications and digital utilities executed completely client-side in the browser. By leveraging local browser calculations, InfinityKit guarantees absolute user privacy, zero data uploads, and complete serverless security.
+InfinityKit is a modern, premium, and 100% client-side digital utility workspace offering 112+ distinct productivity, security, developer, and file manipulation tools with zero server-side file retention and strict user privacy.
 
-## Core Features & Core Values
-- **100% Client-Side Privacy:** All files, PDF operations, images, audio, video, calculations, and conversions are computed in-memory in the browser. Zero user data is uploaded to external servers.
-- **Microsecond Speeds:** High-performance, lightweight browser-based algorithms render calculations instantly.
-- **Zero Tracker Intrusion:** Open-access ecosystem with absolute zero telemetry, cookie payloads, or analytical monitoring.
-- **Premium Apple + Linear UI:** Beautiful White-Theme glassmorphic cards, diagonal ambient glows, and responsive typography optimized for all desktop and mobile displays.
-
----
-
-## Tool Categories & Route Catalog
-
-### 📄 Document & PDF Utilities
-- **Add Custom Text Watermarks to PDFs:** `/tools/watermarkpdf` - Stamp diagonal custom watermarks locally in browser.
-- **Combine Multiple PDFs into One:** `/tools/mergepdf` - Merge PDF file buffers instantly.
-- **Split PDF Pages & Extract Ranges:** `/tools/splitpdf` - Slice and extract pages from target PDFs.
-- **Lock PDF Files with Secure Password:** `/tools/protect-pdf` - Client-side AES encryption for PDF vaults.
-- **Unlock & Decrypt Protected PDFs:** `/tools/unlock-pdf` - Decrypt and unlock password-gated documents.
-- **Convert PDF Pages to Images:** `/tools/pdftoimage` - Render PDF documents into JPG/PNG sheets.
-- **Convert Images & Photos into PDF:** `/tools/imagetopdf` - Pack screenshots and layouts into a single PDF.
-- **Spin & Rotate PDF Pages:** `/tools/rotatepdf` - Correct orientation on rotated document pages.
-- **AI PDF Key Highlights Summarizer:** `/tools/ai-summarize-pdf` - Fast in-browser overview summaries of documents.
-- **AI Chat & Discuss with PDF:** `/tools/ai-chat-pdf` - Local context Q&A with dynamic file uploads.
-
-### 🖼️ Graphic & Photo Utilities
-- **Reduce Image File Size (Compressor):** `/tools/compressimage` - High-fidelity in-browser compression.
-- **Resize Image Boundaries (Height & Width):** `/tools/resizeimage` - Set specific resolutions and bounds.
-- **AI Background Stripper:** `/tools/bg-remover` - Auto background deletion.
-- **DSLR Portrait Background Blur:** `/tools/blur-background` - Dynamic portrait blur effects.
-- **Extract Text from Images (OCR):** `/tools/ocrimage` - In-browser optical character recognition.
-- **Image Dimension & Detail Checker:** `/tools/imageinfo` - Audit image dimensions, file sizes, and properties.
-- **Image Color Palette & Code Extractor:** `/tools/color-palette` - Pull color palettes and HEX/RGBA codes.
-- **e-Signature Studio:** `/tools/e-signature` - Draw, save, and download signature png files.
-- **Remove Secret Data from Photos (EXIF Stripper):** `/tools/metadata-stripper` - Scrub EXIF locations and camera metadata.
-
-### 🎥 Multi-Media, Audio, & Video Utilities
-- **Extract High-Quality Audio from Video:** `/tools/extract-audio` - Strip audio tracks directly.
-- **Convert Video into Animated GIF:** `/tools/video-to-gif` - Render custom timing GIF clips.
-- **Generate & Sync Video Subtitles:** `/tools/subtitles-generator` - Construct SRT files locally.
-- **Convert Video & Audio to Text Transcripts:** `/tools/video-transcription` - Dynamic transcription.
-- **Listen to Text Aloud (Voice Speaker):** `/tools/texttospeech` - Speech synthesis from text parameters.
-- **Focus Ambient Noise Mixer (Rain, Forest):** `/tools/focus-soundscape` - Ambient white/brown noise generator.
-
-### ✍️ Intelligent AI Writing Assistants
-- **Infinity AI Chat & Assistant:** `/tools/chatbot` - Full conversational companion.
-- **AI Smart Text Improver:** `/tools/text-improver` - Optimize draft voice, grammar, and flow.
-- **AI Smart Text Summarizer:** `/tools/summarizer` - Condense draft layouts into highlights.
-- **AI Canvas Art Generator:** `/tools/image-generator` - Generate custom artwork from text prompts.
-- **Refine Prompts for AI Chatbots:** `/tools/smartsuggestions` - Enhance prompts for ChatGPT, Gemini, and Claude.
-
-### 📊 Personal Finance & Spending Ledgers
-- **Record Daily Expense:** `/tools/expenseadd` - Record daily expenditures under custom labels.
-- **View Expense Records History:** `/tools/expenselist` - View and search chronological transactions.
-- **Savings & Monthly Budget Planner:** `/tools/budgettracker` - Allocate monthly limits and thresholds.
-- **Spending Visual Graphs & Charts:** `/tools/expenseanalytics` - Radial visual breakdowns of cashflows.
-- **Printable Expense & Income Statements Builder:** `/tools/dailymonthlyreport` - Compile structured cashflow statements.
-- **Where Do I Spend Most? (Spending Chart):** `/tools/topspendinginsights` - Check major category leaks.
-- **Search & Filter Expenses:** `/tools/searchexpenses` - Filter transactions by name, label, or price.
-- **Reset & Delete Expense Records:** `/tools/resetexpenses` - Purge local records for safety.
-
-### 🛠️ Utilities & Calculations
-- **Body Weight & Health Analyzer (BMI):** `/tools/bmicalculator` - Instant weight-to-height screening assessments.
-- **Pediatric & Adult Medicine Dose Calculator:** `/tools/drugdosage` - Pediatric & clinical mg/ml dosage estimations.
-- **Saline & IV Fluid Drip Rate Calculator:** `/tools/ivdripcalc` - Calculate drops/minute (gtt) for medical infusions.
-- **Daily Medicine Schedule Alarm & Organizer:** `/tools/medicinereminder` - Secure alarm system for medicine tracking.
-- **Daily Tasks List & Progress Tracker:** `/tools/todolist` - Task list and micro-schedules with local storage syncing.
-- **Quick Secure Notebook Vault:** `/tools/notes` - Quick text pads and markdown logs stored locally.
-- **Pomodoro Study Focus Timer:** `/tools/timer` - Study focus timer.
-- **Random Strong Password Generator:** `/tools/passwordgen` - Generate secure passwords locally.
-- **Scan-to-Open QR Code Generator:** `/tools/qrcode-gen` - Create custom dynamic QR codes locally.
-- **All-in-One Measurement Units Converter:** `/tools/unitconverter` - High-precision conversions across metrics.
-- **Sales Discount & Final Price Calculator:** `/tools/discountcalc` - Estimate sales markdown savings.
-- **Simple Percentage Calculator:** `/tools/percentagecalc` - Evaluate percentage multipliers.
-- **LCM & HCF Finder (Lowest & Highest Factors):** `/tools/lcmhcf` - Find math factor limits.
-- **Count Days and Time Between Dates:** `/tools/daysbetween` - Dynamic calendaring duration counts.
-- **Decision Maker Spin-the-Wheel Picker:** `/tools/spinwheel` - Visual random selector.
-- **Pick Random Winner from Names List:** `/tools/randomnamepicker` - Pick a random winner from list parameters.
-- **Self-Destructing Secret Notes:** `/tools/note-shredder` - Destroy notes on reading timer limits.
-- **Password Data Breach Database Checker:** `/tools/password-leak` - Safely audit leak status via k-anonymity.
-
-### 💻 Developer Sandbox & SEO
-- **SEO JSON-LD Structured Data Schema Maker:** `/tools/schema-generator` - Generate search-engine schemas.
-- **JSON to TypeScript Code Converter:** `/tools/json-to-ts` - Autogenerate typings from payloads.
-- **JSON Code Formatter & Beautifier:** `/tools/json-code` - Formats payload codes.
-- **SVG Vector Image Compressor:** `/tools/svg-optimizer` - Sanitize and compress SVG path vectors.
-- **Bulk File Batch Renamer:** `/tools/bulk-renamer` - Batch rename files client-side.
-- **Website Search Engine Meta Tag Inspector:** `/tools/metatagviewer` - Inspect layout meta properties.
+## Core Platform Attributes
+- **Privacy-First**: Zero server-side file storage. PDF splitting, resizing, merging, and image compressions execute locally inside the browser memory.
+- **AI Integrations**: Server-side AI text processing backed by Google Gemini, OpenAI, and free live Pollinations fallback.
+- **Synced cloud backups**: Firestore secured bidirectional synchronisation of notes, checklists, and outflow balance ledgers.
 
 ---
 
-## Technical Architecture specifications
-- **Framework:** Next.js (App Router React v18)
-- **Deployment Endpoint:** Standard NextJS build compiled to statically optimized client page pathways
-- **Asset Base Url:** `https://infinitykit.online`
-- **Sitemap Location:** `https://infinitykit.online/sitemap.xml`
-- **Robots Rules:** Direct crawl permission granted to all bots (`*`, `GPTBot`, `ClaudeBot`, `Google-Extended`, `PerplexityBot`)
+## Tool Folders & Routes Directory
+
+### 📄 PDF Documents (`/pdf`)
+Lightweight, client-side PDF document manipulation tools:
+- **Merge PDF files**: `/pdf/mergepdf` (Combine multiple PDF files)
+- **Split PDF pages**: `/pdf/splitpdf` (Extract pages from PDF)
+- **Reduce PDF size**: `/pdf/compresspdf` (Optimize stream size)
+- **Rotate PDF pages**: `/pdf/rotatepdf` (Change orientation)
+- **Password Lock PDF**: `/pdf/protectpdf` (Secure PDF with password)
+- **Unlock PDF file**: `/pdf/unlockpdf` (Decrypt standard password)
+- **Export PDF to Images**: `/pdf/pdftoimage` (Render PDF as PNGs)
+- **Convert Images to PDF**: `/pdf/imagetopdf` (Compile images into PDF)
+- **Add PDF Watermark**: `/pdf/watermarkpdf` (Inject custom text watermark overlay)
+- **AI PDF Summarizer**: `/pdf/ai-summarize-pdf` (Extract highlights from uploaded PDF)
+- **AI Chat with PDF**: `/pdf/ai-chat-pdf` (Discuss context with PDF content)
+
+### 🖼️ Photos & Images (`/image`)
+In-browser graphical editing and conversion utilities:
+- **Remove Background**: `/image/bg-remover` (Strip background overlay)
+- **Blur Background**: `/image/blur-background` (Apply Gaussian blur)
+- **Shrink Photo file**: `/image/image-compressor` (Lossy canvas size reducer)
+- **Resize Dimensions**: `/image/image-resizer` (Crop and adjust coordinates)
+- **Read Photo Details**: `/image/imageinfo` (Check EXIF and metadata details)
+- **AI Image Generator**: `/image/image-generator` (Descriptive prompt-to-art canvas creator)
+- **EXIF Metadata Stripper**: `/image/metadata-stripper` (Wipe camera details from files)
+- **Color Palette Extractor**: `/image/color-palette` (Extract dynamic HEX color arrays from photos)
+
+### ✍️ AI Writing Assistant (`/ai-writing`)
+Advanced copywriting and editing engines:
+- **AI Essay Writer**: `/ai-writing/essay-writer` (Generate academic essays)
+- **AI Text Humanizer**: `/ai-writing/ai-humanizer` (Rewrite text avoiding robotic GPT clichés)
+- **AI Blog Planner**: `/ai-writing/blog-generator` (Create SEO blog structure)
+- **AI Article Planner**: `/ai-writing/article-writer` (Generate conversational news articles)
+- **AI FAQ Generator**: `/ai-writing/faq-generator` (Create helpful FAQs list)
+- **AI Grammar Checker**: `/ai-writing/grammar-fixer` (Proofread syntax and spelling errors)
+- **AI Paragraph Paraphrase**: `/ai-writing/ai-rewriter` (Restructure paragraphs cleanly)
+- **AI Chatbot Assistant**: `/ai-writing/chatbot` (Interact with advanced Infinity AI model)
+- **AI Smart Text Improver**: `/ai-writing/text-improver` (Elevate document vocabulary)
+- **AI Smart Text Summarizer**: `/ai-writing/summarizer` (Distill long essays into outline key highlights)
+- **AI Prompts for Men**: `/ai-writing/men-prompts` (Tailored style prompts)
+- **AI Prompts for Women**: `/ai-writing/women-prompts` (Tailored style prompts)
+- **Refine Prompts Assistant**: `/ai-writing/smartsuggestions` (Optimize prompts for LLMs)
+
+### 💻 Code & Dev Tools (`/developer-tools`)
+Structured formatters, converters, and design codegen:
+- **Format JSON code**: `/developer-tools/json-code` (Clean and validate JSON)
+- **JSON to TypeScript class**: `/developer-tools/json-to-ts` (Infer interfaces from payload)
+- **Optimize SVG vector**: `/developer-tools/svg-optimizer` (Optimize SVGO XML paths)
+- **Structured SEO Schema Maker**: `/developer-tools/schema-generator` (Build JSON-LD sitemaps)
+- **URL Link Encoder**: `/developer-tools/urlencoder` (Encode/Decode url query segments)
+- **Extract Links from Text**: `/developer-tools/urlextractor` (RegExp url stripper)
+- **Columns Data Summarizer**: `/developer-tools/categorysummary` (Analyze numerical/categorical spreadsheet columns)
+- **E-Signatures Pad**: `/developer-tools/e-signature` (Draw and export online e-signatures)
+- **Secured Vault Note**: `/developer-tools/encrypted-note` (Password protect sensitive client notes)
+- **CSV Spreadsheet Viewer**: `/developer-tools/csvviewer` (Tabular display and edit CSV data)
+- **Frosty Glass CSS Maker**: `/developer-tools/glass-gen` (Generate glassmorphism CSS codes)
+- **Interactive Graph Maker**: `/developer-tools/graphmaker` (Plot dataset lines and bars on HTML canvas)
+- **Average & Mean Calculator**: `/developer-tools/averagecalculator` (Mean, median, and average calculator)
+- **Sort Numbers in Order**: `/developer-tools/numbersorter` (Order arrays mathematically)
+
+### 🛠️ Everyday Tools (`/utility`)
+Daily productivity calculators, security scanners, and study planners:
+- **Body Weight Analyzer (BMI)**: `/utility/bmicalculator` (Health mass index analyzer)
+- **Medicine Dose Calculator**: `/utility/drugdosage` (Prescription mg weight estimator)
+- **IV Fluid Drip Rate**: `/utility/ivdripcalc` (Saline IV drops/min calculator)
+- **Daily Doses Reminder Alarm**: `/utility/medicinereminder` (Pill alarm scheduler)
+- **Pomodoro Study Timer**: `/utility/timer` (Focus interval stopwatch)
+- **Crypto Password Maker**: `/utility/passwordgen` (Generate highly secure passwords)
+- **Scan-to-Open QR Maker**: `/utility/qrcode-gen` (Dynamic QR code generator)
+- **Measurement Units Converter**: `/utility/unitconverter` (Length, mass, and volume converter)
+- **Percentage Discount Calc**: `/utility/percentagecalc` (Standard percent calculator)
+- **Days Counter between Dates**: `/utility/daysbetween` (Calculate duration between dates)
+- **Self-Destruct Notes**: `/utility/note-shredder` (Notes that self-destruct once read)
+- **Breaches Leak Scanner**: `/utility/password-leak` (Secure SHA-1 HaveIBeenPwned scanner)
+- **Key Strength Entropy**: `/utility/passwordstrength` (Calculate cracking entropy bits)
+- **Parabola Math Solver**: `/utility/equationsolver` (Solve quadratic vertex roots)
+- **Daily To-Do Checklist**: `/utility/todolist` (Task list synced to cloud)
+- **Quick Notebook Vault**: `/utility/notes` (Personal notes synchronized to cloud)
+- **Outflow Purchases Recorder**: `/utility/expenseadd` (Budget tracker outflow recorder)
+- **Savings Limits Planner**: `/utility/budgettracker` (Savings limit planner)
+- **Spending Visual Graphs**: `/utility/expenseanalytics` (Visual budgeting graphs)
+- **Printable Balance Statements**: `/utility/dailymonthlyreport` (Export statement balance reports)
+- **Where Do I Spend Most?**: `/utility/topspendinginsights` (Budget drains analytics)
+- **Erase Ledger History**: `/utility/resetexpenses` (Clear all budgets)
+- **View Expense Records**: `/utility/expenselist` (View historical purchases list)
+- **Search & Filter Expenses**: `/utility/searchexpenses` (Query transactions)
+- **Sales Discount Calculator**: `/utility/discountcalc` (Final price discount solver)
+- **LCM & HCF Finder**: `/utility/lcmhcf` (Calculate lowest & highest factors)
+- **Convert Text Cases**: `/utility/caseconverter` (UPPER, lower, and Title case converter)
+- **Word & Character Counter**: `/utility/wordcounter` (Inspect length and density)
+- **Generate Fibonacci Range**: `/utility/fibonacci` (Output Fibonacci range)
+- **Factorial Calculator**: `/utility/factorial` (Solve mathematical factorials)
+- **Prime Number Checker**: `/utility/primenumber` (Validate prime criteria)
+- **Palindrome Checker**: `/utility/palindrome` (Check flipped word reading parity)
+- **Flip Text Backward**: `/utility/textreverse` (Reverse texts character-by-character)
+- **Yes or No Decision Oracle**: `/utility/yesnogerator` (Decision-making oracle)
+- **Triangle Validity Inspector**: `/utility/trianglechecker` (Verify geometric angle validities)
+- **Remove Duplicate Words**: `/utility/removeduplicates` (Wipe repeating word occurrences)
+- **Creative Username Generator**: `/utility/usernamegen` (Create engaging handles)
+- **Internet Speed Test**: `/utility/speed-test` (In-browser speed latency checker)
+- **Morse Code Converter**: `/utility/morse-flash` (Convert letters to Morse signals)
+- **Distance Calc Coordinates**: `/utility/distancecalc` (Euclidean distance calculator)
+- **Class Grade Estimator**: `/utility/examcalc` (Estimate exam percentages)
+- **Spin-the-Wheel Picker**: `/utility/spinwheel` (Animated selection spinner picker)
+- **Compare Choices Matrix**: `/utility/choicecomparator` (Matrix comparison layout tool)
+- **Pick Random Winners**: `/utility/randomnamepicker` (Draw a random winner from list)
+- **Encrypted Password Keeper**: `/utility/passwordsaver` (Store passwords in local AES vault)
+- **Interactive Survey Builder**: `/utility/surveybuilder` (Create active questionnaires)
+- **My Surveys Dashboard**: `/utility/mysurveys` (Inspect survey submissions dashboard)
+- **Survey Submissions Analyst**: `/utility/responseviewer` (Export analytical responses data)
+- **Fill Survey Form**: `/utility/publicsurvey` (Public survey answer submission sheet)
+
+### ⚡ Schedules & Automation (`/automation`)
+Time management and batch processing:
+- **Batch File Renamer**: `/automation/bulk-renamer` (Batch rename uploaded files)
+- **Daily Schedule Planner**: `/automation/dailyplanner` (Arrange and organize schedules)
+- **Calendar Event Scheduler**: `/automation/calendarviewer` (Schedule calendar dates)
+- **Alarm & Reminder Alerts**: `/automation/reminderalert` (Set alerts with triggers)
+
+### 📱 Social Media & Sharing (`/social`)
+P2P sharing and social builders:
+- **Direct P2P File Transfer**: `/social/p2p-share` (Direct in-browser P2P WebRTC sharing)
+- **Link-In-Bio Page Builder**: `/social/link-bio` (Responsive social landing creator)
