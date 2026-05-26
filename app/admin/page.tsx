@@ -156,7 +156,25 @@ export default function AdminPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      let result;
+      try {
+        result = await signInWithPopup(auth, googleProvider);
+      } catch (popupError: any) {
+        console.warn("Popup blocked or failed, trying redirect fallback...", popupError);
+        if (
+          popupError.code === 'auth/popup-blocked' ||
+          popupError.code === 'auth/popup-closed-by-user' ||
+          /Android|iPhone|iPad/i.test(navigator.userAgent)
+        ) {
+          const { signInWithRedirect } = await import('firebase/auth');
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } else {
+          throw popupError;
+        }
+      }
+
+      if (!result) return;
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
       if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com' || result.user.email === 'ananduep93@gmail.com') {
@@ -167,9 +185,13 @@ export default function AdminPage() {
         await signOut(auth);
         alert("Access Denied: You do not possess administrator rights.");
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Authentication failed:", e);
-      alert("Sign in failed. Check console.");
+      if (e.code === 'auth/unauthorized-domain') {
+        alert("🔒 Firebase Domain Unauthorized:\n\nYou must add 'infinitykit.online' and 'www.infinitykit.online' to your Firebase Console under 'Authentication' -> 'Settings' -> 'Authorized Domains'.\n\nGoogle OAuth will fail on custom domains until whitelisted in Firebase!");
+      } else {
+        alert(`Sign in failed: ${e.message || e}`);
+      }
     }
   };
 
