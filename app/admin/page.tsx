@@ -154,6 +154,34 @@ export default function AdminPage() {
     }
   };
 
+  const saveUserProfile = async (currentUser: User) => {
+    if (!currentUser) return;
+    try {
+      const userRef = doc(db, 'users', currentUser.uid);
+      const userSnap = await getDoc(userRef);
+
+      const profileData: any = {
+        uid: currentUser.uid,
+        email: currentUser.email,
+        displayName: currentUser.displayName || 'User',
+        photoURL: currentUser.photoURL || '',
+        lastLogin: new Date().toISOString()
+      };
+
+      // Set admin role for whitelisted emails
+      if (currentUser.email === 'admin@infinitykit.com' || currentUser.email === 'ananduep93@gmail.com') {
+        profileData.role = 'admin';
+      } else if (!userSnap.exists()) {
+        profileData.role = 'user';
+      }
+
+      const { setDoc } = await import('firebase/firestore');
+      await setDoc(userRef, profileData, { merge: true });
+    } catch (error: any) {
+      console.warn('Error saving profile:', error.message);
+    }
+  };
+
   const handleGoogleLogin = async () => {
     try {
       let result;
@@ -175,6 +203,7 @@ export default function AdminPage() {
       }
 
       if (!result) return;
+      await saveUserProfile(result.user);
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
       if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com' || result.user.email === 'ananduep93@gmail.com') {
@@ -202,6 +231,7 @@ export default function AdminPage() {
     setLoginError(null);
     try {
       const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+      await saveUserProfile(result.user);
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
       if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com' || result.user.email === 'ananduep93@gmail.com') {
