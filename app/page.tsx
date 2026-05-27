@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { tools, categories, mapCategoryToPath } from '../config/tools';
 import { useSync } from '../hooks/useSync';
+import { db } from '../lib/firebase';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
 
 export default function HomePage() {
   const { favorites, recentTools, toggleFavorite } = useSync();
@@ -21,6 +23,112 @@ export default function HomePage() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [activeWorkflow, setActiveWorkflow] = useState<string>('document');
   const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  // Reviews & Rating states
+  const [reviews, setReviews] = useState<{ id: string; name: string; rating: number; message: string; timestamp: any }[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewName, setReviewName] = useState('');
+  const [reviewMessage, setReviewMessage] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewSuccess, setReviewSuccess] = useState<string | null>(null);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setLoadingReviews(true);
+      try {
+        const q = query(collection(db, 'reviews'), orderBy('timestamp', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const reviewList: any[] = [];
+        querySnapshot.forEach((doc) => {
+          reviewList.push({ id: doc.id, ...doc.data() });
+        });
+
+        if (reviewList.length === 0) {
+          // Auto-seed mock reviews if collection is empty
+          const seedReviews = [
+            {
+              name: "Anand H.",
+              rating: 5,
+              message: "InfinityKit is amazing. Having access to PDF mergers and QR tools that run completely local inside my browser with absolute zero server latency is a total lifesaver for private client data.",
+              timestamp: new Date()
+            },
+            {
+              name: "Sarah L.",
+              rating: 5,
+              message: "Unlike TinyWow which limits uploads and runs slowly, this feels like an Apple product—lightweight, frosted panels, beautiful theme switches, and instant client-side responses.",
+              timestamp: new Date()
+            }
+          ];
+
+          const seededList: any[] = [];
+          for (const sReview of seedReviews) {
+            const docRef = await addDoc(collection(db, 'reviews'), {
+              name: sReview.name,
+              rating: sReview.rating,
+              message: sReview.message,
+              timestamp: serverTimestamp()
+            });
+            seededList.push({ id: docRef.id, ...sReview });
+          }
+          setReviews(seededList);
+        } else {
+          setReviews(reviewList);
+        }
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewName.trim() || !reviewMessage.trim()) {
+      setReviewError("Please fill out both your name and review message.");
+      return;
+    }
+    
+    setIsSubmittingReview(true);
+    setReviewError(null);
+    setReviewSuccess(null);
+
+    try {
+      const docRef = await addDoc(collection(db, 'reviews'), {
+        name: reviewName.trim(),
+        rating: reviewRating,
+        message: reviewMessage.trim(),
+        timestamp: serverTimestamp()
+      });
+
+      const newReview = {
+        id: docRef.id,
+        name: reviewName.trim(),
+        rating: reviewRating,
+        message: reviewMessage.trim(),
+        timestamp: new Date()
+      };
+
+      setReviews((prev) => [newReview, ...prev]);
+      setReviewName('');
+      setReviewMessage('');
+      setReviewRating(5);
+      setShowReviewForm(false);
+      setReviewSuccess("Thank you! Your review has been added successfully.");
+      setTimeout(() => setReviewSuccess(null), 5000);
+    } catch (err: any) {
+      console.error("Error submitting review:", err);
+      setReviewError(err.message || "Failed to submit review. Please try again.");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   // Statistics calculation
   const stats = useMemo(() => {
@@ -736,52 +844,232 @@ export default function HomePage() {
             <h2 style={{ fontSize: '1.45rem', fontWeight: 850, marginBottom: '6px', letterSpacing: '-0.3px' }}>
               Loved by Engineers & Visual Creators
             </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
               See why digital architects prefer browser-native privacy over server-dependent tools.
             </p>
+            
+            {/* Add Review Buttons & Feedback */}
+            <button
+              onClick={() => setShowReviewForm(!showReviewForm)}
+              style={{
+                background: 'var(--primary-gradient)',
+                color: 'white',
+                border: 'none',
+                padding: '10px 24px',
+                borderRadius: '30px',
+                fontWeight: 700,
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(0,161,155,0.2)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <MessageSquare size={16} /> {showReviewForm ? 'Cancel Review' : 'Write a Review'}
+            </button>
+
+            {reviewSuccess && (
+              <div style={{ color: '#10b981', fontSize: '0.88rem', fontWeight: 600, marginTop: '12px' }}>
+                {reviewSuccess}
+              </div>
+            )}
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '24px'
-          }}>
-            <div className="glass-panel" style={{ margin: 0, padding: '28px', border: '1px solid rgba(0,0,0,0.03)' }}>
-              <div style={{ display: 'flex', color: 'var(--warning-color)', gap: '2px', marginBottom: '12px' }}>
-                <Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" />
-              </div>
-              <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '20px' }}>
-                "InfinityKit is amazing. Having access to PDF mergers and QR tools that run completely local inside my browser with absolute zero server latency is a total lifesaver for private client data."
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: 'white', fontWeight: 700 }}>
-                  AH
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>Anand H.</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Senior DevOps Engineer</div>
-                </div>
-              </div>
-            </div>
+          {/* Star Rating & Review Input Form (Glass Card) */}
+          <AnimatePresence>
+            {showReviewForm && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="glass-panel"
+                style={{
+                  maxWidth: '550px',
+                  margin: '0 auto 40px',
+                  padding: '30px',
+                  border: '1px solid var(--primary-color)',
+                  boxShadow: '0 8px 32px rgba(0,161,155,0.05)'
+                }}
+              >
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px', textAlign: 'center' }}>
+                  Share Your InfinityKit Experience
+                </h3>
+                
+                <form onSubmit={handleSubmitReview} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  
+                  {/* Name field */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px' }}>Your Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Alex M."
+                      value={reviewName}
+                      onChange={(e) => setReviewName(e.target.value)}
+                      className="form-input"
+                      required
+                    />
+                  </div>
 
-            <div className="glass-panel" style={{ margin: 0, padding: '28px', border: '1px solid rgba(0,0,0,0.03)' }}>
-              <div style={{ display: 'flex', color: 'var(--warning-color)', gap: '2px', marginBottom: '12px' }}>
-                <Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" />
-              </div>
-              <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '20px' }}>
-                "Unlike TinyWow which limits uploads and runs slowly, this feels like an Apple product—lightweight, frosted panels, beautiful theme switches, and instant client-side responses."
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent-purple) 0%, var(--primary-glow) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: 'white', fontWeight: 700 }}>
-                  SL
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>Sarah L.</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>UI/UX Product Designer</div>
-                </div>
-              </div>
+                  {/* Rating Selector */}
+                  <div style={{ margin: 0 }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px' }}>Your Rating</label>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const isFilled = hoverRating !== null ? star <= hoverRating : star <= reviewRating;
+                        return (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setReviewRating(star)}
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(null)}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--warning-color)' }}
+                          >
+                            <Star 
+                              size={24} 
+                              fill={isFilled ? "currentColor" : "none"} 
+                              stroke="currentColor"
+                              strokeWidth={1.5}
+                            />
+                          </button>
+                        );
+                      })}
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '10px' }}>
+                        ({reviewRating} out of 5 stars)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Message field */}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px' }}>Review Comment</label>
+                    <textarea
+                      placeholder="What do you love most about InfinityKit?"
+                      value={reviewMessage}
+                      onChange={(e) => setReviewMessage(e.target.value)}
+                      className="form-input"
+                      style={{ minHeight: '100px', resize: 'vertical' }}
+                      required
+                    />
+                  </div>
+
+                  {reviewError && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 600 }}>
+                      ⚠️ {reviewError}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '5px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowReviewForm(false)}
+                      className="btn btn-secondary"
+                      style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingReview}
+                      className="btn"
+                      style={{ padding: '8px 24px', fontSize: '0.85rem' }}
+                    >
+                      {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                    </button>
+                  </div>
+
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Testimonial Cards Listing */}
+          {loadingReviews ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+              <div style={{
+                width: '30px',
+                height: '30px',
+                border: '3px solid var(--glass-border)',
+                borderTopColor: 'var(--primary-color)',
+                borderRadius: '50%',
+                animation: 'home-spin 0.75s linear infinite'
+              }} />
+              <style jsx>{`@keyframes home-spin { to { transform: rotate(360deg); } }`}</style>
             </div>
-          </div>
+          ) : reviews.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic', padding: '20px 0' }}>
+              No customer reviews yet. Be the first to add one!
+            </p>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '24px'
+            }}>
+              {reviews.map((rev) => {
+                const initials = rev.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
+                return (
+                  <div 
+                    key={rev.id} 
+                    className="glass-panel" 
+                    style={{ 
+                      margin: 0, 
+                      padding: '28px', 
+                      border: '1px solid rgba(0,0,0,0.03)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <div>
+                      {/* Rating */}
+                      <div style={{ display: 'flex', color: 'var(--warning-color)', gap: '2px', marginBottom: '12px' }}>
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star 
+                            key={i} 
+                            size={14} 
+                            fill={i < rev.rating ? "currentColor" : "none"} 
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Comment */}
+                      <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '20px' }}>
+                        "{rev.message}"
+                      </p>
+                    </div>
+
+                    {/* Author Profile */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ 
+                        width: '36px', 
+                        height: '36px', 
+                        borderRadius: '50%', 
+                        background: 'var(--primary-gradient)', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        fontSize: '0.8rem', 
+                        color: 'white', 
+                        fontWeight: 700 
+                      }}>
+                        {initials}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{rev.name}</div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>InfinityKit User</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 

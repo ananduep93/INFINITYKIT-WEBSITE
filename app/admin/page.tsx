@@ -26,7 +26,8 @@ import {
   Layers, 
   ExternalLink,
   CheckCircle,
-  Settings
+  Settings,
+  Star
 } from 'lucide-react';
 
 interface UpdateItem {
@@ -49,11 +50,19 @@ interface PromptItem {
   prompt: string;
 }
 
+interface ReviewItem {
+  id: string;
+  name: string;
+  rating: number;
+  message: string;
+  timestamp: any;
+}
+
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'updates' | 'affiliates' | 'prompts'>('updates');
+  const [activeTab, setActiveTab] = useState<'updates' | 'affiliates' | 'prompts' | 'reviews'>('updates');
 
   // Credentials input states
   const [email, setEmail] = useState('');
@@ -74,6 +83,7 @@ export default function AdminPage() {
   const [updates, setUpdates] = useState<UpdateItem[]>([]);
   const [affiliates, setAffiliates] = useState<AffiliateItem[]>([]);
   const [prompts, setPromptItem] = useState<PromptItem[]>([]);
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
 
   // Action loading states
   const [actionLoading, setActionLoading] = useState(false);
@@ -137,7 +147,7 @@ export default function AdminPage() {
       });
       setAffiliates(aList);
 
-      // 3. Fetch AI Prompts
+       // 3. Fetch AI Prompts
       const pSnap = await getDocs(query(collection(db, 'aiPrompts'), limit(15)));
       const pList: PromptItem[] = [];
       pSnap.forEach(d => {
@@ -149,6 +159,20 @@ export default function AdminPage() {
         });
       });
       setPromptItem(pList);
+
+      // 4. Fetch Reviews
+      const rSnap = await getDocs(query(collection(db, 'reviews'), orderBy('timestamp', 'desc'), limit(50)));
+      const rList: ReviewItem[] = [];
+      rSnap.forEach(d => {
+        rList.push({
+          id: d.id,
+          name: d.data().name || '',
+          rating: d.data().rating || 5,
+          message: d.data().message || '',
+          timestamp: d.data().timestamp
+        });
+      });
+      setReviews(rList);
     } catch (err) {
       console.error("Error loading admin collections:", err);
     }
@@ -229,8 +253,30 @@ export default function AdminPage() {
     if (!email.trim() || !password) return;
     setLoginLoading(true);
     setLoginError(null);
+
+    let targetEmail = email.trim();
+    let targetPassword = password;
+
+    const isStaticAdmin = targetEmail.toLowerCase() === 'infinitykit' && targetPassword === 'infinitykit';
+    if (isStaticAdmin) {
+      targetEmail = 'admin@infinitykit.com';
+      targetPassword = 'infinitykit';
+    }
+
     try {
-      const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+      let result;
+      try {
+        result = await signInWithEmailAndPassword(auth, targetEmail, targetPassword);
+      } catch (err: any) {
+        if (isStaticAdmin && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential')) {
+          // If the static admin user account doesn't exist yet, automatically register it!
+          const { createUserWithEmailAndPassword } = await import('firebase/auth');
+          result = await createUserWithEmailAndPassword(auth, targetEmail, targetPassword);
+        } else {
+          throw err;
+        }
+      }
+
       await saveUserProfile(result.user);
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
@@ -445,12 +491,12 @@ export default function AdminPage() {
           </p>
 
           {/* Email / Password credentials form fallback */}
-          <form onSubmit={handleEmailLogin} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '25px' }}>
+          <form onSubmit={handleEmailLogin} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Admin Email Address</label>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Admin Username</label>
               <input
-                type="email"
-                placeholder="admin@infinitykit.com"
+                type="text"
+                placeholder="infinitykit"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -473,7 +519,7 @@ export default function AdminPage() {
               <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
+                placeholder="infinitykit"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -522,50 +568,12 @@ export default function AdminPage() {
                 cursor: 'pointer',
                 boxShadow: '0 4px 15px rgba(0, 161, 155, 0.15)',
                 transition: 'all 0.2s',
-                marginTop: '5px'
+                marginTop: '10px'
               }}
             >
               {loginLoading ? 'Authenticating...' : 'Sign in as Administrator'}
             </button>
           </form>
-
-          {/* Separator line */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '20px' }}>
-            <span style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></span>
-            <span>or single sign-on</span>
-            <span style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></span>
-          </div>
-
-          <button
-            onClick={handleGoogleLogin}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              backgroundColor: 'white',
-              border: '1px solid #ddd',
-              color: '#333',
-              borderRadius: '30px',
-              padding: '12px 24px',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f8f8'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-          >
-            <svg style={{ width: '18px', height: '18px' }} viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1c-4.3 0-8.01 2.47-9.82 6.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Verify with Google
-          </button>
         </div>
       </div>
     );
@@ -737,6 +745,25 @@ export default function AdminPage() {
         >
           <Layers size={16} /> AI Prompt Cards
         </button>
+        <button
+          onClick={() => setActiveTab('reviews')}
+          style={{
+            background: activeTab === 'reviews' ? 'rgba(0,161,155,0.08)' : 'none',
+            border: 'none',
+            color: activeTab === 'reviews' ? 'var(--primary-color)' : 'var(--text-secondary)',
+            fontWeight: 700,
+            padding: '10px 20px',
+            borderRadius: '10px',
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.2s'
+          }}
+        >
+          <Star size={16} /> Customer Reviews
+        </button>
       </nav>
 
       {/* Grid workspace */}
@@ -896,6 +923,46 @@ export default function AdminPage() {
             </form>
           )}
 
+          {activeTab === 'reviews' && (
+            <div className="glass-panel" style={{ margin: 0, padding: '30px' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: 0 }}>
+                <Star size={18} color="var(--primary-color)" fill="var(--primary-color)" /> Reviews Analytics
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ textAlign: 'center', padding: '20px 0', borderBottom: '1px solid var(--glass-border)' }}>
+                  <div style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--primary-color)', fontFamily: "'Outfit', sans-serif" }}>
+                    {reviews.length > 0 ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1) : '0.0'}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', margin: '8px 0', color: 'var(--warning-color)' }}>
+                    {Array.from({ length: 5 }).map((_, i) => {
+                      const avg = reviews.length > 0 ? reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length : 0;
+                      return <Star key={i} size={16} fill={i < Math.round(avg) ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} />;
+                    })}
+                  </div>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Based on {reviews.length} customer {reviews.length === 1 ? 'review' : 'reviews'}
+                  </span>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const count = reviews.filter(r => r.rating === stars).length;
+                    const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                    return (
+                      <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.8rem' }}>
+                        <span style={{ width: '45px', fontWeight: 700, color: 'var(--text-secondary)' }}>{stars} Star</span>
+                        <div style={{ flex: 1, height: '8px', background: 'var(--glass-border)', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: 'var(--primary-gradient)', borderRadius: '4px' }}></div>
+                        </div>
+                        <span style={{ width: '30px', textAlign: 'right', fontWeight: 700, color: 'var(--text-color)' }}>{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
 
         {/* RIGHT COLUMN: Database Listing */}
@@ -903,7 +970,8 @@ export default function AdminPage() {
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: 0 }}>
             <span>Database Items ({
               activeTab === 'updates' ? updates.length :
-              activeTab === 'affiliates' ? affiliates.length : prompts.length
+              activeTab === 'affiliates' ? affiliates.length :
+              activeTab === 'prompts' ? prompts.length : reviews.length
             })</span>
           </h2>
 
@@ -971,6 +1039,34 @@ export default function AdminPage() {
                     <button
                       onClick={() => handleDeleteItem('aiPrompts', item.id)}
                       style={{ background: 'none', border: 'none', color: '#dc3545', cursor: 'pointer', padding: '4px' }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))
+              )
+            )}
+
+            {activeTab === 'reviews' && (
+              reviews.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textAlign: 'center', padding: '30px 0' }}>No customer reviews recorded.</p>
+              ) : (
+                reviews.map((item) => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '15px', padding: '15px', border: '1px solid var(--glass-border)', borderRadius: '12px', background: 'rgba(255,255,255,0.01)' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-color)' }}>{item.name}</span>
+                        <div style={{ display: 'flex', color: 'var(--warning-color)', gap: '1px' }}>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} size={10} fill={i < item.rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} />
+                          ))}
+                        </div>
+                      </div>
+                      <p style={{ fontSize: '0.8rem', margin: 0, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{item.message}</p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteItem('reviews', item.id)}
+                      style={{ background: 'none', border: 'none', color: '#dc3545', cursor: 'pointer', padding: '4px', alignSelf: 'flex-start' }}
                     >
                       <Trash2 size={16} />
                     </button>
