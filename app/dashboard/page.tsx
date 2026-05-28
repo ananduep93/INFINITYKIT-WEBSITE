@@ -41,12 +41,16 @@ export default function DashboardPage() {
 
       const params = new URLSearchParams(window.location.search);
       const authType = params.get('auth');
-      if (authType === 'login') {
+      const redirectType = sessionStorage.getItem('authRedirectSuccess');
+      
+      if (authType === 'login' || redirectType === 'login') {
         setAuthSuccessToast('Sign In Successful! Welcome back.');
+        if (redirectType) sessionStorage.removeItem('authRedirectSuccess');
         window.history.replaceState({}, document.title, window.location.pathname);
         setTimeout(() => setAuthSuccessToast(null), 3500);
-      } else if (authType === 'signup') {
+      } else if (authType === 'signup' || redirectType === 'signup') {
         setAuthSuccessToast('Registration Successful! Welcome to InfinityKit.');
+        if (redirectType) sessionStorage.removeItem('authRedirectSuccess');
         window.history.replaceState({}, document.title, window.location.pathname);
         setTimeout(() => setAuthSuccessToast(null), 3500);
       }

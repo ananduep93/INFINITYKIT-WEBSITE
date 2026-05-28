@@ -89,8 +89,37 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
-  // Check auth persistence
+  // Check auth persistence and handle redirect results
   useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        const { getRedirectResult } = await import('firebase/auth');
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          const currentUser = result.user;
+          await saveUserProfile(currentUser);
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if ((userDoc.exists() && userDoc.data().role === 'admin') || currentUser.email === 'admin@infinitykit.com' || currentUser.email === 'ananduep93@gmail.com') {
+            setUser(currentUser);
+            setIsAdmin(true);
+            fetchAdminData();
+          } else {
+            await signOut(auth);
+            alert("Access Denied: You do not possess administrator rights.");
+          }
+        }
+      } catch (e: any) {
+        console.error("Redirect auth failed:", e);
+        if (e.code === 'auth/unauthorized-domain') {
+          alert("🔒 Firebase Domain Unauthorized:\n\nYou must add '" + window.location.hostname + "' to your Firebase Console under 'Authentication' -> 'Settings' -> 'Authorized Domains'.\n\nGoogle OAuth will fail on custom domains until whitelisted in Firebase!");
+        } else {
+          alert(`Redirect sign in failed: ${e.message || e}`);
+        }
+      }
+    };
+    
+    handleRedirect();
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setAuthLoading(true);
       if (currentUser) {

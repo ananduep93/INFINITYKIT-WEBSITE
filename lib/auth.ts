@@ -25,11 +25,23 @@ export const authService = {
         return result.user;
       } catch (popupError: any) {
         console.warn('Popup sign-in failed, attempting redirect fallback...', popupError);
-        // Fallback to redirect for ANY popup error (including blocked, closed, Brave shields, cookies blocked)
+        
+        // If domain is unauthorized, throw immediately rather than doing a redirect loop
+        if (popupError.code === 'auth/unauthorized-domain') {
+          throw new Error("🔒 Domain Unauthorized: The domain '" + (typeof window !== 'undefined' ? window.location.hostname : '') + "' is not authorized for Firebase Auth. Please add it to your Firebase Console under 'Authentication' -> 'Settings' -> 'Authorized Domains'.");
+        }
+        
+        // Fallback to redirect for other popup errors (blocked, closed, etc.)
         localStorage.setItem('isLoggedIn', 'loading');
-        await signInWithRedirect(auth, googleProvider);
-        // Return a promise that never resolves so the page loading state remains steady during browser redirect
-        return new Promise(() => {});
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return new Promise(() => {});
+        } catch (redirectError: any) {
+          if (redirectError.code === 'auth/unauthorized-domain') {
+            throw new Error("🔒 Domain Unauthorized: The domain '" + (typeof window !== 'undefined' ? window.location.hostname : '') + "' is not authorized for Firebase Auth. Please add it to your Firebase Console under 'Authentication' -> 'Settings' -> 'Authorized Domains'.");
+          }
+          throw redirectError;
+        }
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -45,12 +57,16 @@ export const authService = {
         await this.saveUserProfile(result.user);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userId', result.user.uid);
+        sessionStorage.setItem('authRedirectSuccess', 'login');
         return result.user;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redirect result error:', error);
       if (localStorage.getItem('isLoggedIn') === 'loading') {
         localStorage.removeItem('isLoggedIn');
+      }
+      if (error.code === 'auth/unauthorized-domain') {
+        alert("🔒 Firebase Domain Unauthorized:\n\nThe domain '" + window.location.hostname + "' must be added to your Firebase Console under 'Authentication' -> 'Settings' -> 'Authorized Domains'.\n\nGoogle Sign-In will fail on this custom domain until whitelisted!");
       }
     }
     return null;

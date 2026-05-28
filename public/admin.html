@@ -255,7 +255,7 @@
 
     <script type="module">
         import { auth, db, storage, collection, addDoc, serverTimestamp, doc, getDoc, ref, uploadBytes, getDownloadURL } from './firebase-config.js';
-        import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
  
         const loginSection = document.getElementById('loginSection');
         const adminPanel = document.getElementById('adminPanel');
@@ -320,7 +320,23 @@
             googleLoginBtn.textContent = 'Verifying Google Account...';
 
             try {
-                const userCredential = await signInWithPopup(auth, provider);
+                let userCredential;
+                try {
+                    userCredential = await signInWithPopup(auth, provider);
+                } catch (popupError) {
+                    console.warn("Popup blocked or failed, trying redirect fallback...", popupError);
+                    if (popupError.code === 'auth/unauthorized-domain') {
+                        throw popupError;
+                    }
+                    if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user' || /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                        await signInWithRedirect(auth, provider);
+                        return;
+                    } else {
+                        throw popupError;
+                    }
+                }
+
+                if (!userCredential) return;
                 const user = userCredential.user;
                 
                 console.log("DEBUG: User logged in. UID is:", user.uid);
@@ -357,6 +373,8 @@
                 errorMsg = '🔑 Incorrect email or password.';
             } else if (error.code === 'auth/popup-closed-by-user') {
                 errorMsg = '🚫 Login cancelled.';
+            } else if (error.code === 'auth/unauthorized-domain' || msg.includes('unauthorized-domain')) {
+                errorMsg = '🔒 Firebase Domain Unauthorized: Add ' + window.location.hostname + ' to Authorized Domains in Firebase Console Settings.';
             } else if (msg) {
                 errorMsg = msg; // Show the specific thrown error if possible
             }
@@ -386,6 +404,29 @@
             document.body.style.alignItems = 'flex-start';
             document.body.style.padding = '2rem 0';
         }
+
+        // Handle redirect login result on mount
+        const handleRedirectResultCheck = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result && result.user) {
+                    const user = result.user;
+                    console.log("DEBUG Redirect: User logged in. UID is:", user.uid);
+                    
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    const userData = userDoc.data();
+                    
+                    if (userData && userData.role === 'admin') {
+                        showAdminPanel();
+                    } else {
+                        throw new Error('Unauthorized: This Google account does not have Admin privileges.');
+                    }
+                }
+            } catch (error) {
+                handleLoginError(error);
+            }
+        };
+        handleRedirectResultCheck();
 
         // Persistence check
         onAuthStateChanged(auth, async (user) => {
