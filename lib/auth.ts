@@ -17,7 +17,6 @@ export const authService = {
   async loginWithGoogle(): Promise<User> {
     try {
       console.log('Starting Google Sign-In...');
-      // In Next.js SSR, we can try signInWithPopup. If it fails, fallback to redirect.
       try {
         const result = await signInWithPopup(auth, googleProvider);
         await this.saveUserProfile(result.user);
@@ -25,18 +24,12 @@ export const authService = {
         localStorage.setItem('userId', result.user.uid);
         return result.user;
       } catch (popupError: any) {
-        console.warn('Popup sign-in failed, attempting redirect...', popupError.code);
-        if (
-          popupError.code === 'auth/popup-blocked' ||
-          popupError.code === 'auth/popup-closed-by-user' ||
-          /Android|iPhone|iPad/i.test(navigator.userAgent)
-        ) {
-          localStorage.setItem('isLoggedIn', 'loading');
-          await signInWithRedirect(auth, googleProvider);
-          throw new Error('Redirect initiated');
-        } else {
-          throw popupError;
-        }
+        console.warn('Popup sign-in failed, attempting redirect fallback...', popupError);
+        // Fallback to redirect for ANY popup error (including blocked, closed, Brave shields, cookies blocked)
+        localStorage.setItem('isLoggedIn', 'loading');
+        await signInWithRedirect(auth, googleProvider);
+        // Return a promise that never resolves so the page loading state remains steady during browser redirect
+        return new Promise(() => {});
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -144,7 +137,7 @@ export const authService = {
       const profileData: any = {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName || 'User',
+        displayName: user.email === 'admin@infinitykit.com' ? 'Admin' : (user.displayName || 'User'),
         photoURL: user.photoURL || '',
         lastLogin: new Date().toISOString()
       };

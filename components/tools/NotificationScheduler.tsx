@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Bell, Plus, Trash2, Clock, AlertCircle, Check, RefreshCw } from 'lucide-react';
+import { syncService } from '../../lib/sync';
 
 interface ScheduledNotif {
   id: string;
@@ -47,12 +48,14 @@ export default function NotificationScheduler() {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       setPermission(Notification.permission);
     }
-    try { const s = localStorage.getItem(LS_KEY); if (s) setNotifs(JSON.parse(s)); } catch {}
+    syncService.getData(LS_KEY).then(res => {
+      if (res) setNotifs(res);
+    });
   }, []);
 
   const saveNotifs = useCallback((updated: ScheduledNotif[]) => {
     setNotifs(updated);
-    localStorage.setItem(LS_KEY, JSON.stringify(updated));
+    syncService.saveData(LS_KEY, updated);
   }, []);
 
   // Ticker + fire check
@@ -81,7 +84,7 @@ export default function NotificationScheduler() {
           return n;
         });
         if (changed) {
-          localStorage.setItem(LS_KEY, JSON.stringify(updated));
+          syncService.saveData(LS_KEY, updated);
           return updated;
         }
         return prev;

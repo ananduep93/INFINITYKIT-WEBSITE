@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Star, CheckCircle2, ChevronRight, ClipboardList, AlertCircle, Send } from 'lucide-react';
+import { db } from '../../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
@@ -162,9 +164,32 @@ export default function PublicSurvey() {
   const [submitted, setSubmitted] = useState(false);
   const [loadError, setLoadError] = useState('');
 
-  // ── Load survey config from URL hash or fall back to demo ─────────────────
+  // ── Load survey config from URL parameters, hash, or fall back to demo ──────
   useEffect(() => {
-    const tryLoadFromHash = () => {
+    const loadSurvey = async () => {
+      if (typeof window === 'undefined') return;
+
+      const params = new URLSearchParams(window.location.search);
+      const surveyId = params.get('id');
+      const creatorId = params.get('uid');
+
+      if (surveyId && creatorId) {
+        try {
+          const docRef = doc(db, 'tools', 'surveyHub', creatorId, surveyId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setSurvey(docSnap.data() as SurveyConfig);
+            return;
+          } else {
+            setLoadError('Survey not found in cloud. Showing demo survey instead.');
+          }
+        } catch (err: any) {
+          console.error('Failed to load survey from cloud:', err);
+          setLoadError('Error connecting to cloud database. Showing demo survey instead.');
+        }
+      }
+
+      // Legacy Hash Fallback
       try {
         const hash = window.location.hash.replace('#', '');
         if (hash) {
@@ -176,15 +201,17 @@ export default function PublicSurvey() {
           }
         }
       } catch {
-        setLoadError('Could not parse survey from URL. Showing demo survey instead.');
+        setLoadError('Could not parse legacy link. Showing demo survey instead.');
       }
+
       setSurvey(DEMO_SURVEY);
     };
-    tryLoadFromHash();
 
-    // Also handle hash changes
-    window.addEventListener('hashchange', tryLoadFromHash);
-    return () => window.removeEventListener('hashchange', tryLoadFromHash);
+    loadSurvey();
+
+    // Also handle hash changes for legacy
+    window.addEventListener('hashchange', loadSurvey);
+    return () => window.removeEventListener('hashchange', loadSurvey);
   }, []);
 
   // ── Answer management ─────────────────────────────────────────────────────
@@ -225,18 +252,36 @@ export default function PublicSurvey() {
   };
 
   // ── Submit ────────────────────────────────────────────────────────────────
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate() || !survey) return;
 
-    const key = `infinitykit_responses_${survey.id}`;
-    const existing = JSON.parse(localStorage.getItem(key) || '[]');
     const response = {
       submittedAt: new Date().toISOString(),
       answers,
     };
-    existing.push(response);
-    localStorage.setItem(key, JSON.stringify(existing));
-    setSubmitted(true);
+
+    try {
+      // Save to Firestore tools/surveyResponses/{surveyId}/{responseId}
+      const responseId = 'resp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      const responseRef = doc(db, 'tools', 'surveyResponses', survey.id, responseId);
+      
+      // Note: We need a root 'timestamp' field to satisfy the security rule
+      await setDoc(responseRef, {
+        timestamp: response.submittedAt,
+        answers: response.answers
+      });
+
+      // Also back up locally under infinitykit_responses_{surveyId}
+      const key = `infinitykit_responses_${survey.id}`;
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.push(response);
+      localStorage.setItem(key, JSON.stringify(existing));
+
+      setSubmitted(true);
+    } catch (e: any) {
+      console.error('Failed to submit response:', e);
+      alert('Error submitting response to the cloud: ' + e.message);
+    }
   };
 
   // ─── Thank You Screen ─────────────────────────────────────────────────────
@@ -708,7 +753,7 @@ export default function PublicSurvey() {
           opacity: 0.7,
         }}
       >
-        Your responses are saved locally and never sent to a server. Required fields are marked with{' '}
+        Your responses are securely saved to the database. Required fields are marked with{' '}
         <span style={{ color: '#ef4444' }}>*</span>.
       </p>
     </div>

@@ -29,7 +29,7 @@ export default function SignupPage() {
 
     try {
       await signUpWithEmail(email, password, name);
-      router.push('/dashboard');
+      router.push('/dashboard?auth=signup');
     } catch (err: any) {
       setError(err.message || 'Registration failed. Try checking your credentials.');
     } finally {
@@ -41,7 +41,7 @@ export default function SignupPage() {
     setError('');
     try {
       await loginWithGoogle();
-      router.push('/dashboard');
+      router.push('/dashboard?auth=signup');
     } catch (err: any) {
       setError(err.message || 'Failed to authenticate via Google.');
     }

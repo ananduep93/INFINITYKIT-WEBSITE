@@ -187,7 +187,7 @@ export default function AdminPage() {
       const profileData: any = {
         uid: currentUser.uid,
         email: currentUser.email,
-        displayName: currentUser.displayName || 'User',
+        displayName: currentUser.email === 'admin@infinitykit.com' ? 'Admin' : (currentUser.displayName || 'User'),
         photoURL: currentUser.photoURL || '',
         lastLogin: new Date().toISOString()
       };
@@ -277,12 +277,22 @@ export default function AdminPage() {
         }
       }
 
+      if (isStaticAdmin && !result.user.displayName) {
+        const { updateProfile } = await import('firebase/auth');
+        try {
+          await updateProfile(result.user, { displayName: 'Admin' });
+        } catch (e) {
+          console.warn("Could not set displayName on auth user:", e);
+        }
+      }
+
       await saveUserProfile(result.user);
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
       if ((userDoc.exists() && userDoc.data().role === 'admin') || result.user.email === 'admin@infinitykit.com' || result.user.email === 'ananduep93@gmail.com') {
         setUser(result.user);
         setIsAdmin(true);
+        triggerToast("Sign In Successful! Welcome back, Admin.");
         fetchAdminData();
       } else {
         await signOut(auth);
@@ -496,7 +506,7 @@ export default function AdminPage() {
               <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Admin Username</label>
               <input
                 type="text"
-                placeholder="infinitykit"
+                placeholder=""
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -519,7 +529,7 @@ export default function AdminPage() {
               <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Password</label>
               <input
                 type="password"
-                placeholder="infinitykit"
+                placeholder=""
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -571,7 +581,7 @@ export default function AdminPage() {
                 marginTop: '10px'
               }}
             >
-              {loginLoading ? 'Authenticating...' : 'Sign in as Administrator'}
+              {loginLoading ? 'Authenticating...' : 'Access Dashboard'}
             </button>
           </form>
         </div>

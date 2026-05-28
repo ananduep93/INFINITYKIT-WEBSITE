@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles, FileText, Upload, RefreshCw } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Upload, RefreshCw } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
 
 interface Message {
@@ -60,7 +60,7 @@ export default function AIChatPDF() {
       const numPages = pdf.numPages;
       let text = '';
 
-      for (let i = 1; i <= Math.min(numPages, 30); i++) { // Cap at 30 pages
+      for (let i = 1; i <= Math.min(numPages, 30); i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items.map((item: any) => item.str).join(' ');
@@ -73,7 +73,7 @@ export default function AIChatPDF() {
 
       setPdfText(text);
       setMessages([
-        { sender: 'bot', text: `Successfully parsed and loaded "${uploaded.name}" (${numPages} pages)! Ask me anything about this document.`, timestamp: Date.now() }
+        { sender: 'bot', text: `Successfully parsed "${uploaded.name}" (${numPages} pages)! Ask me anything about this document.`, timestamp: Date.now() }
       ]);
     } catch (err: any) {
       alert(err.message || 'Failed to parse text from the uploaded PDF document. Make sure it is not corrupted or scanned.');
@@ -99,8 +99,10 @@ export default function AIChatPDF() {
     setIsTyping(true);
 
     try {
-      // Build context including past messages
-      const conversationHistory = messages.slice(-4).map(m => `${m.sender === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
+      const conversationHistory = messages.slice(-6).map(m =>
+        `${m.sender === 'user' ? 'User' : 'Assistant'}: ${m.text}`
+      ).join('\n');
+
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -142,7 +144,7 @@ export default function AIChatPDF() {
 
   return (
     <div className="glass-panel" style={{ margin: '0 auto', maxWidth: '850px', display: 'flex', flexDirection: 'column', height: '620px', padding: '25px' }}>
-      
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '15px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -151,10 +153,10 @@ export default function AIChatPDF() {
           </div>
           <div>
             <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.2rem', fontWeight: 700 }}>AI Chat with PDF</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Ask questions and chat interactively with your PDF contents locally.</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Ask questions and chat interactively with your PDF contents.</p>
           </div>
         </div>
-        
+
         {file && (
           <button
             onClick={resetChat}
@@ -176,7 +178,7 @@ export default function AIChatPDF() {
         )}
       </div>
 
-      {/* Upload Zone if no file loaded */}
+      {/* Upload Zone */}
       {!file && !loading && (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div
@@ -204,13 +206,9 @@ export default function AIChatPDF() {
             />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
               <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '50%',
+                width: '56px', height: '56px', borderRadius: '50%',
                 background: 'rgba(0,161,155,0.08)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--primary-color)'
               }}>
                 <Upload size={26} />
@@ -239,7 +237,6 @@ export default function AIChatPDF() {
       {/* Chat session interface */}
       {file && !loading && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* Messages Box */}
           <div style={{ flex: 1, overflowY: 'auto', paddingRight: '10px', display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
             {messages.map((msg, index) => {
               const isBot = msg.sender === 'bot';
@@ -254,22 +251,15 @@ export default function AIChatPDF() {
                     flexDirection: isBot ? 'row' : 'row-reverse'
                   }}
                 >
-                  {/* Avatar */}
                   <div style={{
-                    width: '35px',
-                    height: '35px',
-                    borderRadius: '50%',
+                    width: '35px', height: '35px', borderRadius: '50%',
                     background: isBot ? 'rgba(0, 161, 155, 0.1)' : 'rgba(0,0,0,0.06)',
                     color: isBot ? 'var(--primary-color)' : 'var(--text-color)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                   }}>
                     {isBot ? <Bot size={16} /> : <User size={16} />}
                   </div>
 
-                  {/* Text Bubble */}
                   <div style={{
                     background: isBot ? 'var(--glass-bg)' : 'var(--primary-gradient)',
                     color: isBot ? 'var(--text-color)' : 'white',
@@ -290,14 +280,9 @@ export default function AIChatPDF() {
             {isTyping && (
               <div style={{ display: 'flex', gap: '12px', alignSelf: 'flex-start' }}>
                 <div style={{
-                  width: '35px',
-                  height: '35px',
-                  borderRadius: '50%',
-                  background: 'rgba(0, 161, 155, 0.1)',
-                  color: 'var(--primary-color)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  width: '35px', height: '35px', borderRadius: '50%',
+                  background: 'rgba(0, 161, 155, 0.1)', color: 'var(--primary-color)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                   <Bot size={16} />
                 </div>
@@ -309,7 +294,6 @@ export default function AIChatPDF() {
             <div ref={scrollRef} />
           </div>
 
-          {/* Form Input Bar */}
           <form onSubmit={handleSend} style={{ display: 'flex', gap: '10px' }}>
             <input
               type="text"

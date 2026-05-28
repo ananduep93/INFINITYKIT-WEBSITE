@@ -38,7 +38,7 @@ export default function AISummarizePDF() {
       const pdf = await loadingTask.promise;
       const numPages = pdf.numPages;
 
-      for (let i = 1; i <= Math.min(numPages, 30); i++) { // Cap at 30 pages for browser memory/token limit safety
+      for (let i = 1; i <= Math.min(numPages, 30); i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items.map((item: any) => item.str).join(' ');
@@ -52,7 +52,6 @@ export default function AISummarizePDF() {
       throw new Error('Could not extract any readable text from this PDF file.');
     }
 
-    // Call Gemini API Summarize Route
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -69,8 +68,7 @@ export default function AISummarizePDF() {
     }
 
     const data = await response.json();
-    
-    // Save summary as a text file download
+
     const blob = new Blob([data.text], { type: 'text/plain;charset=utf-8' });
     const downloadUrl = URL.createObjectURL(blob);
 
@@ -99,7 +97,7 @@ export default function AISummarizePDF() {
         instructions={[
           'Upload the PDF document you wish to summarize.',
           'Wait for client-side text parsing extraction to complete.',
-          'Click the "Summarize PDF" button to trigger the Gemini AI summarization engine.'
+          'Click "Summarize PDF" to generate the AI summary.'
         ]}
       />
     </div>

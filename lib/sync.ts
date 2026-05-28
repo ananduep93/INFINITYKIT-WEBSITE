@@ -29,7 +29,29 @@ export const PATH_MAP: Record<string, string> = {
 
   // Passwords
   savedPasswords: 'passwords',
-  passwords: 'passwords'
+  passwords: 'passwords',
+  ik_vault_v1: 'passwords',
+  ik_vault_pin_hash: 'passwords_hash',
+
+  // Daily Planner
+  infinitykit_daily_planner: 'dailyPlanner',
+  dailyPlanner: 'dailyPlanner',
+
+  // Calendar Events
+  infinitykit_calendar_events: 'calendarEvents',
+  calendarEvents: 'calendarEvents',
+
+  // Notifications
+  infinitykit_notifications: 'notifications',
+  notifications: 'notifications',
+
+  // Custom Persona Prompts
+  infinitykit_custom_prompts_men: 'customPromptsMen',
+  infinitykit_custom_prompts_women: 'customPromptsWomen',
+
+  // Surveys
+  infinitykit_surveys: 'surveys',
+  surveys: 'surveys'
 };
 
 // Dynamic Auto-Migration & Firestore Reference Resolver
@@ -214,7 +236,11 @@ export const syncService = {
       'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
       'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
       'budget', 'dailyPlanner', 'medreminders', 'medicineReminders',
-      'reminderAlerts', 'examMarks', 'aichatbot_history'
+      'reminderAlerts', 'examMarks', 'aichatbot_history',
+      'infinitykit_daily_planner', 'infinitykit_calendar_events',
+      'infinitykit_notifications', 'ik_vault_v1', 'ik_vault_pin_hash',
+      'infinitykit_custom_prompts_men', 'infinitykit_custom_prompts_women',
+      'infinitykit_surveys'
     ];
 
     for (const key of toolKeys) {
@@ -250,7 +276,11 @@ export const syncService = {
       'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
       'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
       'budget', 'dailyPlanner', 'medreminders', 'medicineReminders',
-      'reminderAlerts', 'examMarks', 'aichatbot_history'
+      'reminderAlerts', 'examMarks', 'aichatbot_history',
+      'infinitykit_daily_planner', 'infinitykit_calendar_events',
+      'infinitykit_notifications', 'ik_vault_v1', 'ik_vault_pin_hash',
+      'infinitykit_custom_prompts_men', 'infinitykit_custom_prompts_women',
+      'infinitykit_surveys'
     ];
 
     for (const key of toolKeys) {

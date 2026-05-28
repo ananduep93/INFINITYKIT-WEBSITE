@@ -23,6 +23,10 @@ import {
   AlertCircle
 } from 'lucide-react';
 
+import { syncService } from '../../lib/sync';
+import { db } from '../../lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
 
@@ -60,33 +64,36 @@ export default function SurveyBuilder() {
 
   // ─── Load for Editing or New Survey ─────────────────────────────────────────
   useEffect(() => {
-    // Generate a unique ID for new surveys by default
     const newId = 'survey_' + Math.random().toString(36).substr(2, 9);
     
-    // Check if we are editing an existing survey
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const editId = params.get('edit');
       
       if (editId) {
-        const storedSurveys = localStorage.getItem('infinitykit_surveys');
-        if (storedSurveys) {
-          try {
-            const surveys: SavedSurvey[] = JSON.parse(storedSurveys);
-            const target = surveys.find(s => s.id === editId);
-            if (target) {
-              setSurveyId(target.id);
-              setTitle(target.title);
-              setDescription(target.description || '');
-              setQuestions(target.questions || []);
-              return;
+        syncService.getData('infinitykit_surveys').then((data) => {
+          if (data) {
+            try {
+              const surveys: SavedSurvey[] = typeof data === 'string' ? JSON.parse(data) : data;
+              const target = surveys.find(s => s.id === editId);
+              if (target) {
+                setSurveyId(target.id);
+                setTitle(target.title);
+                setDescription(target.description || '');
+                setQuestions(target.questions || []);
+                return;
+              }
+            } catch (e) {
+              console.error('Error parsing stored surveys:', e);
             }
-          } catch (e) {
-            console.error('Error parsing stored surveys:', e);
           }
-        }
+          setSurveyId(newId);
+        }).catch(() => {
+          setSurveyId(newId);
+        });
+      } else {
+        setSurveyId(newId);
       }
-      setSurveyId(newId);
     }
   }, []);
 
@@ -175,7 +182,7 @@ export default function SurveyBuilder() {
     setCopied(false);
   };
 
-  const saveSurvey = () => {
+  const saveSurvey = async () => {
     if (!title.trim()) {
       setSaveStatus({ type: 'error', message: 'Survey title is required.' });
       return;
@@ -187,8 +194,8 @@ export default function SurveyBuilder() {
     }
 
     try {
-      const storedSurveys = localStorage.getItem('infinitykit_surveys');
-      let surveys: SavedSurvey[] = storedSurveys ? JSON.parse(storedSurveys) : [];
+      const data = await syncService.getData('infinitykit_surveys');
+      let surveys: SavedSurvey[] = data ? (typeof data === 'string' ? JSON.parse(data) : data) : [];
 
       const existingIndex = surveys.findIndex(s => s.id === surveyId);
       
@@ -206,16 +213,27 @@ export default function SurveyBuilder() {
         surveys.push(surveyData);
       }
 
-      localStorage.setItem('infinitykit_surveys', JSON.stringify(surveys));
+      await syncService.saveData('infinitykit_surveys', surveys);
       setSaveStatus({ type: 'success', message: 'Survey saved successfully! Manage it on your Dashboard.' });
     } catch (e) {
       setSaveStatus({ type: 'error', message: 'Error saving survey to storage.' });
     }
   };
 
-  const generateShareLink = () => {
+  const generateShareLink = async () => {
     if (questions.length === 0) {
       setSaveStatus({ type: 'error', message: 'Add questions before sharing.' });
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (!isLoggedIn || !userId) {
+      setSaveStatus({ 
+        type: 'error', 
+        message: 'You must be signed in to generate a public shareable link. Please sign in first.' 
+      });
       return;
     }
 
@@ -227,12 +245,20 @@ export default function SurveyBuilder() {
     };
 
     try {
-      const jsonString = JSON.stringify(config);
-      const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
-      const url = `${window.location.origin}/tools/publicsurvey#${base64Data}`;
+      // 1. Write the survey definition to Firestore in tools/surveyHub/{userId}/{surveyId}
+      const surveyRef = doc(db, 'tools', 'surveyHub', userId, config.id);
+      await setDoc(surveyRef, {
+        ...config,
+        createdAt: new Date().toLocaleDateString()
+      });
+
+      // 2. Generate the shortened URL
+      const url = `${window.location.origin}/survey-tools/publicsurvey?id=${config.id}&uid=${userId}`;
       setShareUrl(url);
-    } catch (e) {
-      setSaveStatus({ type: 'error', message: 'Failed to encode survey definition.' });
+      setSaveStatus({ type: 'success', message: 'Shareable link generated and survey published to cloud!' });
+    } catch (e: any) {
+      console.error('Failed to publish survey:', e);
+      setSaveStatus({ type: 'error', message: 'Failed to publish survey to cloud: ' + e.message });
     }
   };
 

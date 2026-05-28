@@ -28,7 +28,7 @@ export default function LoginPage() {
 
     try {
       await loginWithEmail(email, password);
-      router.push('/dashboard');
+      router.push('/dashboard?auth=login');
     } catch (err: any) {
       setError(err.message || 'Invalid email or password. Please try again.');
     } finally {
@@ -40,7 +40,7 @@ export default function LoginPage() {
     setError('');
     try {
       await loginWithGoogle();
-      router.push('/dashboard');
+      router.push('/dashboard?auth=login');
     } catch (err: any) {
       setError(err.message || 'Failed to authenticate via Google.');
     }

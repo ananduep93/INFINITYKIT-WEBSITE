@@ -31,12 +31,25 @@ export default function DashboardPage() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [geminiKey, setGeminiKey] = useState('');
   const [openaiKey, setOpenaiKey] = useState('');
+  const [authSuccessToast, setAuthSuccessToast] = useState<string | null>(null);
 
-  // Load user API key from localStorage
+  // Load user API key from localStorage and check for auth redirects
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setGeminiKey(localStorage.getItem('infinitykit_gemini_key') || '');
       setOpenaiKey(localStorage.getItem('infinitykit_openai_key') || '');
+
+      const params = new URLSearchParams(window.location.search);
+      const authType = params.get('auth');
+      if (authType === 'login') {
+        setAuthSuccessToast('Sign In Successful! Welcome back.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => setAuthSuccessToast(null), 3500);
+      } else if (authType === 'signup') {
+        setAuthSuccessToast('Registration Successful! Welcome to InfinityKit.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => setAuthSuccessToast(null), 3500);
+      }
     }
   }, []);
 
@@ -188,7 +201,7 @@ export default function DashboardPage() {
           </div>
 
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '2.1rem', fontWeight: 900, marginBottom: '12px', letterSpacing: '-0.5px' }}>
-            Access SaaS Dashboard
+            Access Dashboard
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.96rem', marginBottom: '30px', lineHeight: 1.6, maxWidth: '480px', margin: '0 auto 30px' }}>
             Sign in using Firebase secure gateways to sync your local bookmarks, medication planners, private dead drop notes, and budget schedules to high-reliability Firestore databases.
@@ -247,6 +260,38 @@ export default function DashboardPage() {
   return (
     <div style={{ maxWidth: '1140px', margin: '40px auto', padding: '0 24px 60px' }}>
       
+      {/* Toast Alert */}
+      {authSuccessToast && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          zIndex: 1000,
+          background: 'rgba(0,161,155,0.95)',
+          color: 'white',
+          padding: '14px 24px',
+          borderRadius: '12px',
+          boxShadow: '0 8px 30px rgba(0,161,155,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontWeight: 600,
+          fontSize: '0.9rem',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          animation: 'dashboard-slide-in 0.3s ease'
+        }}>
+          <CheckCircle size={18} />
+          <span>{authSuccessToast}</span>
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes dashboard-slide-in {
+              from { transform: translateX(30px); opacity: 0; }
+              to { transform: translateX(0); opacity: 1; }
+            }
+          `}} />
+        </div>
+      )}
+
       {/* Header Profile Ribbon */}
       <motion.div 
         initial={{ opacity: 0, y: -15 }}
@@ -295,7 +340,7 @@ export default function DashboardPage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 900, fontSize: '1.4rem', margin: 0 }}>
-                {user.displayName || 'Infinity Member'}
+                {user.displayName || (user.email ? user.email.split('@')[0] : 'User')}
               </h2>
               {isSubscribed ? (
                 <span style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', background: 'rgba(168, 85, 247, 0.1)', color: 'var(--accent-purple)', border: '1px solid rgba(168, 85, 247, 0.2)', padding: '2px 8px', borderRadius: '50px' }}>

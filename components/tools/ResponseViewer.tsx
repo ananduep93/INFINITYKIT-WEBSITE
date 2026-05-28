@@ -18,6 +18,10 @@ import {
   HelpCircle
 } from 'lucide-react';
 
+import { syncService } from '../../lib/sync';
+import { db } from '../../lib/firebase';
+import { collection, getDocs, doc, deleteDoc, writeBatch } from 'firebase/firestore';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
 
@@ -51,43 +55,62 @@ export default function ResponseViewer() {
   // ─── Load surveys & check search query on mount ────────────────────────────
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('infinitykit_surveys');
-      if (stored) {
-        try {
-          const parsedSurveys: SavedSurvey[] = JSON.parse(stored);
-          setSurveys(parsedSurveys);
-          
-          // Check for URL search param auto-select
-          const params = new URLSearchParams(window.location.search);
-          const urlSurveyId = params.get('surveyId');
-          
-          if (urlSurveyId && parsedSurveys.some(s => s.id === urlSurveyId)) {
-            setSelectedSurveyId(urlSurveyId);
-          } else if (parsedSurveys.length > 0) {
-            setSelectedSurveyId(parsedSurveys[0].id);
+      syncService.getData('infinitykit_surveys').then((data) => {
+        if (data) {
+          try {
+            const parsedSurveys: SavedSurvey[] = typeof data === 'string' ? JSON.parse(data) : data;
+            setSurveys(parsedSurveys);
+            
+            // Check for URL search param auto-select
+            const params = new URLSearchParams(window.location.search);
+            const urlSurveyId = params.get('surveyId');
+            
+            if (urlSurveyId && parsedSurveys.some(s => s.id === urlSurveyId)) {
+              setSelectedSurveyId(urlSurveyId);
+            } else if (parsedSurveys.length > 0) {
+              setSelectedSurveyId(parsedSurveys[0].id);
+            }
+          } catch (e) {
+            console.error('Failed to parse surveys:', e);
           }
-        } catch (e) {
-          console.error('Failed to parse surveys:', e);
         }
-      }
+      });
     }
   }, []);
 
   // ─── Load responses when active survey changes ─────────────────────────────
   useEffect(() => {
     if (selectedSurveyId) {
-      const key = `infinitykit_responses_${selectedSurveyId}`;
-      const stored = localStorage.getItem(key);
-      if (stored) {
+      const fetchResponses = async () => {
         try {
-          setResponses(JSON.parse(stored));
-        } catch (e) {
-          console.error('Failed to parse responses:', e);
-          setResponses([]);
+          const colRef = collection(db, 'tools', 'surveyResponses', selectedSurveyId);
+          const snapshot = await getDocs(colRef);
+          const cloudResponses = snapshot.docs.map(doc => {
+            const docData = doc.data();
+            return {
+              submittedAt: docData.timestamp || new Date().toISOString(),
+              answers: docData.answers || {}
+            } as SurveyResponse;
+          });
+          cloudResponses.sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
+          setResponses(cloudResponses);
+        } catch (err) {
+          console.error('Failed to fetch responses from Firestore:', err);
+          // Fallback to local storage
+          const key = `infinitykit_responses_${selectedSurveyId}`;
+          const stored = localStorage.getItem(key);
+          if (stored) {
+            try {
+              setResponses(JSON.parse(stored));
+            } catch (e) {
+              setResponses([]);
+            }
+          } else {
+            setResponses([]);
+          }
         }
-      } else {
-        setResponses([]);
-      }
+      };
+      fetchResponses();
     } else {
       setResponses([]);
     }
@@ -164,14 +187,28 @@ export default function ResponseViewer() {
   };
 
   // ─── Actions ────────────────────────────────────────────────────────────────
-  const handleClearResponses = () => {
+  const handleClearResponses = async () => {
     if (!activeSurvey) return;
     if (!confirm(`Are you sure you want to permanently clear all ${responses.length} responses for "${activeSurvey.title}"?`)) {
       return;
     }
     
-    localStorage.removeItem(`infinitykit_responses_${activeSurvey.id}`);
-    setResponses([]);
+    try {
+      const colRef = collection(db, 'tools', 'surveyResponses', activeSurvey.id);
+      const snapshot = await getDocs(colRef);
+      
+      const batch = writeBatch(db);
+      snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+
+      localStorage.removeItem(`infinitykit_responses_${activeSurvey.id}`);
+      setResponses([]);
+    } catch (e: any) {
+      console.error('Failed to delete responses:', e);
+      alert('Error deleting responses from cloud: ' + e.message);
+    }
   };
 
   const handleExportCSV = () => {
@@ -210,22 +247,16 @@ export default function ResponseViewer() {
 
   const copyShareLink = () => {
     if (!activeSurvey) return;
-    try {
-      const jsonString = JSON.stringify({
-        id: activeSurvey.id,
-        title: activeSurvey.title,
-        description: activeSurvey.description,
-        questions: activeSurvey.questions
-      });
-      const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
-      const shareUrl = `${window.location.origin}/tools/publicsurvey#${base64Data}`;
-      
-      navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      alert('Failed to generate share link.');
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('You must be signed in to copy the public share link.');
+      return;
     }
+    
+    const shareUrl = `${window.location.origin}/survey-tools/publicsurvey?id=${activeSurvey.id}&uid=${userId}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -251,7 +282,7 @@ export default function ResponseViewer() {
         </div>
 
         <button
-          onClick={() => { window.location.href = '/tools/mysurveys'; }}
+          onClick={() => { window.location.href = '/survey-tools/mysurveys'; }}
           style={{
             padding: '8px 16px',
             borderRadius: '10px',
@@ -387,7 +418,7 @@ export default function ResponseViewer() {
             You haven't built any surveys yet. Create a survey definition using our visual designer first.
           </p>
           <button
-            onClick={() => { window.location.href = '/tools/surveybuilder'; }}
+            onClick={() => { window.location.href = '/survey-tools/surveybuilder'; }}
             style={{
               padding: '8px 18px',
               borderRadius: '8px',

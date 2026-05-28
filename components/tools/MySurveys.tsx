@@ -18,6 +18,10 @@ import {
   Link
 } from 'lucide-react';
 
+import { syncService } from '../../lib/sync';
+import { db } from '../../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
 
@@ -45,33 +49,35 @@ export default function MySurveys() {
   // ─── Load Surveys and Response Tallies ──────────────────────────────────────
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('infinitykit_surveys');
-      if (stored) {
-        try {
-          const parsedSurveys: SavedSurvey[] = JSON.parse(stored);
-          setSurveys(parsedSurveys);
-          
-          // Calculate response counts for each survey
-          const newCounts: Record<string, number> = {};
-          parsedSurveys.forEach(survey => {
-            const responsesKey = `infinitykit_responses_${survey.id}`;
-            const responsesStored = localStorage.getItem(responsesKey);
-            if (responsesStored) {
-              try {
-                const resList = JSON.parse(responsesStored);
-                newCounts[survey.id] = Array.isArray(resList) ? resList.length : 0;
-              } catch (e) {
-                newCounts[survey.id] = 0;
-              }
-            } else {
-              newCounts[survey.id] = 0;
-            }
-          });
-          setCounts(newCounts);
-        } catch (e) {
-          console.error('Failed to parse surveys:', e);
+      syncService.getData('infinitykit_surveys').then((data) => {
+        if (data) {
+          try {
+            const parsedSurveys: SavedSurvey[] = typeof data === 'string' ? JSON.parse(data) : data;
+            setSurveys(parsedSurveys);
+            
+            // Query counts from Firestore
+            parsedSurveys.forEach(survey => {
+              const colRef = collection(db, 'tools', 'surveyResponses', survey.id);
+              getDocs(colRef).then(snapshot => {
+                setCounts(prev => ({ ...prev, [survey.id]: snapshot.size }));
+              }).catch((e) => {
+                console.warn(`Could not fetch cloud count for survey ${survey.id}:`, e);
+                // Local fallback count
+                const responsesKey = `infinitykit_responses_${survey.id}`;
+                const local = localStorage.getItem(responsesKey);
+                try {
+                  const localCount = local ? JSON.parse(local).length : 0;
+                  setCounts(prev => ({ ...prev, [survey.id]: localCount }));
+                } catch {
+                  setCounts(prev => ({ ...prev, [survey.id]: 0 }));
+                }
+              });
+            });
+          } catch (e) {
+            console.error('Failed to parse surveys:', e);
+          }
         }
-      }
+      });
     }
   }, []);
 
@@ -95,30 +101,24 @@ export default function MySurveys() {
   };
 
   const handleEdit = (id: string) => {
-    window.location.href = `/tools/surveybuilder?edit=${id}`;
+    window.location.href = `/survey-tools/surveybuilder?edit=${id}`;
   };
 
   const handleViewResponses = (id: string) => {
-    window.location.href = `/tools/responseviewer?surveyId=${id}`;
+    window.location.href = `/survey-tools/responseviewer?surveyId=${id}`;
   };
 
   const copyShareLink = (survey: SavedSurvey) => {
-    try {
-      const jsonString = JSON.stringify({
-        id: survey.id,
-        title: survey.title,
-        description: survey.description,
-        questions: survey.questions
-      });
-      const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
-      const shareUrl = `${window.location.origin}/tools/publicsurvey#${base64Data}`;
-      
-      navigator.clipboard.writeText(shareUrl);
-      setCopiedId(survey.id);
-      setTimeout(() => setCopiedId(null), 2000);
-    } catch (e) {
-      alert('Failed to generate share link.');
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('You must be signed in to copy the public share link.');
+      return;
     }
+    
+    const shareUrl = `${window.location.origin}/survey-tools/publicsurvey?id=${survey.id}&uid=${userId}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedId(survey.id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
@@ -144,7 +144,7 @@ export default function MySurveys() {
         </div>
 
         <button
-          onClick={() => { window.location.href = '/tools/surveybuilder'; }}
+          onClick={() => { window.location.href = '/survey-tools/surveybuilder'; }}
           style={{
             padding: '10px 20px',
             borderRadius: '12px',
@@ -236,7 +236,7 @@ export default function MySurveys() {
             Get started by launching our drag-and-drop Visual Survey Builder. Once created, you can instantly share the form and collect local responses!
           </p>
           <button
-            onClick={() => { window.location.href = '/tools/surveybuilder'; }}
+            onClick={() => { window.location.href = '/survey-tools/surveybuilder'; }}
             style={{
               padding: '10px 24px',
               borderRadius: '10px',

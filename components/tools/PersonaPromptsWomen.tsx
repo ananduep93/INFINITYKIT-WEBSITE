@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import ReusableResult from '../ui/ReusableResult';
 import ReusableLoading from '../ui/ReusableLoading';
+import { syncService } from '../../lib/sync';
 
 // Pre-built premium prompts for Women
 const PREBUILT_PROMPTS = {
@@ -172,14 +173,15 @@ export default function PersonaPromptsWomen() {
   // Load custom bookmarks on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('infinitykit_custom_prompts_women');
-      if (stored) {
-        try {
-          setBookmarks(JSON.parse(stored));
-        } catch (e) {
-          console.error("Error loading bookmarks:", e);
+      syncService.getData('infinitykit_custom_prompts_women').then(data => {
+        if (data) {
+          try {
+            setBookmarks(typeof data === 'string' ? JSON.parse(data) : data);
+          } catch (e) {
+            console.error("Error loading bookmarks:", e);
+          }
         }
-      }
+      });
     }
   }, []);
 
@@ -208,7 +210,7 @@ export default function PersonaPromptsWomen() {
 
     const updated = [newBookmark, ...bookmarks];
     setBookmarks(updated);
-    localStorage.setItem('infinitykit_custom_prompts_women', JSON.stringify(updated));
+    syncService.saveData('infinitykit_custom_prompts_women', updated);
     setCustomTitle('');
     setIsBookmarking(false);
   };
@@ -217,7 +219,7 @@ export default function PersonaPromptsWomen() {
     e.stopPropagation();
     const updated = bookmarks.filter(b => b.id !== id);
     setBookmarks(updated);
-    localStorage.setItem('infinitykit_custom_prompts_women', JSON.stringify(updated));
+    syncService.saveData('infinitykit_custom_prompts_women', updated);
     if (activeCategory === 'bookmarks' && updated.length === 0) {
       setActiveCategory('career');
     }

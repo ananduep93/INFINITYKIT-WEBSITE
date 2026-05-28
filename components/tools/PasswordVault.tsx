@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Shield, Lock, Unlock, Plus, Trash2, Eye, EyeOff, Copy, Check, Download, Search, Key } from 'lucide-react';
+import { syncService } from '../../lib/sync';
 
 interface VaultEntry {
   id: string;
@@ -58,38 +59,39 @@ export default function PasswordVault() {
   const [showFormPw, setShowFormPw] = useState(false);
 
   useEffect(() => {
-    const storedHash = localStorage.getItem(PIN_HASH_KEY);
-    if (!storedHash) setIsFirstTime(true);
+    syncService.getData(PIN_HASH_KEY).then(storedHash => {
+      if (!storedHash) setIsFirstTime(true);
+    });
   }, []);
 
   const saveEntries = useCallback((data: VaultEntry[], currentPin: string) => {
     const json = JSON.stringify(data);
-    localStorage.setItem(STORAGE_KEY, xorEncode(json, currentPin));
+    syncService.saveData(STORAGE_KEY, xorEncode(json, currentPin));
   }, []);
 
-  const loadEntries = useCallback((currentPin: string): VaultEntry[] => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      return JSON.parse(xorDecode(raw, currentPin));
-    } catch { return []; }
-  }, []);
-
-  const unlock = () => {
+  const unlock = async () => {
     if (!pinInput.trim()) { setPinError('Please enter a PIN.'); return; }
     if (isFirstTime) {
       if (pinInput.length < 4) { setPinError('PIN must be at least 4 characters.'); return; }
-      localStorage.setItem(PIN_HASH_KEY, hashPIN(pinInput));
+      await syncService.saveData(PIN_HASH_KEY, hashPIN(pinInput));
       setPin(pinInput);
       setEntries([]);
       setLocked(false);
       setPinInput('');
       setPinError('');
     } else {
-      const storedHash = localStorage.getItem(PIN_HASH_KEY);
+      const storedHash = await syncService.getData(PIN_HASH_KEY);
       if (hashPIN(pinInput) !== storedHash) { setPinError('Incorrect PIN. Try again.'); return; }
       setPin(pinInput);
-      setEntries(loadEntries(pinInput));
+      
+      const raw = await syncService.getData(STORAGE_KEY);
+      let loadedEntries: VaultEntry[] = [];
+      if (raw) {
+        try {
+          loadedEntries = JSON.parse(xorDecode(raw, pinInput));
+        } catch {}
+      }
+      setEntries(loadedEntries);
       setLocked(false);
       setPinInput('');
       setPinError('');

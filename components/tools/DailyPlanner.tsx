@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, Trash2, Edit3, Download, Clock, X, Check } from 'lucide-react';
+import { syncService } from '../../lib/sync';
 
 interface Task {
   id: string;
@@ -38,10 +39,9 @@ export default function DailyPlanner() {
   const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(LS_KEY);
-    if (stored) {
-      try { setTasks(JSON.parse(stored)); } catch {}
-    }
+    syncService.getData(LS_KEY).then(data => {
+      if (data) setTasks(data);
+    });
     const ticker = setInterval(() => {
       setCurrentHour(new Date().getHours());
       setCurrentMinute(new Date().getMinutes());
@@ -51,7 +51,7 @@ export default function DailyPlanner() {
 
   const saveTasks = useCallback((updated: Task[]) => {
     setTasks(updated);
-    localStorage.setItem(LS_KEY, JSON.stringify(updated));
+    syncService.saveData(LS_KEY, updated);
   }, []);
 
   const openFormForHour = (h: number) => {

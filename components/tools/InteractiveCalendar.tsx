@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Trash2, X, Check, Calendar } from 'lucide-react';
+import { syncService } from '../../lib/sync';
 
 interface CalEvent {
   id: string;
@@ -36,12 +37,14 @@ export default function InteractiveCalendar() {
   const [formNotes, setFormNotes] = useState('');
 
   useEffect(() => {
-    try { const s = localStorage.getItem(LS_KEY); if (s) setData(JSON.parse(s)); } catch {}
+    syncService.getData(LS_KEY).then(res => {
+      if (res) setData(res);
+    });
   }, []);
 
   const saveData = useCallback((updated: CalendarData) => {
     setData(updated);
-    localStorage.setItem(LS_KEY, JSON.stringify(updated));
+    syncService.saveData(LS_KEY, updated);
   }, []);
 
   // Calendar grid

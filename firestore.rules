@@ -36,7 +36,7 @@ service cloud.firestore {
     }
     
     match /tools/surveyResponses/{surveyId}/{responseId} {
-      allow read: if isAdmin(); // Only admin or owner of survey can read responses
+      allow read: if isAdmin() || (request.auth != null && exists(/databases/$(database)/documents/tools/surveyHub/$(request.auth.uid)/$(surveyId)));
       allow create: if request.resource.data.keys().hasAll(['timestamp']) && 
                       request.resource.data.size() < 50; // Basic validation
     }
