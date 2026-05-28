@@ -1,0 +1,562 @@
+[
+  {
+    "id": "bmicalculator",
+    "name": "Body Weight & Health Analyzer (BMI)",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "drugdosage",
+    "name": "Pediatric & Adult Medicine Dose Calculator",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "ivdripcalc",
+    "name": "Saline & IV Fluid Drip Rate Calculator",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "medicinereminder",
+    "name": "Daily Medicine Schedule Alarm & Organizer",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "todolist",
+    "name": "Daily Tasks List & Progress Tracker",
+    "category": "utility-tools"
+  },
+  {
+    "id": "notes",
+    "name": "Quick Secure Notebook Vault",
+    "category": "utility-tools"
+  },
+  {
+    "id": "timer",
+    "name": "Pomodoro Study Focus Timer",
+    "category": "utility-tools"
+  },
+  {
+    "id": "expenseadd",
+    "name": "Record Daily Expense",
+    "category": "business-tools"
+  },
+  {
+    "id": "expenselist",
+    "name": "View Expense Records History",
+    "category": "business-tools"
+  },
+  {
+    "id": "budgettracker",
+    "name": "Savings & Monthly Budget Planner",
+    "category": "business-tools"
+  },
+  {
+    "id": "expenseanalytics",
+    "name": "Spending Visual Graphs & Charts",
+    "category": "business-tools"
+  },
+  {
+    "id": "dailymonthlyreport",
+    "name": "Printable Expense & Income Statements Builder",
+    "category": "business-tools"
+  },
+  {
+    "id": "searchexpenses",
+    "name": "Search & Filter Expenses",
+    "category": "business-tools"
+  },
+  {
+    "id": "topspendinginsights",
+    "name": "Where Do I Spend Most? (Spending Chart)",
+    "category": "business-tools"
+  },
+  {
+    "id": "resetexpenses",
+    "name": "Reset & Delete Expense Records",
+    "category": "business-tools"
+  },
+  {
+    "id": "chatbot",
+    "name": "Infinity AI Chat & Assistant",
+    "category": "ai-tools"
+  },
+  {
+    "id": "text-improver",
+    "name": "AI Smart Text Improver",
+    "category": "ai-tools"
+  },
+  {
+    "id": "summarizer",
+    "name": "AI Smart Text Summarizer",
+    "category": "ai-tools"
+  },
+  {
+    "id": "image-generator",
+    "name": "AI Canvas Art Generator",
+    "category": "ai-tools"
+  },
+  {
+    "id": "essay-writer",
+    "name": "AI Essay Writer",
+    "category": "ai-tools"
+  },
+  {
+    "id": "article-writer",
+    "name": "AI Article Writer",
+    "category": "ai-tools"
+  },
+  {
+    "id": "blog-generator",
+    "name": "AI Blog Post Generator",
+    "category": "ai-tools"
+  },
+  {
+    "id": "faq-generator",
+    "name": "AI FAQ Generator",
+    "category": "ai-tools"
+  },
+  {
+    "id": "ai-rewriter",
+    "name": "AI Content Rewriter",
+    "category": "ai-tools"
+  },
+  {
+    "id": "ai-humanizer",
+    "name": "AI Text Humanizer",
+    "category": "ai-tools"
+  },
+  {
+    "id": "grammar-fixer",
+    "name": "AI Grammar Fixer",
+    "category": "ai-tools"
+  },
+  {
+    "id": "passwordgen",
+    "name": "Random Strong Password Generator",
+    "category": "utility-tools"
+  },
+  {
+    "id": "qrcode-gen",
+    "name": "Scan-to-Open QR Code Generator",
+    "category": "utility-tools"
+  },
+  {
+    "id": "unitconverter",
+    "name": "All-in-One Measurement Units Converter",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "discountcalc",
+    "name": "Sales Discount & Final Price Calculator",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "percentagecalc",
+    "name": "Simple Percentage Calculator",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "lcmhcf",
+    "name": "LCM & HCF Finder (Lowest & Highest Factors)",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "urlencoder",
+    "name": "Web URL Link Safeguard Encoder & Decoder",
+    "category": "developer-tools"
+  },
+  {
+    "id": "caseconverter",
+    "name": "Convert Text to UPPERCASE, lowercase, or Title Case",
+    "category": "text-tools"
+  },
+  {
+    "id": "wordcounter",
+    "name": "Word, Character, & Paragraph Counter",
+    "category": "text-tools"
+  },
+  {
+    "id": "fibonacci",
+    "name": "Generate Fibonacci Sequence Range",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "factorial",
+    "name": "Factorial Calculations Checker (e.g. 5!)",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "primenumber",
+    "name": "Prime Number Checker",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "daysbetween",
+    "name": "Count Days and Time Between Dates",
+    "category": "calculator-tools"
+  },
+  {
+    "id": "palindrome",
+    "name": "Check for Words That Read Flipped (Palindromes)",
+    "category": "text-tools"
+  },
+  {
+    "id": "textreverse",
+    "name": "Flip Text and Letters Backward",
+    "category": "text-tools"
+  },
+  {
+    "id": "averagecalculator",
+    "name": "Calculate Average, Mean, and Median",
+    "category": "student-tools"
+  },
+  {
+    "id": "numbersorter",
+    "name": "Sort Numbers in Order (Lowest to Highest)",
+    "category": "student-tools"
+  },
+  {
+    "id": "yesnogerator",
+    "name": "Instant Yes or No Decision Oracle",
+    "category": "utility-tools"
+  },
+  {
+    "id": "trianglechecker",
+    "name": "Triangle Validity Inspector",
+    "category": "utility-tools"
+  },
+  {
+    "id": "graphmaker",
+    "name": "Interactive Graph Maker",
+    "category": "developer-tools"
+  },
+  {
+    "id": "removeduplicates",
+    "name": "Remove Duplicate Words & Clean Text",
+    "category": "text-tools"
+  },
+  {
+    "id": "usernamegen",
+    "name": "Creative Username Generator",
+    "category": "text-tools"
+  },
+  {
+    "id": "e-signature",
+    "name": "Draw & Save E-Signatures (Online Signature Pad)",
+    "category": "business-tools"
+  },
+  {
+    "id": "metadata-stripper",
+    "name": "Remove Secret Data from Photos (EXIF & Metadata Stripper)",
+    "category": "image-tools"
+  },
+  {
+    "id": "bulk-renamer",
+    "name": "Bulk File Batch Renamer",
+    "category": "automation-tools"
+  },
+  {
+    "id": "json-to-ts",
+    "name": "JSON to TypeScript Code Converter",
+    "category": "developer-tools"
+  },
+  {
+    "id": "encrypted-note",
+    "name": "Password Protected Secured Vault Note",
+    "category": "security-tools"
+  },
+  {
+    "id": "dailyplanner",
+    "name": "Daily Schedule & Routine Planner",
+    "category": "automation-tools"
+  },
+  {
+    "id": "calendarviewer",
+    "name": "Simple Calendar Event Scheduler",
+    "category": "automation-tools"
+  },
+  {
+    "id": "reminderalert",
+    "name": "Custom Alarm & Reminder System",
+    "category": "automation-tools"
+  },
+  {
+    "id": "men-prompts",
+    "name": "Persona Prompts (Men)",
+    "category": "ai-tools"
+  },
+  {
+    "id": "women-prompts",
+    "name": "Persona Prompts (Women)",
+    "category": "ai-tools"
+  },
+  {
+    "id": "svg-optimizer",
+    "name": "SVG Vector Image Compressor",
+    "category": "developer-tools"
+  },
+  {
+    "id": "password-leak",
+    "name": "Password Data Breach Database Checker",
+    "category": "business-tools"
+  },
+  {
+    "id": "note-shredder",
+    "name": "Self-Destructing Secret Notes",
+    "category": "security-tools"
+  },
+  {
+    "id": "csvviewer",
+    "name": "CSV Spreadsheet Table Viewer",
+    "category": "developer-tools"
+  },
+  {
+    "id": "metatagviewer",
+    "name": "Website Search Engine Meta Tag Inspector",
+    "category": "seo-tools"
+  },
+  {
+    "id": "speed-test",
+    "name": "Internet Speed Latency Tester",
+    "category": "security-tools"
+  },
+  {
+    "id": "morse-flash",
+    "name": "Morse Code Converter & Flash Signal",
+    "category": "security-tools"
+  },
+  {
+    "id": "p2p-share",
+    "name": "Direct Secure File Transfer (P2P Share)",
+    "category": "social-tools"
+  },
+  {
+    "id": "distancecalc",
+    "name": "Calculate Distance Between Coordinates",
+    "category": "text-tools"
+  },
+  {
+    "id": "equationsolver",
+    "name": "Solve Math Equations (Step-by-Step)",
+    "category": "student-tools"
+  },
+  {
+    "id": "examcalc",
+    "name": "Class Grade Marks & Percentage Estimator",
+    "category": "utility-tools"
+  },
+  {
+    "id": "passwordstrength",
+    "name": "Password Strength & Hack Time Calculator",
+    "category": "security-tools"
+  },
+  {
+    "id": "spinwheel",
+    "name": "Decision Maker Spin-the-Wheel Picker",
+    "category": "utility-tools"
+  },
+  {
+    "id": "choicecomparator",
+    "name": "Compare Choices Side-by-Side Matrix",
+    "category": "utility-tools"
+  },
+  {
+    "id": "randomnamepicker",
+    "name": "Pick Random Winner from Names List",
+    "category": "utility-tools"
+  },
+  {
+    "id": "compressimage",
+    "name": "Reduce Image File Size (Compressor)",
+    "category": "image-tools"
+  },
+  {
+    "id": "resizeimage",
+    "name": "Resize Image Boundaries (Height & Width)",
+    "category": "image-tools"
+  },
+  {
+    "id": "bg-remover",
+    "name": "AI Background Stripper",
+    "category": "image-tools"
+  },
+  {
+    "id": "blur-background",
+    "name": "DSLR Portrait Background Blur",
+    "category": "image-tools"
+  },
+  {
+    "id": "ocrimage",
+    "name": "Extract Text from Images (OCR)",
+    "category": "text-tools"
+  },
+  {
+    "id": "imageinfo",
+    "name": "Image Dimension & Detail Checker",
+    "category": "image-tools"
+  },
+  {
+    "id": "imagetopdf",
+    "name": "Convert Images & Photos into PDF",
+    "category": "converter-tools"
+  },
+  {
+    "id": "pdftoimage",
+    "name": "Convert PDF Pages to Images",
+    "category": "converter-tools"
+  },
+  {
+    "id": "mergepdf",
+    "name": "Combine Multiple PDFs into One",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "compresspdf",
+    "name": "Reduce PDF Document File Size",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "splitpdf",
+    "name": "Split PDF Pages & Extract Ranges",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "watermarkpdf",
+    "name": "Add Custom Text Watermarks to PDFs",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "rotatepdf",
+    "name": "Spin & Rotate PDF Pages",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "protect-pdf",
+    "name": "Lock PDF Files with Secure Password",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "unlock-pdf",
+    "name": "Unlock & Decrypt Protected PDFs",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "ai-summarize-pdf",
+    "name": "AI PDF Key Highlights Summarizer",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "ai-chat-pdf",
+    "name": "AI Chat & Discuss with PDF",
+    "category": "pdf-tools"
+  },
+  {
+    "id": "color-palette",
+    "name": "Image Color Palette & Code Extractor",
+    "category": "image-tools"
+  },
+  {
+    "id": "texttospeech",
+    "name": "Listen to Text Aloud (Voice Speaker)",
+    "category": "utility-tools"
+  },
+  {
+    "id": "focus-soundscape",
+    "name": "Focus Ambient Noise Mixer (Rain, Forest)",
+    "category": "utility-tools"
+  },
+  {
+    "id": "urlextractor",
+    "name": "Extract Query Fields from URL Links",
+    "category": "developer-tools"
+  },
+  {
+    "id": "glass-gen",
+    "name": "Frosty Glass CSS Card Designer",
+    "category": "developer-tools"
+  },
+  {
+    "id": "json-code",
+    "name": "JSON Code Formatter & Beautifier",
+    "category": "developer-tools"
+  },
+  {
+    "id": "link-bio",
+    "name": "Social Media Links Profile Page Builder",
+    "category": "social-tools"
+  },
+  {
+    "id": "passwordsaver",
+    "name": "Encrypted Password Keeper (Offline Vault)",
+    "category": "utility-tools"
+  },
+  {
+    "id": "surveybuilder",
+    "name": "Custom Interactive Survey Builder",
+    "category": "survey-tools"
+  },
+  {
+    "id": "mysurveys",
+    "name": "My Surveys & Questionnaires Dashboard",
+    "category": "survey-tools"
+  },
+  {
+    "id": "responseviewer",
+    "name": "Survey Results & Submissions Analyst",
+    "category": "survey-tools"
+  },
+  {
+    "id": "smartsuggestions",
+    "name": "Refine Prompts for AI Chatbots",
+    "category": "ai-tools"
+  },
+  {
+    "id": "publicsurvey",
+    "name": "Interactive Survey Submission Form",
+    "category": "survey-tools"
+  },
+  {
+    "id": "categorysummary",
+    "name": "Spreadsheet Columns Data Summarizer",
+    "category": "developer-tools"
+  },
+  {
+    "id": "extract-audio",
+    "name": "Extract High-Quality Audio from Video",
+    "category": "audio-tools"
+  },
+  {
+    "id": "video-to-gif",
+    "name": "Convert Video into Animated GIF",
+    "category": "video-tools"
+  },
+  {
+    "id": "subtitles-generator",
+    "name": "Generate & Sync Video Subtitles",
+    "category": "video-tools"
+  },
+  {
+    "id": "video-transcription",
+    "name": "Convert Video & Audio to Text Transcripts",
+    "category": "video-tools"
+  },
+  {
+    "id": "schema-generator",
+    "name": "SEO JSON-LD Structured Data Schema Maker",
+    "category": "seo-tools"
+  },
+  {
+    "id": "random-name-picker",
+    "name": "Pick Random Winner from Names List",
+    "category": "utility-tools"
+  },
+  {
+    "id": "note-shredder",
+    "name": "Self-Destructing Secret Notes",
+    "category": "utility-tools"
+  },
+  {
+    "id": "ambient-noise-player",
+    "name": "Focus Ambient Noise Mixer (Rain, Forest)",
+    "category": "audio-tools"
+  }
+]

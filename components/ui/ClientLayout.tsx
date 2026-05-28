@@ -36,7 +36,12 @@ import {
   FolderOpen,
   Check,
   ShieldAlert,
-  Share2
+  Share2,
+  GraduationCap,
+  Briefcase,
+  Shield,
+  BarChart3,
+  Calculator
 } from 'lucide-react';
 import { useTheme } from '../ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
@@ -58,19 +63,24 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Expandable folder states for ALL 9 categories
+  // Expandable folder states for restructured categories
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
-    'pdf-tools': true,
+    'ai-tools': false,
     'image-tools': false,
-    'ai-writing-tools': false,
-    'developer-tools': false,
+    'pdf-tools': true,
     'video-tools': false,
     'audio-tools': false,
-    'ocr-tools': false,
+    'text-tools': false,
+    'developer-tools': false,
+    'student-tools': false,
     'seo-tools': false,
-    'social-media-tools': false,
+    'security-tools': false,
+    'business-tools': false,
+    'social-tools': false,
+    'utility-tools': false,
+    'calculator-tools': false,
     'automation-tools': false,
-    'utility-tools': false
+    'survey-tools': false
   });
 
   // GDPR Consent & PWA states
@@ -193,139 +203,174 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     );
   }, [paletteSearch]);
 
-  // Sidebar Folder Mappings - Normal, Understandable Names (All chevrons and children included)
   const categoriesList = [
-    { id: 'pdf-tools', name: 'PDF Documents', icon: <FileText size={16} />, folderKey: 'pdf-tools', children: [
-      { name: 'Merge PDF files', path: '/pdf/mergepdf' },
-      { name: 'Split PDF pages', path: '/pdf/splitpdf' },
-      { name: 'Reduce PDF size', path: '/pdf/compresspdf' },
-      { name: 'Rotate PDF pages', path: '/pdf/rotatepdf' },
-      { name: 'Password Lock PDF', path: '/pdf/protectpdf' },
-      { name: 'Unlock PDF file', path: '/pdf/unlockpdf' },
-      { name: 'Export PDF to Images', path: '/pdf/pdftoimage' },
-      { name: 'Convert Images to PDF', path: '/pdf/imagetopdf' },
-      { name: 'Add PDF Watermark', path: '/pdf/watermarkpdf' },
-      { name: 'AI PDF Summarizer', path: '/pdf/ai-summarize-pdf' },
-      { name: 'AI Chat with PDF', path: '/pdf/ai-chat-pdf' }
+    { id: 'ai-tools', name: 'AI Tools', icon: <Sparkles size={16} />, folderKey: 'ai-tools', children: [
+      { name: "AI Chatbot Assistant", path: "/ai-tools/chatbot" },
+      { name: "AI Smart Text Improver", path: "/ai-tools/text-improver" },
+      { name: "AI Smart Text Summarizer", path: "/ai-tools/summarizer" },
+      { name: "AI Image Generator", path: "/ai-tools/image-generator" },
+      { name: "AI Prompts for Men", path: "/ai-tools/men-prompts" },
+      { name: "AI Prompts for Women", path: "/ai-tools/women-prompts" },
+      { name: "Refine Prompts Assistant", path: "/ai-tools/smartsuggestions" }
     ]},
-    { id: 'image-tools', name: 'Photos & Images', icon: <ImageIcon size={16} />, folderKey: 'image-tools', children: [
-      { name: 'Remove Background', path: '/image/bg-remover' },
-      { name: 'Blur Background', path: '/image/blur-background' },
-      { name: 'Shrink Photo file', path: '/image/image-compressor' },
-      { name: 'Resize Dimensions', path: '/image/image-resizer' },
-      { name: 'Read Photo Details', path: '/image/imageinfo' },
-      { name: 'AI Image Generator', path: '/image/image-generator' },
-      { name: 'EXIF Metadata Stripper', path: '/image/metadata-stripper' },
-      { name: 'Color Palette Extractor', path: '/image/color-palette' }
+    { id: 'image-tools', name: 'Image Tools', icon: <ImageIcon size={16} />, folderKey: 'image-tools', children: [
+      { name: "EXIF Metadata Stripper", path: "/image-tools/metadata-stripper" },
+      { name: "Resize Dimensions", path: "/image-tools/resizeimage" },
+      { name: "Remove Background", path: "/image-tools/bg-remover" },
+      { name: "Blur Background", path: "/image-tools/blur-background" },
+      { name: "Read Photo Details", path: "/image-tools/imageinfo" },
+      { name: "Color Palette Extractor", path: "/image-tools/color-palette" }
     ]},
-    { id: 'ai-writing-tools', name: 'AI Writing Assistant', icon: <PenTool size={16} />, folderKey: 'ai-writing-tools', children: [
-      { name: 'AI Essay Writer', path: '/ai-writing/essay-writer' },
-      { name: 'AI Text Humanizer', path: '/ai-writing/ai-humanizer' },
-      { name: 'AI Blog Planner', path: '/ai-writing/blog-generator' },
-      { name: 'AI Article Planner', path: '/ai-writing/article-writer' },
-      { name: 'AI FAQ Generator', path: '/ai-writing/faq-generator' },
-      { name: 'AI Grammar Checker', path: '/ai-writing/grammar-fixer' },
-      { name: 'AI Paragraph Paraphrase', path: '/ai-writing/ai-rewriter' },
-      { name: 'AI Chatbot Assistant', path: '/ai-writing/chatbot' },
-      { name: 'AI Smart Text Improver', path: '/ai-writing/text-improver' },
-      { name: 'AI Smart Text Summarizer', path: '/ai-writing/summarizer' },
-      { name: 'AI Prompts for Men', path: '/ai-writing/men-prompts' },
-      { name: 'AI Prompts for Women', path: '/ai-writing/women-prompts' },
-      { name: 'Refine Prompts Assistant', path: '/ai-writing/smartsuggestions' }
-    ]},
-    { id: 'developer-tools', name: 'Code & Dev Tools', icon: <Code size={16} />, folderKey: 'developer-tools', children: [
-      { name: 'Format JSON code', path: '/developer-tools/json-code' },
-      { name: 'JSON to TypeScript class', path: '/developer-tools/json-to-ts' },
-      { name: 'Optimize SVG vector', path: '/developer-tools/svg-optimizer' },
-      { name: 'Structured SEO Schema Maker', path: '/developer-tools/schema-generator' },
-      { name: 'URL Link Encoder', path: '/developer-tools/urlencoder' },
-      { name: 'Extract Links from Text', path: '/developer-tools/urlextractor' },
-      { name: 'Columns Data Summarizer', path: '/developer-tools/categorysummary' },
-      { name: 'E-Signatures Pad', path: '/developer-tools/e-signature' },
-      { name: 'Secured Vault Note', path: '/developer-tools/encrypted-note' },
-      { name: 'CSV Spreadsheet Viewer', path: '/developer-tools/csvviewer' },
-      { name: 'Frosty Glass CSS Maker', path: '/developer-tools/glass-gen' },
-      { name: 'Interactive Graph Maker', path: '/developer-tools/graphmaker' },
-      { name: 'Average & Mean Calculator', path: '/developer-tools/averagecalculator' },
-      { name: 'Sort Numbers in Order', path: '/developer-tools/numbersorter' }
+    { id: 'pdf-tools', name: 'PDF Tools', icon: <FileText size={16} />, folderKey: 'pdf-tools', children: [
+      { name: "Merge PDF files", path: "/pdf-tools/mergepdf" },
+      { name: "Split PDF pages", path: "/pdf-tools/splitpdf" },
+      { name: "Add PDF Watermark", path: "/pdf-tools/watermarkpdf" },
+      { name: "Rotate PDF pages", path: "/pdf-tools/rotatepdf" },
+      { name: "Password Lock PDF", path: "/pdf-tools/protect-pdf" },
+      { name: "Unlock PDF file", path: "/pdf-tools/unlock-pdf" },
+      { name: "AI PDF Summarizer", path: "/pdf-tools/ai-summarize-pdf" },
+      { name: "AI Chat with PDF", path: "/pdf-tools/ai-chat-pdf" }
     ]},
     { id: 'video-tools', name: 'Video Tools', icon: <Video size={16} />, folderKey: 'video-tools', children: [
-      { name: 'Convert Video to GIF', path: '/video/video-to-gif' },
-      { name: 'Create Video Subtitles', path: '/video/subtitles-generator' },
-      { name: 'Audio Speech to Text', path: '/video/video-transcription' }
+      { name: "Create Video Subtitles", path: "/video-tools/subtitles-generator" },
+      { name: "Audio Speech to Text", path: "/video-tools/video-transcription" }
     ]},
-    { id: 'audio-tools', name: 'Audio & Music', icon: <Music size={16} />, folderKey: 'audio-tools', children: [
-      { name: 'Extract Video Audio', path: '/audio/extract-audio' },
-      { name: 'Convert Text to Voice', path: '/audio/texttospeech' },
-      { name: 'Focus Noise Soundscape', path: '/audio/focus-soundscape' }
+    { id: 'audio-tools', name: 'Audio Tools', icon: <Music size={16} />, folderKey: 'audio-tools', children: [
+      { name: "Convert Text to Voice", path: "/audio-tools/texttospeech" },
+      { name: "Focus Ambient Noise Mixer", path: "/audio-tools/ambient-noise-player" }
     ]},
-    { id: 'ocr-tools', name: 'Text Scanner (OCR)', icon: <Scan size={16} />, folderKey: 'ocr-tools', children: [
-      { name: 'Scan Image to Text', path: '/ocr/ocrimage' }
+    { id: 'text-tools', name: 'Text Tools', icon: <Scan size={16} />, folderKey: 'text-tools', children: [
+      { name: "Convert Text Cases", path: "/text-tools/caseconverter" },
+      { name: "Word & Character Counter", path: "/text-tools/wordcounter" },
+      { name: "Palindrome Checker", path: "/text-tools/palindrome" },
+      { name: "Flip Text Backward", path: "/text-tools/textreverse" },
+      { name: "Remove Duplicate Words", path: "/text-tools/removeduplicates" },
+      { name: "Scan Image to Text", path: "/text-tools/ocrimage" }
     ]},
-    { id: 'seo-tools', name: 'SEO & Marketing', icon: <Search size={16} />, folderKey: 'seo-tools', children: [
-      { name: 'Audits Landing Meta Tags', path: '/seo/metatagviewer' },
-      { name: 'Sitemap Schema Builder', path: '/seo/schema-generator' }
+    { id: 'developer-tools', name: 'Developer Tools', icon: <Code size={16} />, folderKey: 'developer-tools', children: [
+      { name: "JSON to TypeScript class", path: "/developer-tools/json-to-ts" },
+      { name: "Format JSON code", path: "/developer-tools/json-code" }
     ]},
-    { id: 'social-media-tools', name: 'Social Media & Sharing', icon: <Share2 size={16} />, folderKey: 'social-media-tools', children: [
-      { name: 'Direct P2P File Transfer', path: '/social/p2p-share' },
-      { name: 'Link-In-Bio Page Builder', path: '/social/link-bio' }
+    { id: 'student-tools', name: 'Student Tools', icon: <GraduationCap size={16} />, folderKey: 'student-tools', children: [
+      { name: "Average & Mean Calculator", path: "/student-tools/averagecalculator" },
+      { name: "Sort Numbers in Order", path: "/student-tools/numbersorter" },
+      { name: "Parabola Math Solver", path: "/student-tools/equationsolver" }
     ]},
-    { id: 'automation-tools', name: 'Schedules & Automation', icon: <Activity size={16} />, folderKey: 'automation-tools', children: [
-      { name: 'Batch File Renamer', path: '/automation/bulk-renamer' },
-      { name: 'Daily Schedule Planner', path: '/automation/dailyplanner' },
-      { name: 'Calendar Event Scheduler', path: '/automation/calendarviewer' },
-      { name: 'Alarm & Reminder Alerts', path: '/automation/reminderalert' }
+    { id: 'seo-tools', name: 'SEO Tools', icon: <Search size={16} />, folderKey: 'seo-tools', children: [
+      { name: "Sitemap Schema Builder", path: "/seo-tools/schema-generator" }
     ]},
-    { id: 'utility-tools', name: 'Everyday Tools', icon: <ClipboardList size={16} />, folderKey: 'utility-tools', children: [
-      { name: 'Body Weight Analyzer (BMI)', path: '/utility/bmicalculator' },
-      { name: 'Medicine Dose Calculator', path: '/utility/drugdosage' },
-      { name: 'IV Fluid Drip Rate', path: '/utility/ivdripcalc' },
-      { name: 'Daily Doses Reminder Alarm', path: '/utility/medicinereminder' },
-      { name: 'Pomodoro Study Timer', path: '/utility/timer' },
-      { name: 'Crypto Password Maker', path: '/utility/passwordgen' },
-      { name: 'Scan-to-Open QR Maker', path: '/utility/qrcode-gen' },
-      { name: 'Measurement Units Converter', path: '/utility/unitconverter' },
-      { name: 'Percentage Discount Calc', path: '/utility/percentagecalc' },
-      { name: 'Days Counter between Dates', path: '/utility/daysbetween' },
-      { name: 'Self-Destruct Notes', path: '/utility/note-shredder' },
-      { name: 'Breaches Leak Scanner', path: '/utility/password-leak' },
-      { name: 'Key Strength Entropy', path: '/utility/passwordstrength' },
-      { name: 'Parabola Math Solver', path: '/utility/equationsolver' },
-      { name: 'Daily To-Do Checklist', path: '/utility/todolist' },
-      { name: 'Quick Notebook Vault', path: '/utility/notes' },
-      { name: 'Outflow Purchases Recorder', path: '/utility/expenseadd' },
-      { name: 'Savings Limits Planner', path: '/utility/budgettracker' },
-      { name: 'Spending Visual Graphs', path: '/utility/expenseanalytics' },
-      { name: 'Printable Balance Statements', path: '/utility/dailymonthlyreport' },
-      { name: 'Where Do I Spend Most?', path: '/utility/topspendinginsights' },
-      { name: 'Erase Ledger History', path: '/utility/resetexpenses' },
-      { name: 'View Expense Records', path: '/utility/expenselist' },
-      { name: 'Search & Filter Expenses', path: '/utility/searchexpenses' },
-      { name: 'Sales Discount Calculator', path: '/utility/discountcalc' },
-      { name: 'LCM & HCF Finder', path: '/utility/lcmhcf' },
-      { name: 'Convert Text Cases', path: '/utility/caseconverter' },
-      { name: 'Word & Character Counter', path: '/utility/wordcounter' },
-      { name: 'Generate Fibonacci Range', path: '/utility/fibonacci' },
-      { name: 'Factorial Calculator', path: '/utility/factorial' },
-      { name: 'Prime Number Checker', path: '/utility/primenumber' },
-      { name: 'Palindrome Checker', path: '/utility/palindrome' },
-      { name: 'Flip Text Backward', path: '/utility/textreverse' },
-      { name: 'Yes or No Decision Oracle', path: '/utility/yesnogerator' },
-      { name: 'Triangle Validity Inspector', path: '/utility/trianglechecker' },
-      { name: 'Remove Duplicate Words', path: '/utility/removeduplicates' },
-      { name: 'Creative Username Generator', path: '/utility/usernamegen' },
-      { name: 'Internet Speed Test', path: '/utility/speed-test' },
-      { name: 'Morse Code Converter', path: '/utility/morse-flash' },
-      { name: 'Distance Calc Coordinates', path: '/utility/distancecalc' },
-      { name: 'Class Grade Estimator', path: '/utility/examcalc' },
-      { name: 'Spin-the-Wheel Picker', path: '/utility/spinwheel' },
-      { name: 'Compare Choices Matrix', path: '/utility/choicecomparator' },
-      { name: 'Pick Random Winners', path: '/utility/randomnamepicker' },
-      { name: 'Encrypted Password Keeper', path: '/utility/passwordsaver' },
-      { name: 'Interactive Survey Builder', path: '/utility/surveybuilder' },
-      { name: 'My Surveys Dashboard', path: '/utility/mysurveys' },
-      { name: 'Survey Submissions Analyst', path: '/utility/responseviewer' },
-      { name: 'Fill Survey Form', path: '/utility/publicsurvey' }
+    { id: 'security-tools', name: 'Security Tools', icon: <Shield size={16} />, folderKey: 'security-tools', children: [
+      { name: "Secured Vault Note", path: "/security-tools/encrypted-note" },
+      { name: "Breaches Leak Scanner", path: "/security-tools/password-leak" },
+      { name: "Self-Destruct Notes", path: "/security-tools/note-shredder" },
+      { name: "Key Strength Entropy", path: "/security-tools/passwordstrength" },
+      { name: "Encrypted Password Keeper", path: "/security-tools/passwordsaver" }
+    ]},
+    { id: 'business-tools', name: 'Business Tools', icon: <Briefcase size={16} />, folderKey: 'business-tools', children: [
+      { name: "Outflow Purchases Recorder", path: "/business-tools/expenseadd" },
+      { name: "View Expense Records", path: "/business-tools/expenselist" },
+      { name: "Savings Limits Planner", path: "/business-tools/budgettracker" },
+      { name: "Spending Visual Graphs", path: "/business-tools/expenseanalytics" },
+      { name: "Printable Balance Statements", path: "/business-tools/dailymonthlyreport" },
+      { name: "Search & Filter Expenses", path: "/business-tools/searchexpenses" },
+      { name: "Where Do I Spend Most?", path: "/business-tools/topspendinginsights" },
+      { name: "Erase Ledger History", path: "/business-tools/resetexpenses" }
+    ]},
+    { id: 'social-tools', name: 'Social Tools', icon: <Share2 size={16} />, folderKey: 'social-tools', children: [
+      { name: "Link-In-Bio Page Builder", path: "/social-tools/link-bio" }
+    ]},
+    { id: 'productivity-tools', name: 'Productivity Tools', icon: <ClipboardList size={16} />, folderKey: 'productivity-tools', children: [
+      { name: "Daily To-Do Checklist", path: "/productivity-tools/todolist" },
+      { name: "Quick Notebook Vault", path: "/productivity-tools/notes" },
+      { name: "Pomodoro Study Timer", path: "/productivity-tools/timer" },
+      { name: "Daily Schedule & Routine Planner", path: "/productivity-tools/dailyplanner" },
+      { name: "Simple Calendar Event Scheduler", path: "/productivity-tools/calendarviewer" },
+      { name: "Custom Alarm & Reminder System", path: "/productivity-tools/reminderalert" }
+    ]},
+    { id: 'utility-tools', name: 'Utility Tools', icon: <Settings size={16} />, folderKey: 'utility-tools', children: [
+      { name: "Yes or No Decision Oracle", path: "/utility-tools/yesnogerator" },
+      { name: "Triangle Validity Inspector", path: "/utility-tools/trianglechecker" },
+      { name: "Internet Speed Test", path: "/utility-tools/speed-test" },
+      { name: "Distance Calc Coordinates", path: "/utility-tools/distancecalc" },
+      { name: "Class Grade Estimator", path: "/utility-tools/examcalc" },
+      { name: "Spin-the-Wheel Picker", path: "/utility-tools/spinwheel" },
+      { name: "Compare Choices Matrix", path: "/utility-tools/choicecomparator" },
+      { name: "Pick Random Winners", path: "/utility-tools/randomnamepicker" },
+      { name: "Pick Random Winner from Names List", path: "/utility-tools/random-name-picker" }
+    ]},
+    { id: 'document-tools', name: 'Document Tools', icon: <FolderOpen size={16} />, folderKey: 'document-tools', children: [
+      { name: "CSV Spreadsheet Table Viewer", path: "/document-tools/csvviewer" }
+    ]},
+    { id: 'generator-tools', name: 'Generator Tools', icon: <Zap size={16} />, folderKey: 'generator-tools', children: [
+      { name: "Random Strong Password Generator", path: "/generator-tools/passwordgen" },
+      { name: "Scan-to-Open QR Code Generator", path: "/generator-tools/qrcode-gen" },
+      { name: "Creative Username Generator", path: "/generator-tools/usernamegen" }
+    ]},
+    { id: 'calculator-tools', name: 'Calculator Tools', icon: <Calculator size={16} />, folderKey: 'calculator-tools', children: [
+      { name: "Body Weight & Health Analyzer (BMI)", path: "/calculator-tools/bmicalculator" },
+      { name: "Pediatric & Adult Medicine Dose Calculator", path: "/calculator-tools/drugdosage" },
+      { name: "Saline & IV Fluid Drip Rate Calculator", path: "/calculator-tools/ivdripcalc" },
+      { name: "Daily Medicine Schedule Alarm & Organizer", path: "/calculator-tools/medicinereminder" },
+      { name: "Sales Discount & Final Price Calculator", path: "/calculator-tools/discountcalc" },
+      { name: "Simple Percentage Calculator", path: "/calculator-tools/percentagecalc" },
+      { name: "LCM & HCF Finder (Lowest & Highest Factors)", path: "/calculator-tools/lcmhcf" },
+      { name: "Generate Fibonacci Sequence Range", path: "/calculator-tools/fibonacci" },
+      { name: "Factorial Calculations Checker (e.g. 5!)", path: "/calculator-tools/factorial" },
+      { name: "Prime Number Checker", path: "/calculator-tools/primenumber" },
+      { name: "Count Days and Time Between Dates", path: "/calculator-tools/daysbetween" }
+    ]},
+    { id: 'converter-tools', name: 'Converter Tools', icon: <Activity size={16} />, folderKey: 'converter-tools', children: [
+      { name: "All-in-One Measurement Units Converter", path: "/converter-tools/unitconverter" },
+      { name: "URL Link Encoder", path: "/converter-tools/urlencoder" },
+      { name: "Morse Code Converter", path: "/converter-tools/morse-flash" },
+      { name: "Extract Links from Text", path: "/converter-tools/urlextractor" }
+    ]},
+    { id: 'file-tools', name: 'File Tools', icon: <Folder size={16} />, folderKey: 'file-tools', children: [
+      { name: "Convert Images to PDF", path: "/file-tools/imagetopdf" },
+      { name: "Export PDF to Images", path: "/file-tools/pdftoimage" }
+    ]},
+    { id: 'coding-tools', name: 'Coding Tools', icon: <Code size={16} />, folderKey: 'coding-tools', children: [
+      { name: "Interactive Graph Maker", path: "/coding-tools/graphmaker" },
+      { name: "Frosty Glass CSS Maker", path: "/coding-tools/glass-gen" }
+    ]},
+    { id: 'cloud-tools', name: 'Cloud Tools', icon: <Share2 size={16} />, folderKey: 'cloud-tools', children: [
+      { name: "Direct P2P File Transfer", path: "/cloud-tools/p2p-share" }
+    ]},
+    { id: 'automation-tools', name: 'Automation Tools', icon: <Activity size={16} />, folderKey: 'automation-tools', children: [
+      { name: "Bulk File Batch Renamer", path: "/automation-tools/bulk-renamer" }
+    ]},
+    { id: 'creator-tools', name: 'Creator Tools', icon: <PenTool size={16} />, folderKey: 'creator-tools', children: [
+      { name: "E-Signatures Pad", path: "/creator-tools/e-signature" }
+    ]},
+    { id: 'research-tools', name: 'Research Tools', icon: <BarChart3 size={16} />, folderKey: 'research-tools', children: [
+      { name: "Columns Data Summarizer", path: "/research-tools/categorysummary" }
+    ]},
+    { id: 'writing-tools', name: 'Writing Tools', icon: <PenTool size={16} />, folderKey: 'writing-tools', children: [
+      { name: "AI Essay Writer", path: "/writing-tools/essay-writer" },
+      { name: "AI Article Planner", path: "/writing-tools/article-writer" },
+      { name: "AI Blog Planner", path: "/writing-tools/blog-generator" },
+      { name: "AI FAQ Generator", path: "/writing-tools/faq-generator" },
+      { name: "AI Paragraph Paraphrase", path: "/writing-tools/ai-rewriter" },
+      { name: "AI Text Humanizer", path: "/writing-tools/ai-humanizer" },
+      { name: "AI Grammar Checker", path: "/writing-tools/grammar-fixer" }
+    ]},
+    { id: 'marketing-tools', name: 'Marketing Tools', icon: <Search size={16} />, folderKey: 'marketing-tools', children: [
+      { name: "Audits Landing Meta Tags", path: "/marketing-tools/metatagviewer" }
+    ]},
+    { id: 'compression-tools', name: 'Compression Tools', icon: <Folder size={16} />, folderKey: 'compression-tools', children: [
+      { name: "Optimize SVG vector", path: "/compression-tools/svg-optimizer" },
+      { name: "Shrink Photo file", path: "/compression-tools/compressimage" },
+      { name: "Reduce PDF size", path: "/compression-tools/compresspdf" }
+    ]},
+    { id: 'media-tools', name: 'Media Tools', icon: <Video size={16} />, folderKey: 'media-tools', children: [
+      { name: "Extract Video Audio", path: "/media-tools/extract-audio" },
+      { name: "Convert Video to GIF", path: "/media-tools/video-to-gif" }
+    ]},
+    { id: 'survey-tools', name: 'Survey Tools', icon: <BarChart3 size={16} />, folderKey: 'survey-tools', children: [
+      { name: "Custom Survey Builder", path: "/survey-tools/surveybuilder" },
+      { name: "My Surveys Dashboard", path: "/survey-tools/mysurveys" },
+      { name: "Survey Response Analyst", path: "/survey-tools/responseviewer" },
+      { name: "Fill Survey Form", path: "/survey-tools/publicsurvey" }
     ]}
   ];
 

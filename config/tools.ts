@@ -35,18 +35,209 @@ export interface CategoryDefinition {
 }
 
 export const categories: CategoryDefinition[] = [
-  { id: 'pdf-tools', name: 'PDF Tools', icon: '📄', emoji: '📄', description: 'Merge, split, compress, and edit PDF documents client-side.' },
-  { id: 'image-tools', name: 'Image Tools', icon: '🖼️', emoji: '🖼️', description: 'Compress, resize, generate, and edit images instantly.' },
-  { id: 'video-tools', name: 'Video Tools', icon: '🎥', emoji: '🎥', description: 'Trim, compress, create subtitles, and edit videos.' },
-  { id: 'audio-tools', name: 'Audio Tools', icon: '🎵', emoji: '🎵', description: 'Extract audio, translate speech, and manage music tracks.' },
-  { id: 'ai-writing-tools', name: 'AI Writing Tools', icon: '✍️', emoji: '✍️', description: 'Essay writers, blog generators, FAQ tools, and humanizers.' },
-  { id: 'ocr-tools', name: 'OCR Tools', icon: '🔍', emoji: '🔍', description: 'Extract text from scanned PDFs, images, and documents.' },
-  { id: 'file-conversion-tools', name: 'File Conversion Tools', icon: '🔄', emoji: '🔄', description: 'Convert between files, images, PDFs, and document formats.' },
-  { id: 'developer-tools', name: 'Developer Tools', icon: '💻', emoji: '💻', description: 'JSON formatters, converters, SVG path optimizers, and codegen.' },
-  { id: 'seo-tools', name: 'SEO Tools', icon: '📈', emoji: '📈', description: 'Meta tag auditors, schemas, and SEO content tools.' },
-  { id: 'utility-tools', name: 'Utility Tools', icon: '🛠️', emoji: '🛠️', description: 'QR makers, password generators, and calculation utilities.' },
-  { id: 'social-media-tools', name: 'Social Media Tools', icon: '📱', emoji: '📱', description: 'Link-in-bio pages, P2P file shares, and platform utilities.' },
-  { id: 'automation-tools', name: 'Automation Tools', icon: '⚡', emoji: '⚡', description: 'Bulk file renamers, schedules, and workflow tools.' }
+  {
+    "id": "ai-tools",
+    "name": "AI Tools",
+    "icon": "🤖",
+    "emoji": "🤖",
+    "description": "Chatbots, prompt helpers, and AI graphics."
+  },
+  {
+    "id": "image-tools",
+    "name": "Image Tools",
+    "icon": "🖼️",
+    "emoji": "🖼️",
+    "description": "Resize, edit, strip metadata, and extract palettes."
+  },
+  {
+    "id": "pdf-tools",
+    "name": "PDF Tools",
+    "icon": "📄",
+    "emoji": "📄",
+    "description": "Merge, split, lock, unlock, and sign PDF pages."
+  },
+  {
+    "id": "video-tools",
+    "name": "Video Tools",
+    "icon": "🎥",
+    "emoji": "🎥",
+    "description": "Convert videos and generate subtitles."
+  },
+  {
+    "id": "audio-tools",
+    "name": "Audio Tools",
+    "icon": "🎵",
+    "emoji": "🎵",
+    "description": "Text to speech and ambient noise mixers."
+  },
+  {
+    "id": "text-tools",
+    "name": "Text Tools",
+    "icon": "🔤",
+    "emoji": "🔤",
+    "description": "Counters, case converters, duplicate removers, and OCR."
+  },
+  {
+    "id": "developer-tools",
+    "name": "Developer Tools",
+    "icon": "💻",
+    "emoji": "💻",
+    "description": "JSON formatters, compilers, and SVG builders."
+  },
+  {
+    "id": "student-tools",
+    "name": "Student Tools",
+    "icon": "🎓",
+    "emoji": "🎓",
+    "description": "Average, formula solvers, and grade calculators."
+  },
+  {
+    "id": "seo-tools",
+    "name": "SEO Tools",
+    "icon": "📈",
+    "emoji": "📈",
+    "description": "Website meta tag checkers and schema builders."
+  },
+  {
+    "id": "security-tools",
+    "name": "Security Tools",
+    "icon": "🛡️",
+    "emoji": "🛡️",
+    "description": "Password strength checkers and leak scanners."
+  },
+  {
+    "id": "business-tools",
+    "name": "Business Tools",
+    "icon": "💼",
+    "emoji": "💼",
+    "description": "E-signatures, expenses, and monthly budget trackers."
+  },
+  {
+    "id": "social-tools",
+    "name": "Social Tools",
+    "icon": "📱",
+    "emoji": "📱",
+    "description": "Link-in-bio builders and direct file shares."
+  },
+  {
+    "id": "productivity-tools",
+    "name": "Productivity Tools",
+    "icon": "⏱️",
+    "emoji": "⏱️",
+    "description": "Timers, schedules, planners, and task lists."
+  },
+  {
+    "id": "utility-tools",
+    "name": "Utility Tools",
+    "icon": "🛠️",
+    "emoji": "🛠️",
+    "description": "Decision wheels and custom utility boards."
+  },
+  {
+    "id": "document-tools",
+    "name": "Document Tools",
+    "icon": "📁",
+    "emoji": "📁",
+    "description": "Local document editors and converters."
+  },
+  {
+    "id": "generator-tools",
+    "name": "Generator Tools",
+    "icon": "⚙️",
+    "emoji": "⚙️",
+    "description": "QR code and strong password generators."
+  },
+  {
+    "id": "calculator-tools",
+    "name": "Calculator Tools",
+    "icon": "🧮",
+    "emoji": "🧮",
+    "description": "Dose, drip, discount, BMI, and percentage calculators."
+  },
+  {
+    "id": "converter-tools",
+    "name": "Converter Tools",
+    "icon": "🔄",
+    "emoji": "🔄",
+    "description": "URL converters, Morse translators, and units."
+  },
+  {
+    "id": "file-tools",
+    "name": "File Tools",
+    "icon": "📁",
+    "emoji": "📁",
+    "description": "Bulk renamers and file utilities."
+  },
+  {
+    "id": "coding-tools",
+    "name": "Coding Tools",
+    "icon": "💻",
+    "emoji": "💻",
+    "description": "JSON and code development helpers."
+  },
+  {
+    "id": "cloud-tools",
+    "name": "Cloud Tools",
+    "icon": "☁️",
+    "emoji": "☁️",
+    "description": "Direct p2p secured cloud file transfers."
+  },
+  {
+    "id": "automation-tools",
+    "name": "Automation Tools",
+    "icon": "⚡",
+    "emoji": "⚡",
+    "description": "Daily routines and notification alerts."
+  },
+  {
+    "id": "creator-tools",
+    "name": "Creator Tools",
+    "icon": "🎨",
+    "emoji": "🎨",
+    "description": "Drawing signatures and visual assets."
+  },
+  {
+    "id": "research-tools",
+    "name": "Research Tools",
+    "icon": "🔍",
+    "emoji": "🔍",
+    "description": "Graph builders and spreadsheet readers."
+  },
+  {
+    "id": "writing-tools",
+    "name": "Writing Tools",
+    "icon": "✍️",
+    "emoji": "✍️",
+    "description": "AI essay, blog, and article writers."
+  },
+  {
+    "id": "marketing-tools",
+    "name": "Marketing Tools",
+    "icon": "📢",
+    "emoji": "📢",
+    "description": "SEO landing page checkers."
+  },
+  {
+    "id": "compression-tools",
+    "name": "Compression Tools",
+    "icon": "🗜️",
+    "emoji": "🗜️",
+    "description": "Image, vector, and PDF compressors."
+  },
+  {
+    "id": "media-tools",
+    "name": "Media Tools",
+    "icon": "🎬",
+    "emoji": "🎬",
+    "description": "Audio extractors and video subtitles generator."
+  },
+  {
+    "id": "survey-tools",
+    "name": "Survey Tools",
+    "icon": "📊",
+    "emoji": "📊",
+    "description": "Interactive survey form builders."
+  }
 ];
 
 
@@ -56,7 +247,7 @@ export const tools: ToolDefinition[] = [
     id: 'bmicalculator',
     name: 'Body Weight & Health Analyzer (BMI)',
     description: 'Calculate your Body Mass Index (BMI) instantly for weight assessments.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🧮',
     type: 'simple',
     inputs: [
@@ -87,7 +278,7 @@ export const tools: ToolDefinition[] = [
     id: 'drugdosage',
     name: 'Pediatric & Adult Medicine Dose Calculator',
     description: 'Quickly estimate pediatric or regular dosages based on weight & concentration.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '💊',
     type: 'simple',
     inputs: [
@@ -113,7 +304,7 @@ export const tools: ToolDefinition[] = [
     id: 'ivdripcalc',
     name: 'Saline & IV Fluid Drip Rate Calculator',
     description: 'Calculate drops per minute rates for IV fluid administrations.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '💧',
     type: 'simple',
     inputs: [
@@ -138,7 +329,7 @@ export const tools: ToolDefinition[] = [
     id: 'medicinereminder',
     name: 'Daily Medicine Schedule Alarm & Organizer',
     description: 'Auto-generate intervals and dosing logs over a 24-hour cycle.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '📅',
     type: 'custom',
     componentName: 'MedicationReminder'
@@ -149,7 +340,7 @@ export const tools: ToolDefinition[] = [
     id: 'todolist',
     name: 'Daily Tasks List & Progress Tracker',
     description: 'Interactive checklist synced to Firebase Cloud backup.',
-    category: 'utility-tools',
+    category: 'productivity-tools',
     icon: '📝',
     type: 'custom',
     componentName: 'TodoList'
@@ -158,7 +349,7 @@ export const tools: ToolDefinition[] = [
     id: 'notes',
     name: 'Quick Secure Notebook Vault',
     description: 'Write quick notes. Synced to Firestore automatically.',
-    category: 'utility-tools',
+    category: 'productivity-tools',
     icon: '📓',
     type: 'custom',
     componentName: 'QuickNotes'
@@ -167,7 +358,7 @@ export const tools: ToolDefinition[] = [
     id: 'timer',
     name: 'Pomodoro Study Focus Timer',
     description: 'High-performance Pomodoro and count down watch.',
-    category: 'utility-tools',
+    category: 'productivity-tools',
     icon: '⏱️',
     type: 'custom',
     componentName: 'FocusTimer'
@@ -178,7 +369,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenseadd',
     name: 'Record Daily Expense',
     description: 'Record new outflow transactions with direct cloud save.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '➕',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -187,7 +378,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenselist',
     name: 'View Expense Records History',
     description: 'Sort and filter historical purchases.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '📋',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -196,7 +387,7 @@ export const tools: ToolDefinition[] = [
     id: 'budgettracker',
     name: 'Savings & Monthly Budget Planner',
     description: 'Set spending limits by category and track progress bar indicators.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '🎯',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -205,7 +396,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenseanalytics',
     name: 'Spending Visual Graphs & Charts',
     description: 'Beautiful interactive spending distribution and trends.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '📈',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -214,7 +405,7 @@ export const tools: ToolDefinition[] = [
     id: 'dailymonthlyreport',
     name: 'Printable Expense & Income Statements Builder',
     description: 'Generate a unified report of yesterday, today, and current month outflows.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '📅',
     type: 'custom',
     componentName: 'DailyMonthlyReport'
@@ -223,7 +414,7 @@ export const tools: ToolDefinition[] = [
     id: 'searchexpenses',
     name: 'Search & Filter Expenses',
     description: 'Query transactions using custom key tags, dates, and amount thresholds.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '🔍',
     type: 'custom',
     componentName: 'SearchExpenses'
@@ -232,7 +423,7 @@ export const tools: ToolDefinition[] = [
     id: 'topspendinginsights',
     name: 'Where Do I Spend Most? (Spending Chart)',
     description: 'Identify high-volume expense categories and evaluate key budget drains.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '💡',
     type: 'custom',
     componentName: 'TopSpendingInsights'
@@ -241,7 +432,7 @@ export const tools: ToolDefinition[] = [
     id: 'resetexpenses',
     name: 'Reset & Delete Expense Records',
     description: 'Permanently erase all your logged transaction history and reset spending ledgers.',
-    category: 'utility-tools',
+    category: 'business-tools',
     icon: '🗑️',
     type: 'custom',
     componentName: 'ResetExpenses'
@@ -252,7 +443,7 @@ export const tools: ToolDefinition[] = [
     id: 'chatbot',
     name: 'Infinity AI Chat & Assistant',
     description: 'Premium chatbot interface powered by advanced Gemini models.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '🤖',
     type: 'custom',
     componentName: 'AIChatbot'
@@ -261,7 +452,7 @@ export const tools: ToolDefinition[] = [
     id: 'text-improver',
     name: 'AI Smart Text Improver',
     description: 'Rewrite, fix grammar, and elevate the tone of your documents.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '✨',
     type: 'custom',
     componentName: 'AITextImprover'
@@ -270,7 +461,7 @@ export const tools: ToolDefinition[] = [
     id: 'summarizer',
     name: 'AI Smart Text Summarizer',
     description: 'Distill long essays or articles into highly cohesive outlines.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '📝',
     type: 'custom',
     componentName: 'AISummarizer'
@@ -279,7 +470,7 @@ export const tools: ToolDefinition[] = [
     id: 'image-generator',
     name: 'AI Canvas Art Generator',
     description: 'Convert descriptive sentences into visual graphics.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '🎨',
     type: 'custom',
     componentName: 'AIImageGenerator'
@@ -288,7 +479,7 @@ export const tools: ToolDefinition[] = [
     id: 'essay-writer',
     name: 'AI Essay Writer',
     description: 'Draft well-structured, professional academic essays instantly using advanced AI language models.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '✍️',
     type: 'custom',
     componentName: 'EssayWriter'
@@ -297,7 +488,7 @@ export const tools: ToolDefinition[] = [
     id: 'article-writer',
     name: 'AI Article Writer',
     description: 'Draft SEO-optimized articles, news pieces, and journalistic columns instantly with highly engaging headlines.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '📰',
     type: 'custom',
     componentName: 'ArticleWriter'
@@ -306,7 +497,7 @@ export const tools: ToolDefinition[] = [
     id: 'blog-generator',
     name: 'AI Blog Post Generator',
     description: 'Draft friendly, shareable, and engaging blog posts tailored to your exact niche and audience.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '💬',
     type: 'custom',
     componentName: 'BlogGenerator'
@@ -315,7 +506,7 @@ export const tools: ToolDefinition[] = [
     id: 'faq-generator',
     name: 'AI FAQ Generator',
     description: 'Generate frequently asked questions (FAQs) and answers for your website, landing page, or product docs instantly.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '❓',
     type: 'custom',
     componentName: 'FAQGenerator'
@@ -324,7 +515,7 @@ export const tools: ToolDefinition[] = [
     id: 'ai-rewriter',
     name: 'AI Content Rewriter',
     description: 'Rewrite, paraphrase, expand, or simplify any content locally using advanced machine learning models.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '🔄',
     type: 'custom',
     componentName: 'AIRewriter'
@@ -333,7 +524,7 @@ export const tools: ToolDefinition[] = [
     id: 'ai-humanizer',
     name: 'AI Text Humanizer',
     description: 'Convert robotic or AI-generated copy into highly natural, organic, human-sounding text.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '👤',
     type: 'custom',
     componentName: 'AIHumanizer'
@@ -342,7 +533,7 @@ export const tools: ToolDefinition[] = [
     id: 'grammar-fixer',
     name: 'AI Grammar Fixer',
     description: 'Correct all spelling mistakes, grammatical errors, and sentence structure issues instantly.',
-    category: 'ai-writing-tools',
+    category: 'writing-tools',
     icon: '🛠️',
     type: 'custom',
     componentName: 'GrammarFixer'
@@ -353,7 +544,7 @@ export const tools: ToolDefinition[] = [
     id: 'passwordgen',
     name: 'Random Strong Password Generator',
     description: 'Build strong cryptographic keys with symbols, casing, and lengths.',
-    category: 'utility-tools',
+    category: 'generator-tools',
     icon: '🔑',
     type: 'simple',
     inputs: [
@@ -385,7 +576,7 @@ export const tools: ToolDefinition[] = [
     id: 'qrcode-gen',
     name: 'Scan-to-Open QR Code Generator',
     description: 'Create instantly scannable codes for links, text, or contacts.',
-    category: 'utility-tools',
+    category: 'generator-tools',
     icon: '📱',
     type: 'custom',
     componentName: 'QRCodeGenerator'
@@ -394,7 +585,7 @@ export const tools: ToolDefinition[] = [
     id: 'unitconverter',
     name: 'All-in-One Measurement Units Converter',
     description: 'Transform values between lengths, weights, areas, and temperatures.',
-    category: 'utility-tools',
+    category: 'converter-tools',
     icon: '🔄',
     type: 'simple',
     inputs: [
@@ -433,7 +624,7 @@ export const tools: ToolDefinition[] = [
     id: 'discountcalc',
     name: 'Sales Discount & Final Price Calculator',
     description: 'Find original prices, percentage drop savings, and net totals.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🏷️',
     type: 'simple',
     inputs: [
@@ -457,7 +648,7 @@ export const tools: ToolDefinition[] = [
     id: 'percentagecalc',
     name: 'Simple Percentage Calculator',
     description: 'Compute values, differences, proportions, and percentage ratios.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🔢',
     type: 'simple',
     inputs: [
@@ -480,7 +671,7 @@ export const tools: ToolDefinition[] = [
     id: 'lcmhcf',
     name: 'LCM & HCF Finder (Lowest & Highest Factors)',
     description: 'Calculate Least Common Multiple and Highest Common Factor for integers.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🔢',
     type: 'simple',
     inputs: [
@@ -508,7 +699,7 @@ export const tools: ToolDefinition[] = [
     id: 'urlencoder',
     name: 'Web URL Link Safeguard Encoder & Decoder',
     description: 'Convert characters to URL safe equivalents or decode back.',
-    category: 'developer-tools',
+    category: 'converter-tools',
     icon: '🔗',
     type: 'simple',
     inputs: [
@@ -537,7 +728,7 @@ export const tools: ToolDefinition[] = [
     id: 'caseconverter',
     name: 'Convert Text to UPPERCASE, lowercase, or Title Case',
     description: 'Convert text blocks instantly into UPPERCASE, lowercase, Title Case, camelCase, or snake_case.',
-    category: 'utility-tools',
+    category: 'text-tools',
     icon: '🔠',
     type: 'simple',
     inputs: [
@@ -584,7 +775,7 @@ export const tools: ToolDefinition[] = [
     id: 'wordcounter',
     name: 'Word, Character, & Paragraph Counter',
     description: 'Analyze text metrics including word counts, reading speeds, characters, and paragraphs.',
-    category: 'utility-tools',
+    category: 'text-tools',
     icon: '📝',
     type: 'simple',
     inputs: [
@@ -611,7 +802,7 @@ export const tools: ToolDefinition[] = [
     id: 'fibonacci',
     name: 'Generate Fibonacci Sequence Range',
     description: 'Generate the mathematical Fibonacci sequence up to 100 terms.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🔢',
     type: 'simple',
     inputs: [
@@ -639,7 +830,7 @@ export const tools: ToolDefinition[] = [
     id: 'factorial',
     name: 'Factorial Calculations Checker (e.g. 5!)',
     description: 'Compute the product of all positive integers less than or equal to a number.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🔢',
     type: 'simple',
     inputs: [
@@ -667,7 +858,7 @@ export const tools: ToolDefinition[] = [
     id: 'primenumber',
     name: 'Prime Number Checker',
     description: 'Determine if an integer is a prime number and explore its factors.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '🔢',
     type: 'simple',
     inputs: [
@@ -706,7 +897,7 @@ export const tools: ToolDefinition[] = [
     id: 'daysbetween',
     name: 'Count Days and Time Between Dates',
     description: 'Calculate the precise number of days, weeks, and years between two dates.',
-    category: 'utility-tools',
+    category: 'calculator-tools',
     icon: '⏰',
     type: 'simple',
     inputs: [
@@ -736,7 +927,7 @@ export const tools: ToolDefinition[] = [
     id: 'palindrome',
     name: 'Check for Words That Read Flipped (Palindromes)',
     description: 'Verify if a phrase, word, or sequence reads the same backwards as forwards.',
-    category: 'utility-tools',
+    category: 'text-tools',
     icon: '🔠',
     type: 'simple',
     inputs: [
@@ -760,7 +951,7 @@ export const tools: ToolDefinition[] = [
     id: 'textreverse',
     name: 'Flip Text and Letters Backward',
     description: 'Flip character arrangements backwards instantly.',
-    category: 'utility-tools',
+    category: 'text-tools',
     icon: '✍️',
     type: 'simple',
     inputs: [
@@ -783,7 +974,7 @@ export const tools: ToolDefinition[] = [
     id: 'averagecalculator',
     name: 'Calculate Average, Mean, and Median',
     description: 'Determine mathematical averages (mean, median, mode) and bounds for a list of values.',
-    category: 'developer-tools',
+    category: 'student-tools',
     icon: '📊',
     type: 'simple',
     inputs: [
@@ -817,7 +1008,7 @@ export const tools: ToolDefinition[] = [
     id: 'numbersorter',
     name: 'Sort Numbers in Order (Lowest to Highest)',
     description: 'Arrange list values in strict ascending or descending order.',
-    category: 'developer-tools',
+    category: 'student-tools',
     icon: '📊',
     type: 'simple',
     inputs: [
@@ -916,7 +1107,7 @@ export const tools: ToolDefinition[] = [
     id: 'graphmaker',
     name: 'Interactive Graph Maker',
     description: 'Generate beautiful visual charts from comma separated keys.',
-    category: 'developer-tools',
+    category: 'coding-tools',
     icon: '📊',
     type: 'custom',
     componentName: 'GraphMaker'
@@ -927,7 +1118,7 @@ export const tools: ToolDefinition[] = [
     id: 'removeduplicates',
     name: 'Remove Duplicate Words & Clean Text',
     description: 'Clean your text by identifying and removing duplicate words, leaving you with a clean, unique dataset.',
-    category: 'utility-tools',
+    category: 'text-tools',
     icon: '🧹',
     type: 'simple',
     inputs: [
@@ -951,7 +1142,7 @@ export const tools: ToolDefinition[] = [
     id: 'usernamegen',
     name: 'Creative Username Generator',
     description: 'Generate creative, randomized, and custom username recommendations based on a keyword.',
-    category: 'utility-tools',
+    category: 'generator-tools',
     icon: '🔤',
     type: 'simple',
     inputs: [
@@ -996,7 +1187,7 @@ export const tools: ToolDefinition[] = [
     id: 'e-signature',
     name: 'Draw & Save E-Signatures (Online Signature Pad)',
     description: 'Draw custom electronic signatures and download them as high-quality transparent PNGs.',
-    category: 'developer-tools',
+    category: 'creator-tools',
     icon: '✍️',
     type: 'custom',
     componentName: 'ESignature'
@@ -1036,7 +1227,7 @@ export const tools: ToolDefinition[] = [
     id: 'encrypted-note',
     name: 'Password Protected Secured Vault Note',
     description: 'Symmetrically encrypt text notes locally using robust XOR passkeys and Base64 outputs.',
-    category: 'developer-tools',
+    category: 'security-tools',
     icon: '🔒',
     type: 'custom',
     componentName: 'EncryptedNote'
@@ -1046,7 +1237,7 @@ export const tools: ToolDefinition[] = [
     id: 'dailyplanner',
     name: 'Daily Schedule & Routine Planner',
     description: 'Plan your day with a visual timeline, interactive hourly schedules, and progress tracking.',
-    category: 'automation-tools',
+    category: 'productivity-tools',
     icon: '📅',
     type: 'custom',
     componentName: 'DailyPlanner'
@@ -1055,7 +1246,7 @@ export const tools: ToolDefinition[] = [
     id: 'calendarviewer',
     name: 'Simple Calendar Event Scheduler',
     description: 'Manage month views, select multiple dates, and log key visual events.',
-    category: 'automation-tools',
+    category: 'productivity-tools',
     icon: '📅',
     type: 'custom',
     componentName: 'InteractiveCalendar'
@@ -1064,7 +1255,7 @@ export const tools: ToolDefinition[] = [
     id: 'reminderalert',
     name: 'Custom Alarm & Reminder System',
     description: 'Schedule custom local notification alerts and track active intervals.',
-    category: 'automation-tools',
+    category: 'productivity-tools',
     icon: '🔔',
     type: 'custom',
     componentName: 'NotificationScheduler'
@@ -1073,7 +1264,7 @@ export const tools: ToolDefinition[] = [
     id: 'men-prompts',
     name: 'Persona Prompts (Men)',
     description: 'Targeted persona prompts for creative brainstorming and content generation tailored to male contexts.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '✨',
     type: 'custom',
     componentName: 'PersonaPromptsMen'
@@ -1082,7 +1273,7 @@ export const tools: ToolDefinition[] = [
     id: 'women-prompts',
     name: 'Persona Prompts (Women)',
     description: 'Targeted persona prompts for creative brainstorming and content generation tailored to female contexts.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '✨',
     type: 'custom',
     componentName: 'PersonaPromptsWomen'
@@ -1091,7 +1282,7 @@ export const tools: ToolDefinition[] = [
     id: 'svg-optimizer',
     name: 'SVG Vector Image Compressor',
     description: 'Minify and optimize raw SVG markup to reduce web page load times.',
-    category: 'developer-tools',
+    category: 'compression-tools',
     icon: '🌐',
     type: 'custom',
     componentName: 'SVGOptimizer'
@@ -1100,7 +1291,7 @@ export const tools: ToolDefinition[] = [
     id: 'password-leak',
     name: 'Password Data Breach Database Checker',
     description: 'Check if your common passwords have been exposed in known historical data breaches.',
-    category: 'utility-tools',
+    category: 'security-tools',
     icon: '🕵️‍♂️',
     type: 'custom',
     componentName: 'PasswordLeakScanner'
@@ -1109,7 +1300,7 @@ export const tools: ToolDefinition[] = [
     id: 'note-shredder',
     name: 'Self-Destructing Secret Notes',
     description: 'Write high-confidentiality notes that auto-delete completely on close or shredding.',
-    category: 'utility-tools',
+    category: 'security-tools',
     icon: '🗑️',
     type: 'custom',
     componentName: 'NoteShredder'
@@ -1118,7 +1309,7 @@ export const tools: ToolDefinition[] = [
     id: 'csvviewer',
     name: 'CSV Spreadsheet Table Viewer',
     description: 'Load, edit, filter, and export CSV tabular sheets fully inside your local browser.',
-    category: 'developer-tools',
+    category: 'document-tools',
     icon: '📊',
     type: 'custom',
     componentName: 'CSVViewer'
@@ -1127,7 +1318,7 @@ export const tools: ToolDefinition[] = [
     id: 'metatagviewer',
     name: 'Website Search Engine Meta Tag Inspector',
     description: 'Extract and audit HTML SEO meta headers, descriptions, and OpenGraph parameters.',
-    category: 'seo-tools',
+    category: 'marketing-tools',
     icon: '🌐',
     type: 'custom',
     componentName: 'MetaTagViewer'
@@ -1145,7 +1336,7 @@ export const tools: ToolDefinition[] = [
     id: 'morse-flash',
     name: 'Morse Code Converter & Flash Signal',
     description: 'Translate alphanumeric text blocks to standard Morse code formats and back.',
-    category: 'utility-tools',
+    category: 'converter-tools',
     icon: '✍️',
     type: 'custom',
     componentName: 'MorseCodeTranslator'
@@ -1154,7 +1345,7 @@ export const tools: ToolDefinition[] = [
     id: 'p2p-share',
     name: 'Direct Secure File Transfer (P2P Share)',
     description: 'Direct peer-to-peer browser local file sharing backed by secure WebRTC channels.',
-    category: 'social-media-tools',
+    category: 'cloud-tools',
     icon: '📱',
     type: 'custom',
     componentName: 'P2PFileShare'
@@ -1172,7 +1363,7 @@ export const tools: ToolDefinition[] = [
     id: 'equationsolver',
     name: 'Solve Math Equations (Step-by-Step)',
     description: 'Resolve high-precision quadratic formulas and check factor plots.',
-    category: 'utility-tools',
+    category: 'student-tools',
     icon: '📊',
     type: 'custom',
     componentName: 'QuadraticSolver'
@@ -1190,7 +1381,7 @@ export const tools: ToolDefinition[] = [
     id: 'passwordstrength',
     name: 'Password Strength & Hack Time Calculator',
     description: 'Analyze password complexity, entropy bounds, and crack-duration estimations.',
-    category: 'utility-tools',
+    category: 'security-tools',
     icon: '🔑',
     type: 'custom',
     componentName: 'PasswordStrength'
@@ -1225,7 +1416,7 @@ export const tools: ToolDefinition[] = [
     id: 'compressimage',
     name: 'Reduce Image File Size (Compressor)',
     description: 'Compress and optimize JPEG/PNG image sizes local-first without loss of visual resolution.',
-    category: 'image-tools',
+    category: 'compression-tools',
     icon: '🖼️',
     type: 'custom',
     componentName: 'ImageCompressor'
@@ -1261,7 +1452,7 @@ export const tools: ToolDefinition[] = [
     id: 'ocrimage',
     name: 'Extract Text from Images (OCR)',
     description: 'Extract typed or handwritten alphanumeric text from any uploaded image completely local-first.',
-    category: 'ocr-tools',
+    category: 'text-tools',
     icon: '🔍',
     type: 'custom',
     componentName: 'OCRImage'
@@ -1279,7 +1470,7 @@ export const tools: ToolDefinition[] = [
     id: 'imagetopdf',
     name: 'Convert Images & Photos into PDF',
     description: 'Convert JPEG, PNG, and WebP graphics into clean, portable PDF documents.',
-    category: 'file-conversion-tools',
+    category: 'file-tools',
     icon: '📁',
     type: 'custom',
     componentName: 'ImageToPDF'
@@ -1288,7 +1479,7 @@ export const tools: ToolDefinition[] = [
     id: 'pdftoimage',
     name: 'Convert PDF Pages to Images',
     description: 'Render individual PDF document pages as downloadable high-resolution PNG photos.',
-    category: 'file-conversion-tools',
+    category: 'file-tools',
     icon: '📁',
     type: 'custom',
     componentName: 'PDFToImage'
@@ -1306,7 +1497,7 @@ export const tools: ToolDefinition[] = [
     id: 'compresspdf',
     name: 'Reduce PDF Document File Size',
     description: 'Optimize and compress PDF document sizes local-first without quality loss.',
-    category: 'pdf-tools',
+    category: 'compression-tools',
     icon: '📉',
     type: 'custom',
     componentName: 'CompressPDF'
@@ -1387,25 +1578,16 @@ export const tools: ToolDefinition[] = [
     id: 'texttospeech',
     name: 'Listen to Text Aloud (Voice Speaker)',
     description: 'Convert text blocks into audible human speech accents using native browser synthesis.',
-    category: 'utility-tools',
+    category: 'audio-tools',
     icon: '⚡',
     type: 'custom',
     componentName: 'TextToSpeech'
   },
   {
-    id: 'focus-soundscape',
-    name: 'Focus Ambient Noise Mixer (Rain, Forest)',
-    description: 'Play soothing, customizable focus audio soundscapes like rain, white noise, and waves.',
-    category: 'utility-tools',
-    icon: '⏱️',
-    type: 'custom',
-    componentName: 'AmbientNoisePlayer'
-  },
-  {
     id: 'urlextractor',
     name: 'Extract Query Fields from URL Links',
     description: 'Parse query string URL fields and dissect key-value parameters into an organized table.',
-    category: 'developer-tools',
+    category: 'converter-tools',
     icon: '🔗',
     type: 'custom',
     componentName: 'URLExtractor'
@@ -1414,7 +1596,7 @@ export const tools: ToolDefinition[] = [
     id: 'glass-gen',
     name: 'Frosty Glass CSS Card Designer',
     description: 'Design custom glassmorphic elements and copy clean CSS backdrop-filter style code.',
-    category: 'developer-tools',
+    category: 'coding-tools',
     icon: '🎨',
     type: 'custom',
     componentName: 'GlassmorphicGenerator'
@@ -1432,7 +1614,7 @@ export const tools: ToolDefinition[] = [
     id: 'link-bio',
     name: 'Social Media Links Profile Page Builder',
     description: 'Build beautiful personal link dashboards to host all your professional channels in one place.',
-    category: 'social-media-tools',
+    category: 'social-tools',
     icon: '📱',
     type: 'custom',
     componentName: 'LinkInBio'
@@ -1441,7 +1623,7 @@ export const tools: ToolDefinition[] = [
     id: 'passwordsaver',
     name: 'Encrypted Password Keeper (Offline Vault)',
     description: 'Store and manage your log keys locally using secure browser database sandboxes.',
-    category: 'utility-tools',
+    category: 'security-tools',
     icon: '🔑',
     type: 'custom',
     componentName: 'PasswordVault'
@@ -1450,7 +1632,7 @@ export const tools: ToolDefinition[] = [
     id: 'surveybuilder',
     name: 'Custom Interactive Survey Builder',
     description: 'Create fully interactive custom survey questionnaires with multi-field forms.',
-    category: 'utility-tools',
+    category: 'survey-tools',
     icon: '📈',
     type: 'custom',
     componentName: 'SurveyBuilder'
@@ -1459,7 +1641,7 @@ export const tools: ToolDefinition[] = [
     id: 'mysurveys',
     name: 'My Surveys & Questionnaires Dashboard',
     description: 'Manage your active questionnaires, edit field titles, and view live response URLs.',
-    category: 'utility-tools',
+    category: 'survey-tools',
     icon: '📈',
     type: 'custom',
     componentName: 'MySurveys'
@@ -1468,7 +1650,7 @@ export const tools: ToolDefinition[] = [
     id: 'responseviewer',
     name: 'Survey Results & Submissions Analyst',
     description: 'Track survey submission tallies, check visual stats, and export excel rows.',
-    category: 'utility-tools',
+    category: 'survey-tools',
     icon: '📈',
     type: 'custom',
     componentName: 'ResponseViewer'
@@ -1477,7 +1659,7 @@ export const tools: ToolDefinition[] = [
     id: 'smartsuggestions',
     name: 'Refine Prompts for AI Chatbots',
     description: 'Refine prompts using specialized creative guidelines to yield elite AI text results.',
-    category: 'ai-writing-tools',
+    category: 'ai-tools',
     icon: '✨',
     type: 'custom',
     componentName: 'SmartPromptEditor'
@@ -1486,7 +1668,7 @@ export const tools: ToolDefinition[] = [
     id: 'publicsurvey',
     name: 'Interactive Survey Submission Form',
     description: 'Interactive responsive questionnaire portal for submitting survey answers.',
-    category: 'utility-tools',
+    category: 'survey-tools',
     icon: '📈',
     type: 'custom',
     componentName: 'PublicSurvey'
@@ -1495,7 +1677,7 @@ export const tools: ToolDefinition[] = [
     id: 'categorysummary',
     name: 'Spreadsheet Columns Data Summarizer',
     description: 'Generate visual insights, graphs, and percentage counts from tabular dataset columns.',
-    category: 'developer-tools',
+    category: 'research-tools',
     icon: '📊',
     type: 'custom',
     componentName: 'CategorySummary'
@@ -1504,7 +1686,7 @@ export const tools: ToolDefinition[] = [
     id: 'extract-audio',
     name: 'Extract High-Quality Audio from Video',
     description: 'Extract high-fidelity audio tracks from video files locally using high-performance browser decoding.',
-    category: 'audio-tools',
+    category: 'media-tools',
     icon: '🎵',
     type: 'custom',
     componentName: 'ExtractAudio'
@@ -1513,7 +1695,7 @@ export const tools: ToolDefinition[] = [
     id: 'video-to-gif',
     name: 'Convert Video into Animated GIF',
     description: 'Convert MP4/WebM videos into high-quality animated GIFs locally using parallel worker threads.',
-    category: 'video-tools',
+    category: 'media-tools',
     icon: '🎥',
     type: 'custom',
     componentName: 'VideoToGIF'
@@ -1554,15 +1736,7 @@ export const tools: ToolDefinition[] = [
     type: 'custom',
     componentName: 'RandomNamePicker'
   },
-  {
-    id: 'note-shredder',
-    name: 'Self-Destructing Secret Notes',
-    description: 'Write confidential self-destructing notes with custom shred timers or a read-once burn mechanism.',
-    category: 'utility-tools',
-    icon: '🔏',
-    type: 'custom',
-    componentName: 'NoteShredder'
-  },
+  
   {
     id: 'ambient-noise-player',
     name: 'Focus Ambient Noise Mixer (Rain, Forest)',
@@ -1588,37 +1762,9 @@ export function getToolsByCategory(catId: string): ToolDefinition[] {
 }
 
 export function mapCategoryToPath(catId: string): string {
-  const mapping: Record<string, string> = {
-    'pdf-tools': 'pdf',
-    'image-tools': 'image',
-    'video-tools': 'video',
-    'audio-tools': 'audio',
-    'ai-writing-tools': 'ai-writing',
-    'ocr-tools': 'ocr',
-    'file-conversion-tools': 'converters',
-    'developer-tools': 'developer-tools',
-    'seo-tools': 'seo',
-    'utility-tools': 'utility',
-    'social-media-tools': 'social',
-    'automation-tools': 'automation'
-  };
-  return mapping[catId] || catId;
+  return catId;
 }
 
 export function mapPathToCategory(path: string): string {
-  const mapping: Record<string, string> = {
-    'pdf': 'pdf-tools',
-    'image': 'image-tools',
-    'video': 'video-tools',
-    'audio': 'audio-tools',
-    'ai-writing': 'ai-writing-tools',
-    'ocr': 'ocr-tools',
-    'converters': 'file-conversion-tools',
-    'developer-tools': 'developer-tools',
-    'seo': 'seo-tools',
-    'utility': 'utility-tools',
-    'social': 'social-media-tools',
-    'automation': 'automation-tools'
-  };
-  return mapping[path] || path;
+  return path;
 }
