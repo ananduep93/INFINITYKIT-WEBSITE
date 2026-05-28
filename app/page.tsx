@@ -1,28 +1,23 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Compass, Heart, History, Award, ArrowRight, Star, Sparkles, 
-  Zap, TrendingUp, HelpCircle, ChevronDown, Check, Download, MessageSquare, 
-  Play, Shield, Globe, FileText, Code, CheckCircle2, ChevronRight, Share2, 
-  Clock, Trash2, ArrowUpRight, Cpu
+  Search, Heart, History, ArrowRight, Star, Sparkles, 
+  Zap, TrendingUp, HelpCircle, ChevronDown, MessageSquare, 
+  ChevronRight, ArrowUpRight, Shield, CheckCircle2
 } from 'lucide-react';
 import { tools, categories, mapCategoryToPath } from '../config/tools';
 import { useSync } from '../hooks/useSync';
 import { db } from '../lib/firebase';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 
 export default function HomePage() {
   const { favorites, recentTools, toggleFavorite } = useSync();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [aiQuery, setAiQuery] = useState('');
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [activeWorkflow, setActiveWorkflow] = useState<string>('document');
-  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Reviews & Rating states
   const [reviews, setReviews] = useState<{ id: string; name: string; rating: number; message: string; timestamp: any }[]>([]);
@@ -43,41 +38,22 @@ export default function HomePage() {
         const q = query(collection(db, 'reviews'), orderBy('timestamp', 'desc'));
         const querySnapshot = await getDocs(q);
         const reviewList: any[] = [];
-        querySnapshot.forEach((doc) => {
-          reviewList.push({ id: doc.id, ...doc.data() });
-        });
-
-        if (reviewList.length === 0) {
-          // Auto-seed mock reviews if collection is empty
-          const seedReviews = [
-            {
-              name: "Anand H.",
-              rating: 5,
-              message: "InfinityKit is amazing. Having access to PDF mergers and QR tools that run completely local inside my browser with absolute zero server latency is a total lifesaver for private client data.",
-              timestamp: new Date()
-            },
-            {
-              name: "Sarah L.",
-              rating: 5,
-              message: "Unlike TinyWow which limits uploads and runs slowly, this feels like an Apple product—lightweight, frosted panels, beautiful theme switches, and instant client-side responses.",
-              timestamp: new Date()
+        
+        for (const docSnap of querySnapshot.docs) {
+          const data = docSnap.data();
+          // Automatically purge seeded mock reviews from Firestore if found
+          if (data.name === "Anand H." || data.name === "Sarah L.") {
+            try {
+              await deleteDoc(doc(db, 'reviews', docSnap.id));
+            } catch (delErr) {
+              console.warn("Purging seeded review failed:", delErr);
             }
-          ];
-
-          const seededList: any[] = [];
-          for (const sReview of seedReviews) {
-            const docRef = await addDoc(collection(db, 'reviews'), {
-              name: sReview.name,
-              rating: sReview.rating,
-              message: sReview.message,
-              timestamp: serverTimestamp()
-            });
-            seededList.push({ id: docRef.id, ...sReview });
+          } else {
+            reviewList.push({ id: docSnap.id, ...data });
           }
-          setReviews(seededList);
-        } else {
-          setReviews(reviewList);
         }
+        
+        setReviews(reviewList);
       } catch (err) {
         console.error("Error fetching reviews:", err);
       } finally {
@@ -170,50 +146,6 @@ export default function HomePage() {
     return tools.filter(t => trendingIds.includes(t.id));
   }, []);
 
-  // AI Tools (Gemini-powered tools)
-  const aiTools = useMemo(() => {
-    const aiIds = ['chatbot', 'text-improver', 'summarizer', 'image-generator'];
-    return tools.filter(t => aiIds.includes(t.id));
-  }, []);
-
-  // AI Assistant trigger
-  const handleAiChatSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiQuery.trim()) return;
-
-    setIsAiLoading(true);
-    setAiResponse(null);
-
-    try {
-      const userKey = typeof window !== 'undefined' ? localStorage.getItem('infinitykit_gemini_key') : null;
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (userKey) {
-        headers['x-gemini-key'] = userKey;
-      }
-
-      const response = await fetch('/api/ai', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          prompt: aiQuery,
-          taskType: 'chat'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('AI response error');
-      }
-
-      const data = await response.json();
-      setAiResponse(data.text || 'No response received.');
-    } catch (err) {
-      console.error(err);
-      setAiResponse("I encountered an issue connecting to the AI models. Please configure your custom Google Gemini API Key in the Settings page for a guaranteed high-fidelity live AI experience!");
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
-
   // FAQ Active Item Tracker
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -236,122 +168,172 @@ export default function HomePage() {
     }
   ];
 
-  // Workflows mappings
-  const workflowsList = {
-    document: {
-      title: "Document Optimization Pipeline",
-      desc: "Ideal for business managers, researchers, and students looking to compile, compress, and translate papers securely.",
-      steps: [
-        { id: "mergepdf", name: "Merge PDF Docs", icon: "📄", desc: "Combine multiple sheets locally." },
-        { id: "compresspdf", name: "Compress PDF Size", icon: "🗜️", desc: "Shrink file bytes without loss." },
-        { id: "ocr", name: "OCR Document Scanner", icon: "🔍", desc: "Extract text from scanned pages." }
-      ]
-    },
-    developer: {
-      title: "Fullstack Developer Pipeline",
-      desc: "Perfect for software engineers validating structures, encoding tokens, or building secure credentials.",
-      steps: [
-        { id: "json-validator", name: "JSON Structure Validator", icon: "💻", desc: "Audit syntax and format variables." },
-        { id: "base64-tool", name: "Base64 Encoder/Decoder", icon: "🔄", desc: "Translate raw API tokens." },
-        { id: "qrcode", name: "QR Access Generator", icon: "📱", desc: "Create high-density vector QR codes." }
-      ]
-    },
-    creator: {
-      title: "SaaS Creator Marketing Kit",
-      desc: "Tailored for digital marketers and webmasters auditing landing page SEO and generating structural maps.",
-      steps: [
-        { id: "blog-generator", name: "AI Blog Planner", icon: "✍️", desc: "Write search-engine ready copy." },
-        { id: "schema-generator", name: "JSON-LD SEO Schema Maker", icon: "📈", desc: "Generate search-engine rich results." },
-        { id: "sitemap-generator", name: "Dynamic Sitemap Builder", icon: "🕸️", desc: "Map website pages automatically." }
-      ]
+
+
+  // Motion variants for clean staggered spring entry animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.06,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 110,
+        damping: 16
+      }
     }
   };
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '10px 24px 80px', fontFamily: "'Outfit', sans-serif" }}>
+    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '10px 24px 80px', fontFamily: "'Outfit', sans-serif", position: 'relative' }}>
       
+      {/* Dynamic Glowing Particle and Mesh Accents (Premium Visual Layer) */}
+      <div style={{
+        position: 'absolute',
+        top: '-10%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        maxWidth: '1200px',
+        height: '620px',
+        background: 'radial-gradient(circle at 50% 25%, rgba(0, 161, 155, 0.08) 0%, rgba(124, 58, 237, 0.04) 45%, transparent 75%)',
+        filter: 'blur(90px)',
+        zIndex: -1,
+        pointerEvents: 'none'
+      }} />
+
+      <motion.div
+        animate={{
+          y: [0, -25, 0],
+          x: [0, 15, 0],
+          scale: [1, 1.15, 1],
+          opacity: [0.25, 0.5, 0.25]
+        }}
+        transition={{
+          duration: 14,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          position: 'absolute',
+          top: '8%',
+          left: '5%',
+          width: '150px',
+          height: '150px',
+          background: 'radial-gradient(circle, rgba(0, 240, 255, 0.12) 0%, transparent 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          zIndex: -1
+        }}
+      />
+
+      <motion.div
+        animate={{
+          y: [0, 30, 0],
+          x: [0, -20, 0],
+          scale: [1.15, 0.9, 1.15],
+          opacity: [0.3, 0.6, 0.3]
+        }}
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        style={{
+          position: 'absolute',
+          top: '35%',
+          right: '5%',
+          width: '220px',
+          height: '220px',
+          background: 'radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          zIndex: -1
+        }}
+      />
+
       {/* 1. PREMIUM FUTURISTIC HERO SECTION */}
       <section style={{ 
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
-        padding: '80px 0 50px',
+        padding: '90px 0 60px',
         position: 'relative',
         zIndex: 1
       }}>
-        {/* Subtle glowing ring behind hero text */}
-        <div style={{
-          position: 'absolute',
-          top: '40px',
-          width: '320px',
-          height: '320px',
-          background: 'radial-gradient(circle, rgba(0, 161, 155, 0.08), transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(40px)',
-          pointerEvents: 'none',
-          zIndex: 0
-        }} />
-
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, y: -15, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 100, damping: 15 }}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
             background: 'var(--glass-bg)',
-            border: '1px solid rgba(0, 161, 155, 0.15)',
-            boxShadow: '0 4px 20px rgba(0, 161, 155, 0.04)',
-            padding: '6px 16px',
+            border: '1px solid rgba(0, 161, 155, 0.18)',
+            boxShadow: '0 8px 30px rgba(0, 161, 155, 0.05)',
+            padding: '8px 20px',
             borderRadius: '50px',
-            fontSize: '0.78rem',
-            fontWeight: 700,
+            fontSize: '0.8rem',
+            fontWeight: 800,
             color: 'var(--primary-color)',
-            marginBottom: '24px',
-            letterSpacing: '0.8px',
+            marginBottom: '28px',
+            letterSpacing: '1px',
             textTransform: 'uppercase',
-            backdropFilter: 'blur(10px)'
+            backdropFilter: 'blur(12px)'
           }}
         >
-          <Sparkles size={12} fill="var(--primary-color)" /> Introducing InfinityKit 2.0 — Browser-Native AI Suite
+          <Sparkles size={14} fill="var(--primary-color)" /> Introducing InfinityKit 2.0 — Browser-Native AI Suite
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           style={{
-            fontSize: 'calc(2.2rem + 2vw)',
+            fontSize: 'calc(2.5rem + 2.5vw)',
             fontWeight: 900,
-            lineHeight: 1.1,
-            letterSpacing: '-2px',
-            marginBottom: '20px',
+            lineHeight: 1.05,
+            letterSpacing: '-2.5px',
+            marginBottom: '22px',
             color: 'var(--text-color)',
-            maxWidth: '850px'
+            maxWidth: '900px'
           }}
         >
           The Secure, Local-First{' '}
           <span style={{
-            background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--accent-purple) 100%)',
+            background: 'linear-gradient(135deg, var(--primary-color) 0%, #00F5D4 45%, var(--accent-purple) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            display: 'inline-block'
           }}>
             Utility Ecosystem
           </span>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           style={{
-            fontSize: '1.15rem',
+            fontSize: '1.2rem',
             color: 'var(--text-secondary)',
-            marginBottom: '40px',
-            lineHeight: 1.6,
-            maxWidth: '680px'
+            marginBottom: '44px',
+            lineHeight: 1.65,
+            maxWidth: '720px',
+            opacity: 0.95
           }}
         >
           Access over 80+ secure, developer-grade digital tools that execute 100% client-side. Zero server uploads. Absolute database privacy. Ultimate computing speed.
@@ -359,57 +341,69 @@ export default function HomePage() {
 
         {/* 2. AI-POWERED SEARCH HERO */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          style={{
-            position: 'relative',
-            width: '100%',
-            maxWidth: '620px',
-            boxShadow: '0 15px 50px rgba(0, 0, 0, 0.03)',
-            borderRadius: '24px',
-            border: '1px solid var(--glass-border)',
-            background: 'var(--glass-bg)',
-            backdropFilter: 'blur(30px)',
-            padding: '4px'
-          }}
+          transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          style={{ width: '100%', maxWidth: '660px', position: 'relative' }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+          <motion.div
+            whileHover={{ scale: 1.012 }}
+            whileTap={{ scale: 0.995 }}
+            animate={{
+              borderColor: isSearchFocused ? 'rgba(0, 161, 155, 0.4)' : 'var(--glass-border)',
+              boxShadow: isSearchFocused 
+                ? '0 20px 45px rgba(0, 161, 155, 0.12), 0 0 0 1px rgba(0, 161, 155, 0.25)' 
+                : '0 15px 50px rgba(0, 0, 0, 0.02)'
+            }}
+            transition={{ duration: 0.25 }}
+            style={{
+              display: 'flex', 
+              alignItems: 'center', 
+              width: '100%',
+              borderRadius: '24px',
+              border: '1px solid var(--glass-border)',
+              background: 'var(--glass-bg)',
+              backdropFilter: 'blur(30px)',
+              padding: '6px'
+            }}
+          >
             <span style={{
-              paddingLeft: '20px',
+              paddingLeft: '22px',
               color: 'var(--primary-color)',
               display: 'flex',
               alignItems: 'center'
             }}>
-              <Search size={18} />
+              <Search size={20} />
             </span>
             <input
               type="text"
               placeholder="What are you looking to accomplish today? (e.g. compress pdf, qr code...)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
               style={{
                 width: '100%',
-                padding: '16px 20px 16px 14px',
+                padding: '16px 20px 16px 16px',
                 border: 'none',
                 background: 'transparent',
                 color: 'var(--text-color)',
                 outline: 'none',
-                fontSize: '1rem',
+                fontSize: '1.05rem',
                 fontFamily: 'inherit'
               }}
             />
             <span style={{
               background: 'rgba(0, 161, 155, 0.08)',
               color: 'var(--primary-color)',
-              fontSize: '0.75rem',
+              fontSize: '0.78rem',
               fontWeight: 800,
-              padding: '6px 12px',
-              borderRadius: '8px',
+              padding: '8px 14px',
+              borderRadius: '10px',
               marginRight: '12px',
               letterSpacing: '0.5px'
             }}>⌘K</span>
-          </div>
+          </motion.div>
         </motion.div>
       </section>
 
@@ -422,15 +416,24 @@ export default function HomePage() {
             exit={{ opacity: 0, height: 0 }}
             style={{ marginBottom: '60px', overflow: 'hidden' }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Zap size={18} color="var(--primary-color)" /> Matching Utilities ({filteredTools.length})
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+                <Zap size={20} color="var(--primary-color)" /> Matching Utilities ({filteredTools.length})
               </h2>
             </div>
             {filteredTools.length > 0 ? (
-              <div className="tools-grid">
+              <motion.div 
+                className="tools-grid"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {filteredTools.map((tool) => (
-                  <div key={tool.id} style={{ position: 'relative' }}>
+                  <motion.div 
+                    key={tool.id} 
+                    variants={itemVariants}
+                    style={{ position: 'relative' }}
+                  >
                     <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                       <div className="tool-card">
                         <div className="tool-card-icon">{tool.icon}</div>
@@ -456,12 +459,12 @@ export default function HomePage() {
                     >
                       <Star size={14} fill={favorites.includes(tool.id) ? 'var(--primary-color)' : 'none'} />
                     </button>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
-              <div className="glass-panel" style={{ textAlign: 'center', padding: '40px' }}>
-                <p style={{ color: 'var(--text-secondary)' }}>No utilities matched "{searchQuery}". Browse folders below.</p>
+              <div className="glass-panel" style={{ textAlign: 'center', padding: '50px' }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>No utilities matched "{searchQuery}". Browse categories below.</p>
               </div>
             )}
           </motion.section>
@@ -470,13 +473,22 @@ export default function HomePage() {
 
       {/* 3. BOOKMARKED FAVORITES TRAY */}
       {favoriteToolsList.length > 0 && !searchQuery && (
-        <section style={{ marginBottom: '60px' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 850, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
-            <Heart size={18} color="var(--primary-color)" fill="var(--primary-color)" /> Saved Shortcuts
+        <section style={{ marginBottom: '65px' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 900, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+            <Heart size={20} color="var(--primary-color)" fill="var(--primary-color)" /> Saved Shortcuts
           </h2>
-          <div className="tools-grid">
+          <motion.div 
+            className="tools-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {favoriteToolsList.map((tool) => (
-              <div key={tool.id} style={{ position: 'relative' }}>
+              <motion.div 
+                key={tool.id} 
+                variants={itemVariants}
+                style={{ position: 'relative' }}
+              >
                 <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className="tool-card" style={{ borderLeft: '3px solid var(--primary-color)' }}>
                     <div className="tool-card-icon">{tool.icon}</div>
@@ -501,366 +513,286 @@ export default function HomePage() {
                 >
                   <Star size={14} fill="var(--primary-color)" />
                 </button>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
       )}
 
       {/* 4. SMART CATEGORY BENTO EXPLORER */}
       {!searchQuery && (
-        <section style={{ marginBottom: '65px' }}>
-          <div style={{ marginBottom: '25px' }}>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 850, marginBottom: '6px', letterSpacing: '-0.5px' }}>
+        <section style={{ marginBottom: '75px' }}>
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.5px' }}>
               Explore Specialized Utility Hubs
             </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
               Select a container to enter its private browser sandbox. Zero file retention.
             </p>
           </div>
 
-          <div className="bento-grid">
+          <motion.div 
+            className="bento-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {categories.map((cat) => (
-              <Link href={`/${mapCategoryToPath(cat.id)}`} key={cat.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div className="category-card" style={{ border: '1px solid rgba(0,0,0,0.035)' }}>
-                  <div>
-                    <div className="category-icon">{cat.emoji || cat.icon}</div>
-                    <h3 className="category-title">{cat.name}</h3>
-                    <p className="category-desc">{cat.description}</p>
-                  </div>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    color: 'var(--primary-color)',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    marginTop: '20px'
+              <motion.div
+                key={cat.id}
+                variants={itemVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                style={{ display: 'flex' }}
+              >
+                <Link href={`/${mapCategoryToPath(cat.id)}`} style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex' }}>
+                  <div className="category-card" style={{ 
+                    border: '1px solid var(--glass-border)', 
+                    width: '100%',
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    justifyContent: 'space-between',
+                    background: 'var(--glass-bg)',
+                    backdropFilter: 'blur(20px)',
+                    position: 'relative'
                   }}>
-                    Open Directory <ArrowRight size={12} />
+                    {/* Glowing highlight reflection */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '100%',
+                      background: 'linear-gradient(135deg, rgba(0, 161, 155, 0.025) 0%, transparent 100%)',
+                      pointerEvents: 'none',
+                      zIndex: 0
+                    }} />
+                    
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                      <div className="category-icon" style={{
+                        background: 'rgba(0, 161, 155, 0.06)',
+                        border: '1px solid rgba(0, 161, 155, 0.12)',
+                        width: '52px',
+                        height: '52px',
+                        borderRadius: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '16px'
+                      }}>
+                        {cat.emoji || cat.icon}
+                      </div>
+                      <h3 className="category-title" style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '8px' }}>{cat.name}</h3>
+                      <p className="category-desc" style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{cat.description}</p>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      color: 'var(--primary-color)',
+                      fontSize: '0.85rem',
+                      fontWeight: 800,
+                      marginTop: '24px',
+                      position: 'relative',
+                      zIndex: 1
+                    }}>
+                      Open Directory <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}><ArrowRight size={14} /></motion.span>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
       )}
 
       {/* 5. TRENDING TOOLS CAROUSEL */}
       {!searchQuery && (
-        <section style={{ marginBottom: '60px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 850, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
-              <TrendingUp size={18} color="var(--primary-color)" /> Trending Utilities
+        <section style={{ marginBottom: '70px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+              <TrendingUp size={20} color="var(--primary-color)" /> Trending Utilities
             </h2>
           </div>
-          <div className="tools-grid">
+          <motion.div 
+            className="tools-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {trendingTools.map((tool) => (
-              <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div className="tool-card">
-                  <div className="tool-card-icon" style={{ background: 'rgba(0,161,155,0.08)' }}>{tool.icon}</div>
-                  <div className="tool-card-info">
-                    <div className="tool-card-name">{tool.name}</div>
-                    <div className="tool-card-desc">{tool.description}</div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 6. POPULAR WORKFLOWS PIPELINE */}
-      {!searchQuery && (
-        <section style={{ marginBottom: '65px' }}>
-          <div style={{ marginBottom: '25px' }}>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 850, marginBottom: '6px', letterSpacing: '-0.5px' }}>
-              Popular Productivity Pipelines
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              Chain secure client-side tools together to achieve complex workflows instantly.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', marginBottom: '25px', paddingBottom: '5px' }}>
-            {(Object.keys(workflowsList) as Array<keyof typeof workflowsList>).map((key) => (
-              <button
-                key={key}
-                onClick={() => setActiveWorkflow(key)}
-                style={{
-                  padding: '8px 18px',
-                  borderRadius: '20px',
-                  border: '1px solid var(--glass-border)',
-                  background: activeWorkflow === key ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-                  color: activeWorkflow === key ? 'white' : 'var(--text-color)',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'var(--transition-smooth)'
-                }}
-              >
-                {key === 'document' ? '📄 Office Doc Kit' : key === 'developer' ? '💻 Dev Tools' : '📈 SEO Marketing'}
-              </button>
-            ))}
-          </div>
-
-          <div className="glass-panel" style={{ margin: 0, padding: '35px', background: 'radial-gradient(circle at top right, rgba(0, 161, 155, 0.03), var(--glass-bg))' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>
-              {workflowsList[activeWorkflow as keyof typeof workflowsList].title}
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '30px', lineHeight: 1.5 }}>
-              {workflowsList[activeWorkflow as keyof typeof workflowsList].desc}
-            </p>
-
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between', 
-              flexWrap: 'wrap',
-              gap: '20px',
-              position: 'relative'
-            }}>
-              {workflowsList[activeWorkflow as keyof typeof workflowsList].steps.map((step, idx) => (
-                <React.Fragment key={step.id}>
-                  <div style={{
-                    flex: 1,
-                    minWidth: '220px',
-                    background: 'var(--glass-bg)',
-                    border: '1px solid var(--glass-border)',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    position: 'relative'
-                  }}>
-                    <span style={{ fontSize: '2rem', marginBottom: '8px', display: 'block' }}>{step.icon}</span>
-                    <h4 style={{ fontWeight: 700, fontSize: '0.92rem', marginBottom: '4px' }}>{step.name}</h4>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.4, margin: 0 }}>{step.desc}</p>
-                    <span style={{
-                      position: 'absolute',
-                      top: '12px',
-                      right: '12px',
-                      background: 'rgba(0,161,155,0.06)',
-                      color: 'var(--primary-color)',
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>{idx + 1}</span>
-                  </div>
-                  {idx < 2 && (
-                    <div className="desktop-only" style={{ display: 'flex', color: 'var(--primary-color)', opacity: 0.5 }}>
-                      <ArrowRight size={20} />
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 7. INTELLIGENT LOCAL AI ASSISTANT EMBED */}
-      {!searchQuery && (
-        <section style={{ marginBottom: '65px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', alignItems: 'center' }}>
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--accent-purple)', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
-                <Cpu size={14} /> AI Onboarding Assistant
-              </div>
-              <h2 style={{ fontSize: '1.65rem', fontWeight: 900, marginBottom: '10px', letterSpacing: '-0.5px' }}>
-                Not sure which tool to select? Ask Infinity AI.
-              </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: 1.6, margin: 0 }}>
-                Type your active project challenge in the helper workspace. The assistant parses keywords to recommend the ultimate secure, browser-native utility pipeline.
-              </p>
-            </div>
-
-            <div className="glass-panel" style={{ margin: 0, padding: '25px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <form onSubmit={handleAiChatSubmit} style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  type="text"
-                  placeholder="I need to crop a photo and compile sheets..."
-                  value={aiQuery}
-                  onChange={(e) => setAiQuery(e.target.value)}
-                  style={{
-                    flex: 1,
-                    background: 'rgba(0,0,0,0.015)',
-                    border: '1px solid var(--glass-border)',
-                    borderRadius: '12px',
-                    padding: '10px 14px',
-                    fontSize: '0.88rem',
-                    color: 'var(--text-color)',
-                    outline: 'none'
-                  }}
-                />
-                <button
-                  type="submit"
-                  disabled={isAiLoading || !aiQuery.trim()}
-                  style={{
-                    background: 'var(--primary-gradient)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '12px',
-                    padding: '10px 16px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  Ask
-                </button>
-              </form>
-
-              <div style={{ 
-                background: 'rgba(0,0,0,0.01)', 
-                border: '1px solid var(--glass-border)', 
-                borderRadius: '12px', 
-                padding: '14px 18px', 
-                minHeight: '100px', 
-                fontSize: '0.85rem', 
-                lineHeight: 1.5,
-                color: 'var(--text-secondary)'
-              }}>
-                {isAiLoading ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)' }}>
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor', animation: 'pulse 1s infinite alternate' }} />
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor', animation: 'pulse 1s infinite alternate 0.2s' }} />
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor', animation: 'pulse 1s infinite alternate 0.4s' }} />
-                    <span>Analyzing toolkit...</span>
-                  </div>
-                ) : aiResponse ? (
-                  <div dangerouslySetInnerHTML={{ __html: aiResponse }} />
-                ) : (
-                  <span>Ask a query above to see immediate tool recommendations.</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 8. FEATURED CREATOR ECOSYSTEM */}
-      {!searchQuery && (
-        <section style={{ marginBottom: '65px' }}>
-          <div style={{ marginBottom: '25px' }}>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 850, marginBottom: '6px', letterSpacing: '-0.5px' }}>
-              Premium Workspace Utilities
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              Explore advanced interactive soundscapes and self-destruct security modules designed for high-density focus.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-            <div className="glass-panel" style={{ margin: 0, padding: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px' }}>
-              <div>
-                <span style={{ fontSize: '2rem', display: 'block', marginBottom: '10px' }}>🎧</span>
-                <h3 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '6px' }}>Focus Soundscape Player</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.4, margin: 0 }}>
-                  Synthesize rain, oceans, or forest audio signals directly in your browser using the native HTML5 Web Audio API. 100% offline.
-                </p>
-              </div>
-              <Link href="/audio/ambient-noise-player" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontSize: '0.85rem', fontWeight: 700, marginTop: '20px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Open Player <ArrowUpRight size={14} />
-              </Link>
-            </div>
-
-            <div className="glass-panel" style={{ margin: 0, padding: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px' }}>
-              <div>
-                <span style={{ fontSize: '2rem', display: 'block', marginBottom: '10px' }}>🔏</span>
-                <h3 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '6px' }}>Self-Destruct Notes</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.4, margin: 0 }}>
-                  Write confidential notes that disintegrate automatically after a timer expires or upon reading once. Shredded client-side.
-                </p>
-              </div>
-              <Link href="/utility/note-shredder" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontSize: '0.85rem', fontWeight: 700, marginTop: '20px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Open Shredder <ArrowUpRight size={14} />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 9. RECENTLY USED LAUNCHPAD */}
-      {recentTools.length > 0 && !searchQuery && (
-        <section style={{ marginBottom: '65px' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 850, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
-            <History size={18} color="var(--primary-color)" /> Visited Launchpad
-          </h2>
-          <div className="tools-grid">
-            {recentTools.slice(0, 4).map((recent) => {
-              const tool = tools.find((t) => t.id === recent.id);
-              if (!tool) return null;
-              return (
-                <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} key={tool.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div className="tool-card" style={{ opacity: 0.95 }}>
-                    <div className="tool-card-icon">{tool.icon}</div>
+              <motion.div key={tool.id} variants={itemVariants}>
+                <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div className="tool-card">
+                    <div className="tool-card-icon" style={{ background: 'rgba(0,161,155,0.08)' }}>{tool.icon}</div>
                     <div className="tool-card-info">
                       <div className="tool-card-name">{tool.name}</div>
                       <div className="tool-card-desc">{tool.description}</div>
                     </div>
                   </div>
                 </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
+
+
+
+      {/* 8. FEATURED CREATOR ECOSYSTEM */}
+      {!searchQuery && (
+        <section style={{ marginBottom: '75px' }}>
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.5px' }}>
+              Premium Workspace Utilities
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+              Explore advanced interactive soundscapes and self-destruct security modules designed for high-density focus.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+            <motion.div 
+              whileHover={{ y: -6, borderColor: 'rgba(0, 161, 155, 0.2)', boxShadow: 'var(--hover-neon)' }}
+              className="glass-panel" 
+              style={{ 
+                margin: 0, 
+                padding: '35px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'space-between', 
+                minHeight: '230px',
+                border: '1px solid var(--glass-border)',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '12px' }}>🎧</span>
+                <h3 style={{ fontWeight: 800, fontSize: '1.15rem', marginBottom: '8px' }}>Focus Soundscape Player</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.45, margin: 0 }}>
+                  Synthesize rain, oceans, or forest audio signals directly in your browser using the native HTML5 Web Audio API. 100% offline.
+                </p>
+              </div>
+              <Link href="/audio/ambient-noise-player" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontSize: '0.88rem', fontWeight: 800, marginTop: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Open Player <ArrowUpRight size={14} />
+              </Link>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -6, borderColor: 'rgba(0, 161, 155, 0.2)', boxShadow: 'var(--hover-neon)' }}
+              className="glass-panel" 
+              style={{ 
+                margin: 0, 
+                padding: '35px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                justifyContent: 'space-between', 
+                minHeight: '230px',
+                border: '1px solid var(--glass-border)',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+            >
+              <div>
+                <span style={{ fontSize: '2.2rem', display: 'block', marginBottom: '12px' }}>🔏</span>
+                <h3 style={{ fontWeight: 800, fontSize: '1.15rem', marginBottom: '8px' }}>Self-Destruct Notes</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.45, margin: 0 }}>
+                  Write confidential notes that disintegrate automatically after a timer expires or upon reading once. Shredded client-side.
+                </p>
+              </div>
+              <Link href="/utility/note-shredder" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontSize: '0.88rem', fontWeight: 800, marginTop: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Open Shredder <ArrowUpRight size={14} />
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* 9. RECENTLY USED LAUNCHPAD */}
+      {recentTools.length > 0 && !searchQuery && (
+        <section style={{ marginBottom: '75px' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 900, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+            <History size={20} color="var(--primary-color)" /> Visited Launchpad
+          </h2>
+          <motion.div 
+            className="tools-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {recentTools.slice(0, 4).map((recent) => {
+              const tool = tools.find((t) => t.id === recent.id);
+              if (!tool) return null;
+              return (
+                <motion.div key={tool.id} variants={itemVariants}>
+                  <Link href={`/${mapCategoryToPath(tool.category)}/${tool.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div className="tool-card" style={{ opacity: 0.95 }}>
+                      <div className="tool-card-icon">{tool.icon}</div>
+                      <div className="tool-card-info">
+                        <div className="tool-card-name">{tool.name}</div>
+                        <div className="tool-card-desc">{tool.description}</div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </section>
       )}
 
       {/* 10. STATS & TRUST INDICATORS */}
       {!searchQuery && (
         <section className="glass-panel" style={{ 
-          margin: '0 0 65px 0', 
-          padding: '40px', 
+          margin: '0 0 75px 0', 
+          padding: '44px', 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
           gap: '30px', 
           textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(0, 161, 155, 0.015) 100%)'
+          border: '1px solid var(--glass-border)',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(0, 161, 155, 0.02) 100%)'
         }}>
           <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--primary-color)', fontFamily: "'Outfit', sans-serif" }}>100%</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Client-Side Sandbox</div>
+            <div style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--primary-color)', fontFamily: "'Outfit', sans-serif", letterSpacing: '-1px' }}>100%</div>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 600 }}>Client-Side Sandbox</div>
           </div>
           <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--accent-purple)', fontFamily: "'Outfit', sans-serif" }}>80+</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Developer Utilities</div>
+            <div style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--accent-purple)', fontFamily: "'Outfit', sans-serif", letterSpacing: '-1px' }}>80+</div>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 600 }}>Developer Utilities</div>
           </div>
           <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-color)', fontFamily: "'Outfit', sans-serif" }}>{stats.conversions.toLocaleString()}</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Conversions Completed</div>
+            <div style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--text-color)', fontFamily: "'Outfit', sans-serif", letterSpacing: '-1px' }}>{stats.conversions.toLocaleString()}</div>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 600 }}>Conversions Completed</div>
           </div>
         </section>
       )}
 
       {/* 11. LOVED BY BUILDERS TESTIMONIALS */}
       {!searchQuery && (
-        <section style={{ marginBottom: '65px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '35px' }}>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 850, marginBottom: '6px', letterSpacing: '-0.3px' }}>
+        <section style={{ marginBottom: '75px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.3px' }}>
               Loved by Engineers & Visual Creators
             </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '24px' }}>
               See why digital architects prefer browser-native privacy over server-dependent tools.
             </p>
             
             {/* Add Review Buttons & Feedback */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setShowReviewForm(!showReviewForm)}
               style={{
                 background: 'var(--primary-gradient)',
                 color: 'white',
                 border: 'none',
-                padding: '10px 24px',
+                padding: '12px 28px',
                 borderRadius: '30px',
                 fontWeight: 700,
-                fontSize: '0.88rem',
+                fontSize: '0.9rem',
                 cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(0,161,155,0.2)',
+                boxShadow: '0 6px 20px rgba(0,161,155,0.2)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
@@ -868,10 +800,10 @@ export default function HomePage() {
               }}
             >
               <MessageSquare size={16} /> {showReviewForm ? 'Cancel Review' : 'Write a Review'}
-            </button>
+            </motion.button>
 
             {reviewSuccess && (
-              <div style={{ color: '#10b981', fontSize: '0.88rem', fontWeight: 600, marginTop: '12px' }}>
+              <div style={{ color: '#10b981', fontSize: '0.9rem', fontWeight: 600, marginTop: '16px' }}>
                 {reviewSuccess}
               </div>
             )}
@@ -881,27 +813,28 @@ export default function HomePage() {
           <AnimatePresence>
             {showReviewForm && (
               <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: -20, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 120, damping: 15 }}
                 className="glass-panel"
                 style={{
                   maxWidth: '550px',
-                  margin: '0 auto 40px',
-                  padding: '30px',
+                  margin: '0 auto 45px',
+                  padding: '35px',
                   border: '1px solid var(--primary-color)',
-                  boxShadow: '0 8px 32px rgba(0,161,155,0.05)'
+                  boxShadow: '0 12px 40px rgba(0,161,155,0.06)'
                 }}
               >
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px', textAlign: 'center' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '24px', textAlign: 'center', letterSpacing: '-0.3px' }}>
                   Share Your InfinityKit Experience
                 </h3>
                 
-                <form onSubmit={handleSubmitReview} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <form onSubmit={handleSubmitReview} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   
                   {/* Name field */}
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px' }}>Your Name</label>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '6px' }}>Your Name</label>
                     <input
                       type="text"
                       placeholder="e.g. Alex M."
@@ -914,29 +847,31 @@ export default function HomePage() {
 
                   {/* Rating Selector */}
                   <div style={{ margin: 0 }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px' }}>Your Rating</label>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '6px' }}>Your Rating</label>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       {[1, 2, 3, 4, 5].map((star) => {
                         const isFilled = hoverRating !== null ? star <= hoverRating : star <= reviewRating;
                         return (
-                          <button
+                          <motion.button
                             key={star}
                             type="button"
+                            whileHover={{ scale: 1.25 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => setReviewRating(star)}
                             onMouseEnter={() => setHoverRating(star)}
                             onMouseLeave={() => setHoverRating(null)}
-                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--warning-color)' }}
+                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--warning-color)', transition: 'color 0.2s' }}
                           >
                             <Star 
-                              size={24} 
-                              fill={isFilled ? "currentColor" : "none"} 
-                              stroke="currentColor"
+                              size={28} 
+                              fill={isFilled ? "var(--warning-color)" : "none"} 
+                              stroke="var(--warning-color)"
                               strokeWidth={1.5}
                             />
-                          </button>
+                          </motion.button>
                         );
                       })}
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '10px' }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '12px', fontWeight: 600 }}>
                         ({reviewRating} out of 5 stars)
                       </span>
                     </div>
@@ -944,30 +879,30 @@ export default function HomePage() {
 
                   {/* Message field */}
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, marginBottom: '6px' }}>Review Comment</label>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '6px' }}>Review Comment</label>
                     <textarea
                       placeholder="What do you love most about InfinityKit?"
                       value={reviewMessage}
                       onChange={(e) => setReviewMessage(e.target.value)}
                       className="form-input"
-                      style={{ minHeight: '100px', resize: 'vertical' }}
+                      style={{ minHeight: '110px', resize: 'vertical' }}
                       required
                     />
                   </div>
 
                   {reviewError && (
-                    <div style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 600 }}>
+                    <div style={{ color: '#ef4444', fontSize: '0.85rem', fontWeight: 600 }}>
                       ⚠️ {reviewError}
                     </div>
                   )}
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '5px' }}>
+                  <div style={{ display: 'flex', gap: '14px', justifyContent: 'flex-end', marginTop: '5px' }}>
                     <button
                       type="button"
                       onClick={() => setShowReviewForm(false)}
                       className="btn btn-secondary"
-                      style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                      style={{ padding: '10px 20px', fontSize: '0.88rem', borderRadius: '12px' }}
                     >
                       Cancel
                     </button>
@@ -975,7 +910,7 @@ export default function HomePage() {
                       type="submit"
                       disabled={isSubmittingReview}
                       className="btn"
-                      style={{ padding: '8px 24px', fontSize: '0.85rem' }}
+                      style={{ padding: '10px 26px', fontSize: '0.88rem', borderRadius: '12px' }}
                     >
                       {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
                     </button>
@@ -988,10 +923,10 @@ export default function HomePage() {
 
           {/* Testimonial Cards Listing */}
           {loadingReviews ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>
               <div style={{
-                width: '30px',
-                height: '30px',
+                width: '32px',
+                height: '32px',
                 border: '3px solid var(--glass-border)',
                 borderTopColor: 'var(--primary-color)',
                 borderRadius: '50%',
@@ -1000,91 +935,103 @@ export default function HomePage() {
               <style jsx>{`@keyframes home-spin { to { transform: rotate(360deg); } }`}</style>
             </div>
           ) : reviews.length === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic', padding: '20px 0' }}>
+            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.95rem', fontStyle: 'italic', padding: '30px 0' }}>
               No customer reviews yet. Be the first to add one!
             </p>
           ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '24px'
-            }}>
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '24px'
+              }}
+            >
               {reviews.map((rev) => {
                 const initials = rev.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
                 return (
-                  <div 
+                  <motion.div 
                     key={rev.id} 
+                    variants={itemVariants}
+                    whileHover={{ y: -6, borderColor: 'rgba(0, 161, 155, 0.2)', boxShadow: 'var(--hover-neon)' }}
                     className="glass-panel" 
                     style={{ 
                       margin: 0, 
-                      padding: '28px', 
-                      border: '1px solid rgba(0,0,0,0.03)',
+                      padding: '30px', 
+                      border: '1px solid var(--glass-border)',
                       display: 'flex',
                       flexDirection: 'column',
-                      justifyContent: 'space-between'
+                      justifyContent: 'space-between',
+                      background: 'var(--glass-bg)',
+                      backdropFilter: 'blur(20px)',
+                      borderRadius: '24px',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                     }}
                   >
                     <div>
                       {/* Rating */}
-                      <div style={{ display: 'flex', color: 'var(--warning-color)', gap: '2px', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', color: 'var(--warning-color)', gap: '4px', marginBottom: '16px' }}>
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star 
                             key={i} 
-                            size={14} 
-                            fill={i < rev.rating ? "currentColor" : "none"} 
-                            stroke="currentColor"
+                            size={16} 
+                            fill={i < rev.rating ? "var(--warning-color)" : "none"} 
+                            stroke="var(--warning-color)"
                             strokeWidth={1.5}
                           />
                         ))}
                       </div>
                       
                       {/* Comment */}
-                      <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '20px' }}>
+                      <p style={{ fontSize: '0.92rem', lineHeight: 1.6, color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '24px', opacity: 0.95 }}>
                         "{rev.message}"
                       </p>
                     </div>
 
                     {/* Author Profile */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ 
-                        width: '36px', 
-                        height: '36px', 
+                        width: '40px', 
+                        height: '40px', 
                         borderRadius: '50%', 
                         background: 'var(--primary-gradient)', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center', 
-                        fontSize: '0.8rem', 
+                        fontSize: '0.85rem', 
                         color: 'white', 
-                        fontWeight: 700 
+                        fontWeight: 800,
+                        boxShadow: '0 4px 10px rgba(0, 161, 155, 0.2)'
                       }}>
                         {initials}
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{rev.name}</div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>InfinityKit User</div>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{rev.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', opacity: 0.8 }}>InfinityKit Pioneer</div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           )}
         </section>
       )}
 
       {/* 12. FAQ ACCORDION SECTION */}
-      <section style={{ marginBottom: '65px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '35px' }}>
-          <h2 style={{ fontSize: '1.45rem', fontWeight: 850, marginBottom: '6px', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <HelpCircle size={20} color="var(--primary-color)" /> FAQ Knowledgebase
+      <section style={{ marginBottom: '75px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <HelpCircle size={22} color="var(--primary-color)" /> FAQ Knowledgebase
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
             Learn more about the technology stack, security architectures, and operations of InfinityKit.
           </p>
         </div>
 
-        <div className="faq-container" style={{ maxWidth: '750px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="faq-container" style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {faqItems.map((item, idx) => {
             const isOpen = openFaq === idx;
             return (
@@ -1092,11 +1039,11 @@ export default function HomePage() {
                 key={idx} 
                 className="faq-item" 
                 style={{ 
-                  borderRadius: '16px',
-                  border: isOpen ? '1px solid rgba(0, 161, 155, 0.2)' : '1px solid var(--glass-border)',
+                  borderRadius: '20px',
+                  border: isOpen ? '1px solid rgba(0, 161, 155, 0.25)' : '1px solid var(--glass-border)',
                   background: isOpen ? 'rgba(0, 161, 155, 0.02)' : 'var(--glass-bg)',
-                  boxShadow: isOpen ? '0 4px 15px rgba(0, 161, 155, 0.02)' : 'none',
-                  transition: 'all 0.3s ease'
+                  boxShadow: isOpen ? '0 6px 20px rgba(0, 161, 155, 0.02)' : 'none',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
               >
                 <div 
@@ -1106,9 +1053,9 @@ export default function HomePage() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '20px 24px',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
+                    padding: '22px 28px',
+                    fontWeight: 800,
+                    fontSize: '1rem',
                     cursor: 'pointer',
                     userSelect: 'none'
                   }}
@@ -1119,7 +1066,7 @@ export default function HomePage() {
                     transition={{ duration: 0.25, ease: "easeInOut" }}
                     style={{ color: isOpen ? 'var(--primary-color)' : 'var(--text-secondary)' }}
                   >
-                    <ChevronDown size={16} />
+                    <ChevronDown size={18} />
                   </motion.div>
                 </div>
                 
@@ -1133,10 +1080,11 @@ export default function HomePage() {
                       style={{ overflow: 'hidden' }}
                     >
                       <div style={{ 
-                        padding: '0 24px 20px', 
+                        padding: '0 28px 22px', 
                         color: 'var(--text-secondary)',
-                        fontSize: '0.88rem',
-                        lineHeight: 1.6
+                        fontSize: '0.9rem',
+                        lineHeight: 1.65,
+                        opacity: 0.95
                       }}>
                         {item.a}
                       </div>
@@ -1151,26 +1099,48 @@ export default function HomePage() {
 
       {/* 13. PREMIUM CTA CALLOUT */}
       {!searchQuery && (
-        <section className="glass-panel" style={{
-          margin: '0 0 20px 0',
-          padding: '50px 40px',
-          borderRadius: '24px',
-          background: 'linear-gradient(135deg, rgba(0, 161, 155, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%)',
-          border: '1px solid rgba(0, 161, 155, 0.15)',
-          textAlign: 'center'
-        }}>
-          <h2 style={{ fontSize: '1.65rem', fontWeight: 900, marginBottom: '10px' }}>
+        <motion.section 
+          whileHover={{ borderColor: 'rgba(0, 161, 155, 0.25)', boxShadow: 'var(--hover-neon)' }}
+          transition={{ duration: 0.4 }}
+          className="glass-panel" 
+          style={{
+            margin: '0 0 20px 0',
+            padding: '55px 45px',
+            borderRadius: '30px',
+            background: 'linear-gradient(135deg, rgba(0, 161, 155, 0.06) 0%, rgba(124, 58, 237, 0.05) 100%)',
+            border: '1px solid rgba(0, 161, 155, 0.18)',
+            textAlign: 'center',
+            backdropFilter: 'blur(20px)',
+            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+          }}
+        >
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '12px', letterSpacing: '-0.5px' }}>
             Elevate Your Digital Workflows
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '30px', maxWidth: '600px', margin: '0 auto 30px', lineHeight: 1.5 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.98rem', marginBottom: '32px', maxWidth: '640px', margin: '0 auto 32px', lineHeight: 1.6, opacity: 0.95 }}>
             Unlock continuous database backups, secure sharing parameters, and customized ambient workspaces. 100% free and client-side.
           </p>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <button className="btn" style={{ background: 'var(--primary-gradient)', color: 'white', padding: '12px 30px', borderRadius: '30px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', border: 'none', boxShadow: '0 4px 15px rgba(0, 161, 155, 0.2)' }}>
+            <motion.button 
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="btn" 
+              style={{ 
+                background: 'var(--primary-gradient)', 
+                color: 'white', 
+                padding: '14px 34px', 
+                borderRadius: '30px', 
+                fontWeight: 700, 
+                fontSize: '0.92rem', 
+                cursor: 'pointer', 
+                border: 'none', 
+                boxShadow: '0 6px 20px rgba(0, 161, 155, 0.25)' 
+              }}
+            >
               Open Productive Dashboard <ArrowRight size={14} />
-            </button>
+            </motion.button>
           </Link>
-        </section>
+        </motion.section>
       )}
 
     </div>
