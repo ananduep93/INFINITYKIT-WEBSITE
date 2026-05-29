@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import { supabase } from '../../lib/supabase';
 import { Sparkles, Calendar, Zap, AlertCircle } from 'lucide-react';
 import { ReusableLoading } from '../../components/ui/ReusableLoading';
 
@@ -20,6 +21,25 @@ export default function WhatsNewPage() {
   useEffect(() => {
     async function fetchUpdates() {
       try {
+        // 1. Try to fetch from Supabase (primary)
+        const { data: sbData, error: sbError } = await supabase
+          .from('system_updates')
+          .select('id, message, created_at')
+          .order('created_at', { ascending: false });
+
+        if (!sbError && sbData && sbData.length > 0) {
+          const list: UpdateItem[] = sbData.map(item => ({
+            id: String(item.id),
+            message: item.message,
+            timestamp: new Date(item.created_at)
+          }));
+          setUpdates(list);
+          setError(null);
+          setLoading(false);
+          return;
+        }
+
+        // 2. Fallback to Firestore (coexistence)
         const q = query(collection(db, 'updates'), orderBy('timestamp', 'desc'));
         const querySnapshot = await getDocs(q);
 

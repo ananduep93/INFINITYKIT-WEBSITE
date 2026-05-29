@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Star, CheckCircle2, ChevronRight, ClipboardList, AlertCircle, Send } from 'lucide-react';
 import { db } from '../../lib/firebase';
+import { supabase } from '../../lib/supabase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -175,6 +176,24 @@ export default function PublicSurvey() {
 
       if (surveyId && creatorId) {
         try {
+          // 1. Try to fetch from Supabase (primary)
+          const { data, error } = await supabase
+            .from('surveys')
+            .select('id, title, description, questions')
+            .eq('id', surveyId)
+            .maybeSingle();
+
+          if (!error && data) {
+            setSurvey({
+              id: data.id,
+              title: data.title,
+              description: data.description || '',
+              questions: data.questions as any[]
+            });
+            return;
+          }
+
+          // 2. Fallback to Firestore (coexistence)
           const docRef = doc(db, 'tools', 'surveyHub', creatorId, surveyId);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
@@ -263,6 +282,28 @@ export default function PublicSurvey() {
     try {
       // Save to Firestore tools/surveyResponses/{surveyId}/{responseId}
       const responseId = 'resp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      
+      // 1. Write response to Supabase (primary)
+      try {
+        const browserVal = typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown';
+        const { error: sbError } = await supabase
+          .from('survey_responses')
+          .insert({
+            id: responseId,
+            survey_id: survey.id,
+            answers: response.answers,
+            browser: browserVal,
+            created_at: response.submittedAt
+          });
+
+        if (sbError) {
+          console.warn('[Supabase Sync Warning] Failed to save survey response to Supabase:', sbError.message);
+        }
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to save survey response to Supabase:', sbErr.message || sbErr);
+      }
+
+      // 2. Write response to Firestore (coexistence)
       const responseRef = doc(db, 'tools', 'surveyResponses', survey.id, responseId);
       
       // Note: We need a root 'timestamp' field to satisfy the security rule

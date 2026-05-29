@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from './firebase';
+import { supabase } from './supabase';
 
 const DEBOUNCE_DELAY = 1000;
 const debounceTimers: Record<string, NodeJS.Timeout> = {};
@@ -55,61 +56,90 @@ export const PATH_MAP: Record<string, string> = {
 };
 
 // Dynamic Auto-Migration & Firestore Reference Resolver
-async function getFirestoreRefAndMigrate(userId: string, toolName: string) {
-  const targetCol = PATH_MAP[toolName];
-  
-  if (!targetCol) {
-    // Default fallback path for dynamic unmapped tools
-    return doc(db, 'users', userId, 'tools', toolName);
-  }
+// Dynamic Auto-Migration & Supabase Database Resolver
 
-  const newDocRef = doc(db, 'users', userId, targetCol, 'data');
+async function getSupabaseUserId(): Promise<string | null> {
+  if (typeof window !== 'undefined') {
+    const sessionStr = localStorage.getItem('supabaseSession');
+    if (sessionStr) {
+      try {
+        const session = JSON.parse(sessionStr);
+        if (session?.user?.id) return session.user.id;
+      } catch (e) {}
+    }
+  }
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user?.id) return session.user.id;
+  } catch (e) {}
+  return null;
+}
+
+async function getSupabaseDataAndMigrate(userId: string, toolName: string): Promise<any> {
+  const targetCol = PATH_MAP[toolName] || toolName;
+  const sbUserId = await getSupabaseUserId();
+  
+  if (!sbUserId) {
+    // If not logged into Supabase, fall back immediately to legacy Firestore
+    console.log(`[Auto-Migration] No Supabase session. Querying Firestore directly for "${toolName}"...`);
+    const docRef = doc(db, 'users', userId, targetCol, 'data');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data().data : null;
+  }
   
   try {
-    const newDocSnap = await getDoc(newDocRef);
-    if (newDocSnap.exists()) {
-      // New path exists, use it immediately
-      return newDocRef;
+    // 1. Check if data exists in Supabase
+    const { data: sbData, error: sbError } = await supabase
+      .from('user_data')
+      .select('data')
+      .eq('user_id', sbUserId)
+      .eq('tool_name', targetCol)
+      .maybeSingle();
+
+    if (sbError) {
+      console.warn('[Sync co-existence Warning] Supabase read failed:', sbError.message);
     }
 
-    // New path does NOT exist. Search for legacy documents to migrate
-    const legacyKeys = Object.keys(PATH_MAP).filter(k => PATH_MAP[k] === targetCol);
-    let migratedPayload: any = null;
-    let foundLegacyRef = null;
-
-    for (const legacyKey of legacyKeys) {
-      const legacyRef = doc(db, 'users', userId, 'tools', legacyKey);
-      const legacySnap = await getDoc(legacyRef);
-      if (legacySnap.exists()) {
-        migratedPayload = legacySnap.data().data;
-        foundLegacyRef = legacyRef;
-        break;
-      }
+    if (sbData) {
+      return sbData.data;
     }
 
-    if (migratedPayload !== null) {
-      console.log(`[Auto-Migration] Found legacy user data for "${toolName}". Restoring to subcollection "${targetCol}"...`);
-      // 1. Write legacy payload to the new path
-      await setDoc(newDocRef, {
-        data: migratedPayload,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+    // 2. Data does not exist in Supabase. Check legacy Firestore for migration!
+    console.log(`[Auto-Migration] Checking Firestore for legacy "${toolName}" data...`);
+    const docRef = doc(db, 'users', userId, targetCol, 'data');
+    const docSnap = await getDoc(docRef);
 
-      // 2. Cleanly purge the legacy document to finalize migration
-      if (foundLegacyRef) {
+    if (docSnap.exists()) {
+      const legacyPayload = docSnap.data().data;
+      console.log(`[Auto-Migration] Found Firestore data for "${toolName}". Migrating to Supabase user_data...`);
+
+      // Write to Supabase
+      const { error: upsertError } = await supabase
+        .from('user_data')
+        .upsert({
+          user_id: sbUserId,
+          tool_name: targetCol,
+          data: legacyPayload,
+          updated_at: new Date().toISOString()
+        });
+
+      if (upsertError) {
+        console.error('[Auto-Migration Error] Failed to write migrated data to Supabase:', upsertError.message);
+      } else {
+        console.log(`[Auto-Migration] Successfully migrated "${toolName}" data to Supabase!`);
+        // Cleanly delete from Firestore so we don't migrate again
         try {
-          await deleteDoc(foundLegacyRef);
-          console.log(`[Auto-Migration] Cleanly deleted legacy document for "${toolName}".`);
-        } catch (e) {
-          console.warn('[Auto-Migration Warning] Could not delete legacy document:', e);
-        }
+          await deleteDoc(docRef);
+        } catch (e) {}
       }
+
+      return legacyPayload;
     }
   } catch (error) {
-    console.error(`[Auto-Migration Error] Failed to resolve migration check for "${toolName}":`, error);
+    console.error(`[Sync co-existence Error] Failed to resolve migration for "${toolName}":`, error);
   }
 
-  return newDocRef;
+  return null;
 }
 
 export const syncService = {
@@ -121,11 +151,8 @@ export const syncService = {
     if (isLoggedIn && userId) {
       try {
         if (forceCloud || !localStorage.getItem(toolName)) {
-          const docRef = await getFirestoreRefAndMigrate(userId, toolName);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            const cloudData = docSnap.data().data;
+          const cloudData = await getSupabaseDataAndMigrate(userId, toolName);
+          if (cloudData !== null) {
             localStorage.setItem(toolName, JSON.stringify(cloudData));
             return cloudData;
           }
@@ -153,19 +180,42 @@ export const syncService = {
       }
 
       debounceTimers[toolName] = setTimeout(async () => {
+        const targetCol = PATH_MAP[toolName] || toolName;
         try {
-          const docRef = await getFirestoreRefAndMigrate(userId, toolName);
-          await setDoc(docRef, {
-            data: data,
-            updatedAt: new Date().toISOString()
-          }, { merge: true });
-          console.log(`Synced ${toolName} to cloud.`);
+          // Write to Supabase (primary)
+          const sbUserId = await getSupabaseUserId();
+          if (sbUserId) {
+            const { error: sbError } = await supabase
+              .from('user_data')
+              .upsert({
+                user_id: sbUserId,
+                tool_name: targetCol,
+                data: data,
+                updated_at: new Date().toISOString()
+              });
+
+            if (sbError) {
+              console.error(`[Supabase Sync Error] Failed to save "${toolName}":`, sbError.message);
+            } else {
+              console.log(`Synced ${toolName} to Supabase.`);
+            }
+          }
+
+          // Write to Firebase Firestore temporarily (dual sync / backup coexistence!)
+          try {
+            const docRef = doc(db, 'users', userId, targetCol, 'data');
+            await setDoc(docRef, {
+              data: data,
+              updatedAt: new Date().toISOString()
+            }, { merge: true });
+          } catch (fbErr: any) {
+            console.warn('[Firestore Coexistence Sync Warning]:', fbErr.message);
+          }
         } catch (error) {
           console.error(`Error syncing ${toolName} to cloud:`, error);
         }
       }, DEBOUNCE_DELAY);
     } else {
-      // Dispatches custom event for the app view to notice
       window.dispatchEvent(new CustomEvent('showSignInPrompt', {
         detail: {
           title: 'Cloud Sync Disabled',
@@ -181,14 +231,41 @@ export const syncService = {
     if (!userId) return;
 
     try {
-      const favRef = doc(db, 'users', userId, 'favorites', toolId);
+      const sbUserId = await getSupabaseUserId();
       if (isFavorite) {
-        await setDoc(favRef, {
-          toolId,
-          savedAt: new Date().toISOString()
-        });
+        // Save to Supabase (primary)
+        if (sbUserId) {
+          await supabase
+            .from('user_favorites')
+            .upsert({
+              user_id: sbUserId,
+              tool_id: toolId,
+              saved_at: new Date().toISOString()
+            });
+        }
+        
+        // Save to Firebase (coexistence)
+        try {
+          const { doc, setDoc } = await import('firebase/firestore');
+          const favRef = doc(db, 'users', userId, 'favorites', toolId);
+          await setDoc(favRef, { toolId, savedAt: new Date().toISOString() });
+        } catch (e) {}
       } else {
-        await deleteDoc(favRef);
+        // Delete from Supabase
+        if (sbUserId) {
+          await supabase
+            .from('user_favorites')
+            .delete()
+            .eq('user_id', sbUserId)
+            .eq('tool_id', toolId);
+        }
+          
+        // Delete from Firebase
+        try {
+          const { doc, deleteDoc } = await import('firebase/firestore');
+          const favRef = doc(db, 'users', userId, 'favorites', toolId);
+          await deleteDoc(favRef);
+        } catch (e) {}
       }
     } catch (error) {
       console.error('Error syncing favorite:', error);
@@ -201,6 +278,21 @@ export const syncService = {
     if (!userId) return [];
 
     try {
+      const sbUserId = await getSupabaseUserId();
+      if (sbUserId) {
+        // Fetch from Supabase (primary)
+        const { data, error } = await supabase
+          .from('user_favorites')
+          .select('tool_id')
+          .eq('user_id', sbUserId);
+          
+        if (!error && data) {
+          return data.map(item => item.tool_id);
+        }
+      }
+      
+      // Fallback/Coexistence to Firebase
+      const { collection, getDocs } = await import('firebase/firestore');
       const favsCol = collection(db, 'users', userId, 'favorites');
       const snapshot = await getDocs(favsCol);
       return snapshot.docs.map(doc => doc.id);
@@ -216,11 +308,27 @@ export const syncService = {
     if (!userId) return;
 
     try {
-      const historyRef = doc(db, 'users', userId, 'history', toolId);
-      await setDoc(historyRef, {
-        toolId,
-        lastAccessed: new Date().toISOString()
-      });
+      const sbUserId = await getSupabaseUserId();
+      if (sbUserId) {
+        // Save to Supabase (primary)
+        await supabase
+          .from('tool_usage')
+          .upsert({
+            user_id: sbUserId,
+            tool_id: toolId,
+            last_accessed: new Date().toISOString()
+          });
+      }
+
+      // Save to Firebase (coexistence)
+      try {
+        const { doc, setDoc } = await import('firebase/firestore');
+        const historyRef = doc(db, 'users', userId, 'history', toolId);
+        await setDoc(historyRef, {
+          toolId,
+          lastAccessed: new Date().toISOString()
+        });
+      } catch (e) {}
     } catch (error) {
       console.error('Error syncing history:', error);
     }
@@ -232,6 +340,7 @@ export const syncService = {
     if (!userId) return;
 
     console.log('Starting local -> cloud sync...');
+    const sbUserId = await getSupabaseUserId();
     const toolKeys = [
       'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
       'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
@@ -248,11 +357,29 @@ export const syncService = {
       if (localData) {
         try {
           const data = JSON.parse(localData);
-          const docRef = await getFirestoreRefAndMigrate(userId, key);
-          const docSnap = await getDoc(docRef);
-          if (!docSnap.exists()) {
-            await setDoc(docRef, { data, updatedAt: new Date().toISOString() });
+          const targetCol = PATH_MAP[key] || key;
+          
+          // Upsert in Supabase
+          if (sbUserId) {
+            await supabase
+              .from('user_data')
+              .upsert({
+                user_id: sbUserId,
+                tool_name: targetCol,
+                data: data,
+                updated_at: new Date().toISOString()
+              });
           }
+
+          // Coexistence: also write to Firestore
+          try {
+            const { doc, getDoc, setDoc } = await import('firebase/firestore');
+            const docRef = doc(db, 'users', userId, targetCol, 'data');
+            const docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+              await setDoc(docRef, { data, updatedAt: new Date().toISOString() });
+            }
+          } catch (e) {}
         } catch (e) {}
       }
     }
@@ -272,6 +399,7 @@ export const syncService = {
     if (!userId) return;
 
     console.log('Starting cloud -> local sync...');
+    const sbUserId = await getSupabaseUserId();
     const toolKeys = [
       'todolist', 'todos', 'savedPasswords', 'quicknotes', 'quickNotes',
       'infinityKitExpenseDB', 'infinityKitSettings', 'recentSearches',
@@ -290,7 +418,31 @@ export const syncService = {
     const cloudFavs = await this.getFavorites();
     localStorage.setItem('favorites', JSON.stringify(cloudFavs));
 
+    // History sync from Supabase
     try {
+      if (sbUserId) {
+        const { data, error } = await supabase
+          .from('tool_usage')
+          .select('tool_id, last_accessed')
+          .eq('user_id', sbUserId)
+          .order('last_accessed', { ascending: false })
+          .limit(15);
+
+        if (!error && data) {
+          const history = data.map(item => ({
+            id: item.tool_id,
+            name: item.tool_id,
+            time: item.last_accessed
+          }));
+          localStorage.setItem('recentTools', JSON.stringify(history));
+          console.log('Background sync complete.');
+          window.dispatchEvent(new CustomEvent('infinityKitDataSynced'));
+          return;
+        }
+      }
+
+      // Fallback to Firestore
+      const { collection, getDocs, query, orderBy, limit } = await import('firebase/firestore');
       const historyCol = collection(db, 'users', userId, 'history');
       const q = query(historyCol, orderBy('lastAccessed', 'desc'), limit(15));
       const snapshot = await getDocs(q);
@@ -308,4 +460,5 @@ export const syncService = {
     window.dispatchEvent(new CustomEvent('infinityKitDataSynced'));
   }
 };
+
 export default syncService;

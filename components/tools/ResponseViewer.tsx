@@ -20,6 +20,7 @@ import {
 
 import { syncService } from '../../lib/sync';
 import { db } from '../../lib/firebase';
+import { supabase } from '../../lib/supabase';
 import { collection, getDocs, doc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -83,6 +84,23 @@ export default function ResponseViewer() {
     if (selectedSurveyId) {
       const fetchResponses = async () => {
         try {
+          // 1. Try to fetch from Supabase (primary)
+          const { data, error } = await supabase
+            .from('survey_responses')
+            .select('answers, created_at')
+            .eq('survey_id', selectedSurveyId)
+            .order('created_at', { ascending: true });
+
+          if (!error && data && data.length > 0) {
+            const list: SurveyResponse[] = data.map(item => ({
+              submittedAt: item.created_at,
+              answers: item.answers as Record<string, any>
+            }));
+            setResponses(list);
+            return;
+          }
+
+          // 2. Fallback to Firestore (coexistence)
           const colRef = collection(db, 'tools', 'surveyResponses', selectedSurveyId);
           const snapshot = await getDocs(colRef);
           const cloudResponses = snapshot.docs.map(doc => {
@@ -95,7 +113,7 @@ export default function ResponseViewer() {
           cloudResponses.sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
           setResponses(cloudResponses);
         } catch (err) {
-          console.error('Failed to fetch responses from Firestore:', err);
+          console.error('Failed to fetch responses:', err);
           // Fallback to local storage
           const key = `infinitykit_responses_${selectedSurveyId}`;
           const stored = localStorage.getItem(key);
@@ -194,6 +212,21 @@ export default function ResponseViewer() {
     }
     
     try {
+      // 1. Clear in Supabase (primary)
+      try {
+        const { error } = await supabase
+          .from('survey_responses')
+          .delete()
+          .eq('survey_id', activeSurvey.id);
+        
+        if (error) {
+          console.warn('[Supabase Sync Warning] Failed to delete survey responses from Supabase:', error.message);
+        }
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to delete survey responses from Supabase:', sbErr.message || sbErr);
+      }
+
+      // 2. Clear in Firestore (coexistence)
       const colRef = collection(db, 'tools', 'surveyResponses', activeSurvey.id);
       const snapshot = await getDocs(colRef);
       

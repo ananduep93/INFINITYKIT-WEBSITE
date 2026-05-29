@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { User } from 'firebase/auth';
-import { authService } from '../lib/auth';
+import { authService, UnifiedUser } from '../lib/auth';
 import { syncService } from '../lib/sync';
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UnifiedUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -41,7 +41,8 @@ import {
   Briefcase,
   Shield,
   BarChart3,
-  Calculator
+  Calculator,
+  BookOpen
 } from 'lucide-react';
 import { useTheme } from '../ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
@@ -98,6 +99,44 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       const consent = localStorage.getItem('infinitykit_cookie_consent');
       if (consent === 'true') setCookieConsent(true);
       else if (consent === 'false') setCookieConsent(false);
+
+      // ─── Bulletproof Firebase Auth Referer Error Shield ──────────────────
+      // This intercepts domain referer validation errors (like running on port 3001)
+      // and silences them to prevent crashing the entire application layout.
+      const handleError = (e: ErrorEvent) => {
+        if (e.message?.includes('requests-from-referer') || 
+            e.error?.message?.includes('requests-from-referer') ||
+            e.message?.includes('auth/requests-from-referer') ||
+            e.error?.message?.includes('auth/requests-from-referer')) {
+          console.warn('[Firebase Auth Shield] Intercepted and silenced referer block crash:', e.message);
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+
+      const handleRejection = (e: PromiseRejectionEvent) => {
+        const reason = e.reason;
+        const msg = reason?.message || (typeof reason === 'string' ? reason : '');
+        const code = reason?.code;
+        
+        if (msg.includes('requests-from-referer') || 
+            msg.includes('auth/requests-from-referer') || 
+            code === 'auth/requests-from-referer' ||
+            JSON.stringify(reason).includes('requests-from-referer') ||
+            JSON.stringify(reason).includes('localhost:3001-are-blocked')) {
+          console.warn('[Firebase Auth Shield] Intercepted and silenced referer promise rejection:', reason);
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+
+      window.addEventListener('error', handleError, true);
+      window.addEventListener('unhandledrejection', handleRejection, true);
+
+      return () => {
+        window.removeEventListener('error', handleError, true);
+        window.removeEventListener('unhandledrejection', handleRejection, true);
+      };
     }
   }, []);
 
@@ -523,6 +562,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               {sidebarExpanded && <span>Productivity Catalog</span>}
             </Link>
 
+            <Link href="/blog" className={`sidebar-nav-link ${pathname.startsWith('/blog') ? 'active' : ''}`} style={sidebarLinkStyle(pathname.startsWith('/blog'))}>
+              <BookOpen size={16} />
+              {sidebarExpanded && <span>Resource Articles Hub</span>}
+            </Link>
+
             {sidebarExpanded && (
               <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-secondary)', letterSpacing: '0.8px', textTransform: 'uppercase', padding: '15px 8px 4px' }}>
                 Tool Folders
@@ -756,6 +800,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 </Link>
                 <Link href="/tools" className="sidebar-nav-link" style={sidebarLinkStyle(pathname === '/tools')} onClick={() => setMobileMenuOpen(false)}>
                   <Activity size={16} /> <span>Productivity Catalog</span>
+                </Link>
+
+                <Link href="/blog" className="sidebar-nav-link" style={sidebarLinkStyle(pathname.startsWith('/blog'))} onClick={() => setMobileMenuOpen(false)}>
+                  <BookOpen size={16} /> <span>Resource Articles Hub</span>
                 </Link>
 
                 <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', margin: '15px 0 5px' }}>Folders</span>

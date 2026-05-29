@@ -20,6 +20,7 @@ import {
 
 import { syncService } from '../../lib/sync';
 import { db } from '../../lib/firebase';
+import { supabase } from '../../lib/supabase';
 import { collection, getDocs } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -55,23 +56,38 @@ export default function MySurveys() {
             const parsedSurveys: SavedSurvey[] = typeof data === 'string' ? JSON.parse(data) : data;
             setSurveys(parsedSurveys);
             
-            // Query counts from Firestore
-            parsedSurveys.forEach(survey => {
-              const colRef = collection(db, 'tools', 'surveyResponses', survey.id);
-              getDocs(colRef).then(snapshot => {
-                setCounts(prev => ({ ...prev, [survey.id]: snapshot.size }));
-              }).catch((e) => {
-                console.warn(`Could not fetch cloud count for survey ${survey.id}:`, e);
-                // Local fallback count
-                const responsesKey = `infinitykit_responses_${survey.id}`;
-                const local = localStorage.getItem(responsesKey);
-                try {
-                  const localCount = local ? JSON.parse(local).length : 0;
-                  setCounts(prev => ({ ...prev, [survey.id]: localCount }));
-                } catch {
-                  setCounts(prev => ({ ...prev, [survey.id]: 0 }));
+            // Query counts from Supabase first
+            parsedSurveys.forEach(async (survey) => {
+              try {
+                const { count, error } = await supabase
+                  .from('survey_responses')
+                  .select('id', { count: 'exact', head: true })
+                  .eq('survey_id', survey.id);
+
+                if (!error && count !== null) {
+                  setCounts(prev => ({ ...prev, [survey.id]: count }));
+                } else {
+                  throw new Error(error?.message || 'Empty count');
                 }
-              });
+              } catch (e) {
+                // Fallback to Firestore
+                try {
+                  const colRef = collection(db, 'tools', 'surveyResponses', survey.id);
+                  const snapshot = await getDocs(colRef);
+                  setCounts(prev => ({ ...prev, [survey.id]: snapshot.size }));
+                } catch (fbErr) {
+                  console.warn(`Could not fetch cloud count for survey ${survey.id}:`, fbErr);
+                  // Local fallback count
+                  const responsesKey = `infinitykit_responses_${survey.id}`;
+                  const local = localStorage.getItem(responsesKey);
+                  try {
+                    const localCount = local ? JSON.parse(local).length : 0;
+                    setCounts(prev => ({ ...prev, [survey.id]: localCount }));
+                  } catch {
+                    setCounts(prev => ({ ...prev, [survey.id]: 0 }));
+                  }
+                }
+              }
             });
           } catch (e) {
             console.error('Failed to parse surveys:', e);

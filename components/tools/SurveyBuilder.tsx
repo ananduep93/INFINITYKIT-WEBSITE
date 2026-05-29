@@ -25,6 +25,7 @@ import {
 
 import { syncService } from '../../lib/sync';
 import { db } from '../../lib/firebase';
+import { supabase } from '../../lib/supabase';
 import { doc, setDoc } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -245,14 +246,47 @@ export default function SurveyBuilder() {
     };
 
     try {
-      // 1. Write the survey definition to Firestore in tools/surveyHub/{userId}/{surveyId}
+      // 1. Write the survey definition to Supabase (primary)
+      try {
+        const sessionStr = localStorage.getItem('supabaseSession');
+        let sbUserId = null;
+        if (sessionStr) {
+          const session = JSON.parse(sessionStr);
+          sbUserId = session?.user?.id;
+        }
+        if (!sbUserId) {
+          const { data: { session } } = await supabase.auth.getSession();
+          sbUserId = session?.user?.id;
+        }
+
+        if (sbUserId) {
+          const { error: sbError } = await supabase
+            .from('surveys')
+            .upsert({
+              id: config.id,
+              user_id: sbUserId,
+              title: config.title,
+              description: config.description || null,
+              questions: config.questions,
+              created_at: new Date().toISOString()
+            });
+
+          if (sbError) {
+            console.warn('[Supabase Sync Warning] Failed to publish survey to Supabase:', sbError.message);
+          }
+        }
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to publish survey to Supabase:', sbErr.message || sbErr);
+      }
+
+      // 2. Write the survey definition to Firestore in tools/surveyHub/{userId}/{surveyId}
       const surveyRef = doc(db, 'tools', 'surveyHub', userId, config.id);
       await setDoc(surveyRef, {
         ...config,
         createdAt: new Date().toLocaleDateString()
       });
 
-      // 2. Generate the shortened URL
+      // 3. Generate the shortened URL
       const url = `${window.location.origin}/survey-tools/publicsurvey?id=${config.id}&uid=${userId}`;
       setShareUrl(url);
       setSaveStatus({ type: 'success', message: 'Shareable link generated and survey published to cloud!' });

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { auth, db, googleProvider } from '../../lib/firebase';
+import { supabase } from '../../lib/supabase';
 import { signInWithPopup, onAuthStateChanged, signOut, User, signInWithEmailAndPassword } from 'firebase/auth';
 import { 
   collection, 
@@ -120,34 +121,41 @@ export default function AdminPage() {
     
     handleRedirect();
 
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setAuthLoading(true);
-      if (currentUser) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-          if (userDoc.exists() && userDoc.data().role === 'admin') {
-            setUser(currentUser);
-            setIsAdmin(true);
-            fetchAdminData();
-          } else if (currentUser.email === 'admin@infinitykit.com' || currentUser.email === 'ananduep93@gmail.com') {
-            setUser(currentUser);
-            setIsAdmin(true);
-            fetchAdminData();
-          } else {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (currentUser) => {
+        setAuthLoading(true);
+        if (currentUser) {
+          try {
+            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+            if (userDoc.exists() && userDoc.data().role === 'admin') {
+              setUser(currentUser);
+              setIsAdmin(true);
+              fetchAdminData();
+            } else if (currentUser.email === 'admin@infinitykit.com' || currentUser.email === 'ananduep93@gmail.com') {
+              setUser(currentUser);
+              setIsAdmin(true);
+              fetchAdminData();
+            } else {
+              setUser(null);
+              setIsAdmin(false);
+            }
+          } catch (e) {
+            console.error("Error verifying admin role:", e);
             setUser(null);
             setIsAdmin(false);
           }
-        } catch (e) {
-          console.error("Error verifying admin role:", e);
+        } else {
           setUser(null);
           setIsAdmin(false);
         }
-      } else {
-        setUser(null);
-        setIsAdmin(false);
+        setAuthLoading(false);
+      },
+      (error) => {
+        console.warn('[Admin Firebase Auth error caught gracefully]:', error.message || error);
+        setAuthLoading(false);
       }
-      setAuthLoading(false);
-    });
+    );
 
     return () => unsubscribe();
   }, []);
@@ -156,54 +164,164 @@ export default function AdminPage() {
   const fetchAdminData = async () => {
     try {
       // 1. Fetch updates
-      const uSnap = await getDocs(query(collection(db, 'updates'), orderBy('timestamp', 'desc'), limit(15)));
-      const uList: UpdateItem[] = [];
-      uSnap.forEach(d => {
-        uList.push({ id: d.id, message: d.data().message || '', timestamp: d.data().timestamp });
-      });
-      setUpdates(uList);
+      try {
+        const { data, error } = await supabase
+          .from('system_updates')
+          .select('id, message, created_at')
+          .order('created_at', { ascending: false })
+          .limit(15);
+        if (!error && data && data.length > 0) {
+          setUpdates(data.map(d => ({ id: String(d.id), message: d.message, timestamp: new Date(d.created_at) })));
+        } else {
+          // Fallback to Firestore
+          const uSnap = await getDocs(query(collection(db, 'updates'), orderBy('timestamp', 'desc'), limit(15)));
+          const uList: UpdateItem[] = [];
+          uSnap.forEach(d => {
+            uList.push({ id: d.id, message: d.data().message || '', timestamp: d.data().timestamp });
+          });
+          setUpdates(uList);
+        }
+      } catch (e) {
+        // Fallback to Firestore
+        const uSnap = await getDocs(query(collection(db, 'updates'), orderBy('timestamp', 'desc'), limit(15)));
+        const uList: UpdateItem[] = [];
+        uSnap.forEach(d => {
+          uList.push({ id: d.id, message: d.data().message || '', timestamp: d.data().timestamp });
+        });
+        setUpdates(uList);
+      }
 
       // 2. Fetch affiliate ads
-      const aSnap = await getDocs(query(collection(db, 'affiliateAds'), limit(15)));
-      const aList: AffiliateItem[] = [];
-      aSnap.forEach(d => {
-        aList.push({ 
-          id: d.id, 
-          title: d.data().title || '', 
-          affiliateLink: d.data().affiliateLink || '',
-          mediaLink: d.data().mediaLink || ''
+      try {
+        const { data, error } = await supabase
+          .from('affiliate_ads')
+          .select('id, title, affiliate_link, media_link')
+          .limit(15);
+        if (!error && data && data.length > 0) {
+          setAffiliates(data.map(d => ({ 
+            id: String(d.id), 
+            title: d.title, 
+            affiliateLink: d.affiliate_link, 
+            mediaLink: d.media_link 
+          })));
+        } else {
+          // Fallback to Firestore
+          const aSnap = await getDocs(query(collection(db, 'affiliateAds'), limit(15)));
+          const aList: AffiliateItem[] = [];
+          aSnap.forEach(d => {
+            aList.push({ 
+              id: d.id, 
+              title: d.data().title || '', 
+              affiliateLink: d.data().affiliateLink || '',
+              mediaLink: d.data().mediaLink || ''
+            });
+          });
+          setAffiliates(aList);
+        }
+      } catch (e) {
+        // Fallback to Firestore
+        const aSnap = await getDocs(query(collection(db, 'affiliateAds'), limit(15)));
+        const aList: AffiliateItem[] = [];
+        aSnap.forEach(d => {
+          aList.push({ 
+            id: d.id, 
+            title: d.data().title || '', 
+            affiliateLink: d.data().affiliateLink || '',
+            mediaLink: d.data().mediaLink || ''
+          });
         });
-      });
-      setAffiliates(aList);
+        setAffiliates(aList);
+      }
 
        // 3. Fetch AI Prompts
-      const pSnap = await getDocs(query(collection(db, 'aiPrompts'), limit(15)));
-      const pList: PromptItem[] = [];
-      pSnap.forEach(d => {
-        pList.push({
-          id: d.id,
-          category: d.data().category || 'men',
-          imageUrl: d.data().imageUrl || '',
-          prompt: d.data().prompt || ''
+      try {
+        const { data, error } = await supabase
+          .from('ai_prompts')
+          .select('id, category, image_url, prompt')
+          .limit(15);
+        if (!error && data && data.length > 0) {
+          setPromptItem(data.map(d => ({
+            id: String(d.id),
+            category: d.category as 'men' | 'women',
+            imageUrl: d.image_url,
+            prompt: d.prompt
+          })));
+        } else {
+          // Fallback to Firestore
+          const pSnap = await getDocs(query(collection(db, 'aiPrompts'), limit(15)));
+          const pList: PromptItem[] = [];
+          pSnap.forEach(d => {
+            pList.push({
+              id: d.id,
+              category: d.data().category || 'men',
+              imageUrl: d.data().imageUrl || '',
+              prompt: d.data().prompt || ''
+            });
+          });
+          setPromptItem(pList);
+        }
+      } catch (e) {
+        // Fallback to Firestore
+        const pSnap = await getDocs(query(collection(db, 'aiPrompts'), limit(15)));
+        const pList: PromptItem[] = [];
+        pSnap.forEach(d => {
+          pList.push({
+            id: d.id,
+            category: d.data().category || 'men',
+            imageUrl: d.data().imageUrl || '',
+            prompt: d.data().prompt || ''
+          });
         });
-      });
-      setPromptItem(pList);
+        setPromptItem(pList);
+      }
 
       // 4. Fetch Reviews
-      const rSnap = await getDocs(query(collection(db, 'reviews'), orderBy('timestamp', 'desc'), limit(50)));
-      const rList: ReviewItem[] = [];
-      rSnap.forEach(d => {
-        rList.push({
-          id: d.id,
-          name: d.data().name || '',
-          rating: d.data().rating || 5,
-          message: d.data().message || '',
-          timestamp: d.data().timestamp
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('id, name, rating, message, created_at')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (!error && data && data.length > 0) {
+          setReviews(data.map(d => ({
+            id: String(d.id),
+            name: d.name,
+            rating: d.rating,
+            message: d.message,
+            timestamp: new Date(d.created_at)
+          })));
+        } else {
+          // Fallback to Firestore
+          const rSnap = await getDocs(query(collection(db, 'reviews'), orderBy('timestamp', 'desc'), limit(50)));
+          const rList: ReviewItem[] = [];
+          rSnap.forEach(d => {
+            rList.push({
+              id: d.id,
+              name: d.data().name || '',
+              rating: d.data().rating || 5,
+              message: d.data().message || '',
+              timestamp: d.data().timestamp
+            });
+          });
+          setReviews(rList);
+        }
+      } catch (e) {
+        // Fallback to Firestore
+        const rSnap = await getDocs(query(collection(db, 'reviews'), orderBy('timestamp', 'desc'), limit(50)));
+        const rList: ReviewItem[] = [];
+        rSnap.forEach(d => {
+          rList.push({
+            id: d.id,
+            name: d.data().name || '',
+            rating: d.data().rating || 5,
+            message: d.data().message || '',
+            timestamp: d.data().timestamp
+          });
         });
-      });
-      setReviews(rList);
+        setReviews(rList);
+      }
     } catch (err) {
-      console.error("Error loading admin collections:", err);
+      console.error("Admin data fetch exception: ", err);
     }
   };
 
@@ -395,6 +513,20 @@ export default function AdminPage() {
 
     setActionLoading(true);
     try {
+      // 1. Post to Supabase (primary)
+      try {
+        const { error } = await supabase
+          .from('system_updates')
+          .insert({
+            message: updateMsg.trim(),
+            created_at: new Date().toISOString()
+          });
+        if (error) console.warn('[Supabase Sync Warning] Failed to post update:', error.message);
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to post update:', sbErr.message || sbErr);
+      }
+
+      // 2. Post to Firestore (coexistence)
       await addDoc(collection(db, 'updates'), {
         message: updateMsg.trim(),
         timestamp: serverTimestamp()
@@ -416,6 +548,22 @@ export default function AdminPage() {
 
     setActionLoading(true);
     try {
+      // 1. Post to Supabase (primary)
+      try {
+        const { error } = await supabase
+          .from('affiliate_ads')
+          .insert({
+            title: productTitle.trim(),
+            affiliate_link: affiliateLink.trim(),
+            media_link: mediaLink.trim(),
+            created_at: new Date().toISOString()
+          });
+        if (error) console.warn('[Supabase Sync Warning] Failed to add ad:', error.message);
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to add ad:', sbErr.message || sbErr);
+      }
+
+      // 2. Post to Firestore (coexistence)
       await addDoc(collection(db, 'affiliateAds'), {
         title: productTitle.trim(),
         affiliateLink: affiliateLink.trim(),
@@ -445,6 +593,22 @@ export default function AdminPage() {
     setActionLoading(true);
     try {
       const base64Image = await compressImage(selectedImage);
+      // 1. Post to Supabase (primary)
+      try {
+        const { error } = await supabase
+          .from('ai_prompts')
+          .insert({
+            category: promptCategory,
+            image_url: base64Image,
+            prompt: promptText.trim(),
+            created_at: new Date().toISOString()
+          });
+        if (error) console.warn('[Supabase Sync Warning] Failed to upload prompt:', error.message);
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to upload prompt:', sbErr.message || sbErr);
+      }
+
+      // 2. Post to Firestore (coexistence)
       await addDoc(collection(db, 'aiPrompts'), {
         category: promptCategory,
         imageUrl: base64Image,
@@ -466,6 +630,29 @@ export default function AdminPage() {
   const handleDeleteItem = async (col: string, id: string) => {
     if (!confirm("Are you absolutely sure you want to delete this item?")) return;
     try {
+      // 1. Delete from Supabase (primary)
+      try {
+        let table = '';
+        if (col === 'updates') table = 'system_updates';
+        else if (col === 'affiliateAds') table = 'affiliate_ads';
+        else if (col === 'aiPrompts') table = 'ai_prompts';
+        else if (col === 'reviews') table = 'reviews';
+
+        if (table) {
+          const parsedId = Number(id);
+          if (!isNaN(parsedId)) {
+            const { error } = await supabase
+              .from(table)
+              .delete()
+              .eq('id', parsedId);
+            if (error) console.warn('[Supabase Sync Warning] Failed to delete from table ' + table + ':', error.message);
+          }
+        }
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to delete item from Supabase:', sbErr.message || sbErr);
+      }
+
+      // 2. Delete from Firestore (coexistence)
       await deleteDoc(doc(db, col, id));
       triggerToast("Deleted item from database.");
       fetchAdminData();

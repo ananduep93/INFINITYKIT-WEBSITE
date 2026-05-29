@@ -11,6 +11,7 @@ import {
 import { tools, categories, mapCategoryToPath } from '../config/tools';
 import { useSync } from '../hooks/useSync';
 import { db } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
 import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 
 export default function HomePage() {
@@ -35,6 +36,25 @@ export default function HomePage() {
     const fetchReviews = async () => {
       setLoadingReviews(true);
       try {
+        // 1. Try to fetch from Supabase (primary)
+        const { data: sbData, error: sbError } = await supabase
+          .from('reviews')
+          .select('id, name, rating, message, created_at')
+          .order('created_at', { ascending: false });
+
+        if (!sbError && sbData && sbData.length > 0) {
+          const list = sbData.map(item => ({
+            id: String(item.id),
+            name: item.name,
+            rating: item.rating,
+            message: item.message,
+            timestamp: new Date(item.created_at)
+          }));
+          setReviews(list);
+          return;
+        }
+
+        // 2. Fallback to Firestore (coexistence)
         const q = query(collection(db, 'reviews'), orderBy('timestamp', 'desc'));
         const querySnapshot = await getDocs(q);
         const reviewList: any[] = [];
@@ -76,15 +96,44 @@ export default function HomePage() {
     setReviewSuccess(null);
 
     try {
-      const docRef = await addDoc(collection(db, 'reviews'), {
-        name: reviewName.trim(),
-        rating: reviewRating,
-        message: reviewMessage.trim(),
-        timestamp: serverTimestamp()
-      });
+      let docId = 'rev_' + Date.now();
+
+      // 1. Save to Supabase (primary)
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .insert({
+            name: reviewName.trim(),
+            rating: reviewRating,
+            message: reviewMessage.trim(),
+            created_at: new Date().toISOString()
+          })
+          .select('id')
+          .single();
+
+        if (!error && data) {
+          docId = String(data.id);
+        } else if (error) {
+          console.warn('[Supabase Sync Warning] Failed to post review to Supabase:', error.message);
+        }
+      } catch (sbErr: any) {
+        console.warn('[Supabase Sync Error] Failed to post review to Supabase:', sbErr.message || sbErr);
+      }
+
+      // 2. Save to Firebase (coexistence)
+      try {
+        await addDoc(collection(db, 'reviews'), {
+          name: reviewName.trim(),
+          rating: reviewRating,
+          message: reviewMessage.trim(),
+          timestamp: serverTimestamp()
+        });
+      } catch (fbErr: any) {
+        console.warn('[Firestore Sync Warning] Failed to post review to Firestore:', fbErr.message);
+      }
 
       const newReview = {
-        id: docRef.id,
+        id: docId,
         name: reviewName.trim(),
         rating: reviewRating,
         message: reviewMessage.trim(),

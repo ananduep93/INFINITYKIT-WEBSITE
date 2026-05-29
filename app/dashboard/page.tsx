@@ -208,7 +208,7 @@ export default function DashboardPage() {
             Access Dashboard
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.96rem', marginBottom: '30px', lineHeight: 1.6, maxWidth: '480px', margin: '0 auto 30px' }}>
-            Sign in using Firebase secure gateways to sync your local bookmarks, medication planners, private dead drop notes, and budget schedules to high-reliability Firestore databases.
+            Sign in to sync your local bookmarks, medication planners, private dead drop notes, and budget schedules to high-reliability cloud databases.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '320px', margin: '0 auto' }}>
@@ -1008,7 +1008,7 @@ export default function DashboardPage() {
 
                     {updateSuccess && (
                       <div style={{ fontSize: '0.85rem', color: 'var(--success-color)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <CheckCircle size={14} /> Profile details synchronized to Firebase Auth!
+                        <CheckCircle size={14} /> Profile details synchronized successfully!
                       </div>
                     )}
 

@@ -157,7 +157,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
       default:
         return [
           "Bookmark this utility to access it instantly from your Homepage Dashboard.",
-          "Sync local settings and operations history to secure Firebase storage platforms."
+          "Sync local settings and operations history to secure cloud database platforms."
         ];
     }
   }, [tool.id]);
