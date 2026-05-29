@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project-id.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dskdwqkealdqtngusghm.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRza2R3cWtlYWxkcXRuZ3VzZ2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODQ5MDAsImV4cCI6MjA5NTM2MDkwMH0.uvQZEhDNuKz2k92d2066CTthWHZtc-ematwH344fJYg';
 
 // Standard public client-safe Supabase singleton client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
