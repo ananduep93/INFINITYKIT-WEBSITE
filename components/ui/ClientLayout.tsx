@@ -42,7 +42,8 @@ import {
   Shield,
   BarChart3,
   Calculator,
-  BookOpen
+  BookOpen,
+  CreditCard
 } from 'lucide-react';
 import { useTheme } from '../ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
@@ -76,7 +77,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     'student-tools': false,
     'seo-tools': false,
     'security-tools': false,
-    'business-tools': false,
+    'expense-tracker': false,
     'social-tools': false,
     'utility-tools': false,
     'calculator-tools': false,
@@ -305,15 +306,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "Key Strength Entropy", path: "/security-tools/passwordstrength" },
       { name: "Encrypted Password Keeper", path: "/security-tools/passwordsaver" }
     ]},
-    { id: 'business-tools', name: 'Business Tools', icon: <Briefcase size={16} />, folderKey: 'business-tools', children: [
-      { name: "Outflow Purchases Recorder", path: "/business-tools/expenseadd" },
-      { name: "View Expense Records", path: "/business-tools/expenselist" },
-      { name: "Savings Limits Planner", path: "/business-tools/budgettracker" },
-      { name: "Spending Visual Graphs", path: "/business-tools/expenseanalytics" },
-      { name: "Printable Balance Statements", path: "/business-tools/dailymonthlyreport" },
-      { name: "Search & Filter Expenses", path: "/business-tools/searchexpenses" },
-      { name: "Where Do I Spend Most?", path: "/business-tools/topspendinginsights" },
-      { name: "Erase Ledger History", path: "/business-tools/resetexpenses" }
+    { id: 'expense-tracker', name: 'Expense Tracker', icon: <CreditCard size={16} />, folderKey: 'expense-tracker', children: [
+      { name: "Outflow Purchases Recorder", path: "/expense-tracker/expenseadd" },
+      { name: "View Expense Records", path: "/expense-tracker/expenselist" },
+      { name: "Savings Limits Planner", path: "/expense-tracker/budgettracker" },
+      { name: "Spending Visual Graphs", path: "/expense-tracker/expenseanalytics" },
+      { name: "Printable Balance Statements", path: "/expense-tracker/dailymonthlyreport" },
+      { name: "Search & Filter Expenses", path: "/expense-tracker/searchexpenses" },
+      { name: "Where Do I Spend Most?", path: "/expense-tracker/topspendinginsights" },
+      { name: "Erase Ledger History", path: "/expense-tracker/resetexpenses" }
     ]},
     { id: 'social-tools', name: 'Social Tools', icon: <Share2 size={16} />, folderKey: 'social-tools', children: [
       { name: "Link-In-Bio Page Builder", path: "/social-tools/link-bio" }

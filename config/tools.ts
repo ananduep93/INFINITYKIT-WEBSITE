@@ -113,6 +113,13 @@ export const categories: CategoryDefinition[] = [
     "description": "E-signatures, expenses, and monthly budget trackers."
   },
   {
+    "id": "expense-tracker",
+    "name": "Expense Tracker",
+    "icon": "💳",
+    "emoji": "💳",
+    "description": "Log outflows, track limits, and budget your finances."
+  },
+  {
     "id": "social-tools",
     "name": "Social Tools",
     "icon": "📱",
@@ -369,7 +376,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenseadd',
     name: 'Record Daily Expense',
     description: 'Record new outflow transactions with direct cloud save.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '➕',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -378,7 +385,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenselist',
     name: 'View Expense Records History',
     description: 'Sort and filter historical purchases.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '📋',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -387,7 +394,7 @@ export const tools: ToolDefinition[] = [
     id: 'budgettracker',
     name: 'Savings & Monthly Budget Planner',
     description: 'Set spending limits by category and track progress bar indicators.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '🎯',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -396,7 +403,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenseanalytics',
     name: 'Spending Visual Graphs & Charts',
     description: 'Beautiful interactive spending distribution and trends.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '📈',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -405,7 +412,7 @@ export const tools: ToolDefinition[] = [
     id: 'dailymonthlyreport',
     name: 'Printable Expense & Income Statements Builder',
     description: 'Generate a unified report of yesterday, today, and current month outflows.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '📅',
     type: 'custom',
     componentName: 'DailyMonthlyReport'
@@ -414,7 +421,7 @@ export const tools: ToolDefinition[] = [
     id: 'searchexpenses',
     name: 'Search & Filter Expenses',
     description: 'Query transactions using custom key tags, dates, and amount thresholds.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '🔍',
     type: 'custom',
     componentName: 'SearchExpenses'
@@ -423,7 +430,7 @@ export const tools: ToolDefinition[] = [
     id: 'topspendinginsights',
     name: 'Where Do I Spend Most? (Spending Chart)',
     description: 'Identify high-volume expense categories and evaluate key budget drains.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '💡',
     type: 'custom',
     componentName: 'TopSpendingInsights'
@@ -432,7 +439,7 @@ export const tools: ToolDefinition[] = [
     id: 'resetexpenses',
     name: 'Reset & Delete Expense Records',
     description: 'Permanently erase all your logged transaction history and reset spending ledgers.',
-    category: 'business-tools',
+    category: 'expense-tracker',
     icon: '🗑️',
     type: 'custom',
     componentName: 'ResetExpenses'
