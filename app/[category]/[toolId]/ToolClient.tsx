@@ -170,7 +170,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
   }, [recentTools, tool.id]);
 
   return (
-    <div style={{ maxWidth: '1380px', margin: '0 auto', padding: '10px 0 60px' }}>
+    <div style={{ width: '100%', maxWidth: '1380px', margin: '0 auto', padding: '10px 12px 60px', boxSizing: 'border-box' }}>
       
       {/* Semantic Breadcrumbs navigation */}
       <nav 
@@ -191,16 +191,16 @@ export default function ToolClient({ toolId }: ToolClientProps) {
       </nav>
 
       {/* Dynamic Workspace Header Ribbon */}
-      <header className="glass-panel" style={{ margin: '0 0 30px 0', padding: '24px 30px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '15px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <span style={{ fontSize: '2.2rem', background: 'rgba(0,161,155,0.06)', width: '54px', height: '54px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <header className="glass-panel" style={{ margin: '0 0 30px 0', padding: '24px 20px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '15px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap', minWidth: 0, flex: 1 }}>
+          <span style={{ fontSize: '2.2rem', background: 'rgba(0,161,155,0.06)', width: '54px', height: '54px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {tool.icon}
           </span>
-          <div>
-            <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-color)', margin: 0 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-color)', margin: 0, wordBreak: 'break-word' }}>
               {tool.name}
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px', margin: '4px 0 0 0' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginTop: '4px', margin: '4px 0 0 0', wordBreak: 'break-word' }}>
               {tool.description}
             </p>
           </div>
@@ -308,7 +308,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
           </div>
         </div>
       ) : (
-        <div className="workspace-three-column-grid" style={{ display: 'grid', gap: '24px', alignItems: 'flex-start', gridTemplateColumns: '320px 1fr 300px' }}>
+        <div className="workspace-three-column-grid" style={{ display: 'grid', gap: '24px', alignItems: 'flex-start', gridTemplateColumns: '320px minmax(0, 1fr) 300px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
           {/* ==================== LEFT COLUMN: Parameters / Uploads ==================== */}
           <div className="workspace-column-left" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {tool.inputs && (
@@ -589,7 +589,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
       <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 1140px) {
           .workspace-three-column-grid {
-            grid-template-columns: 1fr 300px !important;
+            grid-template-columns: minmax(0, 1fr) 300px !important;
           }
           .workspace-column-left {
             grid-column: span 2;
@@ -598,11 +598,18 @@ export default function ToolClient({ toolId }: ToolClientProps) {
 
         @media (max-width: 768px) {
           .workspace-three-column-grid {
-            grid-template-columns: 1fr !important;
+            grid-template-columns: minmax(0, 1fr) !important;
           }
           .workspace-column-left,
+          .workspace-column-center,
           .workspace-column-right {
             grid-column: span 1 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+          }
+          .glass-panel {
+            padding: 20px !important;
           }
         }
 
