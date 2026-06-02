@@ -1573,6 +1573,222 @@ export const tools: ToolDefinition[] = [
     componentName: 'AIChatPDF'
   },
   {
+    id: 'rearrange-pdf',
+    name: 'Rearrange PDF Pages',
+    description: 'Reorder pages visually in any sequence of your PDF document in-browser.',
+    category: 'pdf-tools',
+    icon: '🔁',
+    type: 'custom',
+    componentName: 'RearrangePDF'
+  },
+  {
+    id: 'delete-pdf-pages',
+    name: 'Delete Pages from PDF',
+    description: 'Delete specific pages visually from your PDF document container locally.',
+    category: 'pdf-tools',
+    icon: '🗑️',
+    type: 'custom',
+    componentName: 'DeletePDFPages'
+  },
+  {
+    id: 'duplicate-pdf-pages',
+    name: 'Duplicate PDF Pages',
+    description: 'Clone and duplicate PDF page layouts visually client-side.',
+    category: 'pdf-tools',
+    icon: '👥',
+    type: 'custom',
+    componentName: 'DuplicatePDFPages'
+  },
+  {
+    id: 'crop-pdf',
+    name: 'Crop PDF Margins & Bounding Boxes',
+    description: 'Crop white margins or customize page boundaries visually in your PDF document.',
+    category: 'pdf-tools',
+    icon: '✂️',
+    type: 'custom',
+    componentName: 'CropPDFPages'
+  },
+  {
+    id: 'add-pdf-header-footer',
+    name: 'Add Custom PDF Headers & Footers',
+    description: 'Format page layouts with standard margin texts, titles, or dates.',
+    category: 'pdf-tools',
+    icon: '🏷️',
+    type: 'custom',
+    componentName: 'AddPDFHeaderFooter'
+  },
+  {
+    id: 'add-pdf-page-numbers',
+    name: 'Stamp Page Numbers on PDF',
+    description: 'Add dynamic pagination stamps (Page X of Y) visually to all document pages.',
+    category: 'pdf-tools',
+    icon: '#️⃣',
+    type: 'custom',
+    componentName: 'AddPDFPageNumbers'
+  },
+  {
+    id: 'add-pdf-text',
+    name: 'Add Custom Text to PDF',
+    description: 'Type and overlay custom text strings anywhere on PDF documents in-browser.',
+    category: 'pdf-tools',
+    icon: '✍️',
+    type: 'custom',
+    componentName: 'AddPDFText'
+  },
+  {
+    id: 'remove-pdf-restrictions',
+    name: 'Strip PDF Password & Owner Restrictions',
+    description: 'Remove copy, paste, modify, and printing restrictions from locked PDFs locally.',
+    category: 'pdf-tools',
+    icon: '🔓',
+    type: 'custom',
+    componentName: 'RemovePDFRestrictions'
+  },
+  {
+    id: 'ocr-pdf',
+    name: 'OCR Scanned PDF Text Scraper',
+    description: 'Scan and extract selectable, searchable text from image-only PDFs locally.',
+    category: 'pdf-tools',
+    icon: '🔍',
+    type: 'custom',
+    componentName: 'OCRPDF'
+  },
+  {
+    id: 'extract-pdf-text',
+    name: 'Extract Text Layers from PDF',
+    description: 'Extract raw text layouts page-by-page from clean PDFs instantly.',
+    category: 'pdf-tools',
+    icon: '📄',
+    type: 'custom',
+    componentName: 'ExtractPDFText'
+  },
+  {
+    id: 'extract-pdf-images',
+    name: 'Extract Raw Embedded Images from PDF',
+    description: 'Scan the operator stream and download all embedded raster image files in a zip.',
+    category: 'pdf-tools',
+    icon: '🖼️',
+    type: 'custom',
+    componentName: 'ExtractPDFImages'
+  },
+  {
+    id: 'translate-pdf',
+    name: 'Translate PDF Text Content',
+    description: 'Translate PDF text blocks page-by-page and recompile to translated PDF.',
+    category: 'pdf-tools',
+    icon: '🌐',
+    type: 'custom',
+    componentName: 'TranslatePDF'
+  },
+  {
+    id: 'pdf-to-word',
+    name: 'Convert PDF to Editable Word (.docx)',
+    description: 'Convert PDF files into fully editable Microsoft Word documents locally.',
+    category: 'pdf-tools',
+    icon: '📝',
+    type: 'custom',
+    componentName: 'PDFToWord'
+  },
+  {
+    id: 'word-to-pdf',
+    name: 'Convert Word to PDF (.docx)',
+    description: 'Convert Word .docx and .doc files to standard PDF documents client-side.',
+    category: 'pdf-tools',
+    icon: '📕',
+    type: 'custom',
+    componentName: 'WordToPDF'
+  },
+  {
+    id: 'pdf-to-jpg',
+    name: 'Convert PDF to JPEG Images Pack',
+    description: 'Extract and render PDF pages into JPEG format zip packs.',
+    category: 'pdf-tools',
+    icon: '🖼️',
+    type: 'custom',
+    componentName: 'PDFToJPG'
+  },
+  {
+    id: 'pdf-to-png',
+    name: 'Convert PDF to PNG Images Pack',
+    description: 'Extract and render PDF pages into transparent PNG format zip packs.',
+    category: 'pdf-tools',
+    icon: '🎨',
+    type: 'custom',
+    componentName: 'PDFToPNG'
+  },
+  {
+    id: 'pdf-to-excel',
+    name: 'Convert PDF to Excel Spreadsheet (.xls)',
+    description: 'Group text grid lines and export PDF tables into Excel sheets.',
+    category: 'pdf-tools',
+    icon: '📊',
+    type: 'custom',
+    componentName: 'PDFToExcel'
+  },
+  {
+    id: 'pdf-to-csv',
+    name: 'Convert PDF to Comma-Separated Values (.csv)',
+    description: 'Extract raw tables and download comma-delimited CSV text files.',
+    category: 'pdf-tools',
+    icon: '📊',
+    type: 'custom',
+    componentName: 'PDFToCSV'
+  },
+  {
+    id: 'pdf-to-html',
+    name: 'Convert PDF to Webpage HTML Index',
+    description: 'Convert PDF page paragraphs to structured, styled HTML templates.',
+    category: 'pdf-tools',
+    icon: '🌐',
+    type: 'custom',
+    componentName: 'PDFToHTML'
+  },
+  {
+    id: 'html-to-pdf',
+    name: 'Convert HTML Web Files to PDF',
+    description: 'Compile webpage files or html markup codes to paginated PDFs.',
+    category: 'pdf-tools',
+    icon: '📕',
+    type: 'custom',
+    componentName: 'HTMLToPDF'
+  },
+  {
+    id: 'pdf-to-txt',
+    name: 'Convert PDF to Plain Text (.txt)',
+    description: 'Extract raw character streams to plain text notepad files.',
+    category: 'pdf-tools',
+    icon: '📄',
+    type: 'custom',
+    componentName: 'PDFToTXT'
+  },
+  {
+    id: 'txt-to-pdf',
+    name: 'Convert Notepad Text to PDF',
+    description: 'Compile plain text documents into paginated, formatted PDFs.',
+    category: 'pdf-tools',
+    icon: '📕',
+    type: 'custom',
+    componentName: 'TXTToPDF'
+  },
+  {
+    id: 'pdf-to-epub',
+    name: 'Convert PDF to Reflowable EPUB Ebook',
+    description: 'Package PDF page layout text to standardized EPUB digital e-reader files.',
+    category: 'pdf-tools',
+    icon: '📚',
+    type: 'custom',
+    componentName: 'PDFToEPUB'
+  },
+  {
+    id: 'epub-to-pdf',
+    name: 'Convert EPUB Ebook to PDF Document',
+    description: 'Unzip EPUB ebook files and compile XHTML spine contents to PDF.',
+    category: 'pdf-tools',
+    icon: '📕',
+    type: 'custom',
+    componentName: 'EPUBToPDF'
+  },
+  {
     id: 'color-palette',
     name: 'Image Color Palette & Code Extractor',
     description: 'Extract the dominant harmonious color palettes and HEX codes from any uploaded photo.',

@@ -33,10 +33,84 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301); // 301 Permanent Redirect
   }
 
+  // 3. Redirect old /utility/[toolId] to proper standard category/tool path
+  if (pathname.startsWith('/utility/')) {
+    const toolId = pathname.substring(9);
+    const tool = tools.find(t => t.id.toLowerCase() === toolId.toLowerCase());
+    if (tool) {
+      const categoryPath = mapCategoryToPath(tool.category);
+      url.pathname = `/${categoryPath}/${tool.id}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
+  // 4. Redirect old /ai-writing/[toolId] or /ai-writing to canonical paths
+  if (pathname.startsWith('/ai-writing/')) {
+    const toolId = pathname.substring(12);
+    const tool = tools.find(t => t.id.toLowerCase() === toolId.toLowerCase());
+    if (tool) {
+      const categoryPath = mapCategoryToPath(tool.category);
+      url.pathname = `/${categoryPath}/${tool.id}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+  if (pathname === '/ai-writing') {
+    url.pathname = '/writing-tools';
+    return NextResponse.redirect(url, 301);
+  }
+
+  // 5. Redirect old /audio/[toolId] or /audio to standard audio paths
+  if (pathname.startsWith('/audio/')) {
+    const toolId = pathname.substring(7);
+    const tool = tools.find(t => t.id.toLowerCase() === toolId.toLowerCase());
+    if (tool) {
+      const categoryPath = mapCategoryToPath(tool.category);
+      url.pathname = `/${categoryPath}/${tool.id}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+  if (pathname === '/audio') {
+    url.pathname = '/audio-tools';
+    return NextResponse.redirect(url, 301);
+  }
+
+  // 6. Redirect old /image/[toolId] or /image to standard image paths
+  if (pathname.startsWith('/image/')) {
+    const toolId = pathname.substring(7);
+    const tool = tools.find(t => t.id.toLowerCase() === toolId.toLowerCase());
+    if (tool) {
+      const categoryPath = mapCategoryToPath(tool.category);
+      url.pathname = `/${categoryPath}/${tool.id}`;
+      return NextResponse.redirect(url, 301);
+    }
+  }
+  if (pathname === '/image') {
+    url.pathname = '/image-tools';
+    return NextResponse.redirect(url, 301);
+  }
+
+  // 7. Redirect signin to login
+  if (pathname === '/signin' || pathname === '/signin.html') {
+    url.pathname = '/login';
+    return NextResponse.redirect(url, 301);
+  }
+
   return NextResponse.next();
 }
 
-// Intercept only old tools and categories pathways to optimize runtime latency
 export const config = {
-  matcher: ['/tools/:path*', '/categories/:path*']
+  matcher: [
+    '/tools/:path*',
+    '/categories/:path*',
+    '/utility/:path*',
+    '/ai-writing/:path*',
+    '/ai-writing',
+    '/audio/:path*',
+    '/audio',
+    '/image/:path*',
+    '/image',
+    '/signin',
+    '/signin.html'
+  ]
 };
+

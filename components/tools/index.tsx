@@ -113,6 +113,31 @@ const PersonaPromptsMen    = dynamic(() => import('./PersonaPromptsMen'),   { ss
 const PersonaPromptsWomen  = dynamic(() => import('./PersonaPromptsWomen'), { ssr: false, loading: LoadingSkeleton });
 const SmartPromptEditor    = dynamic(() => import('./SmartPromptEditor'),   { ssr: false, loading: LoadingSkeleton });
 
+const RearrangePDF          = dynamic(() => import('./RearrangePDF'),          { ssr: false, loading: LoadingSkeleton });
+const DeletePDFPages        = dynamic(() => import('./DeletePDFPages'),        { ssr: false, loading: LoadingSkeleton });
+const DuplicatePDFPages     = dynamic(() => import('./DuplicatePDFPages'),     { ssr: false, loading: LoadingSkeleton });
+const CropPDFPages          = dynamic(() => import('./CropPDFPages'),          { ssr: false, loading: LoadingSkeleton });
+const AddPDFHeaderFooter    = dynamic(() => import('./AddPDFHeaderFooter'),    { ssr: false, loading: LoadingSkeleton });
+const AddPDFPageNumbers     = dynamic(() => import('./AddPDFPageNumbers'),     { ssr: false, loading: LoadingSkeleton });
+const AddPDFText            = dynamic(() => import('./AddPDFText'),            { ssr: false, loading: LoadingSkeleton });
+const RemovePDFRestrictions = dynamic(() => import('./RemovePDFRestrictions'), { ssr: false, loading: LoadingSkeleton });
+const OCRPDF                = dynamic(() => import('./OCRPDF'),                { ssr: false, loading: LoadingSkeleton });
+const ExtractPDFText        = dynamic(() => import('./ExtractPDFText'),        { ssr: false, loading: LoadingSkeleton });
+const ExtractPDFImages      = dynamic(() => import('./ExtractPDFImages'),      { ssr: false, loading: LoadingSkeleton });
+const TranslatePDF          = dynamic(() => import('./TranslatePDF'),          { ssr: false, loading: LoadingSkeleton });
+const PDFToWord             = dynamic(() => import('./PDFToWord'),             { ssr: false, loading: LoadingSkeleton });
+const WordToPDF             = dynamic(() => import('./WordToPDF'),             { ssr: false, loading: LoadingSkeleton });
+const PDFToJPG              = dynamic(() => import('./PDFToJPG'),              { ssr: false, loading: LoadingSkeleton });
+const PDFToPNG              = dynamic(() => import('./PDFToPNG'),              { ssr: false, loading: LoadingSkeleton });
+const PDFToExcel            = dynamic(() => import('./PDFToExcel'),            { ssr: false, loading: LoadingSkeleton });
+const PDFToCSV              = dynamic(() => import('./PDFToCSV'),              { ssr: false, loading: LoadingSkeleton });
+const PDFToHTML             = dynamic(() => import('./PDFToHTML'),             { ssr: false, loading: LoadingSkeleton });
+const HTMLToPDF             = dynamic(() => import('./HTMLToPDF'),             { ssr: false, loading: LoadingSkeleton });
+const PDFToTXT              = dynamic(() => import('./PDFToTXT'),              { ssr: false, loading: LoadingSkeleton });
+const TXTToPDF              = dynamic(() => import('./TXTToPDF'),              { ssr: false, loading: LoadingSkeleton });
+const PDFToEPUB             = dynamic(() => import('./PDFToEPUB'),             { ssr: false, loading: LoadingSkeleton });
+const EPUBToPDF             = dynamic(() => import('./EPUBToPDF'),             { ssr: false, loading: LoadingSkeleton });
+
 
 const TextToSpeech         = dynamic(() => import('./TextToSpeech'), { ssr: false, loading: LoadingSkeleton });
 
@@ -252,6 +277,30 @@ export {
   DailyPlanner,
   DailyMonthlyReport,
   CSVViewer,
+  RearrangePDF,
+  DeletePDFPages,
+  DuplicatePDFPages,
+  CropPDFPages,
+  AddPDFHeaderFooter,
+  AddPDFPageNumbers,
+  AddPDFText,
+  RemovePDFRestrictions,
+  OCRPDF,
+  ExtractPDFText,
+  ExtractPDFImages,
+  TranslatePDF,
+  PDFToWord,
+  WordToPDF,
+  PDFToJPG,
+  PDFToPNG,
+  PDFToExcel,
+  PDFToCSV,
+  PDFToHTML,
+  HTMLToPDF,
+  PDFToTXT,
+  TXTToPDF,
+  PDFToEPUB,
+  EPUBToPDF,
 };
 
 // ─── Registry map for dynamic ToolClient lookup ───────────────────────────────
@@ -341,6 +390,30 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   DailyPlanner,
   DailyMonthlyReport,
   CSVViewer,
+  RearrangePDF,
+  DeletePDFPages,
+  DuplicatePDFPages,
+  CropPDFPages,
+  AddPDFHeaderFooter,
+  AddPDFPageNumbers,
+  AddPDFText,
+  RemovePDFRestrictions,
+  OCRPDF,
+  ExtractPDFText,
+  ExtractPDFImages,
+  TranslatePDF,
+  PDFToWord,
+  WordToPDF,
+  PDFToJPG,
+  PDFToPNG,
+  PDFToExcel,
+  PDFToCSV,
+  PDFToHTML,
+  HTMLToPDF,
+  PDFToTXT,
+  TXTToPDF,
+  PDFToEPUB,
+  EPUBToPDF,
 
   // Lowercase ID mappings for dynamic lookup fallback (guarantees zero missing registry hits!)
   todolist: TodoList,
@@ -434,4 +507,28 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   categorysummary: CategorySummary,
   equationsolver: QuadraticSolver,
   passwordstrength: PasswordStrength,
+  'rearrange-pdf': RearrangePDF,
+  'delete-pdf-pages': DeletePDFPages,
+  'duplicate-pdf-pages': DuplicatePDFPages,
+  'crop-pdf': CropPDFPages,
+  'add-pdf-header-footer': AddPDFHeaderFooter,
+  'add-pdf-page-numbers': AddPDFPageNumbers,
+  'add-pdf-text': AddPDFText,
+  'remove-pdf-restrictions': RemovePDFRestrictions,
+  'ocr-pdf': OCRPDF,
+  'extract-pdf-text': ExtractPDFText,
+  'extract-pdf-images': ExtractPDFImages,
+  'translate-pdf': TranslatePDF,
+  'pdf-to-word': PDFToWord,
+  'word-to-pdf': WordToPDF,
+  'pdf-to-jpg': PDFToJPG,
+  'pdf-to-png': PDFToPNG,
+  'pdf-to-excel': PDFToExcel,
+  'pdf-to-csv': PDFToCSV,
+  'pdf-to-html': PDFToHTML,
+  'html-to-pdf': HTMLToPDF,
+  'pdf-to-txt': PDFToTXT,
+  'txt-to-pdf': TXTToPDF,
+  'pdf-to-epub': PDFToEPUB,
+  'epub-to-pdf': EPUBToPDF,
 };
