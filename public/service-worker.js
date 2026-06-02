@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinitykit-v4';
+const CACHE_NAME = 'infinitykit-v5';
 const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/icon-192.png',
@@ -40,6 +40,8 @@ self.addEventListener('fetch', (e) => {
     e.request.url.includes('pollinations.ai') || 
     e.request.url.includes('openrouter.ai') || 
     e.request.url.includes('imgbb.com') || 
+    e.request.url.includes('cdnjs.cloudflare.com') ||
+    e.request.url.includes('cdn.jsdelivr.net') ||
     e.request.url.includes('chrome-extension') ||
     e.request.method !== 'GET'
   ) {
