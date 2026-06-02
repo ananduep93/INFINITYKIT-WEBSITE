@@ -138,6 +138,40 @@ const TXTToPDF              = dynamic(() => import('./TXTToPDF'),              {
 const PDFToEPUB             = dynamic(() => import('./PDFToEPUB'),             { ssr: false, loading: LoadingSkeleton });
 const EPUBToPDF             = dynamic(() => import('./EPUBToPDF'),             { ssr: false, loading: LoadingSkeleton });
 
+// Image Editing Wrappers
+const ResizeImage           = dynamic(() => import('./ResizeImage'),           { ssr: false, loading: LoadingSkeleton });
+const CompressImage         = dynamic(() => import('./CompressImage'),         { ssr: false, loading: LoadingSkeleton });
+const CropImage             = dynamic(() => import('./CropImage'),             { ssr: false, loading: LoadingSkeleton });
+const RotateImage           = dynamic(() => import('./RotateImage'),           { ssr: false, loading: LoadingSkeleton });
+const FlipImage             = dynamic(() => import('./FlipImage'),             { ssr: false, loading: LoadingSkeleton });
+const BlurImage             = dynamic(() => import('./BlurImage'),             { ssr: false, loading: LoadingSkeleton });
+const SharpenImage          = dynamic(() => import('./SharpenImage'),          { ssr: false, loading: LoadingSkeleton });
+const PixelateImage         = dynamic(() => import('./PixelateImage'),         { ssr: false, loading: LoadingSkeleton });
+
+// AI Image Wrappers
+const AIArtGenerator        = dynamic(() => import('./AIArtGenerator'),        { ssr: false, loading: LoadingSkeleton });
+const AIAvatarGenerator     = dynamic(() => import('./AIAvatarGenerator'),     { ssr: false, loading: LoadingSkeleton });
+const AIHeadshotGenerator   = dynamic(() => import('./AIHeadshotGenerator'),   { ssr: false, loading: LoadingSkeleton });
+const AILogoGenerator       = dynamic(() => import('./AILogoGenerator'),       { ssr: false, loading: LoadingSkeleton });
+const AIWallpaperGenerator   = dynamic(() => import('./AIWallpaperGenerator'), { ssr: false, loading: LoadingSkeleton });
+const AIPosterGenerator      = dynamic(() => import('./AIPosterGenerator'),      { ssr: false, loading: LoadingSkeleton });
+
+// Image AI Editing Wrappers
+const RemoveBackground      = dynamic(() => import('./RemoveBackground'),      { ssr: false, loading: LoadingSkeleton });
+const RemoveObjects         = dynamic(() => import('./RemoveObjects'),         { ssr: false, loading: LoadingSkeleton });
+const RemoveWatermark       = dynamic(() => import('./RemoveWatermark'),       { ssr: false, loading: LoadingSkeleton });
+const RemoveText            = dynamic(() => import('./RemoveText'),            { ssr: false, loading: LoadingSkeleton });
+const ColorizeImage         = dynamic(() => import('./ColorizeImage'),         { ssr: false, loading: LoadingSkeleton });
+const RestorePhotos         = dynamic(() => import('./RestorePhotos'),         { ssr: false, loading: LoadingSkeleton });
+
+// Converter Wrappers
+const PNGToJPG              = dynamic(() => import('./PNGToJPG'),              { ssr: false, loading: LoadingSkeleton });
+const PNGToWEBP             = dynamic(() => import('./PNGToWEBP'),             { ssr: false, loading: LoadingSkeleton });
+const SVGToPNG              = dynamic(() => import('./SVGToPNG'),              { ssr: false, loading: LoadingSkeleton });
+const HEICToJPG             = dynamic(() => import('./HEICToJPG'),             { ssr: false, loading: LoadingSkeleton });
+const AVIFToPNG             = dynamic(() => import('./AVIFToPNG'),             { ssr: false, loading: LoadingSkeleton });
+
+
 
 const TextToSpeech         = dynamic(() => import('./TextToSpeech'), { ssr: false, loading: LoadingSkeleton });
 
@@ -301,6 +335,33 @@ export {
   TXTToPDF,
   PDFToEPUB,
   EPUBToPDF,
+
+  // Image Ecosystem
+  ResizeImage,
+  CompressImage,
+  CropImage,
+  RotateImage,
+  FlipImage,
+  BlurImage,
+  SharpenImage,
+  PixelateImage,
+  AIArtGenerator,
+  AIAvatarGenerator,
+  AIHeadshotGenerator,
+  AILogoGenerator,
+  AIWallpaperGenerator,
+  AIPosterGenerator,
+  RemoveBackground,
+  RemoveObjects,
+  RemoveWatermark,
+  RemoveText,
+  ColorizeImage,
+  RestorePhotos,
+  PNGToJPG,
+  PNGToWEBP,
+  SVGToPNG,
+  HEICToJPG,
+  AVIFToPNG,
 };
 
 // ─── Registry map for dynamic ToolClient lookup ───────────────────────────────
@@ -531,4 +592,31 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'txt-to-pdf': TXTToPDF,
   'pdf-to-epub': PDFToEPUB,
   'epub-to-pdf': EPUBToPDF,
+
+  // Image Ecosystem Lowercase Mappings
+  'resize-image': ResizeImage,
+  'compress-image': CompressImage,
+  'crop-image': CropImage,
+  'rotate-image': RotateImage,
+  'flip-image': FlipImage,
+  'blur-image': BlurImage,
+  'sharpen-image': SharpenImage,
+  'pixelate-image': PixelateImage,
+  'ai-art-generator': AIArtGenerator,
+  'ai-avatar-generator': AIAvatarGenerator,
+  'ai-headshot-generator': AIHeadshotGenerator,
+  'ai-logo-generator': AILogoGenerator,
+  'ai-wallpaper-generator': AIWallpaperGenerator,
+  'ai-poster-generator': AIPosterGenerator,
+  'remove-background': RemoveBackground,
+  'remove-objects': RemoveObjects,
+  'remove-watermark': RemoveWatermark,
+  'remove-text': RemoveText,
+  'colorize-image': ColorizeImage,
+  'restore-photos': RestorePhotos,
+  'png-to-jpg': PNGToJPG,
+  'png-to-webp': PNGToWEBP,
+  'svg-to-png': SVGToPNG,
+  'heic-to-jpg': HEICToJPG,
+  'avif-to-png': AVIFToPNG,
 };

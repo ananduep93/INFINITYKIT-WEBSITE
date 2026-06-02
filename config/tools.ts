@@ -1968,6 +1968,248 @@ export const tools: ToolDefinition[] = [
     icon: '🎧',
     type: 'custom',
     componentName: 'AmbientNoisePlayer'
+  },
+  
+  // Image Editing
+  {
+    id: 'resize-image',
+    name: 'Resize Image Pixels',
+    description: 'Adjust image width and height coordinates client-side with aspect ratio locking.',
+    category: 'image-tools',
+    icon: '🖼️',
+    type: 'custom',
+    componentName: 'ResizeImage'
+  },
+  {
+    id: 'compress-image',
+    name: 'Compress Image File Size',
+    description: 'Compress and optimize JPEG/PNG image sizes local-first without loss of quality.',
+    category: 'image-tools',
+    icon: '📉',
+    type: 'custom',
+    componentName: 'CompressImage'
+  },
+  {
+    id: 'crop-image',
+    name: 'Crop Image Layout',
+    description: 'Crop images using customizable aspect ratio presets and draggable selector grids.',
+    category: 'image-tools',
+    icon: '✂️',
+    type: 'custom',
+    componentName: 'CropImage'
+  },
+  {
+    id: 'rotate-image',
+    name: 'Rotate Image Angle',
+    description: 'Rotate images by 90-degree steps or fine-tune with precision angle sliders.',
+    category: 'image-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'RotateImage'
+  },
+  {
+    id: 'flip-image',
+    name: 'Flip Image Axis',
+    description: 'Flip images horizontally or vertically in real-time client-side.',
+    category: 'image-tools',
+    icon: '↔️',
+    type: 'custom',
+    componentName: 'FlipImage'
+  },
+  {
+    id: 'blur-image',
+    name: 'Gaussian Image Blur',
+    description: 'Apply adjustable Gaussian blur filters to soften details or create background effects.',
+    category: 'image-tools',
+    icon: '📸',
+    type: 'custom',
+    componentName: 'BlurImage'
+  },
+  {
+    id: 'sharpen-image',
+    name: 'Sharpen Image Details',
+    description: 'Enhance image boundaries and clarify fine details using edge convolution kernels.',
+    category: 'image-tools',
+    icon: '✨',
+    type: 'custom',
+    componentName: 'SharpenImage'
+  },
+  {
+    id: 'pixelate-image',
+    name: 'Retro Pixelate Image',
+    description: 'Convert images to retro pixel-art style by adjusting block pixel dimensions.',
+    category: 'image-tools',
+    icon: '👾',
+    type: 'custom',
+    componentName: 'PixelateImage'
+  },
+
+  // AI Image
+  {
+    id: 'ai-image-generator',
+    name: 'AI Image Generator',
+    description: 'Generate stunning graphic assets using advanced prompt synthesis.',
+    category: 'ai-tools',
+    icon: '🎨',
+    type: 'custom',
+    componentName: 'AIImageGenerator'
+  },
+  {
+    id: 'ai-art-generator',
+    name: 'AI Art Generator',
+    description: 'Convert plain text inputs into beautiful art styles like Cyberpunk or Watercolor.',
+    category: 'ai-tools',
+    icon: '🎭',
+    type: 'custom',
+    componentName: 'AIArtGenerator'
+  },
+  {
+    id: 'ai-avatar-generator',
+    name: 'AI Avatar Generator',
+    description: 'Create customized 3D cartoon or digital avatars for profiles.',
+    category: 'ai-tools',
+    icon: '👤',
+    type: 'custom',
+    componentName: 'AIAvatarGenerator'
+  },
+  {
+    id: 'ai-headshot-generator',
+    name: 'AI Headshot Generator',
+    description: 'Synthesize LinkedIn or studio-grade professional profile pictures.',
+    category: 'ai-tools',
+    icon: '👔',
+    type: 'custom',
+    componentName: 'AIHeadshotGenerator'
+  },
+  {
+    id: 'ai-logo-generator',
+    name: 'AI Logo Generator',
+    description: 'Design minimalist flat vector badges and branding icons.',
+    category: 'ai-tools',
+    icon: '🏷️',
+    type: 'custom',
+    componentName: 'AILogoGenerator'
+  },
+  {
+    id: 'ai-wallpaper-generator',
+    name: 'AI Wallpaper Generator',
+    description: 'Generate wide high-resolution desktop or landscape backgrounds.',
+    category: 'ai-tools',
+    icon: '🖥️',
+    type: 'custom',
+    componentName: 'AIWallpaperGenerator'
+  },
+  {
+    id: 'ai-poster-generator',
+    name: 'AI Poster Generator',
+    description: 'Design beautiful, vertical poster layout prints using text prompts.',
+    category: 'ai-tools',
+    icon: '📜',
+    type: 'custom',
+    componentName: 'AIPosterGenerator'
+  },
+
+  // Image AI Editing
+  {
+    id: 'remove-background',
+    name: 'AI Remove Background',
+    description: 'Strip background layers from images automatically using local chroma-keys or APIs.',
+    category: 'image-tools',
+    icon: '✂️',
+    type: 'custom',
+    componentName: 'RemoveBackground'
+  },
+  {
+    id: 'remove-objects',
+    name: 'AI Remove Objects',
+    description: 'Brush and erase unwanted objects from images with client-side texture matching.',
+    category: 'image-tools',
+    icon: '🧼',
+    type: 'custom',
+    componentName: 'RemoveObjects'
+  },
+  {
+    id: 'remove-watermark',
+    name: 'AI Remove Watermark',
+    description: 'Highlight and erase visual watermark overlays from photos instantly.',
+    category: 'image-tools',
+    icon: '💧',
+    type: 'custom',
+    componentName: 'RemoveWatermark'
+  },
+  {
+    id: 'remove-text',
+    name: 'AI Remove Text',
+    description: 'Scrub typed captions or labels from graphics using inpainting diffusions.',
+    category: 'image-tools',
+    icon: '📝',
+    type: 'custom',
+    componentName: 'RemoveText'
+  },
+  {
+    id: 'colorize-image',
+    name: 'AI Colorize Image',
+    description: 'Apply duotone color schemes and warm/cool gradient maps to graphics.',
+    category: 'image-tools',
+    icon: '🌈',
+    type: 'custom',
+    componentName: 'ColorizeImage'
+  },
+  {
+    id: 'restore-photos',
+    name: 'AI Restore Photos',
+    description: 'Restore faded retro photos using contrast-stretching auto-levels and sharpen filters.',
+    category: 'image-tools',
+    icon: '🎞️',
+    type: 'custom',
+    componentName: 'RestorePhotos'
+  },
+
+  // Converters
+  {
+    id: 'png-to-jpg',
+    name: 'PNG to JPG Converter',
+    description: 'Batch convert PNG images to universal JPG format with quality sliders.',
+    category: 'image-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'PNGToJPG'
+  },
+  {
+    id: 'png-to-webp',
+    name: 'PNG to WEBP Converter',
+    description: 'Batch convert PNG graphics into modern high-efficiency WEBP formats.',
+    category: 'image-tools',
+    icon: '⚡',
+    type: 'custom',
+    componentName: 'PNGToWEBP'
+  },
+  {
+    id: 'svg-to-png',
+    name: 'SVG to PNG Converter',
+    description: 'Render vector SVGs to high-resolution downloadable PNG graphics.',
+    category: 'image-tools',
+    icon: '🖼️',
+    type: 'custom',
+    componentName: 'SVGToPNG'
+  },
+  {
+    id: 'heic-to-jpg',
+    name: 'HEIC to JPG Converter',
+    description: 'Decode Apple proprietary HEIC photos to standard JPEG formats client-side.',
+    category: 'image-tools',
+    icon: '🍏',
+    type: 'custom',
+    componentName: 'HEICToJPG'
+  },
+  {
+    id: 'avif-to-png',
+    name: 'AVIF to PNG Converter',
+    description: 'Convert AVIF images into standard PNG files completely locally.',
+    category: 'image-tools',
+    icon: '📁',
+    type: 'custom',
+    componentName: 'AVIFToPNG'
   }
 ];
 
