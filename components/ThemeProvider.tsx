@@ -17,23 +17,33 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      try {
-        const savedSettings = localStorage.getItem('infinityKitSettings');
-        if (savedSettings) {
-          const settings = JSON.parse(savedSettings);
-          if (settings.theme === 'dark' || settings.theme === 'light') {
-            setTheme(settings.theme);
-            document.documentElement.setAttribute('data-theme', settings.theme);
+      const applySavedTheme = () => {
+        try {
+          const savedSettings = localStorage.getItem('infinityKitSettings');
+          if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            if (settings.theme === 'dark' || settings.theme === 'light') {
+              setTheme(settings.theme);
+              document.documentElement.setAttribute('data-theme', settings.theme);
+            }
+          } else {
+            // Default to light
+            setTheme('light');
+            document.documentElement.setAttribute('data-theme', 'light');
           }
-        } else {
-          // Force light (white) theme as default on first visit
-          setTheme('light');
-          document.documentElement.setAttribute('data-theme', 'light');
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
-      }
+      };
+
+      applySavedTheme();
       setMounted(true);
+
+      // Listen for background sync updates (e.g. from login / cloud sync)
+      window.addEventListener('infinityKitDataSynced', applySavedTheme);
+      return () => {
+        window.removeEventListener('infinityKitDataSynced', applySavedTheme);
+      };
     }
   }, []);
 
@@ -46,6 +56,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const savedSettings = JSON.parse(localStorage.getItem('infinityKitSettings') || '{}');
       savedSettings.theme = nextTheme;
       localStorage.setItem('infinityKitSettings', JSON.stringify(savedSettings));
+
+      // Asynchronously sync theme settings to Supabase / Firebase
+      import('../lib/sync').then(({ default: syncService }) => {
+        syncService.saveData('infinityKitSettings', savedSettings);
+      }).catch(err => console.error('[Theme Sync Warning]', err));
     } catch (e) {
       console.error(e);
     }

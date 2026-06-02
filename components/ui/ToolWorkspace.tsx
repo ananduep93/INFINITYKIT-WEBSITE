@@ -139,6 +139,22 @@ export default function ToolWorkspace({
       setStatusText('Complete!');
       setResult(res);
       setTimeout(() => setPhase('success'), 300);
+
+      // Log operation activity in history
+      try {
+        const { tools: toolsList } = await import('../../config/tools');
+        const { default: syncService } = await import('../../lib/sync');
+        const toolDef = toolsList.find(t => t.id === toolId);
+        const toolName = toolDef ? toolDef.name : toolId;
+        const fileNames = files.map(f => f.name).join(', ');
+        const desc = fileNames 
+          ? `Processed file: ${fileNames}`
+          : (textInput ? `Processed text input: ${textInput.slice(0, 30)}...` : 'Processed action');
+        
+        syncService.logActivity(toolName, desc);
+      } catch (err) {
+        console.error('Failed to log workspace activity:', err);
+      }
     } catch (err: any) {
       clearInterval(progressTimer);
       setErrorMsg(err.message || 'An unexpected computational failure occurred in the browser workspace.');

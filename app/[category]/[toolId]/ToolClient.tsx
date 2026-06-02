@@ -93,7 +93,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
       setIsCalculating(true);
       setCalculationResult(null);
       
-      setTimeout(() => {
+      setTimeout(async () => {
         const res = tool.calculate!(formValues);
         setCalculationResult(res);
         setIsCalculating(false);
@@ -102,6 +102,25 @@ export default function ToolClient({ toolId }: ToolClientProps) {
         if (typeof window !== 'undefined') {
           const current = Number(localStorage.getItem('totalConversions') || '1284');
           localStorage.setItem('totalConversions', String(current + 1));
+        }
+
+        // Dynamically log calculation activity in history
+        try {
+          const { default: syncService } = await import('../../../lib/sync');
+          let desc = 'Ran calculation';
+          if (tool.id === 'bmicalculator' && res) {
+            desc = `Calculated BMI: ${res.bmi} (${res.category})`;
+          } else if (tool.id === 'equationsolver' && res) {
+            desc = `Solved Quadratic Equation: roots = ${res.root1}, ${res.root2}`;
+          } else if (tool.id === 'passwordstrength' && res) {
+            desc = `Evaluated password: ${res.label} (${res.entropyBits} bits of entropy)`;
+          } else {
+            const values = Object.values(formValues).filter(Boolean);
+            desc = values.length > 0 ? `Calculated with inputs: ${values.join(', ')}` : 'Ran calculation';
+          }
+          syncService.logActivity(tool.name, desc);
+        } catch (err) {
+          console.error('Failed to log calculation activity:', err);
         }
       }, 500);
     }

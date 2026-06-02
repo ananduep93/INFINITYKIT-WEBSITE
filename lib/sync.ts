@@ -52,7 +52,10 @@ export const PATH_MAP: Record<string, string> = {
 
   // Surveys
   infinitykit_surveys: 'surveys',
-  surveys: 'surveys'
+  surveys: 'surveys',
+
+  // Activity history log
+  infinitykit_activity_history: 'activity_history'
 };
 
 // Dynamic Auto-Migration & Firestore Reference Resolver
@@ -349,7 +352,7 @@ export const syncService = {
       'infinitykit_daily_planner', 'infinitykit_calendar_events',
       'infinitykit_notifications', 'ik_vault_v1', 'ik_vault_pin_hash',
       'infinitykit_custom_prompts_men', 'infinitykit_custom_prompts_women',
-      'infinitykit_surveys'
+      'infinitykit_surveys', 'infinitykit_activity_history'
     ];
 
     for (const key of toolKeys) {
@@ -408,7 +411,7 @@ export const syncService = {
       'infinitykit_daily_planner', 'infinitykit_calendar_events',
       'infinitykit_notifications', 'ik_vault_v1', 'ik_vault_pin_hash',
       'infinitykit_custom_prompts_men', 'infinitykit_custom_prompts_women',
-      'infinitykit_surveys'
+      'infinitykit_surveys', 'infinitykit_activity_history'
     ];
 
     for (const key of toolKeys) {
@@ -458,6 +461,31 @@ export const syncService = {
 
     console.log('Background sync complete.');
     window.dispatchEvent(new CustomEvent('infinityKitDataSynced'));
+  },
+
+  async logActivity(toolName: string, actionDescription: string): Promise<void> {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = localStorage.getItem('infinitykit_activity_history');
+      let history = stored ? JSON.parse(stored) : [];
+      if (!Array.isArray(history)) history = [];
+
+      const newActivity = {
+        id: `act-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: toolName,
+        time: 'Just now', // Standard fallback
+        timestamp: new Date().toISOString(),
+        action: actionDescription
+      };
+
+      // Keep only last 50 activities
+      history = [newActivity, ...history].slice(0, 50);
+
+      // Save using syncService.saveData to write to localStorage and Supabase!
+      await this.saveData('infinitykit_activity_history', history);
+    } catch (e) {
+      console.error('Failed to log activity:', e);
+    }
   }
 };
 

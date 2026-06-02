@@ -117,12 +117,24 @@ export default function DashboardPage() {
     }
   ];
 
-  // Mock local action history
-  const [mockHistory, setMockHistory] = useState<Array<{ id: string, name: string, time: string, action: string }>>([
-    { id: 'hist-1', name: 'Medication Reminder Scheduler', time: '10 mins ago', action: 'Created daily reminders' },
-    { id: 'hist-2', name: 'Dead Drop Notes', time: '1 hour ago', action: 'Encrypted message chunk local-first' },
-    { id: 'hist-3', name: 'Browser Image Compressor', time: 'Yesterday', action: 'Reduced payload size by 62%' },
-  ]);
+  // Cloud Synced Activity History
+  const { data: activityHistory, saveData: saveActivityHistory } = useSync('infinitykit_activity_history');
+  const logs = useMemo(() => {
+    if (activityHistory && Array.isArray(activityHistory) && activityHistory.length > 0) {
+      return activityHistory;
+    }
+    return [
+      { id: 'hist-1', name: 'Medication Reminder Scheduler', time: '10 mins ago', action: 'Created daily reminders' },
+      { id: 'hist-2', name: 'Dead Drop Notes', time: '1 hour ago', action: 'Encrypted message chunk local-first' },
+      { id: 'hist-3', name: 'Browser Image Compressor', time: 'Yesterday', action: 'Reduced payload size by 62%' },
+    ];
+  }, [activityHistory]);
+
+  const deleteLogItem = async (id: string) => {
+    const listToFilter = activityHistory && Array.isArray(activityHistory) && activityHistory.length > 0 ? activityHistory : logs;
+    const nextHistory = listToFilter.filter(h => h.id !== id);
+    await saveActivityHistory(nextHistory);
+  };
 
   // Filter dynamic favorite tools
   const favoriteToolsList = useMemo(() => {
@@ -728,16 +740,18 @@ export default function DashboardPage() {
                   </h3>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {mockHistory.map((item) => (
+                    {logs.map((item) => (
                       <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', background: 'rgba(0,0,0,0.01)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}>
                         <div>
                           <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>{item.name}</div>
                           <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{item.action}</div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>{item.time}</span>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                            {item.timestamp ? new Date(item.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : item.time}
+                          </span>
                           <button 
-                            onClick={() => setMockHistory(prev => prev.filter(h => h.id !== item.id))}
+                            onClick={() => deleteLogItem(item.id)}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--error-color)', padding: '2px' }}
                           >
                             <Trash2 size={14} style={{ opacity: 0.5 }} />
