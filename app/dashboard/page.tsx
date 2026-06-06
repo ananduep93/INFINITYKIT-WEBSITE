@@ -33,6 +33,17 @@ export default function DashboardPage() {
   const [openaiKey, setOpenaiKey] = useState('');
   const [authSuccessToast, setAuthSuccessToast] = useState<string | null>(null);
 
+  // Sync URL query parameters with activeTab state
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab && tab !== activeTab && ['overview', 'bookmarks', 'premium', 'profile', 'notifications'].includes(tab)) {
+        setActiveTab(tab as any);
+      }
+    }
+  });
+
   // Load user API key from localStorage and check for auth redirects
   useEffect(() => {
     if (typeof window !== 'undefined') {

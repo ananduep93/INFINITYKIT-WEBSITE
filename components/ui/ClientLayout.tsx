@@ -778,6 +778,15 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
+              onClick={toggleTheme}
+              style={{
+                background: 'none', border: 'none', color: 'var(--text-color)', padding: '6px', cursor: 'pointer'
+              }}
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button
               onClick={() => setShowPalette(true)}
               style={{
                 background: 'none', border: 'none', color: 'var(--text-color)', padding: '6px'
@@ -914,17 +923,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
               {/* Mobile Drawer Footer */}
               <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <button
-                  onClick={() => {
-                    toggleTheme();
-                    setMobileMenuOpen(false);
-                  }}
-                  style={{ ...sidebarLinkStyle(false), background: 'none', border: 'none', width: '100%' }}
-                >
-                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                  <span>{theme === 'dark' ? 'Light Workspace' : 'Dark Workspace'}</span>
-                </button>
-
                 <Link 
                   href="/dashboard?tab=profile" 
                   style={sidebarLinkStyle(false)}
@@ -966,17 +964,13 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             <Home size={20} />
             <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Home</span>
           </Link>
-          <Link href="/dashboard" style={{ ...mobileBottomIconStyle(pathname.startsWith('/dashboard')), textDecoration: 'none' }}>
-            <LayoutDashboard size={20} />
-            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Workspace</span>
-          </Link>
-          <button onClick={() => setShowPalette(true)} style={mobileBottomIconStyle(showPalette)}>
-            <Search size={20} color="var(--primary-color)" />
-            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Search</span>
-          </button>
           <Link href="/tools" style={{ ...mobileBottomIconStyle(pathname === '/tools'), textDecoration: 'none' }}>
             <Activity size={20} />
             <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>All Tools</span>
+          </Link>
+          <Link href="/dashboard?tab=profile" style={{ ...mobileBottomIconStyle(pathname.startsWith('/dashboard')), textDecoration: 'none' }}>
+            <User size={20} />
+            <span style={{ fontSize: '0.62rem', fontWeight: 600, marginTop: '2px' }}>Profile</span>
           </Link>
         </nav>
 
