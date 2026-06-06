@@ -75,7 +75,7 @@ export default function PDFMarkupSuite({ initialTool = 'watermark' }: PDFMarkupS
   const generatePreview = async (bytes: Uint8Array) => {
     try {
       const pdfjs = await loadPdfJs();
-      const loadingTask = pdfjs.getDocument({ data: bytes });
+      const loadingTask = pdfjs.getDocument({ data: bytes.slice() });
       const pdfDoc = await loadingTask.promise;
       const page = await pdfDoc.getPage(1);
       
@@ -116,7 +116,7 @@ export default function PDFMarkupSuite({ initialTool = 'watermark' }: PDFMarkupS
       pdfBytesRef.current = bytes;
 
       const pdfjs = await loadPdfJs();
-      const pdfDoc = await pdfjs.getDocument({ data: bytes }).promise;
+      const pdfDoc = await pdfjs.getDocument({ data: bytes.slice() }).promise;
       setNumPages(pdfDoc.numPages);
 
       await generatePreview(bytes);
