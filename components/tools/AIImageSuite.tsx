@@ -45,6 +45,8 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
   const [history, setHistory] = useState<SavedGeneration[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  
+  // Mobile check removed - using CSS media queries
 
   // Sync settings and history from local storage
   useEffect(() => {
@@ -324,6 +326,34 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
 
   return (
     <div className="glass-panel" style={{ padding: '20px' }}>
+      <style>{`
+        .image-suite-grid-reverse {
+          display: grid;
+          grid-template-columns: 320px 1fr;
+          gap: 24px;
+          align-items: start;
+        }
+        .image-suite-preview-container-fixed {
+          background: #0a0a0c;
+          border: 1px solid var(--glass-border);
+          border-radius: 16px;
+          height: 420px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+        }
+        @media (max-width: 1024px) {
+          .image-suite-grid-reverse {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .image-suite-preview-container-fixed {
+            height: 320px !important;
+          }
+        }
+      `}</style>
       
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -354,7 +384,7 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
         {currentInfo.desc} Powered by Flux and OpenAI models.
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '24px', alignItems: 'start' }}>
+      <div className="image-suite-grid-reverse">
         
         {/* Left Side: Creation Settings Panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -533,19 +563,7 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Main Visual Display */}
-          <div
-            style={{
-              background: '#0a0a0c',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '16px',
-              height: '420px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
+          <div className="image-suite-preview-container-fixed">
             {isGenerating ? (
               <div style={{ textAlign: 'center' }}>
                 <div className="spinner" style={{ margin: '0 auto 12px' }} />

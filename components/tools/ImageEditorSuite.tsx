@@ -68,8 +68,20 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
   const [sharpenAmount, setSharpenAmount] = useState<number>(0); // 0 to 100
   const [pixelSize, setPixelSize] = useState<number>(1); // 1 (none) to 50 pixels
 
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+
+  // Handle mobile resize detection
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }
+  }, []);
 
   // Handle Initial Favorites Check & History additions
   useEffect(() => {
@@ -350,19 +362,41 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
     };
   };
 
+  const handleCropTouchStart = (e: React.TouchEvent, type: string) => {
+    setIsDraggingCrop(type);
+    const touch = e.touches[0];
+    dragStart.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      boxX: cropBox.x,
+      boxY: cropBox.y,
+      boxW: cropBox.w,
+      boxH: cropBox.h
+    };
+  };
+
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (!isDraggingCrop) return;
-      
       const dx = e.clientX - dragStart.current.x;
       const dy = e.clientY - dragStart.current.y;
-      
-      // Calculate container dimensions
+      updateCropBox(dx, dy);
+    };
+
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (!isDraggingCrop) return;
+      if (e.cancelable) e.preventDefault();
+      const touch = e.touches[0];
+      const dx = touch.clientX - dragStart.current.x;
+      const dy = touch.clientY - dragStart.current.y;
+      updateCropBox(dx, dy);
+    };
+
+    const updateCropBox = (dx: number, dy: number) => {
       const container = cropRef.current?.parentElement;
       if (!container) return;
       const cRect = container.getBoundingClientRect();
 
-      // Convert delta px to percentages
       const dxPct = (dx / cRect.width) * 100;
       const dyPct = (dy / cRect.height) * 100;
 
@@ -379,8 +413,7 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
         let nextH = Math.max(10, Math.min(100 - dragStart.current.boxY, dragStart.current.boxH + dyPct));
 
         if (cropRatio !== 'custom') {
-          const ratioNum = cropRatio === '1:1' ? 1 : cropRatio === '16:9' ? 16/9 : 4/3;
-          // Calculate height from width percentage, adjusted for image aspect ratio
+          const ratioNum = cropRatio === '1:1' ? 1 : cropRatio === '16:9' ? 16 / 9 : 4 / 3;
           nextH = (nextW * cRect.width) / ratioNum / cRect.height;
         }
 
@@ -398,14 +431,37 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
 
     if (isDraggingCrop) {
       window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
       window.addEventListener('mouseup', handleGlobalMouseUp);
+      window.addEventListener('touchend', handleGlobalMouseUp);
     }
 
     return () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('touchmove', handleGlobalTouchMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
+      window.removeEventListener('touchend', handleGlobalMouseUp);
     };
   }, [isDraggingCrop, cropBox, cropRatio]);
+
+  useEffect(() => {
+    const sliderContainer = sliderContainerRef.current;
+    if (!sliderContainer) return;
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+      const rect = sliderContainer.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+      setSliderPosition(pct);
+    };
+
+    sliderContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return () => {
+      sliderContainer.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [imageSrc]);
 
   // Adjust crop preset ratio
   const handleRatioSelect = (ratio: string) => {
@@ -462,6 +518,51 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
 
   return (
     <div className="glass-panel" style={{ padding: '20px', minHeight: '550px' }}>
+      <style>{`
+        .image-suite-grid {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 24px;
+          align-items: start;
+        }
+        .image-suite-sidebar {
+          background: var(--glass-bg);
+          border: 1px solid var(--glass-border);
+          border-radius: 16px;
+          padding: 16px;
+          height: 520px;
+          overflow-y: auto;
+        }
+        .image-suite-preview-container {
+          position: relative;
+          width: 100%;
+          height: 420px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .image-suite-crop-container {
+          position: relative;
+          width: 100%;
+          height: 420px;
+          padding: 10px;
+        }
+        @media (max-width: 1024px) {
+          .image-suite-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .image-suite-sidebar {
+            height: auto !important;
+          }
+          .image-suite-preview-container {
+            height: 320px !important;
+          }
+          .image-suite-crop-container {
+            height: 320px !important;
+          }
+        }
+      `}</style>
       
       {/* Top Suite Title and Favorite buttons */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -536,7 +637,7 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
           />
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+        <div className="image-suite-grid">
           
           {/* Left Area: Canvas Preview / Split Slider View */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -600,7 +701,6 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
             <div
               ref={sliderContainerRef}
               onMouseMove={handleSliderMouseMove}
-              onTouchMove={handleSliderTouchMove}
               style={{
                 position: 'relative',
                 width: '100%',
@@ -625,7 +725,7 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
               />
 
               {comparisonMode ? (
-                <div style={{ position: 'relative', width: '100%', height: '420px' }}>
+                <div className="image-suite-preview-container">
                   {/* Before state (Base layer) */}
                   <img
                     src={imageSrc}
@@ -638,29 +738,32 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
                     alt="Original"
                   />
                   {/* After state (Clipped top layer) */}
-                  <div
+                  <img
+                    src={modifiedSrc || imageSrc}
                     style={{
                       position: 'absolute',
                       top: 0,
                       left: 0,
+                      width: '100%',
                       height: '100%',
-                      width: `${sliderPosition}%`,
-                      overflow: 'hidden',
-                      borderRight: '2px solid var(--primary-color)'
+                      objectFit: 'contain',
+                      pointerEvents: 'none',
+                      clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`
                     }}
-                  >
-                    <img
-                      src={modifiedSrc || imageSrc}
-                      style={{
-                        width: sliderContainerRef.current?.getBoundingClientRect().width || '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        maxWidth: 'none',
-                        pointerEvents: 'none'
-                      }}
-                      alt="Modified"
-                    />
-                  </div>
+                    alt="Modified"
+                  />
+                  {/* Slider Divider Line */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      bottom: 0,
+                      left: `${sliderPosition}%`,
+                      width: '2px',
+                      background: 'var(--primary-color)',
+                      pointerEvents: 'none'
+                    }}
+                  />
                   {/* Handle indicator */}
                   <div
                     style={{
@@ -684,7 +787,7 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
                   </div>
                 </div>
               ) : (
-                <div style={{ position: 'relative', width: '100%', height: '420px', padding: '10px' }}>
+                <div className="image-suite-crop-container">
                   <img
                     src={modifiedSrc || imageSrc}
                     style={{
@@ -721,12 +824,17 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
                           cursor: 'grab'
                         }}
                         onMouseDown={(e) => handleCropMouseDown(e, 'move')}
+                        onTouchStart={(e) => handleCropTouchStart(e, 'move')}
                       >
                         {/* Crop handle corner */}
                         <div
                           onMouseDown={(e) => {
                             e.stopPropagation();
                             handleCropMouseDown(e, 'br');
+                          }}
+                          onTouchStart={(e) => {
+                            e.stopPropagation();
+                            handleCropTouchStart(e, 'br');
                           }}
                           style={{
                             position: 'absolute',
@@ -812,16 +920,7 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
           </div>
 
           {/* Right Area: Tool Edit Tab Controls */}
-          <div
-            style={{
-              background: 'var(--glass-bg)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '16px',
-              padding: '16px',
-              height: '520px',
-              overflowY: 'auto'
-            }}
-          >
+          <div className="image-suite-sidebar">
             <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Editing Modules
             </h3>

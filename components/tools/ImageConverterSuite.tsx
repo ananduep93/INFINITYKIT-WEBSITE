@@ -44,6 +44,8 @@ export default function ImageConverterSuite({ initialMode = 'png-jpg' }: ImageCo
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Mobile check removed - using CSS media queries
+
   // Load favorites & track history
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -338,6 +340,20 @@ export default function ImageConverterSuite({ initialMode = 'png-jpg' }: ImageCo
 
   return (
     <div className="glass-panel" style={{ padding: '20px' }}>
+      <style>{`
+        .image-suite-grid-reverse {
+          display: grid;
+          grid-template-columns: 320px 1fr;
+          gap: 24px;
+          align-items: start;
+        }
+        @media (max-width: 1024px) {
+          .image-suite-grid-reverse {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+        }
+      `}</style>
       
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -369,7 +385,7 @@ export default function ImageConverterSuite({ initialMode = 'png-jpg' }: ImageCo
       </p>
 
       {/* Main Container Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '24px', alignItems: 'start' }}>
+      <div className="image-suite-grid-reverse">
         
         {/* Left Tuning Settings */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

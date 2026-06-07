@@ -55,6 +55,8 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Mobile check removed - using CSS media queries
+
   // Sync favorites & history
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -166,6 +168,23 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
     }
   }, [threshold, pickedColor, useRemoveBgApi, imageSrc, activeTab]);
 
+  // Prevent default touch movement (scrolling) during active drawing on canvas
+  useEffect(() => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+
+    const preventScroll = (e: TouchEvent) => {
+      if (isDrawing && e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    canvas.addEventListener('touchmove', preventScroll, { passive: false });
+    return () => {
+      canvas.removeEventListener('touchmove', preventScroll);
+    };
+  }, [isDrawing]);
+
   // 1. Local Chroma Background Eraser
   const processLocalBgRemoval = () => {
     const img = sourceImageRef.current;
@@ -275,6 +294,93 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
 
   const handleBrushEnd = () => {
     setIsDrawing(false);
+  };
+
+  const getCanvasTouchPos = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0] || e.changedTouches[0];
+    return {
+      x: ((touch.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((touch.clientY - rect.top) / rect.height) * canvas.height
+    };
+  };
+
+  const handleBgColorPickTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas || !sourceImageRef.current) return;
+    const pos = getCanvasTouchPos(e);
+    const x = Math.floor(pos.x);
+    const y = Math.floor(pos.y);
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (tempCtx) {
+      tempCtx.drawImage(sourceImageRef.current, 0, 0);
+      const pixel = tempCtx.getImageData(x, y, 1, 1).data;
+      const rgb = { r: pixel[0], g: pixel[1], b: pixel[2] };
+      setPickedColor(rgb);
+    }
+  };
+
+  const handleBrushStartTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    setIsDrawing(true);
+    drawBrushStrokeTouch(e);
+  };
+
+  const handleBrushMoveTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    drawBrushStrokeTouch(e);
+  };
+
+  const handleBrushEndTouch = () => {
+    setIsDrawing(false);
+  };
+
+  const drawBrushStrokeTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const drawCanvas = drawCanvasRef.current;
+    const maskCanvas = maskCanvasRef.current;
+    if (!drawCanvas || !maskCanvas) return;
+
+    const dCtx = drawCanvas.getContext('2d');
+    const mCtx = maskCanvas.getContext('2d');
+    if (!dCtx || !mCtx) return;
+
+    const pos = getCanvasTouchPos(e);
+
+    dCtx.lineJoin = 'round';
+    dCtx.lineCap = 'round';
+    dCtx.lineWidth = brushSize;
+
+    if (brushMode === 'paint') {
+      dCtx.globalCompositeOperation = 'source-over';
+      dCtx.strokeStyle = 'rgba(255, 65, 54, 0.4)';
+      dCtx.beginPath();
+      dCtx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+      dCtx.fill();
+
+      mCtx.fillStyle = '#ffffff';
+      mCtx.beginPath();
+      mCtx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+      mCtx.fill();
+    } else {
+      dCtx.save();
+      dCtx.beginPath();
+      dCtx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+      dCtx.clip();
+      if (sourceImageRef.current) {
+        dCtx.drawImage(sourceImageRef.current, 0, 0);
+      }
+      dCtx.restore();
+
+      mCtx.fillStyle = '#000000';
+      mCtx.beginPath();
+      mCtx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+      mCtx.fill();
+    }
   };
 
   const drawBrushStroke = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -598,6 +704,47 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
 
   return (
     <div className="glass-panel" style={{ padding: '20px' }}>
+      <style>{`
+        .image-suite-grid {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 24px;
+          align-items: start;
+        }
+        .image-suite-sidebar {
+          background: var(--glass-bg);
+          border: 1px solid var(--glass-border);
+          border-radius: 16px;
+          padding: 16px;
+          height: 520px;
+          overflow-y: auto;
+        }
+        .image-suite-preview-canvas-container {
+          position: relative;
+          background: repeating-conic-gradient(#555 0% 25%, #333 0% 50%) 50% / 20px 20px;
+          border-radius: 16px;
+          min-height: 400px;
+          max-height: 520px;
+          overflow: auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid var(--glass-border);
+        }
+        @media (max-width: 1024px) {
+          .image-suite-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .image-suite-sidebar {
+            height: auto !important;
+          }
+          .image-suite-preview-canvas-container {
+            min-height: 300px !important;
+            max-height: 360px !important;
+          }
+        }
+      `}</style>
       
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -657,7 +804,7 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
           />
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+        <div className="image-suite-grid">
           
           {/* Preview Panel (Canvas-driven) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -687,20 +834,7 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
             </div>
 
             {/* Interactive Drawing Box */}
-            <div
-              style={{
-                position: 'relative',
-                background: 'repeating-conic-gradient(#555 0% 25%, #333 0% 50%) 50% / 20px 20px',
-                borderRadius: '16px',
-                minHeight: '400px',
-                maxHeight: '520px',
-                overflow: 'auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid var(--glass-border)'
-              }}
-            >
+            <div className="image-suite-preview-canvas-container">
               <canvas
                 ref={drawCanvasRef}
                 onMouseDown={
@@ -719,6 +853,21 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
                     : undefined
                 }
                 onMouseLeave={handleBrushEnd}
+                onTouchStart={
+                  (activeTab === 'remove-objects' || activeTab === 'remove-watermark' || activeTab === 'remove-text')
+                    ? handleBrushStartTouch
+                    : (activeTab === 'bg-remover' ? handleBgColorPickTouch : undefined)
+                }
+                onTouchMove={
+                  (activeTab === 'remove-objects' || activeTab === 'remove-watermark' || activeTab === 'remove-text')
+                    ? handleBrushMoveTouch
+                    : undefined
+                }
+                onTouchEnd={
+                  (activeTab === 'remove-objects' || activeTab === 'remove-watermark' || activeTab === 'remove-text')
+                    ? handleBrushEndTouch
+                    : undefined
+                }
                 style={{
                   maxWidth: '100%',
                   maxHeight: '480px',
@@ -759,16 +908,7 @@ export default function ImageAISuite({ initialTab = 'bg-remover' }: ImageAISuite
           </div>
 
           {/* Right Panel: Side Tuning settings */}
-          <div
-            style={{
-              background: 'var(--glass-bg)',
-              border: '1px solid var(--glass-border)',
-              borderRadius: '16px',
-              padding: '16px',
-              height: '520px',
-              overflowY: 'auto'
-            }}
-          >
+          <div className="image-suite-sidebar">
             <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI Editing Presets
             </h3>
