@@ -53,17 +53,22 @@ export default function AIChatbot() {
       });
 
       const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.error || 'Communication failure with AI servers.');
+      }
+
       const botMsg: Message = {
         sender: 'bot',
-        text: resData.text || 'Sorry, I encountered an error. Please try again.',
+        text: resData.text,
         timestamp: Date.now()
       };
 
       await saveData([...nextMessages, botMsg]);
-    } catch (err) {
+    } catch (err: any) {
       const errorMsg: Message = {
         sender: 'bot',
-        text: 'Failed to communicate with AI server. Check connection.',
+        text: err.message || 'Failed to communicate with AI server. Check connection.',
         timestamp: Date.now()
       };
       await saveData([...nextMessages, errorMsg]);

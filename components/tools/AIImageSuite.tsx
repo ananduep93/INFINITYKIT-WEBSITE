@@ -41,6 +41,16 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
   const [selectedStyle, setSelectedStyle] = useState<string>('none');
   const [openaiKey, setOpenaiKey] = useState<string>('');
   const [useOpenAI, setUseOpenAI] = useState<boolean>(false);
+
+  const saveOpenaiKey = (val: string) => {
+    setOpenaiKey(val);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('infinitykit_openai_key', val);
+      const savedSettings = JSON.parse(localStorage.getItem('infinityKitSettings') || '{}');
+      savedSettings.openaiKey = val;
+      localStorage.setItem('infinityKitSettings', JSON.stringify(savedSettings));
+    }
+  };
   
   const [history, setHistory] = useState<SavedGeneration[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -53,8 +63,9 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
     if (typeof window !== 'undefined') {
       // 1. Sync OpenAI Settings Key
       const savedSettings = JSON.parse(localStorage.getItem('infinityKitSettings') || '{}');
-      if (savedSettings.openaiKey) {
-        setOpenaiKey(savedSettings.openaiKey);
+      const globalOpenaiKey = localStorage.getItem('infinitykit_openai_key') || savedSettings.openaiKey || '';
+      if (globalOpenaiKey) {
+        setOpenaiKey(globalOpenaiKey);
         setUseOpenAI(true);
       }
 
@@ -520,7 +531,7 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
                 style={{ marginTop: '8px', fontSize: '0.8rem' }}
                 placeholder="Paste API Key (sk-...)"
                 value={openaiKey}
-                onChange={(e) => setOpenaiKey(e.target.value)}
+                onChange={(e) => saveOpenaiKey(e.target.value)}
               />
             )}
           </div>

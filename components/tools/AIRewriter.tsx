@@ -28,7 +28,8 @@ Maintain the original meaning, but completely update phrasing and structure for 
     });
 
     if (!response.ok) {
-      throw new Error('Communication failure with AI servers.');
+      const errData = await response.json();
+      throw new Error(errData.error || 'Communication failure with AI servers.');
     }
 
     const data = await response.json();

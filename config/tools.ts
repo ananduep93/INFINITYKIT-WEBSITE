@@ -1905,41 +1905,237 @@ export const tools: ToolDefinition[] = [
     type: 'custom',
     componentName: 'CategorySummary'
   },
+  // --- Video Editing Ecosystem ---
+  {
+    id: 'compress-video',
+    name: 'Compress Video File',
+    description: 'Reduce video file size by adjusting compression level and presets.',
+    category: 'video-tools',
+    icon: '🗜️',
+    type: 'custom',
+    componentName: 'CompressVideo'
+  },
+  {
+    id: 'trim-video',
+    name: 'Trim Video Clip',
+    description: 'Cut out segments from a video clip by specifying start and end times.',
+    category: 'video-tools',
+    icon: '✂️',
+    type: 'custom',
+    componentName: 'TrimVideo'
+  },
+  {
+    id: 'crop-video',
+    name: 'Crop Video Layout',
+    description: 'Crop video dimensions using standard ratios (1:1, 16:9, 9:16) or custom bounds.',
+    category: 'video-tools',
+    icon: '📐',
+    type: 'custom',
+    componentName: 'CropVideo'
+  },
+  {
+    id: 'resize-video',
+    name: 'Resize Video Pixels',
+    description: 'Scale video resolution width and height while maintaining aspect ratios.',
+    category: 'video-tools',
+    icon: '📐',
+    type: 'custom',
+    componentName: 'ResizeVideo'
+  },
+  {
+    id: 'rotate-video',
+    name: 'Rotate Video Orientation',
+    description: 'Rotate video files by 90, 180, or 270 degrees clockwise or counter-clockwise.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'RotateVideo'
+  },
+  {
+    id: 'reverse-video',
+    name: 'Reverse Video Playback',
+    description: 'Generate backward-playing video and audio tracks.',
+    category: 'video-tools',
+    icon: '⏪',
+    type: 'custom',
+    componentName: 'ReverseVideo'
+  },
+  {
+    id: 'merge-video',
+    name: 'Merge Multiple Videos',
+    description: 'Concatenate multiple video clips together sequentially.',
+    category: 'video-tools',
+    icon: '🎞️',
+    type: 'custom',
+    componentName: 'MergeVideo'
+  },
+  {
+    id: 'split-video',
+    name: 'Split Video Clip',
+    description: 'Cut a video into two separate sequential parts at a specific timestamp.',
+    category: 'video-tools',
+    icon: '🥞',
+    type: 'custom',
+    componentName: 'SplitVideo'
+  },
+
+  // --- Video Conversion Ecosystem ---
+  {
+    id: 'convert-mp4-mov',
+    name: 'MP4 to MOV Converter',
+    description: 'Convert MP4 video files into Apple QuickTime MOV format.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertMp4Mov'
+  },
+  {
+    id: 'convert-mov-mp4',
+    name: 'MOV to MP4 Converter',
+    description: 'Convert Apple QuickTime MOV videos into standard MP4 format.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertMovMp4'
+  },
+  {
+    id: 'convert-mp4-webm',
+    name: 'MP4 to WEBM Converter',
+    description: 'Convert MP4 videos into open WebM format optimized for web streaming.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertMp4Webm'
+  },
+  {
+    id: 'convert-webm-mp4',
+    name: 'WEBM to MP4 Converter',
+    description: 'Convert WebM videos into standard high-compatibility MP4 format.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertWebmMp4'
+  },
+  {
+    id: 'convert-mkv-mp4',
+    name: 'MKV to MP4 Converter',
+    description: 'Convert Matroska MKV files into standard H264 MP4 videos.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertMkvMp4'
+  },
+  {
+    id: 'convert-mp4-mkv',
+    name: 'MP4 to MKV Converter',
+    description: 'Convert MP4 videos into highly flexible Matroska MKV container format.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertMp4Mkv'
+  },
+  {
+    id: 'convert-avi-mp4',
+    name: 'AVI to MP4 Converter',
+    description: 'Convert Microsoft AVI legacy videos into modern high-efficiency MP4 format.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertAviMp4'
+  },
+  {
+    id: 'convert-mp4-avi',
+    name: 'MP4 to AVI Converter',
+    description: 'Convert MP4 videos into high-compatibility AVI container format.',
+    category: 'video-tools',
+    icon: '🔄',
+    type: 'custom',
+    componentName: 'ConvertMp4Avi'
+  },
+
+  // --- Video AI Ecosystem ---
+  {
+    id: 'ai-subtitle-gen',
+    name: 'AI Video Subtitle Generator',
+    description: 'Transcribe audio tracks using Google Gemini AI and export clean WebVTT subtitle files.',
+    category: 'ai-tools',
+    icon: '🤖',
+    type: 'custom',
+    componentName: 'AISubtitleGen'
+  },
+  {
+    id: 'ai-video-summary',
+    name: 'AI Video Content Summarizer',
+    description: 'Extract audio and generate structural markdown notes of key points and highlights.',
+    category: 'ai-tools',
+    icon: '🤖',
+    type: 'custom',
+    componentName: 'AIVideoSummary'
+  },
+  {
+    id: 'ai-transcript',
+    name: 'AI Video Audio Transcript',
+    description: 'Transcribe video speech to plain text using advanced neural speech recognition.',
+    category: 'ai-tools',
+    icon: '🤖',
+    type: 'custom',
+    componentName: 'AITranscript'
+  },
+  {
+    id: 'ai-shorts-gen',
+    name: 'AI Shorts Clip Generator',
+    description: 'Clip the most engaging 15-45s highlight and crop into vertical 9:16 aspect ratio.',
+    category: 'ai-tools',
+    icon: '🤖',
+    type: 'custom',
+    componentName: 'AIShortsGen'
+  },
+  {
+    id: 'ai-reels-gen',
+    name: 'AI Reels Clip Generator',
+    description: 'Extract high-engagement highlights from video files and crop into vertical 9:16 layout.',
+    category: 'ai-tools',
+    icon: '🤖',
+    type: 'custom',
+    componentName: 'AIReelsGen'
+  },
+
+  // --- Video Utilities Ecosystem ---
   {
     id: 'extract-audio',
-    name: 'Extract High-Quality Audio from Video',
-    description: 'Extract high-fidelity audio tracks from video files locally using high-performance browser decoding.',
-    category: 'media-tools',
+    name: 'Extract Audio Track',
+    description: 'Extract MP3 or WAV audio files directly from video containers.',
+    category: 'video-tools',
     icon: '🎵',
     type: 'custom',
     componentName: 'ExtractAudio'
   },
   {
+    id: 'mute-video',
+    name: 'Mute Video (Silent Track)',
+    description: 'Generate video files with all audio tracks completely stripped.',
+    category: 'video-tools',
+    icon: '🔇',
+    type: 'custom',
+    componentName: 'MuteVideo'
+  },
+  {
     id: 'video-to-gif',
-    name: 'Convert Video into Animated GIF',
-    description: 'Convert MP4/WebM videos into high-quality animated GIFs locally using parallel worker threads.',
-    category: 'media-tools',
-    icon: '🎥',
+    name: 'Convert Video to GIF',
+    description: 'Convert MP4/WebM videos into high-quality animated GIFs with custom sizes and framerates.',
+    category: 'video-tools',
+    icon: '🎬',
     type: 'custom',
     componentName: 'VideoToGIF'
   },
   {
-    id: 'subtitles-generator',
-    name: 'Generate & Sync Video Subtitles',
-    description: 'Generate, synchronize, and edit dynamic subtitle tracks. Export to SRT or VTT format.',
+    id: 'thumbnail-extractor',
+    name: 'Extract Video Thumbnail',
+    description: 'Seek to a custom timestamp and capture a high-res PNG frame screenshot.',
     category: 'video-tools',
-    icon: '📝',
+    icon: '📷',
     type: 'custom',
-    componentName: 'SubtitlesGenerator'
-  },
-  {
-    id: 'video-transcription',
-    name: 'Convert Video & Audio to Text Transcripts',
-    description: 'Convert video or audio voice tracks into high-fidelity transcripts locally in your browser.',
-    category: 'video-tools',
-    icon: '🗣️',
-    type: 'custom',
-    componentName: 'VideoTranscription'
+    componentName: 'ThumbnailExtractor'
   },
   {
     id: 'schema-generator',

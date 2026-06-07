@@ -26,7 +26,8 @@ Ensure the core style and voice are retained, but with perfect spelling and gram
     });
 
     if (!response.ok) {
-      throw new Error('Communication failure with AI servers.');
+      const errData = await response.json();
+      throw new Error(errData.error || 'Communication failure with AI servers.');
     }
 
     const data = await response.json();

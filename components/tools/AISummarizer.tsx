@@ -30,9 +30,12 @@ export default function AISummarizer() {
       });
 
       const resData = await response.json();
+      if (!response.ok) {
+        throw new Error(resData.error || 'Error generating summary.');
+      }
       setResult(resData.text || 'Error generating summary.');
-    } catch (e) {
-      setResult('Communication failure with AI servers.');
+    } catch (e: any) {
+      setResult(e.message || 'Communication failure with AI servers.');
     } finally {
       setLoading(false);
     }

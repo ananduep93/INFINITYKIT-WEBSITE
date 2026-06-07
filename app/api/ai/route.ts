@@ -223,9 +223,25 @@ export async function POST(request: Request) {
     const clientGeminiKey = request.headers.get('x-gemini-key') || '';
     const clientOpenrouterKey = request.headers.get('x-openrouter-key') || '';
 
-    const openaiKey = clientOpenaiKey || envOpenaiKey;
-    const geminiKey = clientGeminiKey || envGeminiKey;
+    let openaiKey = clientOpenaiKey || envOpenaiKey;
+    let geminiKey = clientGeminiKey || envGeminiKey;
     const openrouterKey = clientOpenrouterKey || envOpenrouterKey;
+
+    // Robust key validation and routing auto-correction
+    if (geminiKey && geminiKey.trim().startsWith('sk-')) {
+      if (!openaiKey) {
+        openaiKey = geminiKey;
+      }
+      geminiKey = '';
+      console.log('[AI API] Auto-routed OpenAI key passed as Gemini key.');
+    }
+    if (openaiKey && openaiKey.trim().startsWith('AIzaSy')) {
+      if (!geminiKey) {
+        geminiKey = openaiKey;
+      }
+      openaiKey = '';
+      console.log('[AI API] Auto-routed Gemini key passed as OpenAI key.');
+    }
 
     const systemInstruction = getSystemPrompt(taskType, context);
     let responseText = '';
@@ -237,7 +253,10 @@ export async function POST(request: Request) {
         usedTier = 'OpenAI';
         responseText = await queryOpenAI(openaiKey, systemInstruction, prompt);
       } catch (err: any) {
-        console.warn('OpenAI Tier failed, attempting fallback to Gemini...', err.message);
+        console.warn('OpenAI Tier failed, attempting fallback...', err.message);
+        if (clientOpenaiKey) {
+          return NextResponse.json({ error: `OpenAI API Error: ${err.message}` }, { status: 400 });
+        }
       }
     }
 
@@ -247,7 +266,10 @@ export async function POST(request: Request) {
         usedTier = 'Gemini';
         responseText = await queryGemini(geminiKey, systemInstruction, prompt);
       } catch (err: any) {
-        console.warn('Gemini Tier failed, attempting fallback to OpenRouter...', err.message);
+        console.warn('Gemini Tier failed, attempting fallback...', err.message);
+        if (clientGeminiKey) {
+          return NextResponse.json({ error: `Gemini API Error: ${err.message}` }, { status: 400 });
+        }
       }
     }
 
@@ -258,6 +280,9 @@ export async function POST(request: Request) {
         responseText = await queryOpenRouter(openrouterKey, systemInstruction, prompt);
       } catch (err: any) {
         console.warn('OpenRouter Tier failed...', err.message);
+        if (clientOpenrouterKey) {
+          return NextResponse.json({ error: `OpenRouter API Error: ${err.message}` }, { status: 400 });
+        }
       }
     }
 

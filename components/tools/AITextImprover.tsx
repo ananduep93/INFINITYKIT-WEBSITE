@@ -30,9 +30,12 @@ export default function AITextImprover() {
       });
 
       const resData = await response.json();
+      if (!response.ok) {
+        throw new Error(resData.error || 'Error polishing document.');
+      }
       setResult(resData.text || 'Error polishing document.');
-    } catch (e) {
-      setResult('Communication failure with AI servers.');
+    } catch (e: any) {
+      setResult(e.message || 'Communication failure with AI servers.');
     } finally {
       setLoading(false);
     }

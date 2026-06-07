@@ -26,7 +26,8 @@ Format style: ${format === 'schema' ? 'FAQPage JSON-LD Schema markup alongside c
     });
 
     if (!response.ok) {
-      throw new Error('Communication failure with AI servers.');
+      const errData = await response.json();
+      throw new Error(errData.error || 'Communication failure with AI servers.');
     }
 
     const data = await response.json();

@@ -147,7 +147,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       (window as any).__fetchIntercepted = true;
       const originalFetch = window.fetch;
       window.fetch = function (input, init) {
-        if (typeof input === 'string' && input.includes('/api/ai')) {
+        if (typeof input === 'string' && (input.includes('/api/ai') || input.includes('/api/video/ai'))) {
           const userKey = localStorage.getItem('infinitykit_gemini_key');
           const openaiKey = localStorage.getItem('infinitykit_openai_key');
           
@@ -257,7 +257,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "AI Poster Generator", path: "/ai-tools/ai-poster-generator" },
       { name: "AI Prompts for Men", path: "/ai-tools/men-prompts" },
       { name: "AI Prompts for Women", path: "/ai-tools/women-prompts" },
-      { name: "Refine Prompts Assistant", path: "/ai-tools/smartsuggestions" }
+      { name: "Refine Prompts Assistant", path: "/ai-tools/smartsuggestions" },
+      { name: "AI Video Subtitle Gen", path: "/ai-tools/ai-subtitle-gen" },
+      { name: "AI Video Summarizer", path: "/ai-tools/ai-video-summary" },
+      { name: "AI Video Transcript", path: "/ai-tools/ai-transcript" },
+      { name: "AI Video Shorts Gen", path: "/ai-tools/ai-shorts-gen" },
+      { name: "AI Video Reels Gen", path: "/ai-tools/ai-reels-gen" }
     ]},
     { id: 'image-tools', name: 'Image Tools', icon: <ImageIcon size={16} />, folderKey: 'image-tools', children: [
       { name: "Resize Image Pixels", path: "/image-tools/resize-image" },
@@ -321,8 +326,26 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "EPUB to PDF", path: "/pdf-tools/epub-to-pdf" }
     ]},
     { id: 'video-tools', name: 'Video Tools', icon: <Video size={16} />, folderKey: 'video-tools', children: [
-      { name: "Create Video Subtitles", path: "/video-tools/subtitles-generator" },
-      { name: "Audio Speech to Text", path: "/video-tools/video-transcription" }
+      { name: "Compress Video File", path: "/video-tools/compress-video" },
+      { name: "Trim Video Clip", path: "/video-tools/trim-video" },
+      { name: "Crop Video Layout", path: "/video-tools/crop-video" },
+      { name: "Resize Video Pixels", path: "/video-tools/resize-video" },
+      { name: "Rotate Video Orientation", path: "/video-tools/rotate-video" },
+      { name: "Reverse Video Playback", path: "/video-tools/reverse-video" },
+      { name: "Merge Multiple Videos", path: "/video-tools/merge-video" },
+      { name: "Split Video Clip", path: "/video-tools/split-video" },
+      { name: "MP4 to MOV Converter", path: "/video-tools/convert-mp4-mov" },
+      { name: "MOV to MP4 Converter", path: "/video-tools/convert-mov-mp4" },
+      { name: "MP4 to WEBM Converter", path: "/video-tools/convert-mp4-webm" },
+      { name: "WEBM to MP4 Converter", path: "/video-tools/convert-webm-mp4" },
+      { name: "MKV to MP4 Converter", path: "/video-tools/convert-mkv-mp4" },
+      { name: "MP4 to MKV Converter", path: "/video-tools/convert-mp4-mkv" },
+      { name: "AVI to MP4 Converter", path: "/video-tools/convert-avi-mp4" },
+      { name: "MP4 to AVI Converter", path: "/video-tools/convert-mp4-avi" },
+      { name: "Extract Audio Track", path: "/video-tools/extract-audio" },
+      { name: "Mute Video (Silent Track)", path: "/video-tools/mute-video" },
+      { name: "Convert Video to GIF", path: "/video-tools/video-to-gif" },
+      { name: "Extract Video Thumbnail", path: "/video-tools/thumbnail-extractor" }
     ]},
     { id: 'audio-tools', name: 'Audio Tools', icon: <Music size={16} />, folderKey: 'audio-tools', children: [
       { name: "Convert Text to Voice", path: "/audio-tools/texttospeech" },

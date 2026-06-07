@@ -5,8 +5,8 @@ const DEFAULT_PUBLIC_BUCKET = 'user-uploads';
 const DEFAULT_PRIVATE_BUCKET = 'private-documents';
 
 // Max file sizes (in bytes)
-const PUBLIC_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
-const PRIVATE_SIZE_LIMIT = 50 * 1024 * 1024; // 50MB
+const PUBLIC_SIZE_LIMIT = 100 * 1024 * 1024; // 100MB
+const PRIVATE_SIZE_LIMIT = 200 * 1024 * 1024; // 200MB
 
 // Approved mime-types matching database storage policy
 const ALLOWED_MIME_TYPES = [
@@ -19,7 +19,21 @@ const ALLOWED_MIME_TYPES = [
   'text/csv',
   'application/json',
   'text/plain',
-  'application/octet-stream'
+  'application/octet-stream',
+  // Video formats
+  'video/mp4',
+  'video/webm',
+  'video/ogg',
+  'video/quicktime', // .mov
+  'video/x-matroska', // .mkv
+  'video/x-msvideo', // .avi
+  // Audio formats
+  'audio/mpeg', // .mp3
+  'audio/wav',
+  'audio/ogg',
+  'audio/webm',
+  'audio/mp4',
+  'audio/x-m4a'
 ];
 
 export interface UploadResult {
