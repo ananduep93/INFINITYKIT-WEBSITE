@@ -13,12 +13,32 @@ let ffmpegPathsResolved = false;
 
 function resolveFfmpegPaths() {
   if (ffmpegPathsResolved) return;
+
+  const cachePath = path.join(os.tmpdir(), 'ik_ffmpeg_paths_cache.json');
+  if (fs.existsSync(cachePath)) {
+    try {
+      const cached = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+      if (cached.ffmpeg && cached.ffprobe && fs.existsSync(cached.ffmpeg) && fs.existsSync(cached.ffprobe)) {
+        console.log(`[Video AI API] Using cached FFmpeg: ${cached.ffmpeg}`);
+        ffmpeg.setFfmpegPath(cached.ffmpeg);
+        ffmpeg.setFfprobePath(cached.ffprobe);
+        ffmpegPathsResolved = true;
+        return;
+      }
+    } catch (e) {}
+  }
+
+  // 1. Check if ffmpeg is globally available in PATH
   try {
     execSync('ffmpeg -version', { stdio: 'ignore' });
+    console.log('[Video AI API] ffmpeg binary is globally accessible in PATH.');
     ffmpegPathsResolved = true;
     return;
-  } catch (e) {}
+  } catch (e) {
+    console.log('[Video AI API] ffmpeg not globally in PATH. Searching WinGet packages...');
+  }
 
+  // 2. Scan standard WinGet download location under user's profile and default Program Files
   const userHome = os.homedir();
   const searchDirs = [
     path.join(userHome, 'AppData', 'Local', 'Microsoft', 'WinGet', 'Packages'),
@@ -31,13 +51,23 @@ function resolveFfmpegPaths() {
       const match = findFileRecursive(dir, 'ffmpeg.exe');
       if (match) {
         const ffprobeMatch = findFileRecursive(dir, 'ffprobe.exe') || match.replace('ffmpeg.exe', 'ffprobe.exe');
+        console.log(`[Video AI API] Found FFmpeg executable: ${match}`);
+        console.log(`[Video AI API] Found FFprobe executable: ${ffprobeMatch}`);
         ffmpeg.setFfmpegPath(match);
         ffmpeg.setFfprobePath(ffprobeMatch);
+
+        // Cache the paths to disk
+        try {
+          fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: match, ffprobe: ffprobeMatch }), 'utf8');
+        } catch (e) {}
+
         ffmpegPathsResolved = true;
         return;
       }
     }
   }
+
+  console.warn('[Video AI API WARNING] Could not resolve FFmpeg/FFprobe binary locations. Standard system execution will be attempted.');
 }
 
 function findFileRecursive(dir: string, fileName: string, depth = 0): string | null {

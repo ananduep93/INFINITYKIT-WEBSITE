@@ -247,21 +247,29 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
         // Pollinations supports seed caching
         const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
         
-        // Pre-fetch/cache image loading
+        // Setup safety timeout to avoid getting stuck in loading state if pre-fetch hangs
+        const timer = setTimeout(() => {
+          console.warn('Image pre-fetch timed out, setting URL directly.');
+          setGeneratedUrl(finalPromptUrl);
+          setIsGenerating(false);
+        }, 15000);
+
+        // Pre-fetch/cache image loading (without crossOrigin to avoid CORS prefetch block)
         const img = new window.Image();
-        img.crossOrigin = 'anonymous';
         img.onload = () => {
+          clearTimeout(timer);
           setGeneratedUrl(finalPromptUrl);
           saveToHistoryList(prompt, finalPromptUrl);
           setIsGenerating(false);
         };
         img.onerror = () => {
+          clearTimeout(timer);
           // Fallback direct url loading
           setGeneratedUrl(finalPromptUrl);
           setIsGenerating(false);
         };
         img.src = finalPromptUrl;
-        return; // Don't turn off isGenerating until image onload finishes
+        return; // Don't turn off isGenerating until image onload finishes or timeout fires
       }
     } catch (err: any) {
       alert(err.message || 'Generation failed.');
@@ -301,7 +309,8 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
 
   const downloadImage = async (urlToDownload: string, name: string) => {
     try {
-      const response = await fetch(urlToDownload);
+      // Use cache: 'no-cache' to bypass standard image cache and force a proper CORS handshake
+      const response = await fetch(urlToDownload, { cache: 'no-cache' });
       const blob = await response.blob();
       const localUrl = URL.createObjectURL(blob);
       
@@ -320,7 +329,8 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
   // Cross-suite routing: sends generated image directly to Visual Editor
   const sendToEditor = async (url: string) => {
     try {
-      const response = await fetch(url);
+      // Use cache: 'no-cache' to bypass standard image cache and force a proper CORS handshake
+      const response = await fetch(url, { cache: 'no-cache' });
       const blob = await response.blob();
       const reader = new FileReader();
       reader.onloadend = () => {
