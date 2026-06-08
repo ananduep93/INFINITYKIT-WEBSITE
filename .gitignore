@@ -11,3 +11,5 @@ dist
 out
 build
 **/.vercel
+*.tsbuildinfo
+
