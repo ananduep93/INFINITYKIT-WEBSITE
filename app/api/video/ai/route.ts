@@ -131,17 +131,17 @@ export async function POST(request: Request) {
     let openaiKey = clientOpenaiKey || envOpenaiKey;
 
     // Auto-detect and correct key swapping
-    if (geminiKey && geminiKey.trim().startsWith('sk-')) {
-      if (!openaiKey) {
-        openaiKey = geminiKey;
-      }
+    // Gemini keys: AIzaSy... (old format) or AQ. (new Google AI Studio format)
+    const isGeminiKey = (k: string) => k.startsWith('AIzaSy') || k.startsWith('AQ.');
+    const isOpenAIKey = (k: string) => k.startsWith('sk-');
+
+    if (geminiKey && isOpenAIKey(geminiKey)) {
+      if (!openaiKey) openaiKey = geminiKey;
       geminiKey = '';
       console.log('[Video AI API] Auto-routed OpenAI key passed as Gemini key.');
     }
-    if (openaiKey && openaiKey.trim().startsWith('AIzaSy')) {
-      if (!geminiKey) {
-        geminiKey = openaiKey;
-      }
+    if (openaiKey && isGeminiKey(openaiKey)) {
+      if (!geminiKey) geminiKey = openaiKey;
       openaiKey = '';
       console.log('[Video AI API] Auto-routed Gemini key passed as OpenAI key.');
     }

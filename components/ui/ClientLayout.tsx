@@ -64,6 +64,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const [mounted, setMounted] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAPISettings, setShowAPISettings] = useState(false);
+  const [geminiKeyInput, setGeminiKeyInput] = useState('');
+  const [geminiKeySaved, setGeminiKeySaved] = useState(false);
   
   // Expandable folder states for restructured categories
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
@@ -100,6 +103,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       const consent = localStorage.getItem('infinitykit_cookie_consent');
       if (consent === 'true') setCookieConsent(true);
       else if (consent === 'false') setCookieConsent(false);
+      // Load saved Gemini key for settings panel
+      const savedKey = localStorage.getItem('infinitykit_gemini_key') || '';
+      setGeminiKeyInput(savedKey);
+      setGeminiKeySaved(!!savedKey);
 
       // ─── Bulletproof Firebase Auth Referer Error Shield ──────────────────
       // This intercepts domain referer validation errors (like running on port 3001)
@@ -724,6 +731,28 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
           {/* Sidebar Footer Controls */}
           <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '15px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            
+            {/* AI Key Settings Button */}
+            <button
+              onClick={() => setShowAPISettings(true)}
+              style={{
+                ...sidebarLinkStyle(false),
+                background: 'none', border: 'none', cursor: 'pointer', width: '100%',
+                position: 'relative'
+              }}
+              title="AI API Key Settings"
+            >
+              <Sparkles size={16} color={geminiKeySaved ? 'var(--primary-color)' : '#f59e0b'} />
+              {sidebarExpanded && (
+                <span style={{ color: geminiKeySaved ? 'var(--text-color)' : '#f59e0b' }}>
+                  {geminiKeySaved ? 'AI Connected ✓' : 'Set AI API Key ⚠'}
+                </span>
+              )}
+              {!geminiKeySaved && !sidebarExpanded && (
+                <span style={{ position: 'absolute', top: 2, right: 2, width: 8, height: 8, background: '#f59e0b', borderRadius: '50%' }} />
+              )}
+            </button>
+
             <Link 
               href="/dashboard?tab=profile" 
               className={`sidebar-nav-link ${pathname.includes('profile') ? 'active' : ''}`}
@@ -761,6 +790,138 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             )}
           </div>
         </aside>
+
+        {/* ====================================================
+            AI API KEY SETTINGS MODAL
+            ==================================================== */}
+        {showAPISettings && (
+          <div
+            onClick={() => setShowAPISettings(false)}
+            style={{
+              position: 'fixed', inset: 0,
+              background: 'rgba(0,0,0,0.6)',
+              backdropFilter: 'blur(12px)',
+              zIndex: 2000,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '20px'
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: theme === 'dark' ? 'rgba(14,18,28,0.98)' : 'rgba(255,255,255,0.98)',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '20px',
+                padding: '32px',
+                maxWidth: '480px',
+                width: '100%',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.4)'
+              }}
+            >
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                    <div style={{ background: 'rgba(0,161,155,0.15)', padding: '8px', borderRadius: '10px' }}>
+                      <Sparkles size={20} color="var(--primary-color)" />
+                    </div>
+                    <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>AI API Key Settings</h2>
+                  </div>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>Connect your Gemini API key to unlock all AI tools.</p>
+                </div>
+                <button onClick={() => setShowAPISettings(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px' }}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Status Banner */}
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: '12px',
+                marginBottom: '24px',
+                background: geminiKeySaved ? 'rgba(0,161,155,0.1)' : 'rgba(245,158,11,0.1)',
+                border: `1px solid ${geminiKeySaved ? 'rgba(0,161,155,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                display: 'flex', alignItems: 'center', gap: '10px'
+              }}>
+                <span style={{ fontSize: '1.2rem' }}>{geminiKeySaved ? '✅' : '⚠️'}</span>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '0.85rem', color: geminiKeySaved ? 'var(--primary-color)' : '#f59e0b' }}>
+                    {geminiKeySaved ? 'Gemini AI Connected' : 'No API Key — AI tools unavailable'}
+                  </p>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                    {geminiKeySaved ? 'Your key is stored locally in this browser.' : 'AI features will fail without a valid key.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Key Input */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '8px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                  Google Gemini API Key
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="password"
+                    value={geminiKeyInput}
+                    onChange={(e) => setGeminiKeyInput(e.target.value)}
+                    placeholder="AIzaSy... or AQ.Ab... (Google AI Studio key)"
+                    className="form-input"
+                    style={{ width: '100%', paddingRight: '110px', fontFamily: 'monospace', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  />
+                  <button
+                    onClick={() => {
+                      const key = geminiKeyInput.trim();
+                      if (!key) {
+                        localStorage.removeItem('infinitykit_gemini_key');
+                        setGeminiKeySaved(false);
+                        alert('API key cleared.');
+                        return;
+                      }
+                      if (!key.startsWith('AIzaSy') && !key.startsWith('AQ.')) {
+                        alert('❌ Invalid key format! Gemini API keys start with "AIzaSy" or "AQ.". Get yours from https://aistudio.google.com/apikey');
+                        return;
+                      }
+                      localStorage.setItem('infinitykit_gemini_key', key);
+                      setGeminiKeySaved(true);
+                      alert('✅ Gemini API key saved! All AI tools will now use your key.');
+                      setShowAPISettings(false);
+                    }}
+                    className="btn"
+                    style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', padding: '6px 14px', fontSize: '0.8rem', borderRadius: '8px' }}
+                  >
+                    Save Key
+                  </button>
+                </div>
+              </div>
+
+              {/* Help text */}
+              <div style={{ padding: '14px', background: 'var(--glass-bg)', borderRadius: '10px', border: '1px solid var(--glass-border)', marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-color)' }}>How to get a free Gemini key:</p>
+                <ol style={{ margin: 0, paddingLeft: '18px', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+                  <li>Go to <strong>aistudio.google.com/apikey</strong></li>
+                  <li>Click <strong>"Create API Key"</strong></li>
+                  <li>Copy the key (starts with <code style={{ background: 'rgba(0,161,155,0.15)', padding: '1px 5px', borderRadius: '4px' }}>AIzaSy</code> or <code style={{ background: 'rgba(0,161,155,0.15)', padding: '1px 5px', borderRadius: '4px' }}>AQ.</code>)</li>
+                  <li>Paste it in the box above and click <strong>Save Key</strong></li>
+                </ol>
+              </div>
+
+              {geminiKeySaved && (
+                <button
+                  onClick={() => {
+                    if (confirm('Remove your saved API key?')) {
+                      localStorage.removeItem('infinitykit_gemini_key');
+                      setGeminiKeyInput('');
+                      setGeminiKeySaved(false);
+                    }
+                  }}
+                  style={{ background: 'none', border: '1px solid var(--error-color)', color: 'var(--error-color)', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', width: '100%' }}
+                >
+                  Remove Saved Key
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ====================================================
             MOBILE HEADER NAVBAR

@@ -3,19 +3,14 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const dynamic = 'force-dynamic';
 
-const envGeminiKey = process.env.GEMINI_API_KEY || '';
-const envOpenaiKey = process.env.OPENAI_API_KEY || '';
-const envOpenrouterKey = process.env.OPENROUTER_API_KEY || '';
+// ─── Environment Keys (Server-side, never exposed to client) ──────────────────
+const ENV_GEMINI_KEY = process.env.GEMINI_API_KEY || '';
 
-// ─── SERVER-SIDE SECURITY & RATE LIMITING ───────────────────────────────────
-
-interface RateLimitRecord {
-  timestamps: number[];
-}
-
+// ─── Rate Limiting ────────────────────────────────────────────────────────────
+interface RateLimitRecord { timestamps: number[] }
 const rateLimitMap = new Map<string, RateLimitRecord>();
-const LIMIT_WINDOW_MS = 60 * 1000;      // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 60;    // 60 requests per minute limit
+const LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 60;
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -23,29 +18,22 @@ function isRateLimited(ip: string): boolean {
     rateLimitMap.set(ip, { timestamps: [now] });
     return false;
   }
-
   const record = rateLimitMap.get(ip)!;
-  // Filter timestamps keeping only those within the active 60-second window
   record.timestamps = record.timestamps.filter(ts => now - ts < LIMIT_WINDOW_MS);
-
-  if (record.timestamps.length >= MAX_REQUESTS_PER_WINDOW) {
-    return true;
-  }
-
+  if (record.timestamps.length >= MAX_REQUESTS_PER_WINDOW) return true;
   record.timestamps.push(now);
   return false;
 }
 
 function sanitizeInput(text: string): string {
   if (!text) return '';
-  // Strip potential script injections & dangerous tags
   return text
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
     .replace(/<\/?[^>]+(>|$)/g, '')
     .trim();
 }
 
-// Smart System Prompts Generator
+// ─── System Prompts ───────────────────────────────────────────────────────────
 function getSystemPrompt(taskType: string, context?: string): string {
   let prompt = '';
   switch (taskType) {
@@ -81,238 +69,198 @@ function getSystemPrompt(taskType: string, context?: string): string {
     default:
       prompt = 'You are a precise, highly intelligent digital assistant. Answer the user\'s request accurately and professionally using Markdown formatting.';
   }
-
   if (context) {
     prompt += `\n\nAdditional Context/Input Material:\n"""\n${context}\n"""`;
   }
   return prompt;
 }
 
-// 1. OpenAI Integration
-async function queryOpenAI(openaiKey: string, systemInstruction: string, userPrompt: string): Promise<string> {
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${openaiKey}`
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemInstruction },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.7
-    })
-  });
+// ─── AI Providers ─────────────────────────────────────────────────────────────
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`OpenAI API returned status ${response.status}: ${errText}`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || '';
-}
-
-// 2. Google Gemini Integration
-async function queryGemini(geminiKey: string, systemInstruction: string, userPrompt: string): Promise<string> {
-  const genAI = new GoogleGenerativeAI(geminiKey);
-  const model = genAI.getGenerativeModel({ 
+// Gemini via official SDK (supports both AIzaSy and AQ. key formats)
+async function queryGemini(key: string, system: string, prompt: string): Promise<string> {
+  const genAI = new GoogleGenerativeAI(key);
+  const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
-    systemInstruction: systemInstruction
+    systemInstruction: system
   });
-
-  const result = await model.generateContent(userPrompt);
-  const responseText = result.response.text();
-  return responseText || '';
-}
-
-// 3. OpenRouter Integration
-async function queryOpenRouter(openrouterKey: string, systemInstruction: string, userPrompt: string): Promise<string> {
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${openrouterKey}`,
-      'HTTP-Referer': 'https://infinitykit.online',
-      'X-Title': 'InfinityKit'
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [
-        { role: 'system', content: systemInstruction },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.7
-    })
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`OpenRouter API returned status ${response.status}: ${errText}`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || '';
-}
-
-// 4. Free, Live Fallback Powered by Pollinations AI Text Endpoint
-async function queryPollinationsFree(systemInstruction: string, userPrompt: string): Promise<string> {
-  console.log('[Pollinations Free Fallback] Fetching live AI response...');
-  const response = await fetch('https://text.pollinations.ai/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      messages: [
-        { role: 'system', content: systemInstruction },
-        { role: 'user', content: userPrompt }
-      ],
-      model: 'openai',
-      seed: Math.floor(Math.random() * 1000000)
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Pollinations free API returned status ${response.status}`);
-  }
-
-  const text = await response.text();
-  if (!text) {
-    throw new Error('Pollinations returned empty response body');
-  }
+  const result = await model.generateContent(prompt);
+  const text = result.response.text();
+  if (!text) throw new Error('Gemini returned empty response');
   return text;
 }
 
+// Gemini via REST API (alternative if SDK fails)
+async function queryGeminiRest(key: string, system: string, prompt: string): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: system }] },
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => '');
+    throw new Error(`Gemini REST ${resp.status}: ${err.slice(0, 200)}`);
+  }
+  const data = await resp.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  if (!text) throw new Error('Gemini REST returned empty response');
+  return text;
+}
+
+// Pollinations free fallback
+async function queryPollinations(system: string, prompt: string): Promise<string> {
+  const resp = await fetch('https://text.pollinations.ai/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: prompt }
+      ],
+      model: 'openai-large',
+      seed: Math.floor(Math.random() * 1000000)
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => '');
+    throw new Error(`Pollinations ${resp.status}: ${err.slice(0, 200)}`);
+  }
+  const text = await resp.text();
+  if (!text || text.trim().length < 5) throw new Error('Pollinations returned empty response');
+  return text;
+}
+
+// OpenAI (only used if user explicitly provides their own OpenAI key)
+async function queryOpenAI(key: string, system: string, prompt: string): Promise<string> {
+  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }],
+      temperature: 0.7
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => '');
+    throw new Error(`OpenAI ${resp.status}: ${err.slice(0, 200)}`);
+  }
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// ─── Main Route Handler ────────────────────────────────────────────────────────
 export async function POST(request: Request) {
-  // 1. IP-Based Sliding Window Rate Limiting Check
+  // Rate limit check
   const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
   if (isRateLimited(clientIp)) {
     return NextResponse.json({
-      error: 'Too many requests. Please slow down and try again in a minute.'
-    }, { 
-      status: 429,
-      headers: { 'Retry-After': '60' }
-    });
+      error: 'Too many requests. Please wait a moment and try again.'
+    }, { status: 429, headers: { 'Retry-After': '60' } });
   }
 
-  let prompt = '';
-  let taskType = '';
-  let context = '';
-  
   try {
     const body = await request.json();
-    // 2. HTML sanitization of inputs to prevent script/tag injection
-    prompt = sanitizeInput(body.prompt || '');
-    taskType = sanitizeInput(body.taskType || '');
-    context = sanitizeInput(body.context || '');
+    const prompt = sanitizeInput(body.prompt || '');
+    const taskType = sanitizeInput(body.taskType || '');
+    const context = sanitizeInput(body.context || '');
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
-
-    // 3. Size boundaries check to prevent excessive payload attacks
     if (prompt.length > 30000) {
-      return NextResponse.json({ error: 'Prompt exceeds the maximum allowed payload size (30,000 characters)' }, { status: 400 });
+      return NextResponse.json({ error: 'Prompt too long (max 30,000 characters)' }, { status: 400 });
     }
 
-    // Resolve client keys (from body or headers) & env keys
-    const clientOpenaiKey = (body.openaiKey || request.headers.get('x-openai-key') || '').trim();
-    const clientGeminiKey = (body.geminiKey || request.headers.get('x-gemini-key') || '').trim();
-    const clientOpenrouterKey = (body.openrouterKey || request.headers.get('x-openrouter-key') || '').trim();
+    // Read user-provided keys (optional — from body or headers, WAF-safe)
+    const userGeminiKey = (body.geminiKey || request.headers.get('x-gemini-key') || '').trim();
+    const userOpenaiKey = (body.openaiKey || request.headers.get('x-openai-key') || '').trim();
 
-    let openaiKey = clientOpenaiKey || envOpenaiKey;
-    let geminiKey = clientGeminiKey || envGeminiKey;
-    const openrouterKey = clientOpenrouterKey || envOpenrouterKey;
-
-    // Robust key validation and routing auto-correction
-    if (geminiKey && geminiKey.trim().startsWith('sk-')) {
-      if (!openaiKey) {
-        openaiKey = geminiKey;
-      }
-      geminiKey = '';
-      console.log('[AI API] Auto-routed OpenAI key passed as Gemini key.');
-    }
-    if (openaiKey && openaiKey.trim().startsWith('AIzaSy')) {
-      if (!geminiKey) {
-        geminiKey = openaiKey;
-      }
-      openaiKey = '';
-      console.log('[AI API] Auto-routed Gemini key passed as OpenAI key.');
-    }
-
-    const systemInstruction = getSystemPrompt(taskType, context);
+    const systemPrompt = getSystemPrompt(taskType, context);
     let responseText = '';
-    let usedTier = '';
+    let usedEngine = '';
+    const errors: string[] = [];
 
-    // TIER 1: OpenAI (Primary)
-    if (openaiKey) {
+    // ── TIER 1: Our Server Gemini Key (Primary — always try this first) ────────
+    if (ENV_GEMINI_KEY && !responseText) {
       try {
-        usedTier = 'OpenAI';
-        responseText = await queryOpenAI(openaiKey, systemInstruction, prompt);
-      } catch (err: any) {
-        console.warn('OpenAI Tier failed, attempting fallback...', err.message);
-        if (clientOpenaiKey) {
-          return NextResponse.json({ error: `OpenAI API Error: ${err.message}` }, { status: 400 });
+        console.log('[AI] Trying server Gemini key (SDK)...');
+        responseText = await queryGemini(ENV_GEMINI_KEY, systemPrompt, prompt);
+        usedEngine = 'Gemini';
+      } catch (e: any) {
+        errors.push(`Server Gemini SDK: ${e.message}`);
+        console.warn('[AI] Server Gemini SDK failed, trying REST...', e.message);
+        // Try REST fallback with same key
+        try {
+          responseText = await queryGeminiRest(ENV_GEMINI_KEY, systemPrompt, prompt);
+          usedEngine = 'GeminiREST';
+        } catch (e2: any) {
+          errors.push(`Server Gemini REST: ${e2.message}`);
+          console.warn('[AI] Server Gemini REST also failed:', e2.message);
         }
       }
     }
 
-    // TIER 2: Google Gemini (Secondary)
-    if (!responseText && geminiKey) {
+    // ── TIER 2: User's Personal Gemini Key (if they saved one in settings) ─────
+    if (!responseText && userGeminiKey && userGeminiKey !== ENV_GEMINI_KEY) {
       try {
-        usedTier = 'Gemini';
-        responseText = await queryGemini(geminiKey, systemInstruction, prompt);
-      } catch (err: any) {
-        console.warn('Gemini Tier failed, attempting fallback...', err.message);
-        if (clientGeminiKey) {
-          return NextResponse.json({ error: `Gemini API Error: ${err.message}` }, { status: 400 });
-        }
+        console.log('[AI] Trying user Gemini key...');
+        responseText = await queryGemini(userGeminiKey, systemPrompt, prompt);
+        usedEngine = 'Gemini';
+      } catch (e: any) {
+        errors.push(`User Gemini: ${e.message}`);
+        console.warn('[AI] User Gemini key failed:', e.message);
       }
     }
 
-    // TIER 3: OpenRouter
-    if (!responseText && openrouterKey) {
+    // ── TIER 3: User's Personal OpenAI Key (if they explicitly set one) ────────
+    if (!responseText && userOpenaiKey) {
       try {
-        usedTier = 'OpenRouter';
-        responseText = await queryOpenRouter(openrouterKey, systemInstruction, prompt);
-      } catch (err: any) {
-        console.warn('OpenRouter Tier failed...', err.message);
-        if (clientOpenrouterKey) {
-          return NextResponse.json({ error: `OpenRouter API Error: ${err.message}` }, { status: 400 });
-        }
+        console.log('[AI] Trying user OpenAI key...');
+        responseText = await queryOpenAI(userOpenaiKey, systemPrompt, prompt);
+        usedEngine = 'OpenAI';
+      } catch (e: any) {
+        errors.push(`User OpenAI: ${e.message}`);
+        console.warn('[AI] User OpenAI key failed:', e.message);
       }
     }
 
-    // TIER 4: Pollinations Free Live AI Fallback
+    // ── TIER 4: Pollinations Free (no key needed) ─────────────────────────────
     if (!responseText) {
       try {
-        usedTier = 'PollinationsFree';
-        responseText = await queryPollinationsFree(systemInstruction, prompt);
-      } catch (err: any) {
-        console.error('All AI tiers including Pollinations Free Fallback failed:', err);
-        return NextResponse.json({
-          error: 'AI service currently experiencing high volume. Please check connection and try again.'
-        }, { status: 503 });
+        console.log('[AI] Trying Pollinations free fallback...');
+        responseText = await queryPollinations(systemPrompt, prompt);
+        usedEngine = 'Pollinations';
+      } catch (e: any) {
+        errors.push(`Pollinations: ${e.message}`);
+        console.warn('[AI] Pollinations failed:', e.message);
       }
+    }
+
+    // ── ALL TIERS FAILED ──────────────────────────────────────────────────────
+    if (!responseText) {
+      console.error('[AI] All tiers failed:', errors.join(' | '));
+      return NextResponse.json({
+        error: 'AI service is temporarily unavailable. You can add your own free Gemini API key via the ⚡ AI Key button in the sidebar to ensure uninterrupted access.',
+        fallbackSuggestion: true
+      }, { status: 503 });
     }
 
     const response = NextResponse.json({
       text: responseText,
-      engine: usedTier,
-      isFallback: usedTier === 'PollinationsFree'
+      engine: usedEngine,
+      isFallback: usedEngine === 'Pollinations'
     });
-
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     return response;
 
   } catch (error: any) {
-    console.error('Unhandled AI API Route error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal Server Error' },
-      { status: 500 }
-    );
+    console.error('[AI] Unhandled error:', error);
+    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }

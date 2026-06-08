@@ -604,6 +604,90 @@ export default function ToolClient({ toolId }: ToolClientProps) {
         </div>
       )}
 
+      {/* ====================================================
+          SEO RICH CONTENT BLOCK — Unique per tool, server rendered
+          Google reads this to determine page value & index it
+          ==================================================== */}
+      {(tool.howToSteps || tool.keyFeatures || tool.useCases || (tool.faq && tool.faq.length > 0)) && (
+        <section style={{ marginTop: '48px', display: 'flex', flexDirection: 'column', gap: '32px' }} aria-label="Tool Guide">
+
+          {/* How To Use */}
+          {tool.howToSteps && tool.howToSteps.length > 0 && (
+            <div className="glass-panel" style={{ margin: 0, padding: '32px' }}>
+              <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-color)', marginTop: 0, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>How to Use</span> {tool.name}
+              </h2>
+              <ol style={{ paddingLeft: '20px', margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {tool.howToSteps.map((step, i) => (
+                  <li key={i} style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.7, paddingLeft: '8px' }}>
+                    <span style={{ color: 'var(--text-color)', fontWeight: 600 }}>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {/* Key Features + Use Cases side by side */}
+          {(tool.keyFeatures || tool.useCases) && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+              {tool.keyFeatures && tool.keyFeatures.length > 0 && (
+                <div className="glass-panel" style={{ margin: 0, padding: '28px' }}>
+                  <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-color)', marginTop: 0, marginBottom: '16px' }}>
+                    ⚡ Key Features
+                  </h2>
+                  <ul style={{ paddingLeft: '18px', margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {tool.keyFeatures.map((f, i) => (
+                      <li key={i} style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{f}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {tool.useCases && tool.useCases.length > 0 && (
+                <div className="glass-panel" style={{ margin: 0, padding: '28px' }}>
+                  <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-color)', marginTop: 0, marginBottom: '16px' }}>
+                    👥 Who Uses This Tool
+                  </h2>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {tool.useCases.map((uc, i) => (
+                      <span key={i} style={{ fontSize: '0.8rem', padding: '6px 14px', borderRadius: '20px', background: 'rgba(0,161,155,0.08)', color: 'var(--primary-color)', fontWeight: 600, border: '1px solid rgba(0,161,155,0.2)' }}>
+                        {uc}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Expanded FAQ Section */}
+          {tool.faq && tool.faq.length > 0 && (
+            <div className="glass-panel" style={{ margin: 0, padding: '32px' }}>
+              <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-color)', marginTop: 0, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <HelpCircle size={20} color="var(--primary-color)" /> Frequently Asked Questions
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {tool.faq.map((item, index) => (
+                  <div key={index} style={{ borderRadius: '12px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.01)', overflow: 'hidden' }}>
+                    <button
+                      onClick={() => setActiveFaq(activeFaq === index ? null : index)}
+                      style={{ width: '100%', padding: '16px 22px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-color)' }}
+                      aria-expanded={activeFaq === index}
+                    >
+                      <span>{item.question}</span>
+                      <span style={{ transform: activeFaq === index ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease', color: 'var(--primary-color)', fontSize: '0.75rem', flexShrink: 0, marginLeft: '12px' }}>▼</span>
+                    </button>
+                    <div style={{ maxHeight: activeFaq === index ? '300px' : '0px', padding: activeFaq === index ? '0 22px 16px' : '0 22px', transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)', overflow: 'hidden', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                      {item.answer}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* HTML standard style blocks avoiding SWC compiler styled-jsx plugin conflicts */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 1140px) {
