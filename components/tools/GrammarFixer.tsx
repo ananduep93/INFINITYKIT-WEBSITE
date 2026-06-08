@@ -15,13 +15,18 @@ export default function GrammarFixer() {
 Explain corrections: ${explainLevel === 'all' ? 'Yes, list a short bulleted explanation of what was fixed at the end of the text' : 'No, just return the polished corrected text'}.
 Ensure the core style and voice are retained, but with perfect spelling and grammar.`;
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: promptText,
         taskType: 'improve',
-        context: textInput
+        context: textInput,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

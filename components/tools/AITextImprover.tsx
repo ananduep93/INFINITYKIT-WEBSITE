@@ -19,13 +19,18 @@ export default function AITextImprover() {
     setResult('');
 
     try {
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: `Enhance this text to have a ${tone} tone. Improve grammar, vocabulary, spelling, and sentence flow.`,
           taskType: 'improve',
-          context: text
+          context: text,
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 

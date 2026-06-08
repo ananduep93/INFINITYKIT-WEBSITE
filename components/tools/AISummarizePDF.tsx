@@ -52,13 +52,18 @@ export default function AISummarizePDF() {
       throw new Error('Could not extract any readable text from this PDF file.');
     }
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: 'Provide a structured, executive summary highlighting the main thesis, key points, and final actionable takeaways of this document.',
         taskType: 'summarize',
-        context: pdfText
+        context: pdfText,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

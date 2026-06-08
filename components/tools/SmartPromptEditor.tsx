@@ -140,13 +140,18 @@ Please respond ONLY with the newly generated final prompt. Do not include conver
 `;
 
     try {
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const res = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: promptPayload,
           taskType: 'improve',
-          context: roughPrompt
+          context: roughPrompt,
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 

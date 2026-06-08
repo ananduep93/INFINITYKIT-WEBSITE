@@ -14,13 +14,18 @@ export default function EssayWriter() {
       throw new Error('Please enter an essay topic or description.');
     }
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: `Write a high-quality ${essayType} essay appropriate for ${academicLevel} level. The tone should be ${tone}. Ensure it has a strong introduction, structured body paragraphs with evidence/arguments, and a cohesive conclusion.`,
         taskType: 'chat',
-        context: `Essay Topic:\n${topicInput}`
+        context: `Essay Topic:\n${topicInput}`,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

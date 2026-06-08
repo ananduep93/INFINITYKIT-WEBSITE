@@ -177,7 +177,7 @@ export async function POST(request: Request) {
           proc
             .videoCodec('libx264')
             .audioCodec('aac')
-            .outputOptions(['-crf', crfValue, '-preset', 'fast']);
+            .outputOptions(['-crf', crfValue, '-preset', 'ultrafast']);
           break;
         }
         case 'trim': {
@@ -187,7 +187,7 @@ export async function POST(request: Request) {
           if (duration > 0) {
             proc.setDuration(duration);
           }
-          proc.videoCodec('libx264').audioCodec('aac');
+          proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
           break;
         }
         case 'crop': {
@@ -198,7 +198,8 @@ export async function POST(request: Request) {
           proc
             .videoFilter(`crop=${cropW}:${cropH}:${cropX}:${cropY}`)
             .videoCodec('libx264')
-            .audioCodec('aac');
+            .audioCodec('aac')
+            .outputOptions(['-preset', 'ultrafast']);
           break;
         }
         case 'resize': {
@@ -208,7 +209,8 @@ export async function POST(request: Request) {
           proc
             .videoFilter(`scale=w='trunc(${resizeW}/2)*2':h='trunc(${resizeH}/2)*2'`)
             .videoCodec('libx264')
-            .audioCodec('aac');
+            .audioCodec('aac')
+            .outputOptions(['-preset', 'ultrafast']);
           break;
         }
         case 'rotate': {
@@ -216,7 +218,7 @@ export async function POST(request: Request) {
           if (rotateAngle === '90') proc.videoFilter('transpose=1');
           else if (rotateAngle === '180') proc.videoFilter('transpose=2,transpose=2');
           else if (rotateAngle === '270') proc.videoFilter('transpose=2');
-          proc.videoCodec('libx264').audioCodec('aac');
+          proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
           break;
         }
         case 'reverse': {
@@ -224,7 +226,8 @@ export async function POST(request: Request) {
             .videoFilter('reverse')
             .audioFilter('areverse')
             .videoCodec('libx264')
-            .audioCodec('aac');
+            .audioCodec('aac')
+            .outputOptions(['-preset', 'ultrafast']);
           break;
         }
         case 'split': {
@@ -235,15 +238,15 @@ export async function POST(request: Request) {
           if (splitDuration > 0) {
             proc.setDuration(splitDuration);
           }
-          proc.videoCodec('libx264').audioCodec('aac');
+          proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
           break;
         }
         case 'convert': {
           // Handled via outputExtension already, standard transcoder params:
           if (outputExtension === 'webm') {
-            proc.videoCodec('libvpx-vp9').audioCodec('libopus');
+            proc.videoCodec('libvpx-vp9').audioCodec('libopus').outputOptions(['-deadline', 'realtime', '-cpu-used', '8']);
           } else {
-            proc.videoCodec('libx264').audioCodec('aac');
+            proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
           }
           break;
         }

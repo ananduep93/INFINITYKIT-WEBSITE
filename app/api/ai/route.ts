@@ -119,7 +119,7 @@ async function queryOpenAI(openaiKey: string, systemInstruction: string, userPro
 async function queryGemini(geminiKey: string, systemInstruction: string, userPrompt: string): Promise<string> {
   const genAI = new GoogleGenerativeAI(geminiKey);
   const model = genAI.getGenerativeModel({ 
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     systemInstruction: systemInstruction
   });
 
@@ -218,10 +218,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prompt exceeds the maximum allowed payload size (30,000 characters)' }, { status: 400 });
     }
 
-    // Resolve client header keys & env keys
-    const clientOpenaiKey = request.headers.get('x-openai-key') || '';
-    const clientGeminiKey = request.headers.get('x-gemini-key') || '';
-    const clientOpenrouterKey = request.headers.get('x-openrouter-key') || '';
+    // Resolve client keys (from body or headers) & env keys
+    const clientOpenaiKey = (body.openaiKey || request.headers.get('x-openai-key') || '').trim();
+    const clientGeminiKey = (body.geminiKey || request.headers.get('x-gemini-key') || '').trim();
+    const clientOpenrouterKey = (body.openrouterKey || request.headers.get('x-openrouter-key') || '').trim();
 
     let openaiKey = clientOpenaiKey || envOpenaiKey;
     let geminiKey = clientGeminiKey || envGeminiKey;

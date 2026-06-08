@@ -17,13 +17,18 @@ Objective: ${rewriteStyle === 'paraphrase' ? 'Paraphrase and structure cleanly' 
 Tone: ${tone}.
 Maintain the original meaning, but completely update phrasing and structure for clarity and impact.`;
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: promptText,
         taskType: 'improve',
-        context: textInput
+        context: textInput,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

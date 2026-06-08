@@ -179,9 +179,11 @@ export default function VideoAISuite() {
       const headers: Record<string, string> = {};
       if (geminiKey) {
         headers['x-gemini-key'] = geminiKey;
+        formData.append('geminiKey', geminiKey);
       }
       if (openaiKey) {
         headers['x-openai-key'] = openaiKey;
+        formData.append('openaiKey', openaiKey);
       }
 
       const response = await fetch('/api/video/ai', {

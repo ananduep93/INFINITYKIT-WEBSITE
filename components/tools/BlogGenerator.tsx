@@ -18,13 +18,18 @@ Tone of voice: ${tone}.
 Include Call to Action (CTA) at the end: ${includeCta === 'yes' ? 'Yes, craft a compelling call to action' : 'No'}.
 Ensure it has a catchy header, bullet points where appropriate for readability, and a friendly, shareable structure.`;
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: promptText,
         taskType: 'chat',
-        context: `Blog Post Niche/Topic:\n${topicInput}`
+        context: `Blog Post Niche/Topic:\n${topicInput}`,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

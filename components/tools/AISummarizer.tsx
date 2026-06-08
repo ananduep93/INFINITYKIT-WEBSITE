@@ -19,13 +19,18 @@ export default function AISummarizer() {
     setResult('');
 
     try {
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: `Distill the text into a ${length} summary. Present the key findings as structured bullet points.`,
           taskType: 'summarize',
-          context: text
+          context: text,
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 

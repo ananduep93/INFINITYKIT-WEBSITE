@@ -94,13 +94,18 @@ export default function TranslatePDF() {
 
       setProgressText(`Sending text to AI translation node for ${targetLang}...`);
 
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: `Translate the following text accurately into ${targetLang}. Keep the layout markers like [Page X] intact. Do not translate the markers, only translate the text below them.`,
           taskType: 'translate',
-          context: documentText
+          context: documentText,
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 

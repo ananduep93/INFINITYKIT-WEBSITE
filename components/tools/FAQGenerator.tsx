@@ -15,13 +15,18 @@ export default function FAQGenerator() {
     const promptText = `Generate exactly ${numFaqs} frequently asked questions (FAQs) with detailed, professional, and clear answers based on the topic.
 Format style: ${format === 'schema' ? 'FAQPage JSON-LD Schema markup alongside clean text output' : 'Clean readable Q&A text format'}.`;
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: promptText,
         taskType: 'chat',
-        context: `Topic/Product/Service Details:\n${contextInput}`
+        context: `Topic/Product/Service Details:\n${contextInput}`,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

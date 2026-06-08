@@ -18,13 +18,18 @@ Target Audience: ${audience}.
 SEO Keywords to naturally include: ${seoKeywords || 'None specified'}.
 Structure the article with a catchy headline, engaging introduction, informative subheadings, and a strong conclusion.`;
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: promptText,
         taskType: 'chat',
-        context: `Article Topic/Outline:\n${topicInput}`
+        context: `Article Topic/Outline:\n${topicInput}`,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

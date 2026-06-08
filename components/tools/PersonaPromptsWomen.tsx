@@ -232,12 +232,17 @@ export default function PersonaPromptsWomen() {
     setResult('');
 
     try {
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const res = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: selectedPromptText,
-          taskType: 'chat'
+          taskType: 'chat',
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 

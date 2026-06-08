@@ -1,13 +1,14 @@
 async function testLocalAI() {
-  console.log('Sending request to local /api/ai endpoint on port 3001...');
+  console.log('Sending request to local /api/ai endpoint on port 3000...');
   try {
-    const response = await fetch('http://localhost:3001/api/ai', {
+    const response = await fetch('http://localhost:3000/api/ai', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-openai-key': 'sk-proj-invalidkey1234567890'
       },
       body: JSON.stringify({
-        prompt: 'Say hello in exactly 3 words!',
+        prompt: 'Say hello',
         taskType: 'chat',
         context: ''
       })

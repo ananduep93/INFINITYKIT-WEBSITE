@@ -533,9 +533,12 @@ export default function VideoEditorSuite({ initialTab = 'trim' }: VideoEditorSui
             grid-template-columns: 1fr !important;
             gap: 16px !important;
           }
-          .video-suite-sidebar {
-            max-height: none !important;
-          }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+        .pulse-active {
+          animation: pulseGlow 1.5s infinite ease-in-out;
         }
       `}</style>
 
@@ -782,10 +785,25 @@ export default function VideoEditorSuite({ initialTab = 'trim' }: VideoEditorSui
             {progress !== null && (
               <div style={{ padding: '10px 0' }}>
                 <div style={{ height: '6px', background: 'var(--glass-border)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px' }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: 'var(--primary-color)', transition: 'width 0.3s ease' }} />
+                  <div 
+                    className={progress === 50 ? 'pulse-active' : ''} 
+                    style={{ 
+                      width: `${progress}%`, 
+                      height: '100%', 
+                      background: 'var(--primary-color)', 
+                      transition: 'width 0.3s ease',
+                      boxShadow: progress === 50 ? '0 0 8px var(--primary-color)' : 'none'
+                    }} 
+                  />
                 </div>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textAlign: 'center', margin: 0 }}>
-                  Processing video buffers... {progress}%
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textAlign: 'center', margin: 0 }} className={progress === 50 ? 'pulse-active' : ''}>
+                  {progress === 50 ? (
+                    <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
+                      Encoding video frames on server... (Please wait, this might take a few moments for larger files)
+                    </span>
+                  ) : (
+                    `Processing video buffers... ${progress}%`
+                  )}
                 </p>
               </div>
             )}

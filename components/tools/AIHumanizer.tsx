@@ -19,13 +19,18 @@ Rules to strictly follow:
 3. Use common but highly descriptive phrasing appropriate for an experienced human writer.
 4. Do NOT change facts, statistics, or the main theme of the input.`;
 
+    const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+    const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
     const response = await fetch('/api/ai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: promptText,
         taskType: 'improve',
-        context: textInput
+        context: textInput,
+        openaiKey: localOpenaiKey,
+        geminiKey: localGeminiKey
       })
     });
 

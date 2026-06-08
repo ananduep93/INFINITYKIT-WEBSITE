@@ -103,13 +103,18 @@ export default function AIChatPDF() {
         `${m.sender === 'user' ? 'User' : 'Assistant'}: ${m.text}`
       ).join('\n');
 
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: `${userMsg.text}\n\nPrevious conversation:\n${conversationHistory}`,
           taskType: 'chat',
-          context: `You are answering questions about this uploaded PDF document. Respond accurately based ONLY on this text:\n\n${pdfText}`
+          context: `You are answering questions about this uploaded PDF document. Respond accurately based ONLY on this text:\n\n${pdfText}`,
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 

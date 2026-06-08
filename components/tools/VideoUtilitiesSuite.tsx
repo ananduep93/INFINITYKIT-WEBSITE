@@ -238,11 +238,12 @@ export default function VideoUtilitiesSuite({ initialTab = 'extract-audio' }: Vi
           flex-direction: column;
           align-items: center;
         }
-        @media (max-width: 1024px) {
-          .video-suite-grid {
-            grid-template-columns: 1fr !important;
-            gap: 16px !important;
-          }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+        .pulse-active {
+          animation: pulseGlow 1.5s infinite ease-in-out;
         }
       `}</style>
 
@@ -360,14 +361,28 @@ export default function VideoUtilitiesSuite({ initialTab = 'extract-audio' }: Vi
               </div>
             </div>
 
-            {/* Progress indicator */}
             {progress !== null && (
               <div style={{ padding: '10px 0' }}>
                 <div style={{ height: '6px', background: 'var(--glass-border)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px' }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: 'var(--primary-color)', transition: 'width 0.3s ease' }} />
+                  <div 
+                    className={progress === 50 ? 'pulse-active' : ''} 
+                    style={{ 
+                      width: `${progress}%`, 
+                      height: '100%', 
+                      background: 'var(--primary-color)', 
+                      transition: 'width 0.3s ease',
+                      boxShadow: progress === 50 ? '0 0 8px var(--primary-color)' : 'none'
+                    }} 
+                  />
                 </div>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textAlign: 'center', margin: 0 }}>
-                  Executing video rendering pipeline... {progress}%
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textAlign: 'center', margin: 0 }} className={progress === 50 ? 'pulse-active' : ''}>
+                  {progress === 50 ? (
+                    <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
+                      Executing video utility pipeline on server... (Please wait, processing files)
+                    </span>
+                  ) : (
+                    `Executing video rendering pipeline... ${progress}%`
+                  )}
                 </p>
               </div>
             )}

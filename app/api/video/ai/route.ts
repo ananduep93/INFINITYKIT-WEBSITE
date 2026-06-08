@@ -122,12 +122,12 @@ export async function POST(request: Request) {
 
     // Resolve Gemini API key
     const envGeminiKey = process.env.GEMINI_API_KEY || '';
-    const clientGeminiKey = request.headers.get('x-gemini-key') || '';
+    const clientGeminiKey = ((formData.get('geminiKey') as string) || request.headers.get('x-gemini-key') || '').trim();
     let geminiKey = clientGeminiKey || envGeminiKey;
 
     // Resolve OpenAI API key
     const envOpenaiKey = process.env.OPENAI_API_KEY || '';
-    const clientOpenaiKey = request.headers.get('x-openai-key') || '';
+    const clientOpenaiKey = ((formData.get('openaiKey') as string) || request.headers.get('x-openai-key') || '').trim();
     let openaiKey = clientOpenaiKey || envOpenaiKey;
 
     // Auto-detect and correct key swapping
@@ -249,7 +249,7 @@ export async function POST(request: Request) {
         console.log(`[Video AI API] Routing to Gemini for action: ${action}`);
         // Build Gen AI model instance
         const genAI = new GoogleGenerativeAI(geminiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         let systemInstruction = '';
         let userPrompt = '';

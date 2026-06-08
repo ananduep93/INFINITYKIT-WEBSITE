@@ -42,13 +42,18 @@ export default function AIChatbot() {
     setIsTyping(true);
 
     try {
+      const localOpenaiKey = localStorage.getItem('infinitykit_openai_key') || '';
+      const localGeminiKey = localStorage.getItem('infinitykit_gemini_key') || '';
+
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: userMsg.text,
           taskType: 'chat',
-          context: JSON.stringify(messages.slice(-5)) // Send last 5 messages for context
+          context: JSON.stringify(messages.slice(-5)), // Send last 5 messages for context
+          openaiKey: localOpenaiKey,
+          geminiKey: localGeminiKey
         })
       });
 
