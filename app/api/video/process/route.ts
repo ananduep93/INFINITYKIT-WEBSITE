@@ -10,9 +10,23 @@ export const maxDuration = 300; // 5 minutes max execution timeout for long vide
 
 let ffmpegPathsResolved = false;
 
-// Self-healing path resolution logic for Gyan.FFmpeg installed via WinGet on Windows
+// Self-healing path resolution logic with caching for fast startup
 function resolveFfmpegPaths() {
   if (ffmpegPathsResolved) return;
+
+  const cachePath = path.join(os.tmpdir(), 'ik_ffmpeg_paths_cache.json');
+  if (fs.existsSync(cachePath)) {
+    try {
+      const cached = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
+      if (cached.ffmpeg && cached.ffprobe && fs.existsSync(cached.ffmpeg) && fs.existsSync(cached.ffprobe)) {
+        console.log(`[Video API] Using cached FFmpeg: ${cached.ffmpeg}`);
+        ffmpeg.setFfmpegPath(cached.ffmpeg);
+        ffmpeg.setFfprobePath(cached.ffprobe);
+        ffmpegPathsResolved = true;
+        return;
+      }
+    } catch (e) {}
+  }
 
   // 1. Check if ffmpeg is globally available in PATH
   try {
@@ -41,6 +55,12 @@ function resolveFfmpegPaths() {
         console.log(`[Video API] Found FFprobe executable: ${ffprobeMatch}`);
         ffmpeg.setFfmpegPath(match);
         ffmpeg.setFfprobePath(ffprobeMatch);
+
+        // Cache the paths to disk
+        try {
+          fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: match, ffprobe: ffprobeMatch }), 'utf8');
+        } catch (e) {}
+
         ffmpegPathsResolved = true;
         return;
       }
@@ -187,7 +207,7 @@ export async function POST(request: Request) {
           if (duration > 0) {
             proc.setDuration(duration);
           }
-          proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
+          proc.videoCodec('copy').audioCodec('copy');
           break;
         }
         case 'crop': {
@@ -238,13 +258,15 @@ export async function POST(request: Request) {
           if (splitDuration > 0) {
             proc.setDuration(splitDuration);
           }
-          proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
+          proc.videoCodec('copy').audioCodec('copy');
           break;
         }
         case 'convert': {
           // Handled via outputExtension already, standard transcoder params:
           if (outputExtension === 'webm') {
             proc.videoCodec('libvpx-vp9').audioCodec('libopus').outputOptions(['-deadline', 'realtime', '-cpu-used', '8']);
+          } else if (outputExtension === 'mov' || outputExtension === 'mkv' || outputExtension === 'mp4') {
+            proc.videoCodec('copy').audioCodec('copy');
           } else {
             proc.videoCodec('libx264').audioCodec('aac').outputOptions(['-preset', 'ultrafast']);
           }
