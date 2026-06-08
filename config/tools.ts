@@ -19,6 +19,9 @@ export interface ToolDefinition {
   icon: string;
   seoTitle?: string;
   seoDescription?: string;
+  howToSteps?: string[];       // Step-by-step guide shown on page for SEO
+  useCases?: string[];         // Who uses this tool — shown as tags
+  keyFeatures?: string[];      // Bullet feature list shown below tool
   faq?: { question: string; answer: string }[];
   type: 'simple' | 'custom';
   inputs?: ToolField[];
@@ -277,8 +280,30 @@ export const tools: ToolDefinition[] = [
         color: Number(bmi) >= 18.5 && Number(bmi) < 25 ? 'success' : 'warning'
       };
     },
+    seoTitle: 'Free BMI Calculator — Check Your Body Mass Index Instantly | InfinityKit',
+    seoDescription: 'Calculate your BMI (Body Mass Index) instantly for free. Enter your height and weight to get your BMI score and health category — Underweight, Normal, Overweight, or Obese.',
+    howToSteps: [
+      'Enter your height in centimeters in the Height field (e.g., 170 for 5 foot 7 inches).',
+      'Enter your weight in kilograms in the Weight field (e.g., 70 kg).',
+      'Click Calculate Results — your BMI score appears instantly.',
+      'Check your BMI category: Underweight, Healthy Weight, Overweight, or Obese.',
+      'Use the result to make informed decisions about your diet and exercise routine.',
+    ],
+    keyFeatures: [
+      'Instant BMI calculation using the standard WHO formula: weight / height squared',
+      'Clear health category: Underweight, Healthy, Overweight, or Obese',
+      'Supports both metric (kg, cm) measurements',
+      '100% private — all calculations happen in your browser, no data sent to any server',
+      'Color-coded result indicator for quick health assessment',
+      'Free to use — no account or sign-up needed',
+    ],
+    useCases: ['Health Enthusiasts', 'Dieticians', 'Gym Members', 'Patients', 'Nurses', 'Fitness Trainers', 'Students'],
     faq: [
-      { question: 'What is BMI?', answer: 'Body Mass Index is a simple screening calculation correlating height and weight to general weight categories.' }
+      { question: 'What is BMI and how is it calculated?', answer: 'BMI (Body Mass Index) is a simple numerical value calculated from your height and weight using the formula: BMI = weight (kg) / height (m) squared. It provides a quick assessment of whether your weight is in a healthy range.' },
+      { question: 'What is a healthy BMI range?', answer: 'According to the WHO: Under 18.5 is Underweight, 18.5 to 24.9 is Normal or Healthy Weight, 25.0 to 29.9 is Overweight, and 30.0 and above is Obese.' },
+      { question: 'Is BMI an accurate measure of health?', answer: 'BMI is a useful screening tool but not a diagnostic measure. It does not account for muscle mass, bone density, age, or fat distribution. Athletes may have high BMI due to muscle, not fat. Consult a doctor for a complete health assessment.' },
+      { question: 'How do I convert feet and inches to centimeters?', answer: 'Multiply feet by 30.48 and inches by 2.54, then add them. For example, 5 feet 7 inches = (5 x 30.48) + (7 x 2.54) = 152.4 + 17.78 = 170.18 cm.' },
+      { question: 'Should children use this BMI calculator?', answer: 'This calculator is designed for adults (18+). Children and teens require age and gender-specific BMI charts from a pediatrician as their body composition changes significantly during growth.' },
     ]
   },
   {
@@ -306,6 +331,30 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free Drug Dosage Calculator — Pediatric & Regular Dose | InfinityKit',
+    seoDescription: 'Calculate accurate medication dosages based on patient weight and concentration. Simple, free, and secure drug dosage calculator for nurses, students, and healthcare.',
+    howToSteps: [
+      'Select the calculator mode (Pediatric Dose, Regular Dose, or Dose by Weight).',
+      'Enter the patient weight in kilograms (kg) or pounds (lbs).',
+      'Input the prescribed dosage rate (e.g. mg per kg of body weight).',
+      'Enter the medication concentration (e.g. mg per ml of solution).',
+      'Click Calculate Results to view the required dose volume in milliliters (ml) instantly.',
+    ],
+    keyFeatures: [
+      'Supports pediatric and adult dosage calculations by weight',
+      'Converts patient weight between kg and lbs automatically',
+      'Clear step-by-step breakdown of the formula and math used',
+      '100% client-side computations ensure patient data remains private',
+      'Clean, accessible layout optimized for busy clinical settings',
+    ],
+    useCases: ['Nurses', 'Medical Students', 'Pediatricians', 'Parents', 'Veterinarians'],
+    faq: [
+      { question: 'How does the drug dosage calculator estimate the dose?', answer: 'It uses the standard medical formula: Dose (ml) = [Weight (kg) × Dose Rate (mg/kg)] / Concentration (mg/ml).' },
+      { question: 'Is this calculator safe to use for medical decisions?', answer: 'While highly accurate, this calculator is for educational and reference purposes only. Always double-check calculations with a certified medical professional.' },
+      { question: 'Does this tool support veterinary/pet dosage?', answer: 'Yes, veterinarians and pet owners can use it to calculate dosages for dogs, cats, and other animals based on their weight.' },
+      { question: 'Are patient details stored or shared?', answer: 'No. The calculator runs entirely offline in your web browser. No medical records or weight details are transmitted or stored.' }
+    ]
   },
   {
     id: 'ivdripcalc',
@@ -331,6 +380,29 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free Saline & IV Fluid Drip Rate Calculator | InfinityKit',
+    seoDescription: 'Calculate IV drip rates in drops per minute (gtt/min) and infusion durations instantly. Free, secure, client-side calculator for clinical reference.',
+    howToSteps: [
+      'Enter the total volume of IV fluid prescribed in milliliters (ml).',
+      'Input the desired infusion time in hours or minutes.',
+      'Select the drop factor of the tubing administration set (e.g. 10, 15, 20, or 60 gtt/ml).',
+      'Click Calculate Results to see the drip rate in drops per minute.',
+      'Use the output rate to adjust the roller clamp on the IV administration set.',
+    ],
+    keyFeatures: [
+      'Instant calculation of IV drip rates (drops/minute) and flow rate (ml/hour)',
+      'Pre-configured drop factors for standard Macrodrip (10, 15, 20) and Microdrip (60) sets',
+      'Calculates total infusion time remaining based on current rates',
+      'Private browser-only calculation with no telemetry or tracking',
+      'Clear, legible high-contrast interface designed for rapid use',
+    ],
+    useCases: ['Nurses', 'Clinical Instructors', 'Nursing Students', 'Veterinary Technicians'],
+    faq: [
+      { question: 'What is the IV drip rate formula?', answer: 'The drip rate is calculated as: Drip Rate (gtt/min) = [Total Volume (ml) × Drop Factor (gtt/ml)] / Infusion Time (minutes).' },
+      { question: 'What is the difference between Macrodrip and Microdrip?', answer: 'Macrodrip sets deliver larger drops (typically 10, 15, or 20 gtt/ml) and are used for fast infusions. Microdrip sets deliver tiny drops (60 gtt/ml) for precise pediatric or medication infusions.' },
+      { question: 'Is this tool certified for clinical treatment?', answer: 'This tool is an educational aid. Clinical decisions should always be verified against official hospital protocols and manual calculations.' }
+    ]
   },
   {
     id: 'medicinereminder',
@@ -454,6 +526,32 @@ export const tools: ToolDefinition[] = [
     icon: '🤖',
     type: 'custom',
     componentName: 'AIChatbot'
+  ,
+    seoTitle: 'Infinity AI Chat & Assistant — Free Gemini-Powered Chatbot | InfinityKit',
+    seoDescription: 'Chat with Infinity AI, a free powerful assistant powered by Google Gemini. Ask questions, get coding help, write essays, and more. No sign-up required.',
+    howToSteps: [
+      'Type your question or task in the chat input box at the bottom of the screen.',
+      'Press Enter or click the Send button — Infinity AI replies instantly using Gemini.',
+      'Continue the conversation naturally — the AI remembers your context within the session.',
+      'Use the copy button on any response to copy text to your clipboard.',
+      'Start a new conversation by clicking Clear Chat to reset the session.',
+    ],
+    keyFeatures: [
+      'Powered by Google Gemini 2.5 Flash — one of the most capable AI models available',
+      'Supports multi-turn conversations with full context memory per session',
+      'Code generation, debugging, and explanation with formatted code blocks',
+      'Essay writing, summarization, brainstorming, and creative writing support',
+      'Instant responses with no loading queues or wait times',
+      'Completely free — no subscription, no sign-up, no credit card required',
+    ],
+    useCases: ['Students', 'Developers', 'Content Writers', 'Researchers', 'Small Business Owners', 'Job Seekers', 'Teachers'],
+    faq: [
+      { question: 'Is the Infinity AI chatbot completely free to use?', answer: 'Yes, Infinity AI Chat is 100% free with no sign-up required. It is powered by Google Gemini and hosted on InfinityKit at no cost to users.' },
+      { question: 'What can I ask the AI assistant?', answer: 'You can ask anything — coding questions, math problems, essay writing, recipe suggestions, business ideas, travel advice, language translation, summarization, and much more.' },
+      { question: 'Does the AI remember my previous conversations?', answer: 'Infinity AI remembers context within your current session. If you clear the chat or close the browser, previous conversations are not retained for privacy reasons.' },
+      { question: 'Can I use Infinity AI for coding help?', answer: 'Absolutely. The AI can write, explain, debug, and optimize code in Python, JavaScript, TypeScript, Java, C++, SQL, and dozens of other programming languages with syntax highlighting.' },
+      { question: 'How is this different from ChatGPT?', answer: 'Infinity AI uses Google Gemini 2.5 Flash which is among the most capable models for reasoning, coding, and general knowledge — and it is completely free with no account needed.' },
+    ]
   },
   {
     id: 'text-improver',
@@ -463,6 +561,32 @@ export const tools: ToolDefinition[] = [
     icon: '✨',
     type: 'custom',
     componentName: 'AITextImprover'
+  ,
+    seoTitle: 'AI Smart Text Improver — Rewrite & Enhance Any Text Free | InfinityKit',
+    seoDescription: 'Improve any text instantly with AI. Fix grammar, boost vocabulary, enhance clarity, and elevate your writing tone for free, no sign-up required.',
+    howToSteps: [
+      'Paste your original text into the input box — emails, essays, reports, or any document.',
+      'Choose your improvement goal: clarity, professionalism, or conciseness.',
+      'Click Improve Text and the AI rewrites your content within seconds.',
+      'Review the improved version and compare it with your original.',
+      'Copy the polished result or make further adjustments and re-run.',
+    ],
+    keyFeatures: [
+      'Enhances vocabulary, sentence structure, and overall writing clarity',
+      'Multiple tone modes: Professional, Casual, Academic, Creative',
+      'Preserves your original meaning while elevating quality',
+      'Works for emails, essays, reports, social posts, and more',
+      'Powered by Google Gemini — state-of-the-art language model',
+      'No word limit — handles long documents efficiently',
+    ],
+    useCases: ['Professionals', 'Students', 'Email Writers', 'Content Marketers', 'Non-native English Speakers', 'Bloggers'],
+    faq: [
+      { question: 'What does the AI Text Improver actually do?', answer: 'It rewrites your text to make it clearer, more professional, and better structured. It fixes awkward phrasing, improves vocabulary choices, and enhances sentence flow while keeping your original meaning intact.' },
+      { question: 'Can I use it to improve professional emails?', answer: 'Yes. The Text Improver is ideal for polishing business emails, cover letters, reports, and client communications. Choose the Formal tone for professional contexts.' },
+      { question: 'Does it change the meaning of my text?', answer: 'No — the AI is instructed to preserve your original meaning. It only improves how the message is expressed, not what the message says.' },
+      { question: 'How is this different from Grammarly?', answer: 'Grammarly focuses on grammar corrections. InfinityKit Text Improver completely rewrites sentences for better flow, tone, and impact — not just fixing errors.' },
+      { question: 'Is there a character or word limit?', answer: 'InfinityKit supports up to 30,000 characters. For very long documents, we recommend processing one section at a time for best results.' },
+    ]
   },
   {
     id: 'summarizer',
@@ -472,6 +596,32 @@ export const tools: ToolDefinition[] = [
     icon: '📝',
     type: 'custom',
     componentName: 'AISummarizer'
+  ,
+    seoTitle: 'Free AI Text Summarizer — Summarize Any Article Instantly | InfinityKit',
+    seoDescription: 'Summarize long articles, essays, research papers, and documents instantly using free AI. Get clear bullet-point summaries in seconds. No sign-up needed.',
+    howToSteps: [
+      'Paste your long article, essay, or document text into the input field.',
+      'Choose your desired summary length: Short, Medium, or Detailed.',
+      'Click Summarize — the AI extracts the key points and main arguments.',
+      'Read the structured summary with bullet points and key takeaways.',
+      'Copy the summary for notes, presentations, or further use.',
+    ],
+    keyFeatures: [
+      'Condenses long content into clear, structured bullet-point summaries',
+      'Preserves all critical facts, statistics, and key arguments',
+      'Three summary lengths: Short, Medium, and Comprehensive',
+      'Works with articles, research papers, news, essays, and reports',
+      'Identifies main topics, supporting arguments, and conclusions',
+      'Free and instant — no account required',
+    ],
+    useCases: ['Students', 'Researchers', 'Journalists', 'Business Analysts', 'Book Readers', 'Legal Professionals'],
+    faq: [
+      { question: 'How accurate is the AI summarizer?', answer: 'Very accurate. The AI identifies the main thesis, supporting arguments, key data points, and conclusions. It preserves factual accuracy and does not introduce information not present in the original text.' },
+      { question: 'What types of content can I summarize?', answer: 'You can summarize news articles, academic papers, blog posts, book chapters, business reports, legal documents, and any other long-form text content.' },
+      { question: 'How long can the text be?', answer: 'Up to 30,000 characters — approximately 5,000 words. For longer documents, summarize in sections for best results.' },
+      { question: 'Does the summarizer work for non-English text?', answer: 'The AI supports multiple languages including French, Spanish, German, Hindi, Arabic, and many others. The summary is generated in the same language as the input.' },
+      { question: 'Can I use this for academic research?', answer: 'Yes — researchers and students use it to quickly grasp key findings of papers before a deep read. Always verify important facts against the original source.' },
+    ]
   },
   {
     id: 'image-generator',
@@ -490,6 +640,33 @@ export const tools: ToolDefinition[] = [
     icon: '✍️',
     type: 'custom',
     componentName: 'EssayWriter'
+  ,
+    seoTitle: 'Free AI Essay Writer — Generate Academic Essays Instantly | InfinityKit',
+    seoDescription: 'Write professional academic essays instantly with free AI. Enter your topic, get a well-structured essay with thesis, body paragraphs, and conclusion. No sign-up needed.',
+    howToSteps: [
+      'Enter your essay topic or title in the input field.',
+      'Optionally add specific points, arguments, or requirements to include.',
+      'Select the essay type: Argumentative, Expository, Descriptive, or Narrative.',
+      'Click Write Essay — the AI generates a fully structured essay in seconds.',
+      'Review the essay with its thesis, supporting paragraphs, and conclusion.',
+      'Copy or download the essay and customize as needed.',
+    ],
+    keyFeatures: [
+      'Generates complete essays with introduction, body paragraphs, and conclusion',
+      'Supports argumentative, expository, descriptive, and narrative essay types',
+      'Academic vocabulary, proper transitions, and thesis-driven structure',
+      'Includes topic sentences and supporting evidence for each paragraph',
+      'Markdown-formatted output for easy editing and export',
+      'Free to use — no account or subscription required',
+    ],
+    useCases: ['Students', 'Academic Writers', 'ESL Learners', 'Researchers', 'Teachers', 'Content Writers'],
+    faq: [
+      { question: 'Can I use AI-generated essays for school?', answer: 'AI essay writers are best used as a learning tool and starting point. Use the generated essay to understand structure, then rewrite in your own voice. Always check your institution academic integrity policy.' },
+      { question: 'What essay types does this support?', answer: 'The AI Essay Writer supports argumentative, expository, descriptive, narrative, compare-and-contrast, and cause-and-effect essays. Simply describe what you need in your prompt.' },
+      { question: 'How long are the generated essays?', answer: 'Typically 400 to 800 words. Request a specific length in your prompt, such as Write a 1000-word essay on climate change.' },
+      { question: 'Does the AI cite sources?', answer: 'The AI uses knowledge from training data. For academic work requiring real citations, verify all facts and add proper references manually.' },
+      { question: 'Can I use this for college application essays?', answer: 'Yes — as a brainstorming and structural guide. Personal statements must reflect your own voice and experiences, so use the AI output as a first draft and heavily personalize it.' },
+    ]
   },
   {
     id: 'article-writer',
@@ -499,6 +676,32 @@ export const tools: ToolDefinition[] = [
     icon: '📰',
     type: 'custom',
     componentName: 'ArticleWriter'
+  ,
+    seoTitle: 'Free AI Article Writer — Generate SEO Articles in Seconds | InfinityKit',
+    seoDescription: 'Write SEO-optimized articles, news pieces, and columns instantly with free AI. Get engaging headlines, subheadings, and well-structured content. No sign-up needed.',
+    howToSteps: [
+      'Enter your article topic or main keyword in the input field.',
+      'Optionally specify the target audience, tone, or key points to cover.',
+      'Click Write Article — the AI generates a full structured article with headlines.',
+      'Review the article with its intro, subheadings, body content, and conclusion.',
+      'Copy the Markdown-formatted content directly into your CMS or blog editor.',
+    ],
+    keyFeatures: [
+      'SEO-optimized structure with H1, H2, H3 headings for search ranking',
+      'Engaging introductions and compelling calls-to-action',
+      'Covers multiple angles with supporting arguments and facts',
+      'Proper journalistic structure: Lead, Body, Conclusion',
+      'Markdown output compatible with WordPress, Ghost, Medium, and all major CMS',
+      'Completely free — unlimited articles, no sign-up required',
+    ],
+    useCases: ['Bloggers', 'Content Marketers', 'SEO Specialists', 'Journalists', 'Small Business Owners', 'Copywriters'],
+    faq: [
+      { question: 'Are the AI-generated articles SEO-friendly?', answer: 'Yes. The AI structures articles with proper H1 and H2 headings, keyword-rich introductions, and clear paragraph structure — all contributing to better search engine rankings.' },
+      { question: 'How long are the generated articles?', answer: 'Typically 600 to 1200 words. Request a specific length in your prompt, such as Write a 1500-word article about solar energy for beginners.' },
+      { question: 'Can I publish AI articles on my blog?', answer: 'Yes, but always review and personalize before publishing. Add your own insights, update outdated information, and ensure accuracy. Google rewards original, helpful content — treat AI output as a strong first draft.' },
+      { question: 'What formats does the article output support?', answer: 'Output is in Markdown format which works directly with WordPress, Ghost, Notion, Medium, Hashnode, and most modern content management systems.' },
+      { question: 'Does it add real facts and statistics?', answer: 'The AI uses knowledge from training data. For articles requiring current statistics, verify and supplement with up-to-date sources before publishing.' },
+    ]
   },
   {
     id: 'blog-generator',
@@ -508,6 +711,32 @@ export const tools: ToolDefinition[] = [
     icon: '💬',
     type: 'custom',
     componentName: 'BlogGenerator'
+  ,
+    seoTitle: 'Free AI Blog Post Generator — Write Engaging Blogs Instantly | InfinityKit',
+    seoDescription: 'Generate engaging, shareable blog posts instantly with free AI. Enter your topic, get a complete blog with hooks, subheadings, and CTAs. No sign-up required.',
+    howToSteps: [
+      'Enter your blog topic, niche, or keyword you want to write about.',
+      'Optionally describe your target audience and preferred writing tone.',
+      'Click Generate Blog Post — the AI writes a complete post with a catchy hook.',
+      'Review the blog with its engaging intro, body sections, and conclusion CTA.',
+      'Customize the content, add your personal experience, and publish.',
+    ],
+    keyFeatures: [
+      'Catchy hooks and engaging introductions that reduce bounce rate',
+      'Organized sections with descriptive subheadings for scannability',
+      'Conversational tone optimized for modern blog audiences',
+      'Built-in call-to-action suggestions in the conclusion',
+      'Includes practical tips, examples, and actionable advice',
+      'SEO-friendly structure with natural keyword placement',
+    ],
+    useCases: ['Bloggers', 'Content Creators', 'Affiliate Marketers', 'Small Businesses', 'Coaches', 'YouTubers'],
+    faq: [
+      { question: 'How is a blog post different from an article?', answer: 'Blog posts are typically more conversational, personal, and reader-friendly. The Blog Generator uses a casual, engaging tone with personal pronouns and storytelling elements.' },
+      { question: 'Can I generate blog posts for any niche?', answer: 'Yes — technology, health, finance, travel, food, relationships, business, gaming, and any other niche. The AI adapts its tone and content to match your specified audience.' },
+      { question: 'Will the blog posts rank on Google?', answer: 'AI-generated content can rank, but needs customization. Add your personal insights, real examples, internal links, and ensure content genuinely helps readers. Google rewards helpful, original content.' },
+      { question: 'How often can I generate blog posts?', answer: 'As often as you like — InfinityKit blog generator is completely free with no daily limits.' },
+      { question: 'Does it generate images for the blog?', answer: 'The text generator creates written content. Use InfinityKit AI Image Generator to create custom featured images and graphics for your blog posts.' },
+    ]
   },
   {
     id: 'faq-generator',
@@ -517,6 +746,32 @@ export const tools: ToolDefinition[] = [
     icon: '❓',
     type: 'custom',
     componentName: 'FAQGenerator'
+  ,
+    seoTitle: 'Free AI FAQ Generator — Generate FAQs for Any Topic | InfinityKit',
+    seoDescription: 'Generate professional FAQ sections for websites, products, and services instantly with free AI. Get 5 to 10 unique Q&As tailored to your topic. No sign-up needed.',
+    howToSteps: [
+      'Enter your product name, service, topic, or website description.',
+      'Specify how many FAQs you want — typically 5, 10, or 15 question-answer pairs.',
+      'Click Generate FAQs — the AI creates realistic questions your users actually ask.',
+      'Review and edit the Q&As to match your specific product details.',
+      'Copy the FAQ section directly into your website, landing page, or documentation.',
+    ],
+    keyFeatures: [
+      'Generates realistic questions that real users actually search for',
+      'Detailed, accurate answers tailored to your specific topic or product',
+      'Schema-ready output compatible with Google FAQ rich results',
+      'Reduces customer support load by answering common questions proactively',
+      'Ideal for websites, SaaS products, e-commerce stores, and service businesses',
+      'Completely free — no credits or sign-up required',
+    ],
+    useCases: ['Website Owners', 'SaaS Founders', 'E-commerce Stores', 'Content Writers', 'Customer Support Teams', 'Course Creators'],
+    faq: [
+      { question: 'Why should I add an FAQ section to my website?', answer: 'FAQ sections improve SEO by targeting long-tail question keywords, reduce customer support inquiries, increase conversion rates by addressing objections, and can earn Google FAQ rich result snippets.' },
+      { question: 'Can the FAQs appear in Google search results?', answer: 'Yes. FAQ content structured with Schema.org FAQPage markup can appear as expandable rich results in Google SERP. InfinityKit pages include JSON-LD FAQ schema automatically.' },
+      { question: 'How many FAQs should I add to my page?', answer: 'Aim for 5 to 10 high-quality FAQs per page. Focus on the most common objections, usage questions, and concerns specific to your product or topic.' },
+      { question: 'Can I generate FAQs in other languages?', answer: 'Yes — specify the language in your prompt. The AI can generate FAQs in Spanish, French, German, Hindi, Arabic, Portuguese, and dozens of other languages.' },
+      { question: 'Are the generated FAQs unique and original?', answer: 'Yes — the AI generates fresh Q&As based on your specific topic. Always review and customize answers to accurately reflect your actual product or policies.' },
+    ]
   },
   {
     id: 'ai-rewriter',
@@ -526,6 +781,32 @@ export const tools: ToolDefinition[] = [
     icon: '🔄',
     type: 'custom',
     componentName: 'AIRewriter'
+  ,
+    seoTitle: 'Free AI Content Rewriter & Paraphraser — Rewrite Any Text | InfinityKit',
+    seoDescription: 'Rewrite, paraphrase, or restructure any text instantly with free AI. Avoid plagiarism, refresh old content, and get new variations. No sign-up needed.',
+    howToSteps: [
+      'Paste the content you want to rewrite into the input box.',
+      'Select a rewriting mode: Standard Rewrite, Creative, Simplified, or Expanded.',
+      'Click Rewrite Content — the AI produces a fresh version of your text.',
+      'Compare the rewritten version with your original text.',
+      'Copy the result or click Rewrite again for additional variations.',
+    ],
+    keyFeatures: [
+      'Multiple rewriting modes: Standard, Creative, Simplified, Expanded',
+      'Preserves original meaning while changing sentence structure and vocabulary',
+      'Useful for avoiding plagiarism and refreshing old content',
+      'Ideal for paraphrasing research sources, blog posts, and marketing copy',
+      'Powered by Gemini — produces natural, human-sounding rewrites',
+      'Unlimited rewrites — completely free with no daily limits',
+    ],
+    useCases: ['Content Writers', 'Students', 'SEO Professionals', 'Marketers', 'Researchers', 'Bloggers', 'Social Media Managers'],
+    faq: [
+      { question: 'What is the difference between rewriting and paraphrasing?', answer: 'Paraphrasing keeps the same ideas but changes the words. Rewriting can go further — restructuring sentences, changing perspective, adjusting tone, and producing a significantly different version.' },
+      { question: 'Can I use the rewriter to avoid plagiarism?', answer: 'Yes — rewriting changes sentence structure and vocabulary while preserving meaning. For academic work, always cite original sources regardless of rewriting.' },
+      { question: 'Does the rewriter change the meaning of my text?', answer: 'The AI is designed to preserve core meaning. In creative mode it may take more liberties with structure. Always review the output to ensure accuracy.' },
+      { question: 'What types of content can I rewrite?', answer: 'Blog posts, articles, product descriptions, social media posts, email copy, academic paragraphs, and any other written content from a single sentence to full paragraphs.' },
+      { question: 'How many times can I rewrite the same text?', answer: 'Unlimited. Each rewrite produces a different variation. Use multiple rewrites to find the version that best suits your needs.' },
+    ]
   },
   {
     id: 'ai-humanizer',
@@ -535,6 +816,32 @@ export const tools: ToolDefinition[] = [
     icon: '👤',
     type: 'custom',
     componentName: 'AIHumanizer'
+  ,
+    seoTitle: 'Free AI Text Humanizer — Make AI Text Sound Human | InfinityKit',
+    seoDescription: 'Transform AI-generated text into natural, human-sounding writing instantly. Bypass AI detectors, improve readability, and make content authentic. Free, no sign-up.',
+    howToSteps: [
+      'Paste your AI-generated text or robotic-sounding content into the input box.',
+      'Click Humanize Text — the AI rewrites it to sound naturally human-written.',
+      'The output avoids common AI patterns like delve, moreover, and testament to.',
+      'Review the humanized version for natural, organic-sounding flow.',
+      'Use the result for blog posts, emails, reports, or professional content.',
+    ],
+    keyFeatures: [
+      'Eliminates robotic AI writing patterns and overused AI vocabulary',
+      'Adds natural sentence variation for human-like rhythm and burstiness',
+      'Removes dead giveaways: delve, moreover, testament, in conclusion',
+      'Passes most AI content detection tools by producing organic text',
+      'Preserves the original meaning and all factual information',
+      'Works with content from ChatGPT, Claude, Gemini, and all AI writers',
+    ],
+    useCases: ['Content Writers', 'Bloggers', 'Students', 'SEO Professionals', 'Marketing Teams', 'Businesses using AI tools'],
+    faq: [
+      { question: 'What is AI text humanization?', answer: 'AI text humanization is the process of rewriting AI-generated content to remove patterns that make it sound robotic. This includes varying sentence length, removing overused AI vocabulary, and adding natural conversational flow.' },
+      { question: 'Will humanized text pass AI detection tools like GPTZero?', answer: 'Our humanizer is designed to produce text that reads as naturally human-written. While no tool guarantees 100% bypass of all detectors, humanized text performs significantly better than raw AI output.' },
+      { question: 'What AI writing patterns does the humanizer remove?', answer: 'It removes overused words like delve, testament, moreover, furthermore, in conclusion, and it is worth noting. It also fixes uniform sentence length, passive voice overuse, and overly formal phrasing.' },
+      { question: 'Does it work for content from ChatGPT and other AI tools?', answer: 'Yes — it works on content from ChatGPT, Claude, Gemini, Copilot, Jasper, and any other AI writing tool. Simply paste the generated text and click Humanize.' },
+      { question: 'Is the humanized content original?', answer: 'The content is a rewrite of your input — the ideas remain the same but the expression is transformed. Combine humanization with your own edits and personal insights for best results.' },
+    ]
   },
   {
     id: 'grammar-fixer',
@@ -544,6 +851,32 @@ export const tools: ToolDefinition[] = [
     icon: '🛠️',
     type: 'custom',
     componentName: 'GrammarFixer'
+  ,
+    seoTitle: 'Free AI Grammar Fixer & Spell Checker — Fix Errors Instantly | InfinityKit',
+    seoDescription: 'Fix grammar, spelling, and punctuation errors instantly with free AI. More powerful than basic spell checkers — corrects sentence structure and style. No sign-up needed.',
+    howToSteps: [
+      'Paste your text with grammar or spelling errors into the input box.',
+      'Click Fix Grammar — the AI scans and corrects all errors instantly.',
+      'Review the corrected text with all changes applied.',
+      'Copy the corrected version for your document, email, or post.',
+      'For additional improvement, run the corrected text through the Text Improver tool.',
+    ],
+    keyFeatures: [
+      'Fixes spelling mistakes, typos, and incorrect word usage',
+      'Corrects subject-verb agreement, tense consistency, and article usage',
+      'Fixes punctuation: commas, apostrophes, quotation marks, and semicolons',
+      'Improves sentence structure for readability and clarity',
+      'More powerful than basic checkers — fixes complex contextual errors',
+      'Supports US, UK, and Australian English variants',
+    ],
+    useCases: ['Students', 'Non-native English Speakers', 'Professionals', 'Email Writers', 'Content Creators', 'Job Applicants'],
+    faq: [
+      { question: 'Is this grammar checker better than Grammarly?', answer: 'InfinityKit Grammar Fixer uses Google Gemini which understands context deeply. It catches complex grammatical errors that rule-based tools miss — including contextual errors, tense shifts, and nuanced style issues.' },
+      { question: 'Does it fix punctuation errors too?', answer: 'Yes — it corrects all punctuation including missing commas, incorrect apostrophes, run-on sentences, semicolon misuse, and quotation mark formatting.' },
+      { question: 'Can it help non-native English speakers?', answer: 'Absolutely. The Grammar Fixer is especially useful for ESL learners who struggle with articles, prepositions, irregular verbs, and sentence structure patterns.' },
+      { question: 'Does it change my writing style?', answer: 'The Grammar Fixer corrects errors while preserving your voice. It does not significantly rewrite your content — only fixes mistakes. Use the Text Improver if you want your style enhanced.' },
+      { question: 'What is the maximum text length?', answer: 'Up to 30,000 characters — about 5,000 words. For longer documents, split into sections for the most thorough grammar check.' },
+    ]
   },
 
   // Utilities
@@ -578,6 +911,32 @@ export const tools: ToolDefinition[] = [
         copyable: true
       };
     }
+  ,
+    seoTitle: 'Free Strong Password Generator — Create Secure Passwords | InfinityKit',
+    seoDescription: 'Generate cryptographically strong random passwords instantly. Choose length, include numbers and symbols. 100% private — generated in your browser. Free, no sign-up.',
+    howToSteps: [
+      'Use the length slider to set your desired password length (8 to 64 characters).',
+      'Toggle "Include Numbers" to add digits (0-9) to your password.',
+      'Toggle "Include Symbols" to add special characters for maximum security.',
+      'Click Calculate Results — your strong password is generated instantly.',
+      'Click the copy button to copy your password to clipboard and store it in a password manager.',
+    ],
+    keyFeatures: [
+      'Cryptographically random generation using browser-native secure random APIs',
+      'Adjustable length from 8 to 64 characters',
+      'Include or exclude numbers, symbols, and mixed case letters',
+      'Generated entirely in your browser — never sent to any server',
+      'One-click clipboard copy for instant use',
+      'Free with no sign-up — generate unlimited passwords',
+    ],
+    useCases: ['Everyone', 'IT Administrators', 'Web Developers', 'Security Professionals', 'Business Owners', 'Students'],
+    faq: [
+      { question: 'Are the generated passwords truly random and secure?', answer: 'Yes. InfinityKit uses the browser Web Crypto API (crypto.getRandomValues) which generates cryptographically secure random values. These are the same standards used in professional security applications.' },
+      { question: 'What makes a password strong?', answer: 'A strong password is at least 12 characters long, contains uppercase and lowercase letters, numbers, and special symbols, and is unique for every account. Avoid dictionary words, names, or dates.' },
+      { question: 'Where should I store my generated passwords?', answer: 'Use a reputable password manager like Bitwarden (free and open-source), 1Password, or Dashlane. Never write passwords in a plain text file or reuse them across multiple accounts.' },
+      { question: 'Is my generated password stored or sent anywhere?', answer: 'No. All password generation happens entirely in your browser. The password never leaves your device — there are no server calls, no logs, and no tracking of any kind.' },
+      { question: 'How long should my password be?', answer: 'At minimum 12 characters for personal accounts, 16 or more for important accounts like email and banking, and 20 or more for administrative and server credentials.' },
+    ]
   },
   {
     id: 'qrcode-gen',
@@ -587,6 +946,32 @@ export const tools: ToolDefinition[] = [
     icon: '📱',
     type: 'custom',
     componentName: 'QRCodeGenerator'
+  ,
+    seoTitle: 'Free QR Code Generator — Create Scannable QR Codes Online | InfinityKit',
+    seoDescription: 'Generate QR codes for URLs, text, email, phone numbers, and more instantly. Free online QR code maker — download as PNG, no sign-up required.',
+    howToSteps: [
+      'Enter the URL, text, phone number, email, or any content you want to encode.',
+      'Your QR code generates automatically as you type — no button click needed.',
+      'Customize the size and error correction level if needed.',
+      'Click Download to save the QR code as a PNG image.',
+      'Use the QR code on business cards, flyers, posters, packaging, or websites.',
+    ],
+    keyFeatures: [
+      'Generates QR codes for URLs, plain text, email addresses, phone numbers, and more',
+      'Real-time preview — QR code updates as you type',
+      'Download as high-resolution PNG suitable for print',
+      'Error correction built-in — QR codes still scan even if slightly damaged',
+      'Works on all devices — desktop and mobile',
+      'Completely free — no sign-up, no watermarks, no limits',
+    ],
+    useCases: ['Business Owners', 'Marketers', 'Event Organizers', 'Restaurants', 'Teachers', 'Content Creators', 'Developers'],
+    faq: [
+      { question: 'What can I encode in a QR code?', answer: 'You can encode URLs, plain text, email addresses, phone numbers, SMS messages, WiFi credentials, vCard contact information, geographic coordinates, and much more. QR codes are versatile data containers.' },
+      { question: 'Are QR codes free to use commercially?', answer: 'Yes — QR codes are a free, open standard. QR codes generated by InfinityKit have no restrictions on commercial use. You can print them on products, marketing materials, and business cards without any licensing fees.' },
+      { question: 'How far away can a QR code be scanned?', answer: 'A standard smartphone can scan a QR code from about 1 foot (30cm) to 5 feet (1.5m) away at typical sizes. For large-format print (posters, billboards), QR codes can be scanned from much greater distances.' },
+      { question: 'Do QR codes expire?', answer: 'Static QR codes (like those generated here) never expire. The data is encoded directly in the pattern. Dynamic QR codes that point to redirect URLs may expire if the redirect service stops, but static ones are permanent.' },
+      { question: 'What size should my QR code be for printing?', answer: 'For business cards: minimum 1.5 cm × 1.5 cm (0.6 inch). For flyers: 2.5 cm to 5 cm. For posters: 5 cm to 10 cm. Larger is always better for reliable scanning.' },
+    ]
   },
   {
     id: 'unitconverter',
@@ -624,6 +1009,29 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free Multi-Unit Converter — Convert Length, Weight, Temp | InfinityKit',
+    seoDescription: 'Convert units of length, weight, temperature, area, volume, and speed instantly. Free, comprehensive online unit conversion tool.',
+    howToSteps: [
+      'Select the unit category (e.g. Length, Weight, Temperature, Area).',
+      'Choose the input unit (From) and the target unit (To).',
+      'Enter the value you wish to convert in the input field.',
+      'Click Calculate Results to see the converted value instantly.',
+      'Copy the converted output or change unit categories to convert different parameters.',
+    ],
+    keyFeatures: [
+      'Supports conversion across multiple categories: Length, Mass, Temp, Speed, Area, Volume',
+      'Converts metric and imperial units (e.g. meters to feet, kilograms to pounds)',
+      'High-precision decimal calculations with instant outputs',
+      'Runs completely locally in your browser for fast, offline-capable use',
+      'User-friendly dropdown navigation and clean layout',
+    ],
+    useCases: ['Students', 'Engineers', 'Travelers', 'Chefs & Bakers', 'DIY Hobbyists'],
+    faq: [
+      { question: 'Does this converter support temperature conversions?', answer: 'Yes, it converts between Celsius, Fahrenheit, and Kelvin using standard temperature formulas.' },
+      { question: 'What is the difference between imperial and metric systems?', answer: 'The metric system (meters, kilograms) is decimal-based and used globally. The imperial system (inches, pounds) is primary in the United States and United Kingdom.' },
+      { question: 'Are there any conversion limits?', answer: 'No, you can perform unlimited conversions for free. All math is done client-side so it is extremely fast.' }
+    ]
   },
 
   // Math Tools
@@ -650,6 +1058,31 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free Discount Calculator — Find Final Price & Savings | InfinityKit',
+    seoDescription: 'Calculate the final price after discount instantly. Enter original price and discount percentage to see how much you save. Free online discount calculator.',
+    howToSteps: [
+      'Enter the original price of the item in the Original Price field.',
+      'Enter the discount percentage in the Discount Percentage field (e.g., 20 for 20%).',
+      'Click Calculate Results — the final price and amount saved appear instantly.',
+      'Use the result to compare deals and make smarter purchasing decisions.',
+    ],
+    keyFeatures: [
+      'Instantly calculates final price after any percentage discount',
+      'Shows the exact amount saved in dollars',
+      'Works for any currency — dollar, euro, pound, rupee, and more',
+      'Simple, fast calculation requiring just two inputs',
+      'Accurate to two decimal places for precise shopping math',
+      'Free and private — no account or sign-up needed',
+    ],
+    useCases: ['Shoppers', 'Retailers', 'Students', 'Business Owners', 'Sales Teams', 'Cashiers'],
+    faq: [
+      { question: 'How is the discounted price calculated?', answer: 'The formula is: Final Price = Original Price × (1 - Discount% / 100). For example, a $100 item with 20% off: $100 × (1 - 0.20) = $100 × 0.80 = $80. You save $20.' },
+      { question: 'Can I calculate the original price from a sale price?', answer: 'To find the original price when you know the sale price and discount: Original Price = Sale Price / (1 - Discount% / 100). For example, $80 sale with 20% discount: $80 / 0.80 = $100 original price.' },
+      { question: 'How do I calculate multiple discounts (stacked discounts)?', answer: 'Calculate the first discount, then apply the second discount to the resulting price. For example, 20% off then 10% off a $100 item: $100 → $80 after 20% → $72 after 10%. This is not the same as 30% off.' },
+      { question: 'What is the difference between discount and cashback?', answer: 'A discount reduces the price before payment. Cashback returns a percentage of the paid amount after purchase. The effective savings are similar but cashback requires you to pay the full price first.' },
+      { question: 'Can this calculate sale tax after discount?', answer: 'This tool calculates the discount only. To add tax: calculate the discounted price first, then multiply by (1 + tax rate/100). For example, $80 with 8% tax: $80 × 1.08 = $86.40.' },
+    ]
   },
   {
     id: 'percentagecalc',
@@ -673,6 +1106,28 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free Simple Percentage Calculator — Quick Math Tool | InfinityKit',
+    seoDescription: 'Calculate percentages, percentage increases, decreases, fractions, and proportions instantly. Free, easy-to-use online percentage calculator.',
+    howToSteps: [
+      'Choose the percentage operation you want to perform from the list.',
+      'Enter the values in the designated input fields.',
+      'Click Calculate Results to view the percentage output instantly.',
+      'Copy the result or clear the fields to run another percentage check.',
+    ],
+    keyFeatures: [
+      'Multiple operations: find percent of a number, percentage change, and proportions',
+      'Real-time calculations with instant, precise decimal results',
+      'Responsive, clutter-free layout for quick desktop and mobile use',
+      '100% client-side computing ensures your financial data stays private',
+      'Completely free with no popups or registration required',
+    ],
+    useCases: ['Shoppers', 'Students', 'Business Analysts', 'Accountants', 'Teachers'],
+    faq: [
+      { question: 'How do I calculate a percentage increase?', answer: 'Subtract the old value from the new value, divide the difference by the old value, and multiply by 100. (e.g. increase from 50 to 75 is 50%).' },
+      { question: 'Can this tool help with tipping or sales tax?', answer: 'Yes! You can find the tip or tax amount by calculating the percentage of your total bill, then adding it to the subtotal.' },
+      { question: 'What is a percentage in math?', answer: 'A percentage is a number or ratio expressed as a fraction of 100. It is denoted using the percent sign "%".' }
+    ]
   },
   {
     id: 'lcmhcf',
@@ -699,6 +1154,29 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free LCM & HCF Calculator — Least Common Multiple | InfinityKit',
+    seoDescription: 'Calculate the Least Common Multiple (LCM) and Highest Common Factor (HCF / GCD) for multiple numbers instantly. Free educational math tool.',
+    howToSteps: [
+      'Enter the first number in the designated input field.',
+      'Enter the second number (and subsequent numbers if needed).',
+      'Click Calculate Results to compute the LCM and HCF values.',
+      'Review the step-by-step prime factorization breakdown of the numbers.',
+      'Use the output values for simplifying fractions or solving algebra problems.',
+    ],
+    keyFeatures: [
+      'Finds both Least Common Multiple (LCM) and Highest Common Factor (HCF / GCD)',
+      'Supports multiple integers simultaneously',
+      'Displays prime factorization steps for educational learning',
+      'Completely free to use with zero advertisements or subscription limits',
+      'Calculates instantly in your browser without sending data to servers',
+    ],
+    useCases: ['Students', 'Math Teachers', 'Parents helping with homework', 'Engineers'],
+    faq: [
+      { question: 'What is the difference between LCM and HCF?', answer: 'LCM (Least Common Multiple) is the smallest positive integer divisible by all numbers. HCF (Highest Common Factor) is the largest integer that divides all numbers without a remainder.' },
+      { question: 'Is HCF the same as GCD?', answer: 'Yes, HCF (Highest Common Factor) is also known as GCD (Greatest Common Divisor) or GCF (Greatest Common Factor).' },
+      { question: 'How is LCM used in real life?', answer: 'LCM is commonly used to find common denominators when adding or subtracting fractions, and to coordinate events that repeat at different intervals.' }
+    ]
   },
 
   // Web Tools
@@ -728,6 +1206,32 @@ export const tools: ToolDefinition[] = [
         return { mainValue: 'Error decoding text. Invalid format.', color: 'error' };
       }
     }
+  ,
+    seoTitle: 'Free URL Encoder & Decoder — Encode Decode URLs Online | InfinityKit',
+    seoDescription: 'Encode and decode URLs and strings online instantly. Convert special characters to URL-safe format or decode percent-encoded strings. Free, no sign-up needed.',
+    howToSteps: [
+      'Paste your URL or text string into the input field.',
+      'Select Encode to convert special characters to URL-safe percent-encoded format.',
+      'Select Decode to convert percent-encoded strings back to readable text.',
+      'Click Calculate Results — the encoded or decoded output appears instantly.',
+      'Copy the result for use in your browser, API, or application.',
+    ],
+    keyFeatures: [
+      'Encodes special characters to percent-encoded URL-safe format',
+      'Decodes percent-encoded strings back to readable text',
+      'Handles all special characters: spaces, &, =, ?, #, @, and more',
+      'Essential for building URLs with query parameters in web development',
+      'Instant results — no button click needed after input',
+      'Free and unlimited — no account required',
+    ],
+    useCases: ['Web Developers', 'API Developers', 'SEO Specialists', 'Digital Marketers', 'Students', 'System Administrators'],
+    faq: [
+      { question: 'What is URL encoding?', answer: 'URL encoding (also called percent-encoding) converts characters that are not allowed in URLs into a safe format. For example, a space becomes %20, and & becomes %26. This ensures URLs are valid and properly interpreted by browsers and servers.' },
+      { question: 'When do I need to URL encode a string?', answer: 'You need to URL encode when passing special characters in query parameters, form data, or API calls. For example: https://example.com/search?q=hello%20world (where space is encoded as %20).' },
+      { question: 'What is the difference between encodeURI and encodeURIComponent?', answer: 'encodeURI encodes an entire URL, preserving characters like /, ?, and #. encodeURIComponent encodes individual components like query parameter values, encoding those characters too. InfinityKit uses encodeURIComponent for maximum safety.' },
+      { question: 'Can I decode multiple URLs at once?', answer: 'Currently the tool processes one URL or string at a time. Paste each URL separately and use the decode function to convert it.' },
+      { question: 'Is URL decoding safe for all encoded strings?', answer: 'Standard percent-encoded strings decode safely. However, malformed or double-encoded strings may produce unexpected results. The tool shows an error message if decoding fails due to invalid encoding.' },
+    ]
   },
 
   // Case Converter
@@ -775,6 +1279,32 @@ export const tools: ToolDefinition[] = [
         copyable: true
       };
     }
+  ,
+    seoTitle: 'Free Case Converter — UPPERCASE, lowercase, Title Case Online | InfinityKit',
+    seoDescription: 'Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, or PascalCase instantly. Free online text case converter. No sign-up needed.',
+    howToSteps: [
+      'Paste or type your text into the input field.',
+      'Select the conversion mode from the dropdown: UPPERCASE, lowercase, Title Case, camelCase, snake_case, or PascalCase.',
+      'Click Calculate Results — your converted text appears instantly.',
+      'Click the copy button to copy the converted text to your clipboard.',
+      'Switch between different case formats as needed without retyping.',
+    ],
+    keyFeatures: [
+      'Six conversion modes: UPPERCASE, lowercase, Title Case, camelCase, snake_case, PascalCase',
+      'Converts entire paragraphs or single words instantly',
+      'One-click copy to clipboard for immediate use',
+      'Ideal for programming variable names, headings, and text formatting',
+      '100% private — runs in browser, no text sent to any server',
+      'Free and unlimited with no account required',
+    ],
+    useCases: ['Developers', 'Writers', 'Students', 'SEO Professionals', 'Data Entry Workers', 'Content Editors'],
+    faq: [
+      { question: 'What is the difference between camelCase and PascalCase?', answer: 'camelCase starts with a lowercase letter (e.g., myVariableName) and is used in JavaScript, Java, and Swift. PascalCase starts with an uppercase letter (e.g., MyVariableName) and is common in C#, class names, and React components.' },
+      { question: 'What is snake_case used for?', answer: 'snake_case uses underscores between words in lowercase (e.g., my_variable_name). It is widely used in Python, Ruby, database column names, and file names in many projects.' },
+      { question: 'What is Title Case?', answer: 'Title Case capitalizes the first letter of each major word (e.g., The Quick Brown Fox). It is used for book titles, article headings, movie titles, and formal document headings.' },
+      { question: 'Can I convert multiple paragraphs at once?', answer: 'Yes — paste any amount of text and the entire block is converted to your selected case format instantly.' },
+      { question: 'Is this tool useful for programming?', answer: 'Absolutely. Developers use the Case Converter to quickly generate properly formatted variable names, function names, and class names in their preferred programming convention.' },
+    ]
   },
 
   // Word Counter
@@ -802,6 +1332,32 @@ export const tools: ToolDefinition[] = [
         color: 'success'
       };
     }
+  ,
+    seoTitle: 'Free Word Counter & Character Counter — Count Words Online | InfinityKit',
+    seoDescription: 'Count words, characters, paragraphs, and estimate reading time instantly. Free online word counter tool — paste your text and get results in real time. No sign-up needed.',
+    howToSteps: [
+      'Paste or type your text into the input field.',
+      'Word count, character count, paragraph count, and reading time update instantly.',
+      'No button to click — results appear in real time as you type.',
+      'Use the statistics for essays, articles, social media posts, and more.',
+      'Clear the field and paste new text to count a different document.',
+    ],
+    keyFeatures: [
+      'Real-time counting — updates instantly as you type or paste',
+      'Counts words, characters (with and without spaces), sentences, and paragraphs',
+      'Estimates reading time based on average 200 words per minute',
+      'Perfect for meeting word count requirements in essays, articles, and posts',
+      'Works entirely in your browser — no text is sent to any server',
+      'Free and unlimited — no account needed',
+    ],
+    useCases: ['Students', 'Writers', 'Bloggers', 'Social Media Managers', 'SEO Professionals', 'Journalists', 'Content Marketers'],
+    faq: [
+      { question: 'How does the word counter work?', answer: 'The tool counts sequences of characters separated by spaces, treating each sequence as a word. It simultaneously counts characters, paragraphs (separated by line breaks), and calculates estimated reading time at 200 words per minute.' },
+      { question: 'What is the character limit on Twitter, Instagram, and LinkedIn?', answer: 'Twitter allows 280 characters per tweet. LinkedIn posts allow up to 3000 characters. Instagram captions allow up to 2200 characters. Use this counter to stay within limits.' },
+      { question: 'Does it count characters with or without spaces?', answer: 'Both — the tool displays character count with spaces and character count without spaces separately, giving you flexibility for different platform requirements.' },
+      { question: 'Can I count words in different languages?', answer: 'Yes — the word counter works with all languages that use spaces between words, including English, French, Spanish, German, and many others. For languages without spaces like Chinese or Japanese, it counts character sequences.' },
+      { question: 'Is there a maximum text length?', answer: 'There is no hard limit. The tool handles documents of any length — from a single sentence to full research papers or books — and updates counts in real time.' },
+    ]
   },
 
   // Fibonacci Generator
@@ -1571,6 +2127,30 @@ export const tools: ToolDefinition[] = [
     icon: '💬',
     type: 'custom',
     componentName: 'AIChatPDF'
+  ,
+    seoTitle: 'Free AI Chat PDF — Discuss & Ask Questions to Any PDF | InfinityKit',
+    seoDescription: 'Chat with any PDF document for free. Upload your PDF and ask questions, find specific information, or get instant summaries. 100% private and secure.',
+    howToSteps: [
+      'Click the Upload PDF button to select a PDF document from your device.',
+      'Once processed, type your question or query in the chat input box.',
+      'Press Enter or click Send to ask the AI about the contents of your PDF.',
+      'Read the precise response referencing details directly from your document.',
+      'Continue chatting or upload a new PDF to start a fresh discussion.',
+    ],
+    keyFeatures: [
+      'Instant PDF text extraction and semantic understanding',
+      'Interactive chat interface powered by Google Gemini AI model',
+      'Provides page-level references and accurate citations',
+      '100% secure — document text processed locally and via secure AI API',
+      'Completely free with no file size limits or registration required',
+    ],
+    useCases: ['Students', 'Researchers', 'Lawyers', 'Business Analysts', 'Teachers', 'Journalists'],
+    faq: [
+      { question: 'How does the AI Chat PDF tool work?', answer: 'The tool extracts text from your uploaded PDF and uses Gemini AI to search, analyze, and answer questions about it in real-time.' },
+      { question: 'Is my uploaded PDF document secure and private?', answer: 'Yes, your privacy is our priority. Your files are not stored on our servers; they are processed locally in your browser session.' },
+      { question: 'Is there a page or file size limit for PDFs?', answer: 'We support documents up to 50MB and hundreds of pages, though processing time may vary depending on your device\'s speed.' },
+      { question: 'Can I translate my PDF contents using the chat?', answer: 'Yes, you can ask the AI to translate specific sections or summarize the entire PDF in any language you prefer.' }
+    ]
   },
   {
     id: 'rearrange-pdf',
@@ -2249,6 +2829,30 @@ export const tools: ToolDefinition[] = [
     icon: '🎨',
     type: 'custom',
     componentName: 'AIImageGenerator'
+  ,
+    seoTitle: 'Free AI Image Generator — Generate Stunning Art from Text | InfinityKit',
+    seoDescription: 'Convert your words into beautiful images instantly with our free AI Image Generator. Choose styles, customize prompts, and download custom graphics. No sign-up needed.',
+    howToSteps: [
+      'Enter a descriptive text prompt explaining what image you want to generate.',
+      'Choose a style preset (e.g. Cinematic, Anime, 3D Render, Origami, Cyberpunk).',
+      'Select your preferred aspect ratio (e.g. 1:1 Square, 16:9 Landscape, 9:16 Vertical).',
+      'Click Generate Image — the AI synthesizes your visual graphic in seconds.',
+      'Click the Download button to save the high-resolution image to your device.',
+    ],
+    keyFeatures: [
+      'Powered by Pollinations AI model backend — fast and detailed image generation',
+      'Wide array of artistic style presets: Cinematic, Anime, Photo, 3D Render, and more',
+      'Multiple aspect ratios optimized for Instagram, YouTube, and blog headers',
+      'Real-time loading indicator and interactive visual gallery',
+      '100% free with no watermark, registration, or credit card required',
+    ],
+    useCases: ['Designers', 'Content Creators', 'Bloggers', 'Social Media Managers', 'Students', 'Web Developers'],
+    faq: [
+      { question: 'Is the AI Image Generator free to use commercially?', answer: 'Yes, images generated are 100% free for both personal and commercial use without licensing restrictions.' },
+      { question: 'How detailed should my text prompts be?', answer: 'The more descriptive, the better. Instead of "a dog", write "a fluffy golden retriever puppy sitting in a sunny park, cinematic lighting, 8k resolution".' },
+      { question: 'Can I generate images in different aspect ratios?', answer: 'Yes, you can choose from 1:1 Square, 16:9 Landscape (ideal for banners/headers), and 9:16 Portrait (perfect for phone wallpapers/stories).' },
+      { question: 'What AI model does this generator use?', answer: 'InfinityKit AI Image Generator uses advanced stable diffusion models via the Pollinations API to provide high-quality image synthesis.' }
+    ]
   },
   {
     id: 'ai-art-generator',
