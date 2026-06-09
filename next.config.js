@@ -25,6 +25,10 @@ const nextConfig = {
       'lucide-react',
       'framer-motion',
     ],
+    serverComponentsExternalPackages: [
+      '@ffmpeg-installer/ffmpeg',
+      '@ffprobe-installer/ffprobe',
+    ],
   },
   // ─── Legacy SEO Redirects (301 Permanent Redirects for Google Index) ─────
   async redirects() {
