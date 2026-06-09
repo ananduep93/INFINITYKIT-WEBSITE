@@ -68,13 +68,43 @@ function resolveFfmpegPaths() {
     const localFfmpeg = ffmpegInstaller.path;
     const localFfprobe = ffprobeInstaller.path;
     if (localFfmpeg && fs.existsSync(localFfmpeg) && localFfprobe && fs.existsSync(localFfprobe)) {
-      console.log(`[Video API] Found FFmpeg binaries in npm package installers: ${localFfmpeg}`);
-      ffmpeg.setFfmpegPath(localFfmpeg);
-      ffmpeg.setFfprobePath(localFfprobe);
+      let finalFfmpeg = localFfmpeg;
+      let finalFfprobe = localFfprobe;
+
+      // On non-Windows platforms, guarantee execute permissions by copying to /tmp and chmoding if necessary
+      if (os.platform() !== 'win32') {
+        try {
+          const tmpFfmpeg = path.join(os.tmpdir(), 'ik_ffmpeg');
+          const tmpFfprobe = path.join(os.tmpdir(), 'ik_ffprobe');
+
+          if (!fs.existsSync(tmpFfmpeg)) {
+            fs.copyFileSync(localFfmpeg, tmpFfmpeg);
+            fs.chmodSync(tmpFfmpeg, '755');
+          }
+          if (!fs.existsSync(tmpFfprobe)) {
+            fs.copyFileSync(localFfprobe, tmpFfprobe);
+            fs.chmodSync(tmpFfprobe, '755');
+          }
+
+          finalFfmpeg = tmpFfmpeg;
+          finalFfprobe = tmpFfprobe;
+          console.log(`[Video API] Copied and chmod-ed binaries in /tmp: ${finalFfmpeg}`);
+        } catch (chmodErr) {
+          console.warn('[Video API WARNING] Could not copy/chmod binaries to /tmp:', chmodErr);
+          try {
+            fs.chmodSync(localFfmpeg, '755');
+            fs.chmodSync(localFfprobe, '755');
+          } catch (e) {}
+        }
+      }
+
+      console.log(`[Video API] Using FFmpeg: ${finalFfmpeg}`);
+      ffmpeg.setFfmpegPath(finalFfmpeg);
+      ffmpeg.setFfprobePath(finalFfprobe);
 
       // Cache the paths to disk
       try {
-        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: localFfmpeg, ffprobe: localFfprobe }), 'utf8');
+        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: finalFfmpeg, ffprobe: finalFfprobe }), 'utf8');
       } catch (e) {}
 
       ffmpegPathsResolved = true;
@@ -162,26 +192,30 @@ export async function POST(request: Request) {
 
       const tempInputPaths: string[] = [];
       const tempOutputPath = path.join(os.tmpdir(), `merged_${Date.now()}.mp4`);
+      const listFilePath = path.join(os.tmpdir(), `merge_list_${Date.now()}.txt`);
 
       try {
-        const command = ffmpeg();
-        
         for (const file of files) {
           const tempPath = path.join(os.tmpdir(), `input_merge_${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${file.name}`);
           const buffer = Buffer.from(await file.arrayBuffer());
           fs.writeFileSync(tempPath, buffer);
           tempInputPaths.push(tempPath);
-          command.input(tempPath);
         }
 
+        // Write file list for concat demuxer (use forward slashes for cross-platform compatibility)
+        const listContent = tempInputPaths.map(p => `file '${p.replace(/\\/g, '/')}'`).join('\n');
+        fs.writeFileSync(listFilePath, listContent, 'utf8');
+
         await new Promise<void>((resolve, reject) => {
-          command
+          ffmpeg(listFilePath)
+            .inputOptions(['-f', 'concat', '-safe', '0'])
+            .outputOptions('-c copy')
             .on('end', () => resolve())
             .on('error', (err) => {
               console.error('[FFmpeg Merge Error]', err);
               reject(err);
             })
-            .mergeToFile(tempOutputPath, os.tmpdir());
+            .save(tempOutputPath);
         });
 
         const fileBuffer = fs.readFileSync(tempOutputPath);
@@ -189,6 +223,7 @@ export async function POST(request: Request) {
         // Cleanup
         tempInputPaths.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p); });
         if (fs.existsSync(tempOutputPath)) fs.unlinkSync(tempOutputPath);
+        if (fs.existsSync(listFilePath)) fs.unlinkSync(listFilePath);
 
         return new Response(fileBuffer, {
           headers: {
@@ -199,6 +234,7 @@ export async function POST(request: Request) {
       } catch (err: any) {
         tempInputPaths.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p); });
         if (fs.existsSync(tempOutputPath)) fs.unlinkSync(tempOutputPath);
+        if (fs.existsSync(listFilePath)) fs.unlinkSync(listFilePath);
         return NextResponse.json({ error: `Merge process failed: ${err.message}` }, { status: 500 });
       }
     }

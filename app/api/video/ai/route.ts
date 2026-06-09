@@ -68,13 +68,43 @@ function resolveFfmpegPaths() {
     const localFfmpeg = ffmpegInstaller.path;
     const localFfprobe = ffprobeInstaller.path;
     if (localFfmpeg && fs.existsSync(localFfmpeg) && localFfprobe && fs.existsSync(localFfprobe)) {
-      console.log(`[Video AI API] Found FFmpeg binaries in npm package installers: ${localFfmpeg}`);
-      ffmpeg.setFfmpegPath(localFfmpeg);
-      ffmpeg.setFfprobePath(localFfprobe);
+      let finalFfmpeg = localFfmpeg;
+      let finalFfprobe = localFfprobe;
+
+      // On non-Windows platforms, guarantee execute permissions by copying to /tmp and chmoding if necessary
+      if (os.platform() !== 'win32') {
+        try {
+          const tmpFfmpeg = path.join(os.tmpdir(), 'ik_ffmpeg');
+          const tmpFfprobe = path.join(os.tmpdir(), 'ik_ffprobe');
+
+          if (!fs.existsSync(tmpFfmpeg)) {
+            fs.copyFileSync(localFfmpeg, tmpFfmpeg);
+            fs.chmodSync(tmpFfmpeg, '755');
+          }
+          if (!fs.existsSync(tmpFfprobe)) {
+            fs.copyFileSync(localFfprobe, tmpFfprobe);
+            fs.chmodSync(tmpFfprobe, '755');
+          }
+
+          finalFfmpeg = tmpFfmpeg;
+          finalFfprobe = tmpFfprobe;
+          console.log(`[Video AI API] Copied and chmod-ed binaries in /tmp: ${finalFfmpeg}`);
+        } catch (chmodErr) {
+          console.warn('[Video AI API WARNING] Could not copy/chmod binaries to /tmp:', chmodErr);
+          try {
+            fs.chmodSync(localFfmpeg, '755');
+            fs.chmodSync(localFfprobe, '755');
+          } catch (e) {}
+        }
+      }
+
+      console.log(`[Video AI API] Using FFmpeg: ${finalFfmpeg}`);
+      ffmpeg.setFfmpegPath(finalFfmpeg);
+      ffmpeg.setFfprobePath(finalFfprobe);
 
       // Cache the paths to disk
       try {
-        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: localFfmpeg, ffprobe: localFfprobe }), 'utf8');
+        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: finalFfmpeg, ffprobe: finalFfprobe }), 'utf8');
       } catch (e) {}
 
       ffmpegPathsResolved = true;

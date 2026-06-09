@@ -37,25 +37,53 @@ export default function PDFToWord() {
     const pdf = await loadingTask.promise;
     const numPages = pdf.numPages;
     
-    const pagesText: string[] = [];
-
-    for (let i = 1; i <= numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items.map((item: any) => item.str).join(' ');
-      pagesText.push(pageText);
-    }
-
     // 2. Generate Docx using 'docx' library client-side
     const { Document, Packer, Paragraph, TextRun, PageBreak } = await import('docx');
 
     const children: any[] = [];
-    pagesText.forEach((text, index) => {
+
+    for (let i = 1; i <= numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const items = textContent.items as any[];
+
+      // Group items on this page into lines using Y coordinate tolerance
+      const mappedItems = items.map((item: any) => ({
+        str: item.str,
+        x: item.transform[4],
+        y: item.transform[5],
+        width: item.width,
+        height: item.height,
+      }));
+
+      const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
+      for (const item of mappedItems) {
+        let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 4));
+        if (foundLine) {
+          foundLine.items.push(item);
+        } else {
+          lines.push({
+            y: item.y,
+            height: item.height,
+            items: [item]
+          });
+        }
+      }
+
+      // Sort lines by Y descending (top to bottom)
+      lines.sort((a, b) => b.y - a.y);
+
+      // Sort items within each line by X ascending (left to right)
+      for (const line of lines) {
+        line.items.sort((a, b) => a.x - b.x);
+      }
+
+      // Add a visual page indicator in the Word document
       children.push(
         new Paragraph({
           children: [
             new TextRun({
-              text: `--- Page ${index + 1} ---`,
+              text: `--- Page ${i} ---`,
               bold: true,
               size: 24,
             }),
@@ -64,23 +92,76 @@ export default function PDFToWord() {
       );
       children.push(new Paragraph({ text: '' })); // Spacing
 
-      // Split text into paragraphs by visual segments if any, or just add
-      children.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: text || '[Empty Page]',
-              size: 22,
-            }),
-          ],
-        })
-      );
+      // Build paragraphs from lines
+      let currentParagraphRuns: any[] = [];
+      let lastY = -1;
+      let lastLineHeight = 12;
 
-      // Add page break if it's not the last page
-      if (index < pagesText.length - 1) {
+      for (let l = 0; l < lines.length; l++) {
+        const line = lines[l];
+        let lineText = '';
+        let lastX = -1;
+        let maxItemHeight = line.height;
+
+        for (const item of line.items) {
+          if (lastX !== -1) {
+            const gap = item.x - lastX;
+            // Estimate spaces to add based on average character width
+            const spaceCharWidth = Math.max(item.height * 0.25, 3);
+            if (gap > spaceCharWidth) {
+              const numSpaces = Math.min(Math.round(gap / spaceCharWidth), 20);
+              lineText += ' '.repeat(numSpaces);
+            }
+          }
+          lineText += item.str;
+          lastX = item.x + item.width;
+          if (item.height > maxItemHeight) {
+            maxItemHeight = item.height;
+          }
+        }
+
+        // Determine if we should start a new paragraph
+        if (lastY !== -1) {
+          const verticalGap = lastY - line.y;
+          // If vertical gap is larger than 1.8x line height, start a new paragraph
+          if (verticalGap > lastLineHeight * 1.8) {
+            if (currentParagraphRuns.length > 0) {
+              children.push(new Paragraph({ children: currentParagraphRuns }));
+              currentParagraphRuns = [];
+            }
+            // Add blank paragraphs for proportional vertical spacing
+            const emptyParagraphsCount = Math.min(Math.floor(verticalGap / (lastLineHeight * 2.5)), 4);
+            for (let ep = 0; ep < emptyParagraphsCount; ep++) {
+              children.push(new Paragraph({ text: '' }));
+            }
+          } else {
+            // Append line break to keep it in the same paragraph
+            currentParagraphRuns.push(new TextRun({ break: 1 }));
+          }
+        }
+
+        // Add line text
+        const docxSize = Math.round(maxItemHeight * 2);
+        currentParagraphRuns.push(
+          new TextRun({
+            text: lineText,
+            size: docxSize > 0 ? docxSize : 22,
+          })
+        );
+
+        lastY = line.y;
+        lastLineHeight = maxItemHeight;
+      }
+
+      if (currentParagraphRuns.length > 0) {
+        children.push(new Paragraph({ children: currentParagraphRuns }));
+      }
+
+      // Add a page break at the end of each page, except the last one
+      if (i < numPages) {
         children.push(new Paragraph({ children: [new PageBreak()] }));
       }
-    });
+    }
 
     const doc = new Document({
       sections: [

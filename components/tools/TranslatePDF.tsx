@@ -84,7 +84,73 @@ export default function TranslatePDF() {
         setProgressText(`Extracting text from page ${i}...`);
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+        const items = textContent.items as any[];
+
+        // Group into lines based on Y coordinate with tolerance
+        const mappedItems = items.map((item: any) => ({
+          str: item.str,
+          x: item.transform[4],
+          y: item.transform[5],
+          width: item.width,
+          height: item.height
+        }));
+
+        const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
+        for (const item of mappedItems) {
+          let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 4));
+          if (foundLine) {
+            foundLine.items.push(item);
+          } else {
+            lines.push({
+              y: item.y,
+              height: item.height,
+              items: [item]
+            });
+          }
+        }
+
+        // Sort lines from top to bottom (Y descending)
+        lines.sort((a, b) => b.y - a.y);
+
+        // Sort items within each line by X ascending (left to right)
+        for (const line of lines) {
+          line.items.sort((a, b) => a.x - b.x);
+        }
+
+        let pageText = '';
+        let lastY = -1;
+        let lastLineHeight = 12;
+
+        for (const line of lines) {
+          let lineText = '';
+          let lastX = -1;
+          for (const item of line.items) {
+            if (lastX !== -1) {
+              const gap = item.x - lastX;
+              const spaceCharWidth = Math.max(item.height * 0.25, 3);
+              if (gap > spaceCharWidth) {
+                const numSpaces = Math.min(Math.round(gap / spaceCharWidth), 20);
+                lineText += ' '.repeat(numSpaces);
+              }
+            }
+            lineText += item.str;
+            lastX = item.x + item.width;
+          }
+
+          if (lastY !== -1) {
+            const verticalGap = lastY - line.y;
+            if (verticalGap > lastLineHeight * 1.8) {
+              pageText += '\n\n';
+            } else {
+              pageText += '\n';
+            }
+          }
+          
+          pageText += lineText;
+          lastY = line.y;
+          lastLineHeight = line.height;
+        }
+
         documentText += `[Page ${i}]\n${pageText}\n\n`;
       }
 

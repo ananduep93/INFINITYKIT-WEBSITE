@@ -43,29 +43,39 @@ export default function PDFToExcel() {
       
       // Coordinate-based line grouping
       const items = textContent.items as any[];
-      items.sort((a, b) => b.transform[5] - a.transform[5] || a.transform[4] - b.transform[4]);
       
-      let currentY = -1;
-      let currentRow: string[] = [];
+      const mappedItems = items.map((item: any) => ({
+        str: item.str.trim(),
+        x: item.transform[4],
+        y: item.transform[5],
+        width: item.width,
+        height: item.height,
+      })).filter(item => item.str !== '');
 
-      items.forEach((item) => {
-        const y = item.transform[5];
-        const text = item.str.trim();
-        if (!text) return;
-
-        // Tolerance for same line grouping
-        if (currentY === -1 || Math.abs(y - currentY) < 5) {
-          currentRow.push(text);
-          currentY = y;
+      const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
+      for (const item of mappedItems) {
+        let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 5));
+        if (foundLine) {
+          foundLine.items.push(item);
         } else {
-          // Output previous row
-          htmlTable += '<tr>' + currentRow.map(col => `<td>${col}</td>`).join('') + '</tr>';
-          currentRow = [text];
-          currentY = y;
+          lines.push({
+            y: item.y,
+            height: item.height,
+            items: [item]
+          });
         }
-      });
-      if (currentRow.length > 0) {
-        htmlTable += '<tr>' + currentRow.map(col => `<td>${col}</td>`).join('') + '</tr>';
+      }
+
+      // Sort lines by Y descending (top to bottom)
+      lines.sort((a, b) => b.y - a.y);
+
+      // Sort items within each line by X ascending (left to right)
+      for (const line of lines) {
+        line.items.sort((a, b) => a.x - b.x);
+        const currentRow = line.items.map(item => item.str);
+        if (currentRow.length > 0) {
+          htmlTable += '<tr>' + currentRow.map(col => `<td>${col}</td>`).join('') + '</tr>';
+        }
       }
     }
     

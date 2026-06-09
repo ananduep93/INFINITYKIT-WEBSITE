@@ -42,31 +42,42 @@ export default function PDFToCSV() {
       const textContent = await page.getTextContent();
       
       const items = textContent.items as any[];
-      // Sort vertically then horizontally
-      items.sort((a, b) => b.transform[5] - a.transform[5] || a.transform[4] - b.transform[4]);
       
-      let currentY = -1;
-      let currentRow: string[] = [];
+      const mappedItems = items.map((item: any) => ({
+        str: item.str.trim(),
+        x: item.transform[4],
+        y: item.transform[5],
+        width: item.width,
+        height: item.height,
+      })).filter(item => item.str !== '');
 
-      items.forEach((item) => {
-        const y = item.transform[5];
-        const text = item.str.trim();
-        if (!text) return;
-
-        if (currentY === -1 || Math.abs(y - currentY) < 5) {
-          // Escape commas in fields
-          const escaped = text.includes(',') ? `"${text.replace(/"/g, '""')}"` : text;
-          currentRow.push(escaped);
-          currentY = y;
+      const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
+      for (const item of mappedItems) {
+        let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 5));
+        if (foundLine) {
+          foundLine.items.push(item);
         } else {
-          csvContent += currentRow.join(',') + '\n';
-          const escaped = text.includes(',') ? `"${text.replace(/"/g, '""')}"` : text;
-          currentRow = [escaped];
-          currentY = y;
+          lines.push({
+            y: item.y,
+            height: item.height,
+            items: [item]
+          });
         }
-      });
-      if (currentRow.length > 0) {
-        csvContent += currentRow.join(',') + '\n';
+      }
+
+      // Sort lines by Y descending (top to bottom)
+      lines.sort((a, b) => b.y - a.y);
+
+      // Sort items within each line by X ascending (left to right)
+      for (const line of lines) {
+        line.items.sort((a, b) => a.x - b.x);
+        const currentRow = line.items.map(item => {
+          const text = item.str;
+          return text.includes(',') ? `"${text.replace(/"/g, '""')}"` : text;
+        });
+        if (currentRow.length > 0) {
+          csvContent += currentRow.join(',') + '\n';
+        }
       }
     }
 
