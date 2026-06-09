@@ -27,7 +27,9 @@ const nextConfig = {
     ],
     serverComponentsExternalPackages: [
       '@ffmpeg-installer/ffmpeg',
+      '@ffmpeg-installer/linux-x64',
       '@ffprobe-installer/ffprobe',
+      '@ffprobe-installer/linux-x64',
     ],
   },
   // ─── Legacy SEO Redirects (301 Permanent Redirects for Google Index) ─────

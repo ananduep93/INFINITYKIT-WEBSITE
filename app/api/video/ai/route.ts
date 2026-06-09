@@ -5,10 +5,9 @@ import os from 'os';
 import { execSync } from 'child_process';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ffmpeg from 'fluent-ffmpeg';
-// @ts-ignore
-import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
-// @ts-ignore
-import ffprobeInstaller from '@ffprobe-installer/ffprobe';
+// Dynamically imported at runtime to prevent cold-start or loading crashes in serverless environments
+let ffmpegInstaller: any = null;
+let ffprobeInstaller: any = null;
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes max timeout
@@ -65,6 +64,8 @@ function resolveFfmpegPaths() {
 
   // 3. Check local npm packages @ffmpeg-installer/ffmpeg and @ffprobe-installer/ffprobe
   try {
+    if (!ffmpegInstaller) ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+    if (!ffprobeInstaller) ffprobeInstaller = require('@ffprobe-installer/ffprobe');
     const localFfmpeg = ffmpegInstaller.path;
     const localFfprobe = ffprobeInstaller.path;
     if (localFfmpeg && fs.existsSync(localFfmpeg) && localFfprobe && fs.existsSync(localFfprobe)) {

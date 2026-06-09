@@ -140,8 +140,18 @@ export default function VideoConverterSuite({ initialTarget = 'webm' }: VideoCon
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || 'Server error during conversion.');
+        let errMsg = 'Server error during conversion.';
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errMsg;
+        } catch (e) {
+          try {
+            const errText = await response.text();
+            const cleanText = errText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (cleanText) errMsg = cleanText.slice(0, 200);
+          } catch (inner) {}
+        }
+        throw new Error(errMsg);
       }
 
       setProgress(85);

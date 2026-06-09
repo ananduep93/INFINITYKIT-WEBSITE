@@ -243,26 +243,38 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
           saveToHistoryList(prompt, finalUrl);
         }
       } else {
-        // Free Pollinations Flux Call (fully client side!)
-        // Pollinations supports seed caching
-        const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
-        
-        const res = await fetch(finalPromptUrl);
+        // Route through our server-side image proxy to bypass client IP-based rate limiting
+        const res = await fetch('/api/ai/image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: fullPrompt,
+            width: w,
+            height: h,
+            seed: seed,
+            model: model
+          })
+        });
+
         if (!res.ok) {
-          if (res.status === 402 || res.status === 429) {
-            throw new Error('The image generation queue is currently full for your IP. Please wait a few seconds and try again, or configure your own OpenAI key.');
-          }
-          throw new Error(`Generation failed (HTTP Status ${res.status}). The service might be busy. Please try again.`);
+          let errMsg = `Generation failed (HTTP Status ${res.status}). The service might be busy. Please try again.`;
+          try {
+            const errData = await res.json();
+            errMsg = errData.error || errMsg;
+          } catch (e) {}
+          throw new Error(errMsg);
         }
-        
+
         const blob = await res.blob();
         if (!blob.type.startsWith('image/')) {
           throw new Error('Received invalid image format from the generator.');
         }
-        
+
         const localBlobUrl = URL.createObjectURL(blob);
         setGeneratedUrl(localBlobUrl);
-        saveToHistoryList(prompt, finalPromptUrl); // Keep the persistent remote URL in history
+        // Keep the persistent remote URL in history for display/redownload
+        const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
+        saveToHistoryList(prompt, finalPromptUrl);
       }
     } catch (err: any) {
       console.error(err);

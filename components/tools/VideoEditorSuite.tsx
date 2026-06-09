@@ -463,8 +463,18 @@ export default function VideoEditorSuite({ initialTab = 'trim' }: VideoEditorSui
         });
 
         if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error || 'Server error occurred during video processing.');
+          let errMsg = 'Server error occurred during video processing.';
+          try {
+            const errData = await response.json();
+            errMsg = errData.error || errMsg;
+          } catch (e) {
+            try {
+              const errText = await response.text();
+              const cleanText = errText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+              if (cleanText) errMsg = cleanText.slice(0, 200);
+            } catch (inner) {}
+          }
+          throw new Error(errMsg);
         }
 
         setProgress(85);
