@@ -247,34 +247,28 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
         // Pollinations supports seed caching
         const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
         
-        // Setup safety timeout to avoid getting stuck in loading state if pre-fetch hangs
-        const timer = setTimeout(() => {
-          console.warn('Image pre-fetch timed out, setting URL directly.');
-          setGeneratedUrl(finalPromptUrl);
-          setIsGenerating(false);
-        }, 15000);
-
-        // Pre-fetch/cache image loading (without crossOrigin to avoid CORS prefetch block)
-        const img = new window.Image();
-        img.onload = () => {
-          clearTimeout(timer);
-          setGeneratedUrl(finalPromptUrl);
-          saveToHistoryList(prompt, finalPromptUrl);
-          setIsGenerating(false);
-        };
-        img.onerror = () => {
-          clearTimeout(timer);
-          // Fallback direct url loading
-          setGeneratedUrl(finalPromptUrl);
-          setIsGenerating(false);
-        };
-        img.src = finalPromptUrl;
-        return; // Don't turn off isGenerating until image onload finishes or timeout fires
+        const res = await fetch(finalPromptUrl);
+        if (!res.ok) {
+          if (res.status === 402 || res.status === 429) {
+            throw new Error('The image generation queue is currently full for your IP. Please wait a few seconds and try again, or configure your own OpenAI key.');
+          }
+          throw new Error(`Generation failed (HTTP Status ${res.status}). The service might be busy. Please try again.`);
+        }
+        
+        const blob = await res.blob();
+        if (!blob.type.startsWith('image/')) {
+          throw new Error('Received invalid image format from the generator.');
+        }
+        
+        const localBlobUrl = URL.createObjectURL(blob);
+        setGeneratedUrl(localBlobUrl);
+        saveToHistoryList(prompt, finalPromptUrl); // Keep the persistent remote URL in history
       }
     } catch (err: any) {
+      console.error(err);
       alert(err.message || 'Generation failed.');
     } finally {
-      if (useOpenAI) setIsGenerating(false);
+      setIsGenerating(false);
     }
   };
 

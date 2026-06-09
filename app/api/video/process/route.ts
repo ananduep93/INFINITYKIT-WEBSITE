@@ -4,6 +4,10 @@ import fs from 'fs';
 import os from 'os';
 import { execSync } from 'child_process';
 import ffmpeg from 'fluent-ffmpeg';
+// @ts-ignore
+import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
+// @ts-ignore
+import ffprobeInstaller from '@ffprobe-installer/ffprobe';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes max execution timeout for long video transcodes
@@ -35,10 +39,52 @@ function resolveFfmpegPaths() {
     ffmpegPathsResolved = true;
     return;
   } catch (e) {
-    console.log('[Video API] ffmpeg not globally in PATH. Searching WinGet packages...');
+    console.log('[Video API] ffmpeg not globally in PATH. Searching standard paths...');
   }
 
-  // 2. Scan standard WinGet download location under user's profile and default Program Files
+  // 2. Scan standard Linux/macOS binary locations
+  const standardLinuxPaths = [
+    '/usr/bin/ffmpeg',
+    '/usr/local/bin/ffmpeg',
+    '/usr/sbin/ffmpeg',
+    '/usr/local/sbin/ffmpeg',
+    '/opt/homebrew/bin/ffmpeg'
+  ];
+  for (const p of standardLinuxPaths) {
+    if (fs.existsSync(p)) {
+      const ffprobePath = p.replace('ffmpeg', 'ffprobe');
+      console.log(`[Video API] Found FFmpeg at standard location: ${p}`);
+      ffmpeg.setFfmpegPath(p);
+      if (fs.existsSync(ffprobePath)) {
+        ffmpeg.setFfprobePath(ffprobePath);
+      }
+      ffmpegPathsResolved = true;
+      return;
+    }
+  }
+
+  // 3. Check local npm packages @ffmpeg-installer/ffmpeg and @ffprobe-installer/ffprobe
+  try {
+    const localFfmpeg = ffmpegInstaller.path;
+    const localFfprobe = ffprobeInstaller.path;
+    if (localFfmpeg && fs.existsSync(localFfmpeg) && localFfprobe && fs.existsSync(localFfprobe)) {
+      console.log(`[Video API] Found FFmpeg binaries in npm package installers: ${localFfmpeg}`);
+      ffmpeg.setFfmpegPath(localFfmpeg);
+      ffmpeg.setFfprobePath(localFfprobe);
+
+      // Cache the paths to disk
+      try {
+        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: localFfmpeg, ffprobe: localFfprobe }), 'utf8');
+      } catch (e) {}
+
+      ffmpegPathsResolved = true;
+      return;
+    }
+  } catch (e) {
+    console.log('[Video API] Failed to resolve npm package installers:', e);
+  }
+
+  // 4. Scan standard WinGet download location under user's profile and default Program Files (Windows)
   const userHome = os.homedir();
   const searchDirs = [
     path.join(userHome, 'AppData', 'Local', 'Microsoft', 'WinGet', 'Packages'),
@@ -67,7 +113,7 @@ function resolveFfmpegPaths() {
     }
   }
 
-  console.warn('[Video API WARNING] Could not resolve FFmpeg/FFprobe binary locations. Standard system execution will be attempted.');
+  console.warn('[Video API WARNING] Could not resolve FFmpeg/FFprobe binary locations.');
 }
 
 function findFileRecursive(dir: string, fileName: string, depth = 0): string | null {
@@ -90,6 +136,12 @@ function findFileRecursive(dir: string, fileName: string, depth = 0): string | n
 
 export async function POST(request: Request) {
   resolveFfmpegPaths();
+
+  if (!ffmpegPathsResolved) {
+    return NextResponse.json({
+      error: 'FFmpeg binary was not found on the server. If you are the administrator, please install FFmpeg on the hosting server (e.g. run "sudo apt-get update && sudo apt-get install -y ffmpeg" on Linux/Ubuntu).'
+    }, { status: 500 });
+  }
 
   try {
     const formData = await request.formData();
