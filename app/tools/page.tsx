@@ -102,7 +102,7 @@ export default function ToolsPage() {
           {categories.map((cat) => (
             <Link
               key={cat.id}
-              href={`/${mapCategoryToPath(cat.id)}`}
+              href={`/${mapCategoryToPath(cat.id)}?ref=hub`}
               style={{ textDecoration: 'none' }}
             >
               <button

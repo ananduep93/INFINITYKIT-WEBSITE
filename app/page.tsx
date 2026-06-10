@@ -594,7 +594,7 @@ export default function HomePage() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 style={{ display: 'flex' }}
               >
-                <Link href={`/${mapCategoryToPath(cat.id)}`} style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex' }}>
+                <Link href={`/${mapCategoryToPath(cat.id)}?ref=hub`} style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex' }}>
                   <div className="category-card" style={{ 
                     border: '1px solid var(--glass-border)', 
                     width: '100%',
