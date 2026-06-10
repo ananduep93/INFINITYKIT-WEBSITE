@@ -17,7 +17,7 @@ import confetti from 'canvas-confetti';
 
 export default function DashboardPage() {
   const { theme } = useTheme();
-  const { user, logout, isLoggedIn, loginWithGoogle, loading: authLoading } = useAuth();
+  const { user, logout, isLoggedIn, loginWithGoogle, loading: authLoading, updateDisplayName } = useAuth();
   const { favorites, recentTools, toggleFavorite } = useSync();
   
   // Avatar gradients mapping
@@ -40,6 +40,16 @@ export default function DashboardPage() {
   const [openaiKey, setOpenaiKey] = useState('');
   const [authSuccessToast, setAuthSuccessToast] = useState<string | null>(null);
 
+  // Tab change handler that keeps URL parameters synchronized
+  const handleTabChange = (newTab: 'overview' | 'bookmarks' | 'premium' | 'profile' | 'notifications') => {
+    setActiveTab(newTab);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', newTab);
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  };
+
   // Sync URL query parameters with activeTab state
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -49,7 +59,7 @@ export default function DashboardPage() {
         setActiveTab(tab as any);
       }
     }
-  });
+  }, [activeTab]);
 
   // Load user API key from localStorage and check for auth redirects
   useEffect(() => {
@@ -179,14 +189,20 @@ export default function DashboardPage() {
   };
 
   // Handle profile update
-  const handleProfileUpdate = (e: React.FormEvent) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
-    setTimeout(() => {
-      setIsUpdating(false);
+    try {
+      if (updateDisplayName) {
+        await updateDisplayName(profileName);
+      }
       setUpdateSuccess(true);
       setTimeout(() => setUpdateSuccess(false), 3000);
-    }, 1200);
+    } catch (err) {
+      console.error('Failed to update profile name:', err);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   if (authLoading) {
@@ -409,35 +425,35 @@ export default function DashboardPage() {
         {/* Navigation Sidebar Card */}
         <div className="dashboard-sidebar">
           <button 
-            onClick={() => setActiveTab('overview')}
+            onClick={() => handleTabChange('overview')}
             className={`dashboard-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           >
             <BarChart2 size={16} /> Overview & Stats
           </button>
           
           <button 
-            onClick={() => setActiveTab('bookmarks')}
+            onClick={() => handleTabChange('bookmarks')}
             className={`dashboard-tab-btn ${activeTab === 'bookmarks' ? 'active' : ''}`}
           >
             <Star size={16} /> Sync Bookmarks & History
           </button>
 
           <button 
-            onClick={() => setActiveTab('premium')}
+            onClick={() => handleTabChange('premium')}
             className={`dashboard-tab-btn ${activeTab === 'premium' ? 'premium-active' : ''}`}
           >
             <Award size={16} /> Premium Upgrades
           </button>
 
           <button 
-            onClick={() => setActiveTab('profile')}
+            onClick={() => handleTabChange('profile')}
             className={`dashboard-tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
           >
             <User size={16} /> Profile & Avatars
           </button>
 
           <button 
-            onClick={() => setActiveTab('notifications')}
+            onClick={() => handleTabChange('notifications')}
             className={`dashboard-tab-btn ${activeTab === 'notifications' ? 'active' : ''}`}
             style={{ justifyContent: 'space-between' }}
           >

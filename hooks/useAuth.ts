@@ -40,7 +40,11 @@ export function useAuth() {
     signUpWithEmail: (e: string, p: string, n: string) => authService.signUpWithEmail(e, p, n),
     loginWithEmail: (e: string, p: string) => authService.loginWithEmail(e, p),
     loginAnonymously: () => authService.loginAnonymously(),
-    logout: () => authService.logout()
+    logout: () => authService.logout(),
+    updateDisplayName: async (name: string) => {
+      await authService.updateDisplayName(name);
+      setUser(prev => prev ? { ...prev, displayName: name } : null);
+    }
   };
 }
 export default useAuth;

@@ -317,6 +317,33 @@ export const authService = {
     }
   },
 
+  async updateDisplayName(name: string): Promise<void> {
+    // 1. Update Firebase display name if logged in
+    const fbUser = auth.currentUser;
+    if (fbUser) {
+      try {
+        await updateProfile(fbUser, { displayName: name });
+        await this.saveUserProfile(fbUser);
+      } catch (fbErr: any) {
+        console.warn('[Firebase Auth] Failed to update display name:', fbErr.message);
+      }
+    }
+
+    // 2. Update Supabase display name if logged in
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { display_name: name }
+      });
+      if (error) {
+        console.warn('[Supabase Auth] Failed to update display name:', error.message);
+      } else {
+        console.log('[Supabase Auth] Display name updated successfully.');
+      }
+    } catch (sbErr: any) {
+      console.warn('[Supabase Auth] Failed to update display name:', sbErr.message || sbErr);
+    }
+  },
+
   async saveUserProfile(user: User): Promise<void> {
     if (!user) return;
     try {
