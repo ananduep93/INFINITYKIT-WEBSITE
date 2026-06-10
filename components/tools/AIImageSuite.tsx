@@ -196,7 +196,7 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
 
     try {
       // Route through client-side direct request first to bypass server IP sharing queue limits
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
+      const pollinationsUrl = `https://pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
       
       let res;
       try {

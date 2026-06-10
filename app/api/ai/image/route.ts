@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-
+// Trigger build to verify GitHub Pages check removal
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
@@ -15,14 +15,14 @@ export async function POST(request: Request) {
     const m = model || 'flux';
 
     // Tier 1: Main Pollinations Request
-    const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${s}&nologo=true&enhance=true&model=${m}`;
+    const finalPromptUrl = `https://pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${s}&nologo=true&enhance=true&model=${m}`;
     console.log(`[Proxy Image API] Fetching from Pollinations: ${finalPromptUrl}`);
 
     let res = await fetch(finalPromptUrl);
 
     // Tier 2 Fallback: If busy (402/429), try without extra query parameters (enhance/model) to bypass specific queue limits
     if (!res.ok && (res.status === 402 || res.status === 429)) {
-      const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${s}`;
+      const fallbackUrl = `https://pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${s}`;
       console.log(`[Proxy Image API] Fallback to simple request: ${fallbackUrl}`);
       const fallbackRes = await fetch(fallbackUrl);
       if (fallbackRes.ok) {
