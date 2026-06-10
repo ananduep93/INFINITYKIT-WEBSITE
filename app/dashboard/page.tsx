@@ -404,112 +404,36 @@ export default function DashboardPage() {
         <div className="dashboard-sidebar">
           <button 
             onClick={() => setActiveTab('overview')}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'overview' ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-              borderBottom: activeTab === 'overview' ? 'none' : '1px solid var(--glass-border)',
-              color: activeTab === 'overview' ? 'white' : 'var(--text-color)',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`dashboard-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           >
             <BarChart2 size={16} /> Overview & Stats
           </button>
           
           <button 
             onClick={() => setActiveTab('bookmarks')}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'bookmarks' ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-              borderBottom: activeTab === 'bookmarks' ? 'none' : '1px solid var(--glass-border)',
-              color: activeTab === 'bookmarks' ? 'white' : 'var(--text-color)',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`dashboard-tab-btn ${activeTab === 'bookmarks' ? 'active' : ''}`}
           >
             <Star size={16} /> Sync Bookmarks & History
           </button>
 
           <button 
             onClick={() => setActiveTab('premium')}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'premium' ? 'linear-gradient(135deg, var(--accent-purple) 0%, var(--primary-color) 100%)' : 'var(--glass-bg)',
-              borderBottom: activeTab === 'premium' ? 'none' : '1px solid var(--glass-border)',
-              color: activeTab === 'premium' ? 'white' : 'var(--text-color)',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: activeTab === 'premium' ? '0 4px 15px rgba(168, 85, 247, 0.2)' : 'none'
-            }}
+            className={`dashboard-tab-btn ${activeTab === 'premium' ? 'premium-active' : ''}`}
           >
             <Award size={16} /> Premium Upgrades
           </button>
 
           <button 
             onClick={() => setActiveTab('profile')}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'profile' ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-              borderBottom: activeTab === 'profile' ? 'none' : '1px solid var(--glass-border)',
-              color: activeTab === 'profile' ? 'white' : 'var(--text-color)',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`dashboard-tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
           >
             <User size={16} /> Profile & Avatars
           </button>
 
           <button 
             onClick={() => setActiveTab('notifications')}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              border: 'none',
-              background: activeTab === 'notifications' ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-              borderBottom: activeTab === 'notifications' ? 'none' : '1px solid var(--glass-border)',
-              color: activeTab === 'notifications' ? 'white' : 'var(--text-color)',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
+            className={`dashboard-tab-btn ${activeTab === 'notifications' ? 'active' : ''}`}
+            style={{ justifyContent: 'space-between' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Bell size={16} /> Notifications
@@ -1183,7 +1107,37 @@ export default function DashboardPage() {
           flex-direction: column;
           gap: 8px;
         }
-        @media (max-width: 991px) {
+        .dashboard-tab-btn {
+          width: 100%;
+          padding: 12px 16px;
+          border-radius: 12px;
+          border: none;
+          background: var(--glass-bg);
+          border-bottom: 1px solid var(--glass-border);
+          color: var(--text-color);
+          font-weight: 600;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .dashboard-tab-btn:hover {
+          background: rgba(0, 161, 155, 0.04);
+        }
+        .dashboard-tab-btn.active {
+          background: var(--primary-gradient) !important;
+          border-bottom: none !important;
+          color: white !important;
+        }
+        .dashboard-tab-btn.premium-active {
+          background: linear-gradient(135deg, var(--accent-purple) 0%, var(--primary-color) 100%) !important;
+          border-bottom: none !important;
+          color: white !important;
+          box-shadow: 0 4px 15px rgba(168, 85, 247, 0.2);
+        }
+        @media (max-width: 1024px) {
           .dashboard-grid-container {
             grid-template-columns: 1fr !important;
             gap: 20px !important;
@@ -1191,17 +1145,22 @@ export default function DashboardPage() {
           .dashboard-sidebar {
             flex-direction: row !important;
             overflow-x: auto !important;
-            padding: 4px !important;
-            margin-bottom: 10px !important;
+            padding: 8px 4px !important;
+            margin-bottom: 20px !important;
             width: 100% !important;
             white-space: nowrap !important;
             -ms-overflow-style: none !important;
             scrollbar-width: none !important;
+            gap: 10px !important;
           }
           .dashboard-sidebar::-webkit-scrollbar {
             display: none !important;
           }
           .dashboard-sidebar button {
+            flex: 0 0 auto !important;
+            width: auto !important;
+          }
+          .dashboard-tab-btn {
             flex: 0 0 auto !important;
             width: auto !important;
           }
