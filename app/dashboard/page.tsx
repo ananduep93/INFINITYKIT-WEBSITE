@@ -20,6 +20,13 @@ export default function DashboardPage() {
   const { user, logout, isLoggedIn, loginWithGoogle, loading: authLoading } = useAuth();
   const { favorites, recentTools, toggleFavorite } = useSync();
   
+  // Avatar gradients mapping
+  const avatarGradients: Record<string, string> = {
+    'cyan-orb': 'var(--primary-gradient)',
+    'purple-orb': 'linear-gradient(135deg, var(--accent-purple) 0%, #a855f7 100%)',
+    'slate-orb': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+  };
+
   // Local states
   const [activeTab, setActiveTab] = useState<'overview' | 'bookmarks' | 'premium' | 'profile' | 'notifications'>('overview');
   const [profileName, setProfileName] = useState(user?.displayName || '');
@@ -49,6 +56,7 @@ export default function DashboardPage() {
     if (typeof window !== 'undefined') {
       setGeminiKey(localStorage.getItem('infinitykit_gemini_key') || '');
       setOpenaiKey(localStorage.getItem('infinitykit_openai_key') || '');
+      setSelectedAvatar(localStorage.getItem('infinitykit_selected_avatar') || 'cyan-orb');
 
       const params = new URLSearchParams(window.location.search);
       const authType = params.get('auth');
@@ -333,9 +341,7 @@ export default function DashboardPage() {
             width: '60px',
             height: '60px',
             borderRadius: '50%',
-            background: isSubscribed 
-              ? 'linear-gradient(135deg, var(--accent-purple) 0%, var(--primary-color) 100%)' 
-              : 'var(--primary-gradient)',
+            background: avatarGradients[selectedAvatar] || 'var(--primary-gradient)',
             border: isSubscribed ? '2px solid rgba(168, 85, 247, 0.4)' : '1px solid var(--glass-border)',
             boxShadow: isSubscribed ? '0 0 15px rgba(168, 85, 247, 0.25)' : 'none',
             color: 'white',
@@ -986,7 +992,10 @@ export default function DashboardPage() {
                     ].map((avatar) => (
                       <button
                         key={avatar.id}
-                        onClick={() => setSelectedAvatar(avatar.id)}
+                        onClick={() => {
+                          setSelectedAvatar(avatar.id);
+                          localStorage.setItem('infinitykit_selected_avatar', avatar.id);
+                        }}
                         style={{
                           background: 'none',
                           border: 'none',
