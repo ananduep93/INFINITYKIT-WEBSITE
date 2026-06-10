@@ -100,24 +100,28 @@ export default function ToolsPage() {
             All Categories
           </button>
           {categories.map((cat) => (
-            <button
+            <Link
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              style={{
-                padding: '8px 18px',
-                borderRadius: '20px',
-                border: '1px solid var(--glass-border)',
-                background: selectedCategory === cat.id ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-                color: selectedCategory === cat.id ? 'white' : 'var(--text-color)',
-                fontWeight: 600,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'var(--transition-smooth)'
-              }}
+              href={`/${mapCategoryToPath(cat.id)}`}
+              style={{ textDecoration: 'none' }}
             >
-              {cat.emoji || cat.icon} {cat.name}
-            </button>
+              <button
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '20px',
+                  border: '1px solid var(--glass-border)',
+                  background: selectedCategory === cat.id ? 'var(--primary-gradient)' : 'var(--glass-bg)',
+                  color: selectedCategory === cat.id ? 'white' : 'var(--text-color)',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'var(--transition-smooth)'
+                }}
+              >
+                {cat.emoji || cat.icon} {cat.name}
+              </button>
+            </Link>
           ))}
         </div>
       </div>
