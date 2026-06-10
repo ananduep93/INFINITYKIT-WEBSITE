@@ -97,17 +97,12 @@ const nextConfig = {
       },
       {
         source: '/ai-tools/:toolId.html',
-        destination: '/tools/:toolId',
-        permanent: true,
-      },
-      {
-        source: '/ai-tools',
-        destination: '/tools',
+        destination: '/ai-tools/:toolId',
         permanent: true,
       },
       {
         source: '/ai-tools/index.html',
-        destination: '/tools',
+        destination: '/ai-tools',
         permanent: true,
       },
       {
