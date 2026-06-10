@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     if (!res.ok) {
       console.warn(`[Proxy Image API] Request failed with status: ${res.status}`);
       return NextResponse.json({
-        error: `The image generation queue is currently full (HTTP status ${res.status}). Please wait a few seconds and try again, or configure your own OpenAI key.`
+        error: `The image generation queue is currently full (HTTP status ${res.status}). Please wait a few seconds and try again.`
       }, { status: res.status });
     }
 

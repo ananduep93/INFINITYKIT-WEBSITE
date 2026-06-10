@@ -39,18 +39,6 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
   
   // Custom Styles selector based on preset
   const [selectedStyle, setSelectedStyle] = useState<string>('none');
-  const [openaiKey, setOpenaiKey] = useState<string>('');
-  const [useOpenAI, setUseOpenAI] = useState<boolean>(false);
-
-  const saveOpenaiKey = (val: string) => {
-    setOpenaiKey(val);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('infinitykit_openai_key', val);
-      const savedSettings = JSON.parse(localStorage.getItem('infinityKitSettings') || '{}');
-      savedSettings.openaiKey = val;
-      localStorage.setItem('infinityKitSettings', JSON.stringify(savedSettings));
-    }
-  };
   
   const [history, setHistory] = useState<SavedGeneration[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -61,15 +49,7 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
   // Sync settings and history from local storage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // 1. Sync OpenAI Settings Key
-      const savedSettings = JSON.parse(localStorage.getItem('infinityKitSettings') || '{}');
-      const globalOpenaiKey = localStorage.getItem('infinitykit_openai_key') || savedSettings.openaiKey || '';
-      if (globalOpenaiKey) {
-        setOpenaiKey(globalOpenaiKey);
-        setUseOpenAI(true);
-      }
-
-      // 2. Load Generation History
+      // 1. Load Generation History
       const savedHistory = JSON.parse(localStorage.getItem('infinitykit_ai_images') || '[]');
       setHistory(savedHistory);
 
@@ -215,36 +195,16 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
     else if (aspectRatio === '9:16') { w = 432; h = 768; }
 
     try {
-      if (useOpenAI && openaiKey) {
-        // OpenAI DALL-E 3 Call
-        const res = await fetch('https://api.openai.com/v1/images/generations', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openaiKey}`
-          },
-          body: JSON.stringify({
-            model: 'dall-e-3',
-            prompt: fullPrompt,
-            n: 1,
-            size: '1024x1024' // OpenAI expects square ratios
-          })
-        });
-
-        if (!res.ok) {
-          throw new Error('OpenAI Image API failed or key has expired.');
-        }
-
-        const data = await res.json();
-        const finalUrl = data.data?.[0]?.url;
-        if (finalUrl) {
-          // Download or set directly
-          setGeneratedUrl(finalUrl);
-          saveToHistoryList(prompt, finalUrl);
-        }
-      } else {
-        // Route through our server-side image proxy to bypass client IP-based rate limiting
-        const res = await fetch('/api/ai/image', {
+      // Route through client-side direct request first to bypass server IP sharing queue limits
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
+      
+      let res;
+      try {
+        console.log('[AIImageSuite] Fetching image directly from Pollinations client-side...');
+        res = await fetch(pollinationsUrl);
+      } catch (clientErr) {
+        console.warn('[AIImageSuite] Client-side fetch failed, falling back to server proxy...', clientErr);
+        res = await fetch('/api/ai/image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -255,27 +215,26 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
             model: model
           })
         });
-
-        if (!res.ok) {
-          let errMsg = `Generation failed (HTTP Status ${res.status}). The service might be busy. Please try again.`;
-          try {
-            const errData = await res.json();
-            errMsg = errData.error || errMsg;
-          } catch (e) {}
-          throw new Error(errMsg);
-        }
-
-        const blob = await res.blob();
-        if (!blob.type.startsWith('image/')) {
-          throw new Error('Received invalid image format from the generator.');
-        }
-
-        const localBlobUrl = URL.createObjectURL(blob);
-        setGeneratedUrl(localBlobUrl);
-        // Keep the persistent remote URL in history for display/redownload
-        const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
-        saveToHistoryList(prompt, finalPromptUrl);
       }
+
+      if (!res.ok) {
+        let errMsg = `Generation failed (HTTP Status ${res.status}). The service might be busy. Please wait a few seconds and try again.`;
+        try {
+          const errData = await res.json();
+          errMsg = errData.error || errMsg;
+        } catch (e) {}
+        throw new Error(errMsg);
+      }
+
+      const blob = await res.blob();
+      if (!blob.type.startsWith('image/')) {
+        throw new Error('Received invalid image format from the generator.');
+      }
+
+      const localBlobUrl = URL.createObjectURL(blob);
+      setGeneratedUrl(localBlobUrl);
+      // Keep the persistent remote URL in history for display/redownload
+      saveToHistoryList(prompt, pollinationsUrl);
     } catch (err: any) {
       console.error(err);
       alert(err.message || 'Generation failed.');
@@ -523,34 +482,7 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
             />
           </div>
 
-          {/* OpenAI Key trigger options */}
-          <div
-            style={{
-              padding: '12px',
-              borderRadius: '10px',
-              border: '1px solid var(--glass-border)',
-              background: 'rgba(255,255,255,0.01)'
-            }}
-          >
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}>
-              <input
-                type="checkbox"
-                checked={useOpenAI}
-                onChange={(e) => setUseOpenAI(e.target.checked)}
-              />
-              Use DALL-E 3 (OpenAI Key)
-            </label>
-            {useOpenAI && (
-              <input
-                type="password"
-                className="form-input"
-                style={{ marginTop: '8px', fontSize: '0.8rem' }}
-                placeholder="Paste API Key (sk-...)"
-                value={openaiKey}
-                onChange={(e) => saveOpenaiKey(e.target.value)}
-              />
-            )}
-          </div>
+
 
           <button
             onClick={generateImage}
