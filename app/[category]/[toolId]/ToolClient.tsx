@@ -270,61 +270,36 @@ export default function ToolClient({ toolId }: ToolClientProps) {
             )}
           </div>
           
-          {/* Metadata & Ecosystem Panels Grid underneath the app */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', width: '100%' }}>
-            {/* AI Suggestions Box */}
-            <div className="glass-panel" style={{ margin: 0, padding: '24px', background: 'rgba(0, 161, 155, 0.03)', border: '1px solid rgba(0, 161, 155, 0.15)' }}>
-              <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-color)', margin: '0 0 15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} color="var(--primary-color)" /> AI Suggestions
+          {/* Related Tools Box */}
+          {relatedTools.length > 0 && (
+            <div className="glass-panel" style={{ margin: '0 auto', padding: '24px', width: '100%', maxWidth: '800px', boxSizing: 'border-box' }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-color)', margin: '0 0 15px' }}>
+                Related Utilities
               </h3>
-              <ul style={{ paddingLeft: '16px', margin: 0, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                {aiSuggestions.map((sug, idx) => (
-                  <li key={idx} style={{ position: 'relative' }}>{sug}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Related Tools Box */}
-            {relatedTools.length > 0 && (
-              <div className="glass-panel" style={{ margin: 0, padding: '24px' }}>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-color)', margin: '0 0 15px' }}>
-                  Related Utilities
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {relatedTools.map((t) => (
-                    <Link 
-                      href={`/${mapCategoryToPath(t.category)}/${t.id}`} 
-                      key={t.id}
-                      style={{ textDecoration: 'none', color: 'inherit' }}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {relatedTools.map((t) => (
+                  <Link 
+                    href={`/${mapCategoryToPath(t.category)}/${t.id}`} 
+                    key={t.id}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <div 
+                      style={{ 
+                        padding: '12px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.01)', transition: 'all 0.25s ease-in-out'
+                      }}
+                      className="related-item-row"
                     >
-                      <div 
-                        style={{ 
-                          padding: '12px 14px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.01)', transition: 'all 0.25s ease-in-out'
-                        }}
-                        className="related-item-row"
-                      >
-                        <span style={{ fontSize: '1.4rem' }}>{t.icon}</span>
-                        <div style={{ minWidth: 0, flex: 1 }}>
-                          <h4 style={{ fontSize: '0.8rem', fontWeight: 700, margin: 0, color: 'var(--text-color)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</h4>
-                          <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</p>
-                        </div>
+                      <span style={{ fontSize: '1.4rem' }}>{t.icon}</span>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <h4 style={{ fontSize: '0.8rem', fontWeight: 700, margin: 0, color: 'var(--text-color)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</h4>
+                        <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</p>
                       </div>
-                    </Link>
-                  ))}
-                </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            )}
-
-            {/* Secure Sandbox Badge */}
-            <div className="glass-panel" style={{ margin: 0, padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ShieldCheck size={16} color="var(--success-color)" /> Browser Sandboxed
-              </h4>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
-                Calculations occur locally within client browser sandbox nodes. No details or credentials ever leave your physical device.
-              </p>
             </div>
-          </div>
+          )}
         </div>
       ) : (
         <div className="workspace-three-column-grid" style={{ display: 'grid', gap: '24px', alignItems: 'flex-start', gridTemplateColumns: '320px minmax(0, 1fr) 300px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
@@ -424,15 +399,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
               </form>
             )}
 
-            {/* Secure Sandbox Badge */}
-            <div className="glass-panel" style={{ margin: 0, padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-color)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ShieldCheck size={16} color="var(--success-color)" /> Browser Sandboxed
-              </h4>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
-                Calculations occur locally within client browser sandbox nodes. No details or credentials ever leave your physical device.
-              </p>
-            </div>
+
           </div>
 
           {/* ==================== CENTER COLUMN: Workspace / Results ==================== */}
@@ -534,17 +501,7 @@ export default function ToolClient({ toolId }: ToolClientProps) {
           {/* ==================== RIGHT COLUMN: Ecosystem Intelligence ==================== */}
           <div className="workspace-column-right" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
-            {/* AI Suggestions Box */}
-            <div className="glass-panel" style={{ margin: 0, padding: '24px', background: 'rgba(0, 161, 155, 0.03)', border: '1px solid rgba(0, 161, 155, 0.15)' }}>
-              <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-color)', margin: '0 0 15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} color="var(--primary-color)" /> AI Suggestions
-              </h3>
-              <ul style={{ paddingLeft: '16px', margin: 0, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                {aiSuggestions.map((sug, idx) => (
-                  <li key={idx} style={{ position: 'relative' }}>{sug}</li>
-                ))}
-              </ul>
-            </div>
+
 
             {/* Related Tools Box */}
             {relatedTools.length > 0 && (

@@ -18,34 +18,74 @@ export async function POST(request: Request) {
     const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
     if (hfToken) {
       console.log('[Proxy Image API] Using Hugging Face Inference API...');
-      const hfModel = m === 'turbo' ? 'stabilityai/stable-diffusion-xl-base-1.0' : 'black-forest-labs/FLUX.1-schnell';
-      const hfUrl = `https://api-inference.huggingface.co/models/${hfModel}`;
       
-      try {
-        const hfRes = await fetch(hfUrl, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${hfToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ inputs: prompt })
-        });
+      const primaryModel = m === 'turbo' ? 'stabilityai/stable-diffusion-xl-base-1.0' : 'black-forest-labs/FLUX.1-schnell';
+      const modelsToTry = [
+        primaryModel,
+        'Lykon/dreamshaper-8',
+        'runwayml/stable-diffusion-v1-5'
+      ];
+      
+      const errors: string[] = [];
+      for (const hfModel of modelsToTry) {
+        const hfUrl = `https://api-inference.huggingface.co/models/${hfModel}`;
+        console.log(`[Proxy Image API] Attempting generation with Hugging Face model: ${hfModel}`);
         
-        if (hfRes.ok) {
-          const blob = await hfRes.blob();
-          const buffer = Buffer.from(await blob.arrayBuffer());
-          return new Response(buffer, {
+        try {
+          let hfRes = await fetch(hfUrl, {
+            method: 'POST',
             headers: {
-              'Content-Type': blob.type || 'image/jpeg',
-              'Cache-Control': 'no-store, no-cache, must-revalidate'
-            }
+              'Authorization': `Bearer ${hfToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ inputs: prompt })
           });
-        } else {
-          console.warn(`[Proxy Image API] Hugging Face failed with status ${hfRes.status}:`, await hfRes.text());
+          
+          // Retry on 503 loading (up to 2 times with a 2.5 second delay)
+          if (hfRes.status === 503) {
+            console.log(`[Proxy Image API] Model ${hfModel} is loading (HTTP 503). Retrying in 2.5s...`);
+            await new Promise(resolve => setTimeout(resolve, 2500));
+            hfRes = await fetch(hfUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${hfToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ inputs: prompt })
+            });
+          }
+          
+          if (hfRes.ok) {
+            const blob = await hfRes.blob();
+            const buffer = Buffer.from(await blob.arrayBuffer());
+            return new Response(buffer, {
+              headers: {
+                'Content-Type': blob.type || 'image/jpeg',
+                'Cache-Control': 'no-store, no-cache, must-revalidate'
+              }
+            });
+          } else {
+            const errText = await hfRes.text();
+            console.warn(`[Proxy Image API] Hugging Face model ${hfModel} failed with status ${hfRes.status}:`, errText);
+            errors.push(`${hfModel} (HTTP ${hfRes.status}): ${errText}`);
+            
+            // Break early and return specific auth errors so the developer knows the key is invalid
+            if (hfRes.status === 401) {
+              return NextResponse.json({
+                error: `Hugging Face Authentication Failed (HTTP 401). Please verify your HF_TOKEN environment variable on Vercel.`
+              }, { status: 401 });
+            }
+          }
+        } catch (err: any) {
+          console.error(`[Proxy Image API] Hugging Face request error for ${hfModel}:`, err);
+          errors.push(`${hfModel} (Error): ${err.message || err}`);
         }
-      } catch (err) {
-        console.error('[Proxy Image API] Hugging Face request error:', err);
       }
+      
+      // If we got here, all HF models failed. Return the exact details so the user can see the reason.
+      return NextResponse.json({
+        error: `AI generation failed. Details:\n` + errors.join('\n')
+      }, { status: 502 });
     }
 
     // Tier 1: Main Pollinations Request
