@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
 import https from 'https';
+import dns from 'dns';
 
 export const dynamic = 'force-dynamic';
 
-// Helper function to perform requests using Node's built-in https module
-// This bypasses any issues next/undici fetch has with DNS/IPv6/TLS on Vercel
-function makeHttpsRequest(
+// Raw HTTP/HTTPS request helper using Node's native https module
+function makeHttpsRequestRaw(
   url: string,
   method: 'GET' | 'POST',
   headers: Record<string, string>,
-  body?: string
+  body?: string,
+  sniServername?: string
 ): Promise<{ status: number; data: Buffer; contentType: string; text: string }> {
   return new Promise((resolve, reject) => {
     try {
@@ -20,7 +21,8 @@ function makeHttpsRequest(
         path: parsedUrl.pathname + parsedUrl.search,
         method: method,
         headers: headers,
-        timeout: 9000 // 9 second timeout to avoid Vercel 10s timeout crash
+        servername: sniServername || parsedUrl.hostname,
+        timeout: 9000 // 9 second timeout
       };
 
       const req = https.request(reqOptions, (res) => {
@@ -54,6 +56,89 @@ function makeHttpsRequest(
       reject(e);
     }
   });
+}
+
+// Triple-layer DNS resolution fallback system
+// Bypasses Vercel's broken container DNS resolver
+async function resolveHostname(hostname: string): Promise<string> {
+  // Layer 1: Standard Node DNS lookup
+  try {
+    const result = await dns.promises.lookup(hostname);
+    if (result && result.address) {
+      console.log(`[DNS Layer 1] Standard lookup resolved ${hostname} to ${result.address}`);
+      return result.address;
+    }
+  } catch (err) {
+    console.warn(`[DNS Layer 1] Standard lookup failed for ${hostname}:`, err);
+  }
+
+  // Layer 2: Custom DNS Resolver (Google/Cloudflare port 53 UDP)
+  try {
+    const resolver = new dns.promises.Resolver();
+    resolver.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+    const ips = await resolver.resolve4(hostname);
+    if (ips && ips.length > 0) {
+      console.log(`[DNS Layer 2] Custom resolver resolved ${hostname} to ${ips[0]}`);
+      return ips[0];
+    }
+  } catch (err) {
+    console.warn(`[DNS Layer 2] Custom resolver failed for ${hostname}:`, err);
+  }
+
+  // Layer 3: DNS-over-HTTPS (DoH) via Google DNS IP 8.8.8.8 (No DNS query required to find 8.8.8.8)
+  try {
+    console.log(`[DNS Layer 3] Querying Google DoH directly at 8.8.8.8 for ${hostname}...`);
+    const dohRes = await makeHttpsRequestRaw(
+      'https://8.8.8.8/resolve?name=' + encodeURIComponent(hostname) + '&type=A',
+      'GET',
+      { 'Host': 'dns.google' },
+      undefined,
+      'dns.google' // servername for SNI
+    );
+    if (dohRes.status === 200) {
+      const data = JSON.parse(dohRes.text);
+      if (data && data.Answer && data.Answer.length > 0) {
+        // Find the first A record
+        const aRecord = data.Answer.find((ans: any) => ans.type === 1);
+        if (aRecord && aRecord.data) {
+          console.log(`[DNS Layer 3] DoH resolved ${hostname} to ${aRecord.data}`);
+          return aRecord.data;
+        }
+      }
+    }
+  } catch (err) {
+    console.error(`[DNS Layer 3] DoH failed for ${hostname}:`, err);
+  }
+
+  return hostname; // Fallback to original hostname if all resolve layers fail
+}
+
+// Bypasses DNS/IPv6/TLS issues on Vercel by manually routing traffic
+async function makeHttpsRequest(
+  url: string,
+  method: 'GET' | 'POST',
+  headers: Record<string, string>,
+  body?: string
+): Promise<{ status: number; data: Buffer; contentType: string; text: string }> {
+  const parsedUrl = new URL(url);
+  const hostname = parsedUrl.hostname;
+  
+  // Resolve hostname dynamically using our triple-DNS system
+  const resolvedIp = await resolveHostname(hostname);
+  
+  // Route to the IP address directly, preserving SNI and Host header
+  const resolvedUrl = url.replace(hostname, resolvedIp);
+  
+  return makeHttpsRequestRaw(
+    resolvedUrl,
+    method,
+    {
+      ...headers,
+      'Host': hostname
+    },
+    body,
+    hostname // Servername for SNI TLS handshake
+  );
 }
 
 export async function POST(request: Request) {
@@ -141,7 +226,7 @@ export async function POST(request: Request) {
       }, { status: 502 });
     }
 
-    // Tier 1: Main Pollinations Request (Using https module for maximum reliability)
+    // Tier 1: Main Pollinations Request (Using Https module with robust DNS resolution)
     const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${s}&nologo=true&enhance=true&model=${m}`;
     console.log(`[Proxy Image API] Fetching from Pollinations: ${finalPromptUrl}`);
 
