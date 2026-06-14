@@ -198,23 +198,51 @@ export default function AIImageSuite({ initialPreset = 'general' }: AIImageSuite
       // Route through client-side direct request first to bypass server IP sharing queue limits
       const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true&model=${model}`;
       
-      let res;
+      let res: any;
+      let directSucceeded = false;
       try {
         console.log('[AIImageSuite] Fetching image directly from Pollinations client-side...');
         res = await fetch(pollinationsUrl);
+        if (res.ok) {
+          directSucceeded = true;
+        } else {
+          console.warn(`[AIImageSuite] Direct client fetch returned HTTP status ${res.status}. Falling back to server proxy...`);
+        }
       } catch (clientErr) {
-        console.warn('[AIImageSuite] Client-side fetch failed, falling back to server proxy...', clientErr);
-        res = await fetch('/api/ai/image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: fullPrompt,
-            width: w,
-            height: h,
-            seed: seed,
-            model: model
-          })
-        });
+        console.warn('[AIImageSuite] Client-side fetch failed due to network error. Falling back to server proxy...', clientErr);
+      }
+
+      if (!directSucceeded) {
+        const maxRetries = 4;
+        const retryDelayMs = 1500;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            console.log(`[AIImageSuite] Server proxy fetch attempt ${attempt}/${maxRetries}...`);
+            res = await fetch('/api/ai/image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                prompt: fullPrompt,
+                width: w,
+                height: h,
+                seed: seed,
+                model: model
+              })
+            });
+            
+            // If success or a non-rate-limit error, break and handle it
+            if (res.ok || (res.status !== 402 && res.status !== 429)) {
+              break;
+            }
+          } catch (proxyErr) {
+            console.error(`[AIImageSuite] Server proxy fetch attempt ${attempt} failed:`, proxyErr);
+          }
+          
+          if (attempt < maxRetries) {
+            console.log(`[AIImageSuite] Queue is busy (status ${res?.status}). Waiting ${retryDelayMs / 1000}s before retry...`);
+            await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+          }
+        }
       }
 
       if (!res.ok) {

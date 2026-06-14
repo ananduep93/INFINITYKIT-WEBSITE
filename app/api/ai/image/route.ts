@@ -14,6 +14,40 @@ export async function POST(request: Request) {
     const s = seed || Math.floor(Math.random() * 1000000);
     const m = model || 'flux';
 
+    // Hugging Face Fallback / Alternative Integration
+    const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_KEY;
+    if (hfToken) {
+      console.log('[Proxy Image API] Using Hugging Face Inference API...');
+      const hfModel = m === 'turbo' ? 'stabilityai/stable-diffusion-xl-base-1.0' : 'black-forest-labs/FLUX.1-schnell';
+      const hfUrl = `https://api-inference.huggingface.co/models/${hfModel}`;
+      
+      try {
+        const hfRes = await fetch(hfUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${hfToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ inputs: prompt })
+        });
+        
+        if (hfRes.ok) {
+          const blob = await hfRes.blob();
+          const buffer = Buffer.from(await blob.arrayBuffer());
+          return new Response(buffer, {
+            headers: {
+              'Content-Type': blob.type || 'image/jpeg',
+              'Cache-Control': 'no-store, no-cache, must-revalidate'
+            }
+          });
+        } else {
+          console.warn(`[Proxy Image API] Hugging Face failed with status ${hfRes.status}:`, await hfRes.text());
+        }
+      } catch (err) {
+        console.error('[Proxy Image API] Hugging Face request error:', err);
+      }
+    }
+
     // Tier 1: Main Pollinations Request
     const finalPromptUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${s}&nologo=true&enhance=true&model=${m}`;
     console.log(`[Proxy Image API] Fetching from Pollinations: ${finalPromptUrl}`);
