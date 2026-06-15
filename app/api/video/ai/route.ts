@@ -224,14 +224,13 @@ function findFileRecursive(dir: string, fileName: string, depth = 0): string | n
   return null;
 }
 
-async function queryOpenAIWhisper(openaiKey: string, audioFilePath: string, responseFormat: 'vtt' | 'text' | 'verbose_json'): Promise<string> {
+async function queryOpenAIWhisper(openaiKey: string, fileBuffer: Buffer, mimeType: string, fileName: string, responseFormat: 'vtt' | 'text' | 'verbose_json'): Promise<string> {
   const url = 'https://api.openai.com/v1/audio/transcriptions';
   const formData = new FormData();
   
-  const fileBuffer = fs.readFileSync(audioFilePath);
-  const fileBlob = new Blob([fileBuffer], { type: 'audio/mp3' });
+  const fileBlob = new Blob([new Uint8Array(fileBuffer)], { type: mimeType });
   
-  formData.append('file', fileBlob, 'audio.mp3');
+  formData.append('file', fileBlob, fileName);
   formData.append('model', 'whisper-1');
   formData.append('response_format', responseFormat);
   
@@ -280,11 +279,8 @@ async function queryOpenAIChat(openaiKey: string, systemInstruction: string, use
 export async function POST(request: Request) {
   resolveFfmpegPaths();
 
-  if (!ffmpegPathsResolved) {
-    return NextResponse.json({
-      error: 'FFmpeg binary was not found on the server. If you are the administrator, please install FFmpeg on the hosting server (e.g. run "sudo apt-get update && sudo apt-get install -y ffmpeg" on Linux/Ubuntu).'
-    }, { status: 500 });
-  }
+  // FFmpeg is optional for subtitle/transcript/summary — these send the video file directly to the AI.
+  // FFmpeg is required only for shorts/reel (video clipping). Checked below.
 
   try {
     const formData = await request.formData();
@@ -353,36 +349,63 @@ export async function POST(request: Request) {
 
     console.log(`[Video AI API] Provider: ${activeProvider}, Action: ${action}, File: ${file.name}`);
 
+    // For shorts/reel, FFmpeg is required for video clipping
+    if ((action === 'shorts' || action === 'reel') && !ffmpegPathsResolved) {
+      return NextResponse.json({
+        error: 'FFmpeg binary was not found on the server. Shorts/Reel generation requires FFmpeg for video clipping. Please contact the administrator.'
+      }, { status: 500 });
+    }
+
     // Save input video to a temp file
     const tempInputPath = path.join(os.tmpdir(), `ai_in_${Date.now()}_${file.name}`);
     const inputBuffer = Buffer.from(await file.arrayBuffer());
     fs.writeFileSync(tempInputPath, inputBuffer);
 
-    // Extract lightweight mono audio from video
+    // Determine video MIME type (OpenAI Whisper and Gemini both support mp4/webm natively)
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'mp4';
+    const videoMimeType: string =
+      fileExt === 'webm' ? 'video/webm' :
+      fileExt === 'mov'  ? 'video/quicktime' :
+      fileExt === 'mkv'  ? 'video/x-matroska' :
+      'video/mp4';
+
+    // For subtitle/transcript/summary: send the video file DIRECTLY to the AI — no FFmpeg needed.
+    // OpenAI Whisper accepts mp4/webm/mov natively (up to 25 MB).
+    // Gemini accepts video/* inline data natively.
+    // For shorts/reel: we still extract audio first for timestamp analysis, then use FFmpeg to clip.
+    let aiFileBuffer: Buffer = inputBuffer;
+    let aiMimeType: string = videoMimeType;
+    let aiFileName: string = file.name;
     const tempAudioPath = path.join(os.tmpdir(), `ai_audio_${Date.now()}.mp3`);
-    
-    try {
-      await new Promise<void>((resolve, reject) => {
-        ffmpeg(tempInputPath)
-          .noVideo()
-          .audioCodec('libmp3lame')
-          .audioBitrate(64) // 64kbps mono is perfectly readable by AI models but very lightweight
-          .audioChannels(1)
-          .output(tempAudioPath)
-          .on('end', () => resolve())
-          .on('error', (err) => reject(err))
-          .run();
-      });
-    } catch (audioErr: any) {
-      if (fs.existsSync(tempInputPath)) fs.unlinkSync(tempInputPath);
-      if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
-      console.error('[Video AI API] Audio extraction failed:', audioErr);
-      return NextResponse.json({ error: `Audio extraction failed: ${audioErr.message}` }, { status: 500 });
+
+    if (ffmpegPathsResolved && (action === 'shorts' || action === 'reel')) {
+      // Extract audio only when we need it for shorts/reel timestamp analysis
+      try {
+        await new Promise<void>((resolve, reject) => {
+          ffmpeg(tempInputPath)
+            .noVideo()
+            .audioCodec('libmp3lame')
+            .audioBitrate(64)
+            .audioChannels(1)
+            .output(tempAudioPath)
+            .on('end', () => resolve())
+            .on('error', (err) => reject(err))
+            .run();
+        });
+        aiFileBuffer = fs.readFileSync(tempAudioPath);
+        aiMimeType = 'audio/mp3';
+        aiFileName = 'audio.mp3';
+        console.log('[Video AI API] Audio extracted for shorts/reel timestamp analysis.');
+      } catch (audioErr: any) {
+        if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
+        console.error('[Video AI API] Audio extraction failed:', audioErr);
+        return NextResponse.json({ error: `Audio extraction failed: ${audioErr.message}` }, { status: 500 });
+      }
+    } else {
+      console.log(`[Video AI API] Sending ${videoMimeType} file directly to AI provider (no FFmpeg needed for ${action}).`);
     }
 
-    // Convert audio to base64 for Gemini if needed
-    const audioBuffer = fs.readFileSync(tempAudioPath);
-    const audioBase64 = audioBuffer.toString('base64');
+    const audioBase64 = aiFileBuffer.toString('base64');
 
     let rawAiResponse = '';
 
@@ -390,16 +413,16 @@ export async function POST(request: Request) {
       if (activeProvider === 'openai') {
         console.log(`[Video AI API] Routing to OpenAI for action: ${action}`);
         if (action === 'subtitle') {
-          rawAiResponse = await queryOpenAIWhisper(openaiKey, tempAudioPath, 'vtt');
+          rawAiResponse = await queryOpenAIWhisper(openaiKey, aiFileBuffer, aiMimeType, aiFileName, 'vtt');
         } else if (action === 'transcript') {
-          rawAiResponse = await queryOpenAIWhisper(openaiKey, tempAudioPath, 'text');
+          rawAiResponse = await queryOpenAIWhisper(openaiKey, aiFileBuffer, aiMimeType, aiFileName, 'text');
         } else if (action === 'summary') {
-          const transcriptText = await queryOpenAIWhisper(openaiKey, tempAudioPath, 'text');
+          const transcriptText = await queryOpenAIWhisper(openaiKey, aiFileBuffer, aiMimeType, aiFileName, 'text');
           const systemInstruction = 'You are an expert video summarization assistant. Analyze the transcript text and generate a clear, professional, and well-structured text summary of the video content. Use Markdown headings, bullet points, key takeaways, and action items.';
           const userPrompt = `Summarize the following video transcription:\n"""\n${transcriptText}\n"""`;
           rawAiResponse = await queryOpenAIChat(openaiKey, systemInstruction, userPrompt);
         } else if (action === 'shorts' || action === 'reel') {
-          const verboseJson = await queryOpenAIWhisper(openaiKey, tempAudioPath, 'verbose_json');
+          const verboseJson = await queryOpenAIWhisper(openaiKey, aiFileBuffer, aiMimeType, aiFileName, 'verbose_json');
           let segments = [];
           try {
             const parsed = JSON.parse(verboseJson);
@@ -453,7 +476,7 @@ Today we are editing videos.`;
         const response = await model.generateContent([
           {
             inlineData: {
-              mimeType: 'audio/mp3',
+              mimeType: aiMimeType,
               data: audioBase64
             }
           },
@@ -465,7 +488,7 @@ Today we are editing videos.`;
 
       console.log(`[Video AI API] AI response received for action ${action}`);
 
-      // Cleanup extracted audio
+      // Cleanup extracted audio (only created for shorts/reel with FFmpeg)
       if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
 
       // If text summary, transcript, or subtitle, return immediately
