@@ -32,10 +32,6 @@ export default function VideoAISuite() {
   // Results
   const [textResult, setTextResult] = useState<string | null>(null);
   const [resultType, setResultType] = useState<'subtitle' | 'summary' | 'transcript' | 'video' | null>(null);
-  const [videoResultUrl, setVideoResultUrl] = useState<string | null>(null);
-  const [videoResultBlob, setVideoResultBlob] = useState<Blob | null>(null);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [isSharing, setIsSharing] = useState(false);
 
   // Video playback (source video)
   const [isPlaying, setIsPlaying] = useState(false);
@@ -44,8 +40,6 @@ export default function VideoAISuite() {
   const [isMuted, setIsMuted] = useState(false);
 
   // Video playback (output cropped video if applicable)
-  const [isOutPlaying, setIsOutPlaying] = useState(false);
-  const outVideoRef = useRef<HTMLVideoElement>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -100,9 +94,7 @@ export default function VideoAISuite() {
     setFile(uploaded);
     setTextResult(null);
     setResultType(null);
-    setVideoResultUrl(null);
-    setVideoResultBlob(null);
-    setShareUrl(null);
+
     const url = URL.createObjectURL(uploaded);
     setVideoSrc(url);
     setIsPlaying(false);
@@ -160,14 +152,11 @@ export default function VideoAISuite() {
     }
   };
 
-  const handleAiAction = async (action: 'subtitle' | 'summary' | 'transcript' | 'shorts' | 'reel') => {
+  const handleAiAction = async (action: 'subtitle' | 'summary' | 'transcript') => {
     if (!file) return;
     setIsProcessing(true);
     setProgress(15);
     setTextResult(null);
-    setVideoResultUrl(null);
-    setVideoResultBlob(null);
-    setShareUrl(null);
 
     const formData = new FormData();
     formData.append('action', action);
@@ -209,18 +198,9 @@ export default function VideoAISuite() {
 
       setProgress(80);
 
-      if (action === 'subtitle' || action === 'summary' || action === 'transcript') {
-        const data = await response.json();
-        setTextResult(data.result);
-        setResultType(action);
-      } else {
-        // Shorts / Reels clip returns binary blob
-        const blob = await response.blob();
-        setVideoResultBlob(blob);
-        const url = URL.createObjectURL(blob);
-        setVideoResultUrl(url);
-        setResultType('video');
-      }
+      const data = await response.json();
+      setTextResult(data.result);
+      setResultType(action);
 
       setProgress(100);
       syncService.logActivity('Video AI Suite', `Completed AI ${action.toUpperCase()} action on "${file.name}"`);
@@ -255,29 +235,7 @@ export default function VideoAISuite() {
     URL.revokeObjectURL(url);
   };
 
-  const handleShareVideo = async () => {
-    if (!videoResultBlob || !file) return;
-    setIsSharing(true);
-    try {
-      const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-      const exportFile = new File([videoResultBlob], `ai_crop_${cleanName}.mp4`, {
-        type: 'video/mp4'
-      });
-
-      const uploadRes = await storageService.uploadFile(exportFile, { isPublic: true });
-      setShareUrl(uploadRes.url);
-      await navigator.clipboard.writeText(uploadRes.url);
-      alert('Shareable link copied to clipboard!');
-    } catch (err: any) {
-      console.error(err);
-      if (videoResultUrl) {
-        await navigator.clipboard.writeText(window.location.origin + videoResultUrl);
-        alert('Local blob link copied to clipboard!');
-      }
-    } finally {
-      setIsSharing(false);
-    }
-  };
+  ;
 
   return (
     <div className="glass-panel" style={{ padding: '20px', minHeight: '520px' }}>
@@ -351,7 +309,7 @@ export default function VideoAISuite() {
       </div>
 
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '20px' }}>
-        Automatically transcribe, generate WebVTT subtitles, summarize video content, or crop clips to vertical 9:16 Shorts/Reels highlights.
+        Automatically transcribe, generate WebVTT subtitles, or summarize video content.
       </p>
 
       {/* Upload Dropzone */}
@@ -479,75 +437,14 @@ export default function VideoAISuite() {
               </div>
             )}
 
-            {/* Video output results panel (Shorts/Reels vertical) */}
-            {videoResultUrl && (
-              <div className="glass-panel" style={{ padding: '16px', background: 'rgba(0,161,155,0.04)' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 800, marginBottom: '14px' }}>AI Clipped Highlight Output (9:16)</h4>
-                
-                <div style={{ display: 'flex', gap: '20px', alignItems: 'start', flexWrap: 'wrap' }}>
-                  {/* Vertical Video Element */}
-                  <div style={{
-                    width: '140px',
-                    height: '248px',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    background: '#000',
-                    border: '1px solid var(--glass-border)',
-                    position: 'relative'
-                  }}>
-                    <video
-                      ref={outVideoRef}
-                      src={videoResultUrl}
-                      controls
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onPlay={() => setIsOutPlaying(true)}
-                      onPause={() => setIsOutPlaying(false)}
-                    />
-                  </div>
-
-                  {/* Vertical Clip Download/Share */}
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
-                      Vertical highlight compiled with centered focal cropping and compressed for mobile delivery formats.
-                    </p>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <a
-                        href={videoResultUrl}
-                        download={`ai_highlight_${file?.name}`}
-                        className="btn-primary"
-                        style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', fontSize: '0.82rem' }}
-                      >
-                        <Download size={14} /> Download Highlight
-                      </a>
-                      <button
-                        onClick={handleShareVideo}
-                        disabled={isSharing}
-                        className="btn-secondary"
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', fontSize: '0.82rem' }}
-                      >
-                        {isSharing ? <RefreshCw size={14} className="animate-spin" /> : <Share2 size={14} />}
-                        Share Link
-                      </button>
-                    </div>
-
-                    {shareUrl && (
-                      <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--glass-border)', padding: '10px', borderRadius: '8px', fontSize: '0.78rem', wordBreak: 'break-all', marginTop: '4px' }}>
-                        <strong>Shareable URL:</strong> <a href={shareUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary-color)' }}>{shareUrl}</a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+            
 
             <button
               onClick={() => {
                 setVideoSrc(null);
                 setFile(null);
                 setTextResult(null);
-                setVideoResultUrl(null);
-                setVideoResultBlob(null);
-                setShareUrl(null);
+
               }}
               className="btn-secondary"
               style={{ alignSelf: 'flex-start', padding: '8px 16px', fontSize: '0.8rem' }}
@@ -594,25 +491,9 @@ export default function VideoAISuite() {
                 AI Transcript
               </button>
 
-              <button
-                className="btn-secondary"
-                disabled={isProcessing || !file}
-                onClick={() => handleAiAction('shorts')}
-                style={{ justifyContent: 'flex-start', gap: '10px', padding: '12px' }}
-              >
-                <Sparkles size={16} color="var(--primary-color)" />
-                AI Shorts Generator (9:16)
-              </button>
+              
 
-              <button
-                className="btn-secondary"
-                disabled={isProcessing || !file}
-                onClick={() => handleAiAction('reel')}
-                style={{ justifyContent: 'flex-start', gap: '10px', padding: '12px' }}
-              >
-                <Sparkles size={16} color="var(--primary-color)" />
-                AI Reel Generator (9:16)
-              </button>
+              
             </div>
           </div>
 

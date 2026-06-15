@@ -261,8 +261,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "AI Video Subtitle Gen", path: "/ai-tools/ai-subtitle-gen" },
       { name: "AI Video Summarizer", path: "/ai-tools/ai-video-summary" },
       { name: "AI Video Transcript", path: "/ai-tools/ai-transcript" },
-      { name: "AI Video Shorts Gen", path: "/ai-tools/ai-shorts-gen" },
-      { name: "AI Video Reels Gen", path: "/ai-tools/ai-reels-gen" }
     ]},
     { id: 'image-tools', name: 'Image Tools', icon: <ImageIcon size={16} />, folderKey: 'image-tools', children: [
       { name: "Resize Image Pixels", path: "/image-tools/resize-image" },

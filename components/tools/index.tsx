@@ -108,8 +108,6 @@ const ConvertMp4Avi      = dynamic(() => import('./VideoSuiteWrappers').then(m =
 const AISubtitleGen      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AISubtitleGen), { ssr: false, loading: LoadingSkeleton });
 const AIVideoSummary     = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AIVideoSummary), { ssr: false, loading: LoadingSkeleton });
 const AITranscript       = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AITranscript), { ssr: false, loading: LoadingSkeleton });
-const AIShortsGen        = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AIShortsGen), { ssr: false, loading: LoadingSkeleton });
-const AIReelsGen         = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AIReelsGen), { ssr: false, loading: LoadingSkeleton });
 const MuteVideo          = dynamic(() => import('./VideoSuiteWrappers').then(m => m.MuteVideo), { ssr: false, loading: LoadingSkeleton });
 const ThumbnailExtractor = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ThumbnailExtractor), { ssr: false, loading: LoadingSkeleton });
 const VideoEditorSuite   = dynamic(() => import('./VideoEditorSuite'),   { ssr: false, loading: LoadingSkeleton });
@@ -307,8 +305,6 @@ export {
   AISubtitleGen,
   AIVideoSummary,
   AITranscript,
-  AIShortsGen,
-  AIReelsGen,
   MuteVideo,
   ThumbnailExtractor,
   VideoEditorSuite,
@@ -467,8 +463,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   AISubtitleGen,
   AIVideoSummary,
   AITranscript,
-  AIShortsGen,
-  AIReelsGen,
   MuteVideo,
   ThumbnailExtractor,
   VideoEditorSuite,
@@ -610,8 +604,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'ai-subtitle-gen': AISubtitleGen,
   'ai-video-summary': AIVideoSummary,
   'ai-transcript': AITranscript,
-  'ai-shorts-gen': AIShortsGen,
-  'ai-reels-gen': AIReelsGen,
   'mute-video': MuteVideo,
   'thumbnail-extractor': ThumbnailExtractor,
   'video-editor-suite': VideoEditorSuite,

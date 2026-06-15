@@ -2,227 +2,10 @@ import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { execSync } from 'child_process';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import ffmpeg from 'fluent-ffmpeg';
-// Dynamically imported at runtime to prevent cold-start or loading crashes in serverless environments
-let ffmpegInstaller: any = null;
-let ffprobeInstaller: any = null;
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes max timeout
-
-let ffmpegPathsResolved = false;
-
-function resolveFfmpegPaths() {
-  if (ffmpegPathsResolved) return;
-
-  const cachePath = path.join(os.tmpdir(), 'ik_ffmpeg_paths_cache.json');
-  if (fs.existsSync(cachePath)) {
-    try {
-      const cached = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-      if (cached.ffmpeg && cached.ffprobe && fs.existsSync(cached.ffmpeg) && fs.existsSync(cached.ffprobe)) {
-        console.log(`[Video AI API] Using cached FFmpeg: ${cached.ffmpeg}`);
-        ffmpeg.setFfmpegPath(cached.ffmpeg);
-        ffmpeg.setFfprobePath(cached.ffprobe);
-        ffmpegPathsResolved = true;
-        return;
-      }
-    } catch (e) {}
-  }
-
-  // 1. Check if ffmpeg is globally available in PATH
-  try {
-    execSync('ffmpeg -version', { stdio: 'ignore' });
-    console.log('[Video AI API] ffmpeg binary is globally accessible in PATH.');
-    ffmpegPathsResolved = true;
-    return;
-  } catch (e) {
-    console.log('[Video AI API] ffmpeg not globally in PATH. Searching standard paths...');
-  }
-
-  // 2. Scan standard Linux/macOS binary locations
-  const standardLinuxPaths = [
-    '/usr/bin/ffmpeg',
-    '/usr/local/bin/ffmpeg',
-    '/usr/sbin/ffmpeg',
-    '/usr/local/sbin/ffmpeg',
-    '/opt/homebrew/bin/ffmpeg'
-  ];
-  for (const p of standardLinuxPaths) {
-    if (fs.existsSync(p)) {
-      const ffprobePath = p.replace('ffmpeg', 'ffprobe');
-      console.log(`[Video AI API] Found FFmpeg at standard location: ${p}`);
-      ffmpeg.setFfmpegPath(p);
-      if (fs.existsSync(ffprobePath)) {
-        ffmpeg.setFfprobePath(ffprobePath);
-      }
-      ffmpegPathsResolved = true;
-      return;
-    }
-  }
-
-  // 3. Try ffmpeg-static (best option for Vercel serverless — ships a statically compiled binary)
-  try {
-    const ffmpegStaticPath = require('ffmpeg-static') as string;
-    if (ffmpegStaticPath && fs.existsSync(ffmpegStaticPath)) {
-      let finalFfmpeg = ffmpegStaticPath;
-
-      // On non-Windows, copy to /tmp and chmod to guarantee execute permissions
-      if (os.platform() !== 'win32') {
-        try {
-          const tmpFfmpeg = path.join(os.tmpdir(), 'ik_ffmpeg_static');
-          if (!fs.existsSync(tmpFfmpeg)) {
-            fs.copyFileSync(ffmpegStaticPath, tmpFfmpeg);
-            fs.chmodSync(tmpFfmpeg, '755');
-          }
-          finalFfmpeg = tmpFfmpeg;
-        } catch (chmodErr) {
-          console.warn('[Video AI API WARNING] Could not copy/chmod ffmpeg-static to /tmp:', chmodErr);
-          try { fs.chmodSync(ffmpegStaticPath, '755'); } catch (e) {}
-        }
-      }
-
-      console.log(`[Video AI API] Using ffmpeg-static binary: ${finalFfmpeg}`);
-      ffmpeg.setFfmpegPath(finalFfmpeg);
-
-      // Also try @ffprobe-installer for ffprobe path alongside ffmpeg-static
-      try {
-        if (!ffprobeInstaller) ffprobeInstaller = require('@ffprobe-installer/ffprobe');
-        const localFfprobe = ffprobeInstaller.path;
-        if (localFfprobe && fs.existsSync(localFfprobe)) {
-          let finalFfprobe = localFfprobe;
-          if (os.platform() !== 'win32') {
-            try {
-              const tmpFfprobe = path.join(os.tmpdir(), 'ik_ffprobe');
-              if (!fs.existsSync(tmpFfprobe)) {
-                fs.copyFileSync(localFfprobe, tmpFfprobe);
-                fs.chmodSync(tmpFfprobe, '755');
-              }
-              finalFfprobe = tmpFfprobe;
-            } catch (e) { try { fs.chmodSync(localFfprobe, '755'); } catch (_) {} }
-          }
-          ffmpeg.setFfprobePath(finalFfprobe);
-          console.log(`[Video AI API] Using ffprobe from @ffprobe-installer: ${finalFfprobe}`);
-        }
-      } catch (e) {
-        console.warn('[Video AI API] ffprobe-installer not found, ffprobe path not set.');
-      }
-
-      // Cache the resolved path
-      try {
-        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: finalFfmpeg }), 'utf8');
-      } catch (e) {}
-
-      ffmpegPathsResolved = true;
-      return;
-    }
-  } catch (e) {
-    console.log('[Video AI API] ffmpeg-static not available:', e);
-  }
-
-  // 3b. Fallback: Check local npm packages @ffmpeg-installer/ffmpeg and @ffprobe-installer/ffprobe
-  try {
-    if (!ffmpegInstaller) ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-    if (!ffprobeInstaller) ffprobeInstaller = require('@ffprobe-installer/ffprobe');
-    const localFfmpeg = ffmpegInstaller.path;
-    const localFfprobe = ffprobeInstaller.path;
-    if (localFfmpeg && fs.existsSync(localFfmpeg) && localFfprobe && fs.existsSync(localFfprobe)) {
-      let finalFfmpeg = localFfmpeg;
-      let finalFfprobe = localFfprobe;
-
-      // On non-Windows platforms, guarantee execute permissions by copying to /tmp and chmoding if necessary
-      if (os.platform() !== 'win32') {
-        try {
-          const tmpFfmpeg = path.join(os.tmpdir(), 'ik_ffmpeg');
-          const tmpFfprobe = path.join(os.tmpdir(), 'ik_ffprobe');
-
-          if (!fs.existsSync(tmpFfmpeg)) {
-            fs.copyFileSync(localFfmpeg, tmpFfmpeg);
-            fs.chmodSync(tmpFfmpeg, '755');
-          }
-          if (!fs.existsSync(tmpFfprobe)) {
-            fs.copyFileSync(localFfprobe, tmpFfprobe);
-            fs.chmodSync(tmpFfprobe, '755');
-          }
-
-          finalFfmpeg = tmpFfmpeg;
-          finalFfprobe = tmpFfprobe;
-          console.log(`[Video AI API] Copied and chmod-ed binaries in /tmp: ${finalFfmpeg}`);
-        } catch (chmodErr) {
-          console.warn('[Video AI API WARNING] Could not copy/chmod binaries to /tmp:', chmodErr);
-          try {
-            fs.chmodSync(localFfmpeg, '755');
-            fs.chmodSync(localFfprobe, '755');
-          } catch (e) {}
-        }
-      }
-
-      console.log(`[Video AI API] Using FFmpeg: ${finalFfmpeg}`);
-      ffmpeg.setFfmpegPath(finalFfmpeg);
-      ffmpeg.setFfprobePath(finalFfprobe);
-
-      // Cache the paths to disk
-      try {
-        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: finalFfmpeg, ffprobe: finalFfprobe }), 'utf8');
-      } catch (e) {}
-
-      ffmpegPathsResolved = true;
-      return;
-    }
-  } catch (e) {
-    console.log('[Video AI API] Failed to resolve npm package installers:', e);
-  }
-
-  // 4. Scan standard WinGet download location under user's profile and default Program Files (Windows)
-  const userHome = os.homedir();
-  const searchDirs = [
-    path.join(userHome, 'AppData', 'Local', 'Microsoft', 'WinGet', 'Packages'),
-    path.join('C:', 'Program Files'),
-    path.join('C:', 'Program Files (x86)')
-  ];
-
-  for (const dir of searchDirs) {
-    if (fs.existsSync(dir)) {
-      const match = findFileRecursive(dir, 'ffmpeg.exe');
-      if (match) {
-        const ffprobeMatch = findFileRecursive(dir, 'ffprobe.exe') || match.replace('ffmpeg.exe', 'ffprobe.exe');
-        console.log(`[Video AI API] Found FFmpeg executable: ${match}`);
-        console.log(`[Video AI API] Found FFprobe executable: ${ffprobeMatch}`);
-        ffmpeg.setFfmpegPath(match);
-        ffmpeg.setFfprobePath(ffprobeMatch);
-
-        // Cache the paths to disk
-        try {
-          fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: match, ffprobe: ffprobeMatch }), 'utf8');
-        } catch (e) {}
-
-        ffmpegPathsResolved = true;
-        return;
-      }
-    }
-  }
-
-  console.warn('[Video AI API WARNING] Could not resolve FFmpeg/FFprobe binary locations.');
-}
-
-function findFileRecursive(dir: string, fileName: string, depth = 0): string | null {
-  if (depth > 5) return null;
-  try {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-      const fullPath = path.join(dir, file);
-      const stat = fs.statSync(fullPath);
-      if (stat.isDirectory()) {
-        const found = findFileRecursive(fullPath, fileName, depth + 1);
-        if (found) return found;
-      } else if (file.toLowerCase() === fileName.toLowerCase()) {
-        return fullPath;
-      }
-    }
-  } catch (e) {}
-  return null;
-}
 
 async function queryOpenAIWhisper(openaiKey: string, fileBuffer: Buffer, mimeType: string, fileName: string, responseFormat: 'vtt' | 'text' | 'verbose_json'): Promise<string> {
   const url = 'https://api.openai.com/v1/audio/transcriptions';
@@ -277,14 +60,9 @@ async function queryOpenAIChat(openaiKey: string, systemInstruction: string, use
 }
 
 export async function POST(request: Request) {
-  resolveFfmpegPaths();
-
-  // FFmpeg is optional for subtitle/transcript/summary — these send the video file directly to the AI.
-  // FFmpeg is required only for shorts/reel (video clipping). Checked below.
-
   try {
     const formData = await request.formData();
-    const action = formData.get('action') as string; // 'subtitle', 'transcript', 'summary', 'shorts', 'reel'
+    const action = formData.get('action') as string; // 'subtitle', 'transcript', 'summary'
     const file = formData.get('file') as File;
     const providerParam = formData.get('provider') as string || 'openai';
 
@@ -349,12 +127,7 @@ export async function POST(request: Request) {
 
     console.log(`[Video AI API] Provider: ${activeProvider}, Action: ${action}, File: ${file.name}`);
 
-    // For shorts/reel, FFmpeg is required for video clipping
-    if ((action === 'shorts' || action === 'reel') && !ffmpegPathsResolved) {
-      return NextResponse.json({
-        error: 'FFmpeg binary was not found on the server. Shorts/Reel generation requires FFmpeg for video clipping. Please contact the administrator.'
-      }, { status: 500 });
-    }
+
 
     // Save input video to a temp file
     const tempInputPath = path.join(os.tmpdir(), `ai_in_${Date.now()}_${file.name}`);
@@ -369,41 +142,13 @@ export async function POST(request: Request) {
       fileExt === 'mkv'  ? 'video/x-matroska' :
       'video/mp4';
 
-    // For subtitle/transcript/summary: send the video file DIRECTLY to the AI — no FFmpeg needed.
+    // Send the video file DIRECTLY to the AI — no FFmpeg needed.
     // OpenAI Whisper accepts mp4/webm/mov natively (up to 25 MB).
     // Gemini accepts video/* inline data natively.
-    // For shorts/reel: we still extract audio first for timestamp analysis, then use FFmpeg to clip.
-    let aiFileBuffer: Buffer = inputBuffer;
-    let aiMimeType: string = videoMimeType;
-    let aiFileName: string = file.name;
-    const tempAudioPath = path.join(os.tmpdir(), `ai_audio_${Date.now()}.mp3`);
-
-    if (ffmpegPathsResolved && (action === 'shorts' || action === 'reel')) {
-      // Extract audio only when we need it for shorts/reel timestamp analysis
-      try {
-        await new Promise<void>((resolve, reject) => {
-          ffmpeg(tempInputPath)
-            .noVideo()
-            .audioCodec('libmp3lame')
-            .audioBitrate(64)
-            .audioChannels(1)
-            .output(tempAudioPath)
-            .on('end', () => resolve())
-            .on('error', (err) => reject(err))
-            .run();
-        });
-        aiFileBuffer = fs.readFileSync(tempAudioPath);
-        aiMimeType = 'audio/mp3';
-        aiFileName = 'audio.mp3';
-        console.log('[Video AI API] Audio extracted for shorts/reel timestamp analysis.');
-      } catch (audioErr: any) {
-        if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
-        console.error('[Video AI API] Audio extraction failed:', audioErr);
-        return NextResponse.json({ error: `Audio extraction failed: ${audioErr.message}` }, { status: 500 });
-      }
-    } else {
-      console.log(`[Video AI API] Sending ${videoMimeType} file directly to AI provider (no FFmpeg needed for ${action}).`);
-    }
+    const aiFileBuffer: Buffer = inputBuffer;
+    const aiMimeType: string = videoMimeType;
+    const aiFileName: string = file.name;
+    console.log(`[Video AI API] Sending ${videoMimeType} file directly to AI provider (no FFmpeg needed for ${action}).`);
 
     const audioBase64 = aiFileBuffer.toString('base64');
 
@@ -420,24 +165,6 @@ export async function POST(request: Request) {
           const transcriptText = await queryOpenAIWhisper(openaiKey, aiFileBuffer, aiMimeType, aiFileName, 'text');
           const systemInstruction = 'You are an expert video summarization assistant. Analyze the transcript text and generate a clear, professional, and well-structured text summary of the video content. Use Markdown headings, bullet points, key takeaways, and action items.';
           const userPrompt = `Summarize the following video transcription:\n"""\n${transcriptText}\n"""`;
-          rawAiResponse = await queryOpenAIChat(openaiKey, systemInstruction, userPrompt);
-        } else if (action === 'shorts' || action === 'reel') {
-          const verboseJson = await queryOpenAIWhisper(openaiKey, aiFileBuffer, aiMimeType, aiFileName, 'verbose_json');
-          let segments = [];
-          try {
-            const parsed = JSON.parse(verboseJson);
-            segments = (parsed.segments || []).map((s: any) => ({
-              start: s.start,
-              end: s.end,
-              text: s.text
-            }));
-          } catch (e) {
-            console.warn('[Video AI API] Failed to parse Whisper verbose_json segments:', e);
-          }
-
-          const systemInstruction = 'You are an expert social media highlight clipper. Analyze the transcription segments with timestamps, identify the single most engaging and high-impact hook or segment that is between 15 and 45 seconds long. Return a JSON object with exactly two keys: "startTime" (in seconds) and "duration" (in seconds). Return ONLY this JSON object. No other text. Example: { "startTime": 15.2, "duration": 30.0 }';
-          const userPrompt = `Here are the transcription segments with timestamps:\n"""\n${JSON.stringify(segments)}\n"""\n\nIdentify the best 15-45 second highlight segment and return the startTime and duration in JSON.`;
-          
           rawAiResponse = await queryOpenAIChat(openaiKey, systemInstruction, userPrompt);
         }
       } else {
@@ -468,9 +195,6 @@ Hello, welcome to Infinity Kit!
 00:00:04.500 --> 00:00:08.000
 Today we are editing videos.`;
           userPrompt = 'Generate subtitles in WebVTT format for this audio file.';
-        } else if (action === 'shorts' || action === 'reel') {
-          systemInstruction = 'You are an expert social media highlight clipper. Analyze the audio, identify the single most engaging and high-impact hook or segment that is between 15 and 45 seconds long. Return a JSON object with exactly two keys: "startTime" (in seconds) and "duration" (in seconds). Return ONLY this JSON object. No other text. Example: { "startTime": 15.2, "duration": 30.0 }';
-          userPrompt = 'Identify the best 15-45 second highlight segment from this audio.';
         }
 
         const response = await model.generateContent([
@@ -489,7 +213,7 @@ Today we are editing videos.`;
       console.log(`[Video AI API] AI response received for action ${action}`);
 
       // Cleanup extracted audio (only created for shorts/reel with FFmpeg)
-      if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
+      
 
       // If text summary, transcript, or subtitle, return immediately
       if (action === 'transcript' || action === 'summary' || action === 'subtitle') {
@@ -498,68 +222,7 @@ Today we are editing videos.`;
       }
 
       // Shorts / Reels generation: parse timestamps and run FFmpeg clip+crop on server
-      if (action === 'shorts' || action === 'reel') {
-        let startTime = 0;
-        let duration = 30;
-
-        try {
-          // Clean JSON brackets if wrapped
-          const cleanJsonStr = rawAiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(cleanJsonStr);
-          startTime = Number(parsed.startTime || 0);
-          duration = Number(parsed.duration || 30);
-        } catch (jsonErr) {
-          console.warn('[Video AI API] AI failed to return valid JSON, falling back to default 0-30s trim:', rawAiResponse);
-          // Try to regex parse
-          const startMatch = rawAiResponse.match(/"startTime":\s*([\d.]+)/);
-          const durMatch = rawAiResponse.match(/"duration":\s*([\d.]+)/);
-          if (startMatch) startTime = Number(startMatch[1]);
-          if (durMatch) duration = Number(durMatch[1]);
-        }
-
-        console.log(`[Video AI API] AI Clipper chosen: Start = ${startTime}s, Duration = ${duration}s. Clipping vertical crop...`);
-
-        const tempShortsPath = path.join(os.tmpdir(), `ai_clip_${Date.now()}.mp4`);
-
-        try {
-          await new Promise<void>((resolve, reject) => {
-            ffmpeg(tempInputPath)
-              .setStartTime(startTime)
-              .setDuration(duration)
-              // Center crop horizontal video to vertical 9:16 aspect ratio
-              .videoFilter(`crop=ih*9/16:ih:(iw-ow)/2:0,scale=w='trunc(720/2)*2':h='trunc(1280/2)*2'`)
-              .videoCodec('libx264')
-              .audioCodec('aac')
-              .output(tempShortsPath)
-              .on('end', () => resolve())
-              .on('error', (err) => reject(err))
-              .run();
-          });
-
-          const fileBuffer = fs.readFileSync(tempShortsPath);
-
-          // Cleanup remaining temp files
-          if (fs.existsSync(tempInputPath)) fs.unlinkSync(tempInputPath);
-          if (fs.existsSync(tempShortsPath)) fs.unlinkSync(tempShortsPath);
-
-          const downloadName = `ai_${action}_${file.name}`;
-
-          return new Response(fileBuffer, {
-            headers: {
-              'Content-Type': 'video/mp4',
-              'Content-Disposition': `attachment; filename="${downloadName}"`,
-              'X-AI-Start-Time': String(startTime),
-              'X-AI-Duration': String(duration)
-            }
-          });
-
-        } catch (ffmpegErr: any) {
-          if (fs.existsSync(tempInputPath)) fs.unlinkSync(tempInputPath);
-          if (fs.existsSync(tempShortsPath)) fs.unlinkSync(tempShortsPath);
-          console.error('[Video AI API] Highlight clipping failed:', ffmpegErr);
-          return NextResponse.json({ error: `Highlight clipping failed: ${ffmpegErr.message}` }, { status: 500 });
-        }
-      }
+      
 
       // Default fallback
       if (fs.existsSync(tempInputPath)) fs.unlinkSync(tempInputPath);
@@ -567,7 +230,6 @@ Today we are editing videos.`;
 
     } catch (aiErr: any) {
       if (fs.existsSync(tempInputPath)) fs.unlinkSync(tempInputPath);
-      if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
       const providerName = activeProvider === 'openai' ? 'OpenAI' : 'Gemini';
       console.error(`[Video AI API] ${providerName} request failed:`, aiErr);
       return NextResponse.json({ error: `${providerName} processing failed: ${aiErr.message}` }, { status: 500 });

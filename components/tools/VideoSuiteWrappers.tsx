@@ -85,14 +85,6 @@ export function AITranscript() {
   return <VideoAISuite />;
 }
 
-export function AIShortsGen() {
-  return <VideoAISuite />;
-}
-
-export function AIReelsGen() {
-  return <VideoAISuite />;
-}
-
 // Video Utilities Wrappers
 export function ExtractAudioWrapper() {
   return <VideoUtilitiesSuite initialTab="extract-audio" />;
