@@ -55,7 +55,6 @@ const ExpenseTrackerSuite= dynamic(() => import('./ExpenseTrackerSuite'),{ ssr: 
 const AIChatbot          = dynamic(() => import('./AIChatbot'),         { ssr: false, loading: LoadingSkeleton });
 const AITextImprover     = dynamic(() => import('./AITextImprover'),    { ssr: false, loading: LoadingSkeleton });
 const AISummarizer       = dynamic(() => import('./AISummarizer'),      { ssr: false, loading: LoadingSkeleton });
-const AIImageGenerator   = dynamic(() => import('./AIImageGenerator'),  { ssr: false, loading: LoadingSkeleton });
 const QRCodeGenerator    = dynamic(() => import('./QRCodeGenerator'),   { ssr: false, loading: LoadingSkeleton });
 const GraphMaker         = dynamic(() => import('./GraphMaker'),        { ssr: false, loading: LoadingSkeleton });
 const ESignature         = dynamic(() => import('./ESignature'),        { ssr: false, loading: LoadingSkeleton });
@@ -177,13 +176,6 @@ const BlurImage             = dynamic(() => import('./BlurImage'),             {
 const SharpenImage          = dynamic(() => import('./SharpenImage'),          { ssr: false, loading: LoadingSkeleton });
 const PixelateImage         = dynamic(() => import('./PixelateImage'),         { ssr: false, loading: LoadingSkeleton });
 
-// AI Image Wrappers
-const AIArtGenerator        = dynamic(() => import('./AIArtGenerator'),        { ssr: false, loading: LoadingSkeleton });
-const AIAvatarGenerator     = dynamic(() => import('./AIAvatarGenerator'),     { ssr: false, loading: LoadingSkeleton });
-const AIHeadshotGenerator   = dynamic(() => import('./AIHeadshotGenerator'),   { ssr: false, loading: LoadingSkeleton });
-const AILogoGenerator       = dynamic(() => import('./AILogoGenerator'),       { ssr: false, loading: LoadingSkeleton });
-const AIWallpaperGenerator   = dynamic(() => import('./AIWallpaperGenerator'), { ssr: false, loading: LoadingSkeleton });
-const AIPosterGenerator      = dynamic(() => import('./AIPosterGenerator'),      { ssr: false, loading: LoadingSkeleton });
 
 // Image AI Editing Wrappers
 const RemoveBackground      = dynamic(() => import('./RemoveBackground'),      { ssr: false, loading: LoadingSkeleton });
@@ -264,7 +256,6 @@ export {
   AIChatbot,
   AITextImprover,
   AISummarizer,
-  AIImageGenerator,
   QRCodeGenerator,
   GraphMaker,
   ESignature,
@@ -401,12 +392,6 @@ export {
   BlurImage,
   SharpenImage,
   PixelateImage,
-  AIArtGenerator,
-  AIAvatarGenerator,
-  AIHeadshotGenerator,
-  AILogoGenerator,
-  AIWallpaperGenerator,
-  AIPosterGenerator,
   RemoveBackground,
   RemoveObjects,
   RemoveWatermark,
@@ -431,7 +416,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   AIChatbot,
   AITextImprover,
   AISummarizer,
-  AIImageGenerator,
   QRCodeGenerator,
   GraphMaker,
   ESignature,
@@ -571,7 +555,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   chatbot: AIChatbot,
   'text-improver': AITextImprover,
   summarizer: AISummarizer,
-  'image-generator': AIImageGenerator,
   'dynamic-qr': QRCodeGenerator,
   'graph-maker': GraphMaker,
   'e-signature': ESignature,
@@ -712,12 +695,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'blur-image': BlurImage,
   'sharpen-image': SharpenImage,
   'pixelate-image': PixelateImage,
-  'ai-art-generator': AIArtGenerator,
-  'ai-avatar-generator': AIAvatarGenerator,
-  'ai-headshot-generator': AIHeadshotGenerator,
-  'ai-logo-generator': AILogoGenerator,
-  'ai-wallpaper-generator': AIWallpaperGenerator,
-  'ai-poster-generator': AIPosterGenerator,
   'remove-background': RemoveBackground,
   'remove-objects': RemoveObjects,
   'remove-watermark': RemoveWatermark,
