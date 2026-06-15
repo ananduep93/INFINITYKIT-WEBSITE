@@ -26,6 +26,7 @@ const nextConfig = {
       'framer-motion',
     ],
     serverComponentsExternalPackages: [
+      'ffmpeg-static',
       '@ffmpeg-installer/ffmpeg',
       '@ffmpeg-installer/linux-x64',
       '@ffprobe-installer/ffprobe',

@@ -62,7 +62,66 @@ function resolveFfmpegPaths() {
     }
   }
 
-  // 3. Check local npm packages @ffmpeg-installer/ffmpeg and @ffprobe-installer/ffprobe
+  // 3. Try ffmpeg-static (best option for Vercel serverless — ships a statically compiled binary)
+  try {
+    const ffmpegStaticPath = require('ffmpeg-static') as string;
+    if (ffmpegStaticPath && fs.existsSync(ffmpegStaticPath)) {
+      let finalFfmpeg = ffmpegStaticPath;
+
+      // On non-Windows, copy to /tmp and chmod to guarantee execute permissions
+      if (os.platform() !== 'win32') {
+        try {
+          const tmpFfmpeg = path.join(os.tmpdir(), 'ik_ffmpeg_static');
+          if (!fs.existsSync(tmpFfmpeg)) {
+            fs.copyFileSync(ffmpegStaticPath, tmpFfmpeg);
+            fs.chmodSync(tmpFfmpeg, '755');
+          }
+          finalFfmpeg = tmpFfmpeg;
+        } catch (chmodErr) {
+          console.warn('[Video API WARNING] Could not copy/chmod ffmpeg-static to /tmp:', chmodErr);
+          try { fs.chmodSync(ffmpegStaticPath, '755'); } catch (e) {}
+        }
+      }
+
+      console.log(`[Video API] Using ffmpeg-static binary: ${finalFfmpeg}`);
+      ffmpeg.setFfmpegPath(finalFfmpeg);
+
+      // Also try @ffprobe-installer for ffprobe path alongside ffmpeg-static
+      try {
+        if (!ffprobeInstaller) ffprobeInstaller = require('@ffprobe-installer/ffprobe');
+        const localFfprobe = ffprobeInstaller.path;
+        if (localFfprobe && fs.existsSync(localFfprobe)) {
+          let finalFfprobe = localFfprobe;
+          if (os.platform() !== 'win32') {
+            try {
+              const tmpFfprobe = path.join(os.tmpdir(), 'ik_ffprobe');
+              if (!fs.existsSync(tmpFfprobe)) {
+                fs.copyFileSync(localFfprobe, tmpFfprobe);
+                fs.chmodSync(tmpFfprobe, '755');
+              }
+              finalFfprobe = tmpFfprobe;
+            } catch (e) { try { fs.chmodSync(localFfprobe, '755'); } catch (_) {} }
+          }
+          ffmpeg.setFfprobePath(finalFfprobe);
+          console.log(`[Video API] Using ffprobe from @ffprobe-installer: ${finalFfprobe}`);
+        }
+      } catch (e) {
+        console.warn('[Video API] ffprobe-installer not found, ffprobe path not set.');
+      }
+
+      // Cache the resolved path
+      try {
+        fs.writeFileSync(cachePath, JSON.stringify({ ffmpeg: finalFfmpeg }), 'utf8')
+      } catch (e) {}
+
+      ffmpegPathsResolved = true;
+      return;
+    }
+  } catch (e) {
+    console.log('[Video API] ffmpeg-static not available:', e);
+  }
+
+  // 3b. Fallback: Check local npm packages @ffmpeg-installer/ffmpeg and @ffprobe-installer/ffprobe
   try {
     if (!ffmpegInstaller) ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
     if (!ffprobeInstaller) ffprobeInstaller = require('@ffprobe-installer/ffprobe');
