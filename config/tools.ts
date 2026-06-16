@@ -3905,55 +3905,7 @@ export const tools: ToolDefinition[] = [
                 "answer": "Our tool supports major graphic file types including PNG, JPG, JPEG, WEBP, AVIF, and SVG."
           }
     ]
-  },
-  {
-    id: 'blur-background',
-    name: 'DSLR Portrait Background Blur',
-    description: 'Create professional DSLR depth-of-field portrait blur focus rings for photos locally.',
-    category: 'image-tools',
-    icon: '📸',
-    type: 'custom',
-    componentName: 'BlurBackground'
-  ,
-    seoTitle: "Free DSLR Portrait Background Blur — Edit & Convert Images Online | InfinityKit",
-    seoDescription: "Create professional DSLR depth-of-field portrait blur focus rings for photos locally. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your image file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed image file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Fast client-side image rendering with zero quality degradation",
-          "Supports multiple graphic formats: PNG, JPEG, WEBP, SVG",
-          "Completely secure browser processing with no image uploads to servers",
-          "Adjustable settings for custom widths, heights, or compression rates"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the DSLR Portrait Background Blur free to use?",
-                "answer": "Yes, the DSLR Portrait Background Blur is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Which image formats are supported?",
-                "answer": "Our tool supports major graphic file types including PNG, JPG, JPEG, WEBP, AVIF, and SVG."
-          }
-    ]
+
   },
   {
     id: 'ocrimage',

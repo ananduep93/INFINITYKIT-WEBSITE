@@ -75,7 +75,7 @@ const UnlockPDF          = dynamic(() => import('./UnlockPDF'),         { ssr: f
 const AISummarizePDF     = dynamic(() => import('./AISummarizePDF'),    { ssr: false, loading: LoadingSkeleton });
 const AIChatPDF          = dynamic(() => import('./AIChatPDF'),         { ssr: false, loading: LoadingSkeleton });
 const BackgroundRemover  = dynamic(() => import('./BackgroundRemover'), { ssr: false, loading: LoadingSkeleton });
-const BlurBackground     = dynamic(() => import('./BlurBackground'),    { ssr: false, loading: LoadingSkeleton });
+
 const ExtractAudio       = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ExtractAudioWrapper), { ssr: false, loading: LoadingSkeleton });
 const VideoToGIF         = dynamic(() => import('./VideoSuiteWrappers').then(m => m.VideoToGIFWrapper), { ssr: false, loading: LoadingSkeleton });
 const EssayWriter        = dynamic(() => import('./EssayWriter'),       { ssr: false, loading: LoadingSkeleton });
@@ -274,7 +274,7 @@ export {
   AISummarizePDF,
   AIChatPDF,
   BackgroundRemover,
-  BlurBackground,
+
   ExtractAudio,
   VideoToGIF,
   EssayWriter,
@@ -432,7 +432,7 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   AISummarizePDF,
   AIChatPDF,
   BackgroundRemover,
-  BlurBackground,
+
   ExtractAudio,
   VideoToGIF,
   EssayWriter,
@@ -573,7 +573,7 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'ai-summarize-pdf': AISummarizePDF,
   'ai-chat-pdf': AIChatPDF,
   'bg-remover': BackgroundRemover,
-  'blur-background': BlurBackground,
+
   'extract-audio': ExtractAudio,
   'video-to-gif': VideoToGIF,
   'essay-writer': EssayWriter,

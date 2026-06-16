@@ -5,7 +5,8 @@ import { PDFDocument } from 'pdf-lib';
 import ToolWorkspace from '../ui/ToolWorkspace';
 
 export default function CompressPDF() {
-  const [level, setLevel] = useState<'low' | 'medium' | 'high'>('medium');
+  const [targetSize, setTargetSize] = useState<number>(5);
+  const [targetUnit, setTargetUnit] = useState<'KB' | 'MB'>('MB');
 
   const handleCompress = async (files: File[]) => {
     if (files.length === 0) {
@@ -23,21 +24,10 @@ export default function CompressPDF() {
     const copiedPages = await compressedDoc.copyPages(pdfDoc, pdfDoc.getPageIndices());
     copiedPages.forEach((page) => compressedDoc.addPage(page));
 
-    // Save with different optimization options depending on compression level
-    let compressedBytes: Uint8Array;
-    if (level === 'high') {
-      // Maximum structural compression & object stream packing
-      compressedBytes = await compressedDoc.save({
-        useObjectStreams: true
-      });
-    } else if (level === 'medium') {
-      compressedBytes = await compressedDoc.save({
-        useObjectStreams: true
-      });
-    } else {
-      // Standard saving with clean page copying
-      compressedBytes = await compressedDoc.save();
-    }
+    // Use maximum structural compression (object stream packing)
+    const compressedBytes = await compressedDoc.save({
+      useObjectStreams: true
+    });
 
     // If pdf-lib output size is somehow larger (which happens for already compressed PDFs),
     // we make sure we don't return a larger file by falling back to the original bytes!
@@ -47,9 +37,14 @@ export default function CompressPDF() {
       finalBytes = new Uint8Array(fileBytes);
     }
 
-    const originalSize = (file.size / 1024).toFixed(1);
-    const compressedSize = (finalBytes.length / 1024).toFixed(1);
+    const originalSizeKB = (file.size / 1024).toFixed(1);
+    const compressedSizeKB = (finalBytes.length / 1024).toFixed(1);
     const ratio = Math.max(0, ((1 - (finalBytes.length / file.size)) * 100)).toFixed(0);
+
+    const targetBytes = targetUnit === 'MB' ? targetSize * 1024 * 1024 : targetSize * 1024;
+    const achievedNote = finalBytes.length <= targetBytes
+      ? 'Target size achieved ✓'
+      : `Best effort — PDF structural compression applied (target may not be fully reachable)`;
 
     const blob = new Blob([finalBytes as any], { type: 'application/pdf' });
     const downloadUrl = URL.createObjectURL(blob);
@@ -57,7 +52,7 @@ export default function CompressPDF() {
     return {
       downloadUrl,
       fileName: `compressed_${file.name}`,
-      resultData: `Original File Size: ${originalSize} KB\nOptimized File Size: ${compressedSize} KB\nDocument Size Reduction Ratio: ${ratio}%`
+      resultData: `Original Size: ${originalSizeKB} KB\nOptimized Size: ${compressedSizeKB} KB\nSize Reduction: ${ratio}%\n${achievedNote}`
     };
   };
 
@@ -70,37 +65,53 @@ export default function CompressPDF() {
         Optimize and shrink PDF files 100% locally in your browser by compressing object streams and clearing redundant metadata.
       </p>
 
-      <div style={{ marginBottom: '25px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <label style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)' }}>
-          Target Optimization Profile
+      <div style={{ marginBottom: '25px' }}>
+        <label style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)', display: 'block', marginBottom: '10px' }}>
+          Target File Size
         </label>
-        <div style={{ display: 'flex', gap: '15px' }}>
-          {[
-            { id: 'low', label: 'Low (Max Quality)' },
-            { id: 'medium', label: 'Medium (Balanced)' },
-            { id: 'high', label: 'High (Maximum Compression)' }
-          ].map((item) => (
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="number"
+            min="1"
+            value={targetSize}
+            onChange={(e) => setTargetSize(Math.max(1, Number(e.target.value)))}
+            style={{
+              flex: 1,
+              padding: '10px 14px',
+              borderRadius: '10px',
+              border: '1px solid var(--glass-border)',
+              background: 'var(--glass-bg)',
+              color: 'var(--text-color)',
+              fontSize: '1rem',
+              fontWeight: 600,
+              outline: 'none'
+            }}
+            placeholder="e.g. 5"
+          />
+          {(['KB', 'MB'] as const).map((unit) => (
             <button
-              key={item.id}
+              key={unit}
               type="button"
-              onClick={() => setLevel(item.id as any)}
+              onClick={() => setTargetUnit(unit)}
               style={{
-                flex: 1,
-                padding: '10px 15px',
+                padding: '10px 22px',
                 borderRadius: '10px',
-                background: level === item.id ? 'var(--primary-gradient)' : 'var(--glass-bg)',
-                border: level === item.id ? 'none' : '1px solid var(--glass-border)',
-                color: level === item.id ? 'white' : 'var(--text-color)',
-                fontWeight: 600,
-                fontSize: '0.85rem',
+                border: targetUnit === unit ? 'none' : '1px solid var(--glass-border)',
+                background: targetUnit === unit ? 'var(--primary-gradient)' : 'var(--glass-bg)',
+                color: targetUnit === unit ? 'white' : 'var(--text-color)',
+                fontWeight: 700,
+                fontSize: '0.9rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
             >
-              {item.label}
+              {unit}
             </button>
           ))}
         </div>
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+          PDF compression is structural (metadata/stream cleanup). Results may vary depending on how the original PDF was created.
+        </p>
       </div>
 
       <ToolWorkspace
@@ -110,9 +121,9 @@ export default function CompressPDF() {
         onProcess={handleCompress}
         actionButtonText="Reduce PDF Size"
         instructions={[
-          'Upload the PDF document you want to optimize and compress.',
-          'Choose the Target Optimization Profile above.',
-          'Click the "Reduce PDF Size" button to process and download your optimized document.'
+          'Upload the PDF document you want to optimize.',
+          'Enter your target file size (e.g. 5 MB or 500 KB) and select the unit.',
+          'Click "Reduce PDF Size" — the tool applies structural compression and reports the achieved size.'
         ]}
       />
     </div>

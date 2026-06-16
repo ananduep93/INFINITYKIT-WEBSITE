@@ -47,8 +47,10 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
   const [originalHeight, setOriginalHeight] = useState<number>(0);
 
   // Compress State
-  const [quality, setQuality] = useState<number>(0.8);
+  const [targetSize, setTargetSize] = useState<number>(500);
+  const [targetUnit, setTargetUnit] = useState<'KB' | 'MB'>('KB');
   const [compressedSize, setCompressedSize] = useState<string | null>(null);
+  const [isCompressing, setIsCompressing] = useState<boolean>(false);
 
   // Crop State
   const [cropRatio, setCropRatio] = useState<string>('custom'); // custom, 1:1, 16:9, 4:3
@@ -116,7 +118,7 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
       applyEdits(imageRef.current);
     }
   }, [
-    activeTab, width, height, quality, rotation, angleSlider, flipH, flipV,
+    activeTab, width, height, rotation, angleSlider, flipH, flipV,
     blurRadius, sharpenAmount, pixelSize, cropBox, cropRatio
   ]);
 
@@ -276,10 +278,60 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
           setModifiedSrc(URL.createObjectURL(blob));
           setCompressedSize((blob.size / 1024).toFixed(1));
         }
-      }, format, activeTab === 'compress' ? quality : 0.95);
+      }, format, 0.95);
 
     } catch (err) {
       console.error('In-browser drawing error:', err);
+    }
+  };
+
+  // Binary-search compression to hit target file size
+  const handleCompressToTarget = async () => {
+    if (!imageSrc || !imageRef.current || !file) return;
+    setIsCompressing(true);
+    try {
+      const img = imageRef.current;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+
+      const format = file.type === 'image/png' ? 'image/jpeg' : (file.type || 'image/jpeg');
+      const targetBytes = targetUnit === 'MB'
+        ? targetSize * 1024 * 1024
+        : targetSize * 1024;
+
+      const toBlob = (q: number): Promise<Blob | null> =>
+        new Promise((res) => canvas.toBlob(res, format, q));
+
+      let bestBlob: Blob | null = null;
+
+      if (file.size <= targetBytes) {
+        bestBlob = await toBlob(0.95);
+      } else {
+        let lo = 0.05, hi = 0.95;
+        for (let i = 0; i < 14; i++) {
+          const mid = (lo + hi) / 2;
+          const blob = await toBlob(mid);
+          if (!blob) break;
+          if (blob.size <= targetBytes) {
+            bestBlob = blob;
+            lo = mid;
+          } else {
+            hi = mid;
+          }
+        }
+        if (!bestBlob) bestBlob = await toBlob(lo);
+      }
+
+      if (bestBlob) {
+        setModifiedSrc(URL.createObjectURL(bestBlob));
+        setCompressedSize((bestBlob.size / 1024).toFixed(1));
+      }
+    } finally {
+      setIsCompressing(false);
     }
   };
 
@@ -1012,22 +1064,72 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
               {/* COMPRESS PANEL */}
               {activeTab === 'compress' && (
                 <div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 6px' }}>Quality Compression</h4>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 6px' }}>Target File Size</h4>
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>
-                    Reduce target file sizes by sliding output quality ratios.
+                    Enter a target size — the tool finds the best quality that fits.
                   </p>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 700, display: 'block', marginBottom: '6px' }}>
-                    Compression Strength: {Math.round(quality * 100)}%
-                  </label>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="1.0"
-                    step="0.05"
-                    value={quality}
-                    onChange={(e) => setQuality(Number(e.target.value))}
-                    style={{ width: '100%', accentColor: 'var(--primary-color)', cursor: 'pointer' }}
-                  />
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '10px' }}>
+                    <input
+                      type="number"
+                      min="1"
+                      value={targetSize}
+                      onChange={(e) => setTargetSize(Math.max(1, Number(e.target.value)))}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--glass-border)',
+                        background: 'var(--glass-bg)',
+                        color: 'var(--text-color)',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        outline: 'none'
+                      }}
+                      placeholder="e.g. 500"
+                    />
+                    {(['KB', 'MB'] as const).map((unit) => (
+                      <button
+                        key={unit}
+                        type="button"
+                        onClick={() => setTargetUnit(unit)}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          border: targetUnit === unit ? 'none' : '1px solid var(--glass-border)',
+                          background: targetUnit === unit ? 'var(--primary-gradient)' : 'var(--glass-bg)',
+                          color: targetUnit === unit ? 'white' : 'var(--text-color)',
+                          fontWeight: 700,
+                          fontSize: '0.78rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {unit}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleCompressToTarget}
+                    disabled={isCompressing || !imageSrc}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '8px',
+                      background: isCompressing ? 'var(--glass-bg)' : 'var(--primary-gradient)',
+                      border: 'none',
+                      color: 'white',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      cursor: isCompressing ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {isCompressing ? 'Compressing…' : 'Apply Compression'}
+                  </button>
+                  {compressedSize && (
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '10px', textAlign: 'center' }}>
+                      Result: {compressedSize} KB
+                    </p>
+                  )}
                 </div>
               )}
 

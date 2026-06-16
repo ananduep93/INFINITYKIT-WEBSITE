@@ -285,7 +285,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "EXIF Metadata Stripper", path: "/image-tools/metadata-stripper" },
       { name: "Resize Dimensions", path: "/image-tools/resizeimage" },
       { name: "Remove Background (Classic)", path: "/image-tools/bg-remover" },
-      { name: "Blur Background (Classic)", path: "/image-tools/blur-background" },
+
       { name: "Read Photo Details", path: "/image-tools/imageinfo" },
       { name: "Color Palette Extractor", path: "/image-tools/color-palette" }
     ]},
