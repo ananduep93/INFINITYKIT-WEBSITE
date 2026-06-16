@@ -543,7 +543,8 @@ export default function ImageEditorSuite({ initialTab = 'resize' }: ImageEditorS
     setBlurRadius(0);
     setSharpenAmount(0);
     setPixelSize(1);
-    setQuality(0.8);
+    setTargetSize(500);
+    setTargetUnit('KB');
     setWidth(originalWidth);
     setHeight(originalHeight);
     setCropBox({ x: 10, y: 10, w: 80, h: 80 });
