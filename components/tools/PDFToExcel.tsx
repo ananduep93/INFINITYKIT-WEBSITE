@@ -1,27 +1,46 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import ToolWorkspace from '../ui/ToolWorkspace';
+import { getPdfJs, getTextItems, groupItemsIntoLines } from '../../lib/pdfjs';
+
+/**
+ * Cluster X-coordinates into column buckets using a tolerance of ±10px.
+ * Returns a sorted array of representative column X values.
+ */
+function clusterXCoordinates(xValues: number[], tolerance = 10): number[] {
+  const sorted = [...xValues].sort((a, b) => a - b);
+  const clusters: number[] = [];
+
+  for (const x of sorted) {
+    const existing = clusters.find((c) => Math.abs(c - x) <= tolerance);
+    if (existing === undefined) {
+      clusters.push(x);
+    }
+  }
+
+  return clusters.sort((a, b) => a - b);
+}
+
+/**
+ * Find the nearest column bucket index for a given X value.
+ */
+function nearestColumnIndex(x: number, columns: number[], tolerance = 10): number {
+  let best = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < columns.length; i++) {
+    const dist = Math.abs(columns[i] - x);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = i;
+    }
+  }
+  // If no column is within 2× tolerance, still use the nearest
+  return best;
+}
 
 export default function PDFToExcel() {
-  const loadPdfJs = () => {
-    return new Promise<any>((resolve, reject) => {
-      if (typeof window === 'undefined') return reject(new Error('Browser environment required.'));
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF.js engine.'));
-      document.head.appendChild(script);
-    });
-  };
+  const [progress, setProgress] = useState<string>('');
 
   const handleConvertToExcel = async (files: File[]) => {
     if (files.length === 0) {
@@ -29,84 +48,95 @@ export default function PDFToExcel() {
     }
 
     const file = files[0];
-    const pdfjsLib = await loadPdfJs();
+    setProgress('Loading PDF engine…');
+
+    // 1. Load shared PDF.js utility (no CDN script injection)
+    const pdfjsLib = await getPdfJs();
     const arrayBuffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     const pdf = await loadingTask.promise;
-    const numPages = pdf.numPages;
-    
-    let htmlTable = '<table>';
+    const numPages: number = pdf.numPages;
+
+    // 2. Load SheetJS
+    const XLSX = await import('xlsx');
+    const wb = XLSX.utils.book_new();
 
     for (let i = 1; i <= numPages; i++) {
+      setProgress(`Processing page ${i} of ${numPages}…`);
+
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      
-      // Coordinate-based line grouping
-      const items = textContent.items as any[];
-      
-      const mappedItems = items.map((item: any) => ({
-        str: item.str.trim(),
-        x: item.transform[4],
-        y: item.transform[5],
-        width: item.width,
-        height: item.height,
-      })).filter(item => item.str !== '');
 
-      const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
-      for (const item of mappedItems) {
-        let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 5));
-        if (foundLine) {
-          foundLine.items.push(item);
-        } else {
-          lines.push({
-            y: item.y,
-            height: item.height,
-            items: [item]
-          });
-        }
+      // Use shared helpers — safely filters TextMarkedContent objects in pdfjs v6+
+      const items = getTextItems(textContent).filter((item) => item.str.trim() !== '');
+
+      if (items.length === 0) {
+        // Empty page — add a blank sheet
+        const ws = XLSX.utils.aoa_to_sheet([[]]);
+        XLSX.utils.book_append_sheet(wb, ws, `Sheet${i}`);
+        continue;
       }
 
-      // Sort lines by Y descending (top to bottom)
-      lines.sort((a, b) => b.y - a.y);
+      // --- Column clustering ---
+      const allX = items.map((item) => item.transform[4]);
+      const columns = clusterXCoordinates(allX, 10);
 
-      // Sort items within each line by X ascending (left to right)
+      // --- Group items into lines ---
+      const lines = groupItemsIntoLines(items);
+
+      // --- Build rows matrix ---
+      const sheetRows: string[][] = [];
+
       for (const line of lines) {
-        line.items.sort((a, b) => a.x - b.x);
-        const currentRow = line.items.map(item => item.str);
-        if (currentRow.length > 0) {
-          htmlTable += '<tr>' + currentRow.map(col => `<td>${col}</td>`).join('') + '</tr>';
+        const row: string[] = new Array(columns.length).fill('');
+
+        for (const item of line.items) {
+          const x = item.transform[4];
+          const colIdx = nearestColumnIndex(x, columns, 10);
+          // Concatenate if multiple items share the same column bucket on this line
+          row[colIdx] = row[colIdx] ? row[colIdx] + ' ' + item.str.trim() : item.str.trim();
         }
+
+        sheetRows.push(row);
       }
+
+      // --- Create worksheet for this page ---
+      const ws = XLSX.utils.aoa_to_sheet(sheetRows);
+      XLSX.utils.book_append_sheet(wb, ws, `Sheet${i}`);
     }
-    
-    htmlTable += '</table>';
 
-    // Package as XLS HTML format readable directly by Excel
-    const xlsTemplate = `
-      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-      <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Sheet1</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
-      <body>${htmlTable}</body>
-      </html>
-    `;
+    setProgress('Generating Excel file…');
 
-    const blob = new Blob([xlsTemplate], { type: 'application/vnd.ms-excel' });
+    // 3. Write workbook as real .xlsx binary
+    const buf: ArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([buf], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     const downloadUrl = URL.createObjectURL(blob);
+
+    setProgress('');
 
     return {
       downloadUrl,
-      fileName: `${file.name.replace(/\.pdf$/i, '')}.xls`,
-      resultData: `Successfully extracted grid coordinates and compiled Excel worksheet format with ${numPages} page(s).`
+      fileName: `${file.name.replace(/\.pdf$/i, '')}.xlsx`,
+      resultData: `Successfully extracted tabular data from "${file.name}" — ${numPages} page(s) → ${numPages} sheet(s).`,
     };
   };
 
   return (
     <div className="glass-panel" style={{ margin: '0 auto', maxWidth: '850px' }}>
       <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px' }}>
-        Convert PDF to Excel (.xls)
+        Convert PDF to Excel (.xlsx)
       </h2>
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '25px' }}>
-        Extract tables and structured coordinate grids from PDF documents into Excel spreadsheets 100% locally.
+        Extract tables and structured coordinate grids from PDF documents into real Excel spreadsheets 100% locally.
       </p>
+
+      {progress && (
+        <p style={{ color: 'var(--accent)', fontSize: '0.85rem', marginBottom: '12px', fontStyle: 'italic' }}>
+          {progress}
+        </p>
+      )}
 
       <ToolWorkspace
         toolId="pdf-to-excel"
@@ -115,9 +145,9 @@ export default function PDFToExcel() {
         onProcess={handleConvertToExcel}
         actionButtonText="Convert to Excel"
         instructions={[
-          'Upload your PDF file containing tabular data tables.',
-          'Wait for coordinate text grouping algorithms to map grid cells client-side.',
-          'Download the compiled Excel-ready Spreadsheet file.'
+          'Upload your PDF file containing tabular data or structured text.',
+          'X-coordinate column clustering maps each text cell to the correct spreadsheet column.',
+          'Download the compiled multi-sheet Excel (.xlsx) file — one sheet per PDF page.',
         ]}
       />
     </div>

@@ -3,44 +3,25 @@
 import React, { useState, useRef } from 'react';
 import { FileDown, Upload, FileText, CheckCircle, AlertCircle, RefreshCw, Download, Layers } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs } from '../../lib/pdfjs';
 
 export default function PDFToJPG() {
   const [file, setFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [scale, setScale] = useState(2.0); // 2.0 ≈ 150 DPI
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Dynamic loaders for cdn scripts
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF library.'));
-      document.body.appendChild(script);
-    });
-  };
-
   const loadJSZip = (): Promise<any> => {
     return new Promise((resolve, reject) => {
-      if ((window as any).JSZip) {
-        resolve((window as any).JSZip);
-        return;
-      }
+      if ((window as any).JSZip) { resolve((window as any).JSZip); return; }
       const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
       script.onload = () => resolve((window as any).JSZip);
       script.onerror = () => reject(new Error('Failed to load ZIP library.'));
       document.body.appendChild(script);
@@ -62,7 +43,7 @@ export default function PDFToJPG() {
     setDownloadUrl(null);
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await uploaded.arrayBuffer();
       const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       setNumPages(pdf.numPages);
@@ -77,35 +58,36 @@ export default function PDFToJPG() {
     setIsProcessing(true);
     setError(null);
     setSuccess(null);
+    setProgress({ current: 0, total: numPages });
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const JSZip = await loadJSZip();
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       
       const zip = new JSZip();
-      const limit = Math.min(numPages, 10); // Safe limit for single zip
 
-      for (let i = 1; i <= limit; i++) {
+      for (let i = 1; i <= numPages; i++) {
+        setProgress({ current: i, total: numPages });
         const page = await pdfDoc.getPage(i);
-        const viewport = page.getViewport({ scale: 2.0 }); // High-res
+        const viewport = page.getViewport({ scale });
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         const ctx = canvas.getContext('2d');
         if (ctx) {
           await page.render({ canvasContext: ctx, viewport }).promise;
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
           const base64Data = dataUrl.split(',')[1];
-          zip.file(`page_${i}.jpg`, base64Data, { base64: true });
+          zip.file(`page_${String(i).padStart(3, '0')}.jpg`, base64Data, { base64: true });
         }
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
       const url = URL.createObjectURL(content);
       setDownloadUrl(url);
-      setSuccess(`Successfully converted first ${limit} page(s) to JPG format!`);
+      setSuccess(`Successfully converted all ${numPages} page(s) to high-resolution JPG!`);
     } catch (err: any) {
       setError(err.message || 'Error occurred while converting pages.');
     } finally {
@@ -119,6 +101,7 @@ export default function PDFToJPG() {
     setDownloadUrl(null);
     setError(null);
     setSuccess(null);
+    setProgress({ current: 0, total: 0 });
   };
 
   return (
@@ -213,7 +196,7 @@ export default function PDFToJPG() {
                   {file.name}
                 </h4>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  Size: {(file.size / 1024 / 1024).toFixed(2)} MB &nbsp;·&nbsp; Total Pages: {numPages}
+                  Size: {(file.size / 1024 / 1024).toFixed(2)} MB &nbsp;·&nbsp; Pages: {numPages}
                 </p>
               </div>
               <button
@@ -227,6 +210,25 @@ export default function PDFToJPG() {
               </button>
             </div>
 
+            {/* Resolution Selector */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Output Resolution</label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {[{label: 'Standard (72 DPI)', val: 1.0}, {label: 'High (150 DPI)', val: 2.0}, {label: 'Ultra (300 DPI)', val: 4.0}].map(opt => (
+                  <button
+                    key={opt.val}
+                    onClick={() => setScale(opt.val)}
+                    style={{
+                      padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
+                      background: scale === opt.val ? 'var(--primary-color)' : 'var(--glass-border)',
+                      color: scale === opt.val ? '#fff' : 'var(--text-secondary)',
+                      border: 'none'
+                    }}
+                  >{opt.label}</button>
+                ))}
+              </div>
+            </div>
+
             <button
               onClick={runConvert}
               style={{
@@ -235,7 +237,7 @@ export default function PDFToJPG() {
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
               }}
             >
-              Convert PDF to JPG Pack
+              Convert All {numPages} Page(s) to JPG
             </button>
           </div>
         )}
@@ -244,7 +246,14 @@ export default function PDFToJPG() {
         {isProcessing && (
           <div className="glass-panel" style={{ margin: 0, padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center' }}>
             <ReusableLoading type="spinner" />
-            <p style={{ fontWeight: 600, color: 'var(--text-color)' }}>Rendering PDF pages to JPEG format...</p>
+            <p style={{ fontWeight: 600, color: 'var(--text-color)' }}>
+              {progress.current > 0 ? `Rendering page ${progress.current} of ${progress.total}...` : 'Initializing PDF engine...'}
+            </p>
+            {progress.total > 0 && (
+              <div style={{ width: '100%', maxWidth: '300px', height: '6px', borderRadius: '99px', background: 'var(--glass-border)', overflow: 'hidden' }}>
+                <div style={{ width: `${(progress.current / progress.total) * 100}%`, height: '100%', background: 'var(--primary-color)', borderRadius: '99px', transition: 'width 0.3s ease' }} />
+              </div>
+            )}
           </div>
         )}
 

@@ -2,8 +2,23 @@
 
 import React, { useState, useRef } from 'react';
 import Tesseract from 'tesseract.js';
-import { FileText, Upload, RefreshCw, Download, FilePlus, Copy, Check } from 'lucide-react';
+import { FileText, Upload, Download, Copy, Check } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs } from '../../lib/pdfjs';
+
+const OCR_LANGUAGES = [
+  { code: 'eng', label: 'English' },
+  { code: 'fra', label: 'French' },
+  { code: 'deu', label: 'German' },
+  { code: 'spa', label: 'Spanish' },
+  { code: 'ita', label: 'Italian' },
+  { code: 'por', label: 'Portuguese' },
+  { code: 'nld', label: 'Dutch' },
+  { code: 'chi_sim', label: 'Chinese Simplified' },
+  { code: 'jpn', label: 'Japanese' },
+  { code: 'ara', label: 'Arabic' },
+  { code: 'hin', label: 'Hindi' },
+];
 
 export default function OCRPDF() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,27 +29,11 @@ export default function OCRPDF() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [ocrLanguage, setOcrLanguage] = useState('eng');
+  // 0 = no limit (all pages)
+  const [maxPages, setMaxPages] = useState<number>(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Load PDF.js script dynamically
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF engine. Check internet connection.'));
-      document.body.appendChild(script);
-    });
-  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -51,7 +50,7 @@ export default function OCRPDF() {
     setOcrText('');
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await uploaded.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       setNumPages(pdfDoc.numPages);
@@ -69,20 +68,18 @@ export default function OCRPDF() {
     setOcrText('');
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-      
-      let fullText = '';
 
-      // Process first 10 pages maximum to avoid crash/timeout in browser thread
-      const pagesToProcess = Math.min(numPages, 10);
+      let fullText = '';
+      const pagesToProcess = maxPages > 0 ? Math.min(numPages, maxPages) : numPages;
 
       for (let i = 1; i <= pagesToProcess; i++) {
         setCurrentPage(i);
-        
+
         const page = await pdfDoc.getPage(i);
-        const viewport = page.getViewport({ scale: 1.5 }); // Good resolution for OCR
+        const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
@@ -95,18 +92,19 @@ export default function OCRPDF() {
           }).promise;
         }
 
-        // Run Tesseract OCR on page canvas
-        const ocrResult = await Tesseract.recognize(canvas, 'eng');
+        // Run Tesseract OCR on page canvas with selected language
+        const ocrResult = await Tesseract.recognize(canvas, ocrLanguage, {});
         fullText += `--- Page ${i} ---\n${ocrResult.data.text}\n\n`;
       }
 
       setOcrText(fullText);
-      setSuccess(`OCR successfully completed for ${pagesToProcess} pages!`);
+      setSuccess(`OCR successfully completed for ${pagesToProcess} page(s)!`);
 
     } catch (err: any) {
       setError(err.message || 'Error occurred while processing OCR.');
     } finally {
       setIsProcessing(false);
+      setCurrentPage(0);
     }
   };
 
@@ -133,12 +131,18 @@ export default function OCRPDF() {
     setOcrText('');
     setError(null);
     setSuccess(null);
+    setCurrentPage(0);
   };
+
+  const pagesToProcess = numPages
+    ? (maxPages > 0 ? Math.min(numPages, maxPages) : numPages)
+    : 0;
+  const progressPercent = pagesToProcess > 0 ? Math.round((currentPage / pagesToProcess) * 100) : 0;
 
   return (
     <div style={{ padding: '10px 0' }}>
       <div className="glass-panel" style={{ maxWidth: '850px', margin: '0 auto', padding: '32px' }}>
-        
+
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
           <div style={{
@@ -150,10 +154,10 @@ export default function OCRPDF() {
           </div>
           <div>
             <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.75rem', fontWeight: 800, margin: 0, color: 'var(--text-color)' }}>
-              OCR PDF Scanned Text Extractor
+              Extract PDF Text
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>
-              Convert scanned PDFs into searchable plain text completely client-side in your browser.
+              Convert scanned or layout PDFs into searchable plain text completely client-side in your browser.
             </p>
           </div>
         </div>
@@ -193,7 +197,7 @@ export default function OCRPDF() {
           >
             <Upload size={40} color="var(--primary-color)" style={{ marginBottom: '14px' }} />
             <p style={{ fontWeight: 700, fontSize: '1.05rem', margin: '0 0 6px', color: 'var(--text-color)' }}>
-              Select scanned PDF document
+              Select PDF document for text extraction
             </p>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '0 0 16px' }}>
               Drag and drop your file here, or click to browse local files
@@ -215,7 +219,7 @@ export default function OCRPDF() {
           onChange={handleUpload}
         />
 
-        {/* File details and process trigger */}
+        {/* File details, options, and process trigger */}
         {file && numPages && !isProcessing && !ocrText && (
           <div className="glass-panel" style={{ margin: 0, padding: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
@@ -239,6 +243,57 @@ export default function OCRPDF() {
               </button>
             </div>
 
+            {/* Options row: language + page limit */}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              {/* Language selector */}
+              <div style={{ flex: 1, minWidth: '180px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  OCR Language
+                </label>
+                <select
+                  value={ocrLanguage}
+                  onChange={e => setOcrLanguage(e.target.value)}
+                  style={{
+                    width: '100%', padding: '9px 12px', borderRadius: '9px',
+                    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+                    color: 'var(--text-color)', fontSize: '0.88rem', fontWeight: 600,
+                    cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  {OCR_LANGUAGES.map(lang => (
+                    <option key={lang.code} value={lang.code}>{lang.label} ({lang.code})</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Max pages selector */}
+              <div style={{ flex: 1, minWidth: '180px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Pages to Process
+                </label>
+                <select
+                  value={maxPages}
+                  onChange={e => setMaxPages(Number(e.target.value))}
+                  style={{
+                    width: '100%', padding: '9px 12px', borderRadius: '9px',
+                    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+                    color: 'var(--text-color)', fontSize: '0.88rem', fontWeight: 600,
+                    cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  <option value={0}>All pages ({numPages})</option>
+                  <option value={10}>First 10 pages</option>
+                  <option value={25}>First 25 pages</option>
+                  <option value={50}>First 50 pages</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Info note */}
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0 16px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border)' }}>
+              ℹ️ Processing all {numPages} pages may take several minutes for large documents. OCR runs entirely in your browser — no data leaves your device.
+            </p>
+
             <button
               onClick={runOCR}
               style={{
@@ -252,16 +307,28 @@ export default function OCRPDF() {
           </div>
         )}
 
-        {/* Processing Indicator */}
+        {/* Processing Indicator with progress bar */}
         {isProcessing && (
-          <div className="glass-panel" style={{ margin: 0, padding: '50px 30px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center' }}>
+          <div className="glass-panel" style={{ margin: 0, padding: '40px 30px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center' }}>
             <ReusableLoading type="spinner" />
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-color)' }}>
-                Running OCR: Page {currentPage} of {Math.min(numPages || 0, 10)}
+            <div style={{ width: '100%', maxWidth: '420px' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-color)', margin: '0 0 6px' }}>
+                Processing page {currentPage} of {pagesToProcess}…
               </h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginTop: '4px' }}>
-                Analyzing scanned character layouts. Please keep this tab active.
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', margin: '0 0 14px' }}>
+                Extracting text layouts. Please keep this tab active.
+              </p>
+              {/* Progress bar */}
+              <div style={{ width: '100%', height: '8px', borderRadius: '999px', background: 'var(--glass-border)', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', borderRadius: '999px',
+                  background: 'linear-gradient(90deg, var(--primary-color), #007a75)',
+                  width: `${progressPercent}%`,
+                  transition: 'width 0.35s ease',
+                }} />
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: '8px 0 0', fontWeight: 600 }}>
+                {progressPercent}% complete
               </p>
             </div>
           </div>

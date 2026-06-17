@@ -6,6 +6,7 @@ import {
   Settings, Type, Hash, Stamp, Layout 
 } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs } from '../../lib/pdfjs';
 
 interface PDFMarkupSuiteProps {
   initialTool?: 'watermark' | 'headerfooter' | 'pagenumbers' | 'addtext';
@@ -53,28 +54,10 @@ export default function PDFMarkupSuite({ initialTool = 'watermark' }: PDFMarkupS
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfBytesRef = useRef<Uint8Array | null>(null);
 
-  // Dynamic PDFJS loader
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF viewer engine.'));
-      document.body.appendChild(script);
-    });
-  };
 
   const generatePreview = async (bytes: Uint8Array) => {
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const loadingTask = pdfjs.getDocument({ data: bytes.slice() });
       const pdfDoc = await loadingTask.promise;
       const page = await pdfDoc.getPage(1);
@@ -115,7 +98,7 @@ export default function PDFMarkupSuite({ initialTool = 'watermark' }: PDFMarkupS
       const bytes = new Uint8Array(await selectedFile.arrayBuffer());
       pdfBytesRef.current = bytes;
 
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const pdfDoc = await pdfjs.getDocument({ data: bytes.slice() }).promise;
       setNumPages(pdfDoc.numPages);
 
@@ -235,6 +218,8 @@ export default function PDFMarkupSuite({ initialTool = 'watermark' }: PDFMarkupS
           });
         }
       });
+
+
 
       setSaveProgress(85);
       const markedBytes = await pdfDoc.save();

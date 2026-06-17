@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { ImageIcon, Upload, Download, Trash2, ChevronUp, ChevronDown, FileText, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
-import { jsPDF } from 'jspdf';
 
 type PageSize = 'a4' | 'letter' | 'fit';
 
@@ -88,57 +87,68 @@ export default function ImageToPDF() {
     });
 
   const handleConvert = async () => {
-    if (images.length === 0) {
-      setError('Please add at least one image.');
-      return;
-    }
+    if (images.length === 0) { setError('Please add at least one image.'); return; }
     resetResult();
     setIsProcessing(true);
     try {
-      // A4: 210x297mm, Letter: 215.9x279.4mm
-      const pageSizes: Record<string, [number, number]> = {
-        a4: [210, 297],
-        letter: [215.9, 279.4],
+      const { PDFDocument } = await import('pdf-lib');
+      const pdfDoc = await PDFDocument.create();
+
+      // Page dimensions in points (1pt = 1/72 inch)
+      // A4: 595.28 x 841.89 pt, Letter: 612 x 792 pt
+      const pageSizePts: Record<string, [number, number]> = {
+        a4: [595.28, 841.89],
+        letter: [612, 792],
       };
 
-      let pdf: jsPDF | null = null;
-
-      for (let i = 0; i < images.length; i++) {
-        const entry = images[i];
+      for (const entry of images) {
         const img = await loadImage(entry.preview);
         const imgW = img.naturalWidth;
         const imgH = img.naturalHeight;
 
-        let pdfW: number, pdfH: number;
+        let pageW: number, pageH: number;
         if (pageSize === 'fit') {
-          // Convert px to mm (96dpi -> 25.4mm/inch)
-          pdfW = (imgW / 96) * 25.4;
-          pdfH = (imgH / 96) * 25.4;
+          // Scale pixels to points (assume 96dpi screen)
+          pageW = (imgW / 96) * 72;
+          pageH = (imgH / 96) * 72;
         } else {
-          [pdfW, pdfH] = pageSizes[pageSize];
+          [pageW, pageH] = pageSizePts[pageSize];
         }
 
-        if (i === 0) {
-          pdf = new jsPDF({ orientation: pdfW > pdfH ? 'l' : 'p', unit: 'mm', format: [pdfW, pdfH] });
+        const page = pdfDoc.addPage([pageW, pageH]);
+
+        // Embed image (convert WebP via canvas first)
+        let pdfImage: any;
+        if (entry.file.type === 'image/png') {
+          const bytes = await entry.file.arrayBuffer();
+          pdfImage = await pdfDoc.embedPng(bytes);
         } else {
-          pdf!.addPage([pdfW, pdfH], pdfW > pdfH ? 'l' : 'p');
+          // JPEG or WebP → rasterise to JPEG
+          const canvas2 = document.createElement('canvas');
+          canvas2.width = imgW; canvas2.height = imgH;
+          canvas2.getContext('2d')!.drawImage(img, 0, 0);
+          const dataUrl = canvas2.toDataURL('image/jpeg', 0.95);
+          const resp = await fetch(dataUrl);
+          const jpegBytes = await resp.arrayBuffer();
+          pdfImage = await pdfDoc.embedJpg(jpegBytes);
         }
 
-        // Fit image within page margins
-        const margin = pageSize === 'fit' ? 0 : 10;
-        const availW = pdfW - margin * 2;
-        const availH = pdfH - margin * 2;
-        const ratio = Math.min(availW / imgW, availH / imgH);
-        const drawW = imgW * ratio;
-        const drawH = imgH * ratio;
+        const dims = pdfImage.scale(1);
+        const margin = pageSize === 'fit' ? 0 : 30;
+        const availW = pageW - margin * 2;
+        const availH = pageH - margin * 2;
+        const scale = Math.min(availW / dims.width, availH / dims.height);
+        const drawW = dims.width * scale;
+        const drawH = dims.height * scale;
         const x = margin + (availW - drawW) / 2;
+        // pdf-lib Y axis is bottom-up; position image so it's vertically centred
         const y = margin + (availH - drawH) / 2;
 
-        const format = entry.file.type === 'image/png' ? 'PNG' : 'JPEG';
-        pdf!.addImage(entry.preview, format, x, y, drawW, drawH);
+        page.drawImage(pdfImage, { x, y, width: drawW, height: drawH });
       }
 
-      const blob = pdf!.output('blob');
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setSuccess(`PDF created with ${images.length} page${images.length > 1 ? 's' : ''}.`);

@@ -2,34 +2,16 @@
 
 import React from 'react';
 import ToolWorkspace from '../ui/ToolWorkspace';
+import { getPdfJs, getTextItems, groupItemsIntoLines } from '../../lib/pdfjs';
 
 export default function PDFToCSV() {
-  const loadPdfJs = () => {
-    return new Promise<any>((resolve, reject) => {
-      if (typeof window === 'undefined') return reject(new Error('Browser environment required.'));
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF.js engine.'));
-      document.head.appendChild(script);
-    });
-  };
-
   const handleConvertToCSV = async (files: File[]) => {
     if (files.length === 0) {
       throw new Error('Please upload a PDF file.');
     }
 
     const file = files[0];
-    const pdfjsLib = await loadPdfJs();
+    const pdfjsLib = await getPdfJs();
     const arrayBuffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     const pdf = await loadingTask.promise;
@@ -41,38 +23,12 @@ export default function PDFToCSV() {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
       
-      const items = textContent.items as any[];
-      
-      const mappedItems = items.map((item: any) => ({
-        str: item.str.trim(),
-        x: item.transform[4],
-        y: item.transform[5],
-        width: item.width,
-        height: item.height,
-      })).filter(item => item.str !== '');
+      const items = getTextItems(textContent).filter(item => item.str.trim() !== '');
+      const lines = groupItemsIntoLines(items);
 
-      const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
-      for (const item of mappedItems) {
-        let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 5));
-        if (foundLine) {
-          foundLine.items.push(item);
-        } else {
-          lines.push({
-            y: item.y,
-            height: item.height,
-            items: [item]
-          });
-        }
-      }
-
-      // Sort lines by Y descending (top to bottom)
-      lines.sort((a, b) => b.y - a.y);
-
-      // Sort items within each line by X ascending (left to right)
       for (const line of lines) {
-        line.items.sort((a, b) => a.x - b.x);
         const currentRow = line.items.map(item => {
-          const text = item.str;
+          const text = item.str.trim();
           return text.includes(',') ? `"${text.replace(/"/g, '""')}"` : text;
         });
         if (currentRow.length > 0) {

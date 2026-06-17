@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Image, Upload, RefreshCw, Download, FileImage, AlertCircle, CheckCircle } from 'lucide-react';
+import { Image, Upload, Download, FileImage, AlertCircle, CheckCircle } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs } from '../../lib/pdfjs';
 
 interface ExtractedImageItem {
   id: string;
@@ -22,29 +23,12 @@ export default function ExtractPDFImages() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [zipLoading, setZipLoading] = useState(false);
+  // 0 = no limit (all pages)
+  const [maxPages, setMaxPages] = useState<number>(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Dynamic PDFJS loader
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF engine.'));
-      document.body.appendChild(script);
-    });
-  };
-
-  // Dynamic JSZip loader
+  // Dynamic JSZip loader — switched to jsdelivr CDN
   const loadJSZip = (): Promise<any> => {
     return new Promise((resolve, reject) => {
       if ((window as any).JSZip) {
@@ -52,7 +36,7 @@ export default function ExtractPDFImages() {
         return;
       }
       const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
       script.onload = () => resolve((window as any).JSZip);
       script.onerror = () => reject(new Error('Failed to load ZIP compressor.'));
       document.body.appendChild(script);
@@ -74,7 +58,7 @@ export default function ExtractPDFImages() {
     setExtractedImages([]);
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await uploaded.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       setNumPages(pdfDoc.numPages);
@@ -92,14 +76,13 @@ export default function ExtractPDFImages() {
     setExtractedImages([]);
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-      
+
       const imagesList: ExtractedImageItem[] = [];
 
-      // Loop page-by-page (limit to first 15 pages to keep memory bounds safe in UI)
-      const pagesToScan = Math.min(numPages, 15);
+      const pagesToScan = maxPages > 0 ? Math.min(numPages, maxPages) : numPages;
 
       for (let i = 1; i <= pagesToScan; i++) {
         setProgressText(`Scanning page ${i} of ${pagesToScan}...`);
@@ -108,54 +91,132 @@ export default function ExtractPDFImages() {
 
         for (let j = 0; j < operatorList.fnArray.length; j++) {
           const fn = operatorList.fnArray[j];
-          // PaintImageXObject draws embedded images in pdf-spec operators
-          if (fn === pdfjs.OPS.paintImageXObject || fn === pdfjs.OPS.paintInlineImageXObject) {
-            const imgKey = operatorList.argsArray[j][0];
-            
-            // Get Image raw bits from page resources
-            const img = await new Promise<any>((resolve) => {
-              page.objs.get(imgKey, (obj: any) => resolve(obj));
-            });
+          const isInline = fn === pdfjs.OPS.paintInlineImageXObject;
+          const isImageOp = 
+            fn === pdfjs.OPS.paintImageXObject || 
+            fn === pdfjs.OPS.paintImageMaskXObject ||
+            (pdfjs.OPS.paintJpegXObject && fn === pdfjs.OPS.paintJpegXObject);
 
-            if (img && img.width && img.height && img.data) {
+          if (isImageOp || isInline) {
+            let img: any = null;
+
+            if (isInline) {
+              img = operatorList.argsArray[j][0];
+            } else {
+              const imgKey = operatorList.argsArray[j][0];
+              
+              // 1. Try page.objs.get
+              img = await new Promise<any>((resolve) => {
+                let resolved = false;
+                const timer = setTimeout(() => {
+                  if (!resolved) {
+                    resolved = true;
+                    resolve(null);
+                  }
+                }, 1000);
+                
+                page.objs.get(imgKey, (obj: any) => {
+                  if (!resolved) {
+                    resolved = true;
+                    clearTimeout(timer);
+                    resolve(obj);
+                  }
+                });
+              });
+
+              // 2. Fallback to page.commonObjs.get
+              if (!img && page.commonObjs) {
+                img = await new Promise<any>((resolve) => {
+                  let resolved = false;
+                  const timer = setTimeout(() => {
+                    if (!resolved) {
+                      resolved = true;
+                      resolve(null);
+                    }
+                  }, 1000);
+                  
+                  page.commonObjs.get(imgKey, (obj: any) => {
+                    if (!resolved) {
+                      resolved = true;
+                      clearTimeout(timer);
+                      resolve(obj);
+                    }
+                  });
+                });
+              }
+            }
+
+            if (img && img.width && img.height) {
               const canvas = document.createElement('canvas');
               canvas.width = img.width;
               canvas.height = img.height;
               const ctx = canvas.getContext('2d');
 
               if (ctx) {
-                const imgData = ctx.createImageData(img.width, img.height);
-                const dataLength = img.data.length;
+                let hasDrawn = false;
+                const drawable = img.bitmap || img.image || img;
                 
-                // RGB (3 bytes per pixel) vs RGBA (4 bytes per pixel) conversion
-                if (dataLength === img.width * img.height * 3) {
-                  let srcIdx = 0;
-                  let dstIdx = 0;
-                  const limit = img.width * img.height;
-                  for (let k = 0; k < limit; k++) {
-                    imgData.data[dstIdx] = img.data[srcIdx];     // R
-                    imgData.data[dstIdx + 1] = img.data[srcIdx + 1]; // G
-                    imgData.data[dstIdx + 2] = img.data[srcIdx + 2]; // B
-                    imgData.data[dstIdx + 3] = 255;                // A
-                    srcIdx += 3;
-                    dstIdx += 4;
+                if (
+                  drawable instanceof HTMLImageElement || 
+                  drawable instanceof ImageBitmap || 
+                  (typeof HTMLCanvasElement !== 'undefined' && drawable instanceof HTMLCanvasElement)
+                ) {
+                  ctx.drawImage(drawable, 0, 0);
+                  hasDrawn = true;
+                } else if (img.data) {
+                  const imgData = ctx.createImageData(img.width, img.height);
+                  const dataLength = img.data.length;
+
+                  if (dataLength === img.width * img.height * 3) {
+                    // RGB
+                    let srcIdx = 0;
+                    let dstIdx = 0;
+                    const limit = img.width * img.height;
+                    for (let k = 0; k < limit; k++) {
+                      imgData.data[dstIdx] = img.data[srcIdx];       // R
+                      imgData.data[dstIdx + 1] = img.data[srcIdx + 1]; // G
+                      imgData.data[dstIdx + 2] = img.data[srcIdx + 2]; // B
+                      imgData.data[dstIdx + 3] = 255;                  // A
+                      srcIdx += 3;
+                      dstIdx += 4;
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    hasDrawn = true;
+                  } else if (dataLength === img.width * img.height) {
+                    // Grayscale
+                    let srcIdx = 0;
+                    let dstIdx = 0;
+                    const limit = img.width * img.height;
+                    for (let k = 0; k < limit; k++) {
+                      const val = img.data[srcIdx];
+                      imgData.data[dstIdx] = val;       // R
+                      imgData.data[dstIdx + 1] = val;   // G
+                      imgData.data[dstIdx + 2] = val;   // B
+                      imgData.data[dstIdx + 3] = 255;   // A
+                      srcIdx++;
+                      dstIdx += 4;
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                    hasDrawn = true;
+                  } else if (dataLength === img.width * img.height * 4) {
+                    // RGBA
+                    imgData.data.set(img.data);
+                    ctx.putImageData(imgData, 0, 0);
+                    hasDrawn = true;
                   }
-                } else {
-                  // RGBA directly
-                  imgData.data.set(img.data);
                 }
 
-                ctx.putImageData(imgData, 0, 0);
-                const dataUrl = canvas.toDataURL('image/png');
-                
-                imagesList.push({
-                  id: `img_${i}_${j}_${Date.now()}`,
-                  pageNum: i,
-                  dataUrl,
-                  width: img.width,
-                  height: img.height,
-                  format: 'png'
-                });
+                if (hasDrawn) {
+                  const dataUrl = canvas.toDataURL('image/png');
+                  imagesList.push({
+                    id: `img_${i}_${j}_${Date.now()}`,
+                    pageNum: i,
+                    dataUrl,
+                    width: img.width,
+                    height: img.height,
+                    format: 'png'
+                  });
+                }
               }
             }
           }
@@ -222,7 +283,7 @@ export default function ExtractPDFImages() {
   return (
     <div style={{ padding: '10px 0' }}>
       <div className="glass-panel" style={{ maxWidth: '850px', margin: '0 auto', padding: '32px' }}>
-        
+
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
           <div style={{
@@ -267,7 +328,7 @@ export default function ExtractPDFImages() {
           </div>
         )}
 
-        {/* Upload boxes */}
+        {/* Upload box */}
         {!file && (
           <div
             onClick={() => fileInputRef.current?.click()}
@@ -325,6 +386,28 @@ export default function ExtractPDFImages() {
               </button>
             </div>
 
+            {/* Page limit selector */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Pages to Scan
+              </label>
+              <select
+                value={maxPages}
+                onChange={e => setMaxPages(Number(e.target.value))}
+                style={{
+                  width: '100%', padding: '9px 12px', borderRadius: '9px',
+                  background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+                  color: 'var(--text-color)', fontSize: '0.88rem', fontWeight: 600,
+                  cursor: 'pointer', outline: 'none',
+                }}
+              >
+                <option value={0}>All pages ({numPages})</option>
+                <option value={25}>First 25 pages</option>
+                <option value={50}>First 50 pages</option>
+                <option value={100}>First 100 pages</option>
+              </select>
+            </div>
+
             <button
               onClick={runExtraction}
               style={{
@@ -333,7 +416,7 @@ export default function ExtractPDFImages() {
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
               }}
             >
-              Scan & Extract Embedded Photos
+              Scan &amp; Extract Embedded Photos
             </button>
           </div>
         )}

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { FileDown, Upload, FileText, CheckCircle, AlertCircle, Loader2, RefreshCw, Grid, Download, Eye, Layers } from 'lucide-react';
+import { getPdfJs } from '../../lib/pdfjs';
 
 interface ExtractedPage {
   pageNumber: number;
@@ -24,28 +25,11 @@ export default function PDFToImage() {
   const [extractedPages, setExtractedPages] = useState<ExtractedPage[]>([]);
   const [previewPage, setPreviewPage] = useState<ExtractedPage | null>(null);
   const [zipLoading, setZipLoading] = useState(false);
+  const [scale, setScale] = useState(2.0); // 2.0 ≈ 150 DPI
+
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfDocRef = useRef<any>(null);
-
-  // Dynamic loaders for cdn scripts
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF library. Please check your connection.'));
-      document.body.appendChild(script);
-    });
-  };
 
   const loadJSZip = (): Promise<any> => {
     return new Promise((resolve, reject) => {
@@ -75,7 +59,7 @@ export default function PDFToImage() {
     setIsParsing(true);
 
     try {
-      const pdfjsLib = await loadPdfJs();
+      const pdfjsLib = await getPdfJs();
       const arrayBuffer = await selectedFile.arrayBuffer();
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       
@@ -126,8 +110,8 @@ export default function PDFToImage() {
       
       for (let pageNum = s; pageNum <= e; pageNum++) {
         const page = await pdfDocRef.current.getPage(pageNum);
-        // Using scale 2.0 for clear high-res photos
-        const viewport = page.getViewport({ scale: 2.0 });
+        // Using chosen resolution scale
+        const viewport = page.getViewport({ scale });
         
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
@@ -399,6 +383,35 @@ export default function PDFToImage() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Resolution/DPI Selector */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                Output Resolution
+              </label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {[
+                  { label: 'Standard (72 DPI)', val: 1.0 },
+                  { label: 'High (150 DPI)', val: 2.0 },
+                  { label: 'Ultra (300 DPI)', val: 4.0 }
+                ].map(opt => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setScale(opt.val)}
+                    style={{
+                      flex: 1, padding: '10px 16px', borderRadius: '10px', border: '1px solid',
+                      borderColor: scale === opt.val ? 'var(--primary-color)' : 'var(--glass-border)',
+                      background: scale === opt.val ? 'var(--primary-color)' : 'transparent',
+                      color: scale === opt.val ? '#fff' : 'var(--text-color)',
+                      fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', transition: 'var(--transition-smooth)'
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button

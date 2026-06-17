@@ -4852,76 +4852,26 @@ export const tools: ToolDefinition[] = [
     ]
   },
   {
-    id: 'remove-pdf-restrictions',
-    name: 'Strip PDF Password & Owner Restrictions',
-    description: 'Remove copy, paste, modify, and printing restrictions from locked PDFs locally.',
-    category: 'pdf-tools',
-    icon: '🔓',
-    type: 'custom',
-    componentName: 'RemovePDFRestrictions'
-  ,
-    seoTitle: "Free Strip PDF Password & Owner Restrictions — Manage PDF Pages Online | InfinityKit",
-    seoDescription: "Remove copy, paste, modify, and printing restrictions from locked PDFs locally. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your PDF file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed PDF file directly to your local storage."
-    ],
-    keyFeatures: [
-          "High-speed PDF compilation and parsing directly in your browser",
-          "Maintains document layout structure and formatting integrity",
-          "Secure client-side operations — your documents never leave your device",
-          "Interactive page organizer and custom export settings"
-    ],
-    useCases: [
-          "Students",
-          "Office Staff",
-          "Researchers",
-          "Legal Writers",
-          "Academic Readers"
-    ],
-    faq: [
-          {
-                "question": "Is the Strip PDF Password & Owner Restrictions free to use?",
-                "answer": "Yes, the Strip PDF Password & Owner Restrictions is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Is there a document size limit?",
-                "answer": "There are no file size limits because all PDF operations are performed directly on your local device."
-          }
-    ]
-  },
-  {
     id: 'ocr-pdf',
-    name: 'OCR Scanned PDF Text Scraper',
-    description: 'Scan and extract selectable, searchable text from image-only PDFs locally.',
+    name: 'Extract PDF Text',
+    description: 'Convert scanned PDF pages into searchable plain text content client-side using OCR.',
     category: 'pdf-tools',
-    icon: '🔍',
+    icon: '📝',
     type: 'custom',
-    componentName: 'OCRPDF'
-  ,
-    seoTitle: "Free OCR Scanned PDF Text Scraper — Manage PDF Pages Online | InfinityKit",
-    seoDescription: "Scan and extract selectable, searchable text from image-only PDFs locally. Access our free, high-performance web tool for instant results.",
+    componentName: 'OCRPDF',
+    seoTitle: "Free OCR Extract PDF Text — Manage PDF Pages Online | InfinityKit",
+    seoDescription: "Convert scanned PDF pages into searchable plain text content client-side using OCR. Access our free, high-performance web tool for instant results.",
     howToSteps: [
           "Select and upload your PDF file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed PDF file directly to your local storage."
+          "Choose the OCR document language (e.g. English, Spanish, etc).",
+          "Click the extract text button to process the pages using local Tesseract OCR.",
+          "Download the extracted plain text file or copy it to clipboard."
     ],
     keyFeatures: [
-          "High-speed PDF compilation and parsing directly in your browser",
-          "Maintains document layout structure and formatting integrity",
-          "Secure client-side operations — your documents never leave your device",
-          "Interactive page organizer and custom export settings"
+          "High-performance client-side OCR running directly in your browser",
+          "Supports multiple languages including English, French, Spanish, German",
+          "Secure client-side operations — your files never leave your device",
+          "Easily copy results to clipboard or download as a text file"
     ],
     useCases: [
           "Students",
@@ -4932,69 +4882,16 @@ export const tools: ToolDefinition[] = [
     ],
     faq: [
           {
-                "question": "Is the OCR Scanned PDF Text Scraper free to use?",
-                "answer": "Yes, the OCR Scanned PDF Text Scraper is completely free with unlimited access and no hidden charges."
+                "question": "Is the Extract PDF Text tool free to use?",
+                "answer": "Yes, it is completely free with unlimited access and no limits on pages processed."
           },
           {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
+                "question": "Are my files processed on your servers?",
+                "answer": "No. Tesseract OCR and PDF parsing run entirely inside your browser's local sandbox, keeping your documents 100% private."
           },
           {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Is there a document size limit?",
-                "answer": "There are no file size limits because all PDF operations are performed directly on your local device."
-          }
-    ]
-  },
-  {
-    id: 'extract-pdf-text',
-    name: 'Extract Text Layers from PDF',
-    description: 'Extract raw text layouts page-by-page from clean PDFs instantly.',
-    category: 'pdf-tools',
-    icon: '📄',
-    type: 'custom',
-    componentName: 'ExtractPDFText'
-  ,
-    seoTitle: "Free Extract Text Layers from PDF — Manage PDF Pages Online | InfinityKit",
-    seoDescription: "Extract raw text layouts page-by-page from clean PDFs instantly. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your PDF file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed PDF file directly to your local storage."
-    ],
-    keyFeatures: [
-          "High-speed PDF compilation and parsing directly in your browser",
-          "Maintains document layout structure and formatting integrity",
-          "Secure client-side operations — your documents never leave your device",
-          "Interactive page organizer and custom export settings"
-    ],
-    useCases: [
-          "Students",
-          "Office Staff",
-          "Researchers",
-          "Legal Writers",
-          "Academic Readers"
-    ],
-    faq: [
-          {
-                "question": "Is the Extract Text Layers from PDF free to use?",
-                "answer": "Yes, the Extract Text Layers from PDF is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Is there a document size limit?",
-                "answer": "There are no file size limits because all PDF operations are performed directly on your local device."
+                "question": "How long does OCR text extraction take?",
+                "answer": "Processing speed depends on your local CPU and the number of pages, as OCR is performed page-by-page locally."
           }
     ]
   },

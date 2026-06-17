@@ -1,27 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import ToolWorkspace from '../ui/ToolWorkspace';
+import { getPdfJs, getTextItems, groupItemsIntoLines } from '../../lib/pdfjs';
 
 export default function PDFToWord() {
-  const loadPdfJs = () => {
-    return new Promise<any>((resolve, reject) => {
-      if (typeof window === 'undefined') return reject(new Error('Browser environment required.'));
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF.js engine.'));
-      document.head.appendChild(script);
-    });
-  };
+  const [progress, setProgress] = useState<string>('');
 
   const handleConvertToWord = async (files: File[]) => {
     if (files.length === 0) {
@@ -29,68 +13,43 @@ export default function PDFToWord() {
     }
 
     const file = files[0];
-    
-    // 1. Parse text from PDF.js
-    const pdfjsLib = await loadPdfJs();
+    setProgress('Loading PDF engine…');
+
+    // 1. Parse PDF with shared utility (pdfjs-dist, no CDN script injection)
+    const pdfjsLib = await getPdfJs();
     const arrayBuffer = await file.arrayBuffer();
     const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     const pdf = await loadingTask.promise;
-    const numPages = pdf.numPages;
-    
-    // 2. Generate Docx using 'docx' library client-side
-    const { Document, Packer, Paragraph, TextRun, PageBreak } = await import('docx');
+    const numPages: number = pdf.numPages;
+
+    // 2. Load docx library
+    const { Document, Packer, Paragraph, TextRun, PageBreak, HeadingLevel } = await import('docx');
 
     const children: any[] = [];
 
     for (let i = 1; i <= numPages; i++) {
+      setProgress(`Converting page ${i} of ${numPages}…`);
+
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      const items = textContent.items as any[];
 
-      // Group items on this page into lines using Y coordinate tolerance
-      const mappedItems = items.map((item: any) => ({
-        str: item.str,
-        x: item.transform[4],
-        y: item.transform[5],
-        width: item.width,
-        height: item.height,
-      }));
+      // Use shared helpers — correctly filters TextMarkedContent in v6+
+      const items = getTextItems(textContent);
+      const lines = groupItemsIntoLines(items);
 
-      const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
-      for (const item of mappedItems) {
-        let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 4));
-        if (foundLine) {
-          foundLine.items.push(item);
-        } else {
-          lines.push({
-            y: item.y,
-            height: item.height,
-            items: [item]
-          });
-        }
-      }
-
-      // Sort lines by Y descending (top to bottom)
-      lines.sort((a, b) => b.y - a.y);
-
-      // Sort items within each line by X ascending (left to right)
-      for (const line of lines) {
-        line.items.sort((a, b) => a.x - b.x);
-      }
-
-      // Add a visual page indicator in the Word document
+      // Visual page separator
       children.push(
         new Paragraph({
           children: [
             new TextRun({
-              text: `--- Page ${i} ---`,
+              text: `— Page ${i} —`,
               bold: true,
               size: 24,
             }),
           ],
         })
       );
-      children.push(new Paragraph({ text: '' })); // Spacing
+      children.push(new Paragraph({ text: '' }));
 
       // Build paragraphs from lines
       let currentParagraphRuns: any[] = [];
@@ -99,55 +58,92 @@ export default function PDFToWord() {
 
       for (let l = 0; l < lines.length; l++) {
         const line = lines[l];
+
+        // Compute max height and dominant fontName for this line
+        let maxItemHeight = 0;
+        let dominantFont = '';
+        for (const item of line.items) {
+          if (item.height > maxItemHeight) {
+            maxItemHeight = item.height;
+            dominantFont = item.fontName ?? '';
+          }
+        }
+        if (maxItemHeight === 0) maxItemHeight = lastLineHeight;
+
+        // Detect bold via fontName
+        const isBold = /bold/i.test(dominantFont);
+
+        // Detect heading via font height (> 14pt in PDF units ≈ heading)
+        const isHeading = maxItemHeight > 14;
+
+        // Build line text with proportional space gaps between items
         let lineText = '';
         let lastX = -1;
-        let maxItemHeight = line.height;
-
         for (const item of line.items) {
+          const x = item.transform[4];
           if (lastX !== -1) {
-            const gap = item.x - lastX;
-            // Estimate spaces to add based on average character width
-            const spaceCharWidth = Math.max(item.height * 0.25, 3);
-            if (gap > spaceCharWidth) {
-              const numSpaces = Math.min(Math.round(gap / spaceCharWidth), 20);
+            const gap = x - lastX;
+            const spaceWidth = Math.max(item.height * 0.25, 3);
+            if (gap > spaceWidth) {
+              const numSpaces = Math.min(Math.round(gap / spaceWidth), 20);
               lineText += ' '.repeat(numSpaces);
             }
           }
           lineText += item.str;
-          lastX = item.x + item.width;
-          if (item.height > maxItemHeight) {
-            maxItemHeight = item.height;
-          }
+          lastX = x + item.width;
         }
 
-        // Determine if we should start a new paragraph
+        // Decide paragraph break vs line break
         if (lastY !== -1) {
           const verticalGap = lastY - line.y;
-          // If vertical gap is larger than 1.8x line height, start a new paragraph
-          if (verticalGap > lastLineHeight * 1.8) {
+          const isParagraphBreak = verticalGap > lastLineHeight * 1.8;
+
+          if (isParagraphBreak) {
             if (currentParagraphRuns.length > 0) {
               children.push(new Paragraph({ children: currentParagraphRuns }));
               currentParagraphRuns = [];
             }
-            // Add blank paragraphs for proportional vertical spacing
-            const emptyParagraphsCount = Math.min(Math.floor(verticalGap / (lastLineHeight * 2.5)), 4);
-            for (let ep = 0; ep < emptyParagraphsCount; ep++) {
+            // Add proportional blank paragraphs for large gaps
+            const blanks = Math.min(Math.floor(verticalGap / (lastLineHeight * 2.5)), 3);
+            for (let b = 0; b < blanks; b++) {
               children.push(new Paragraph({ text: '' }));
             }
           } else {
-            // Append line break to keep it in the same paragraph
+            // Same paragraph — soft line break
             currentParagraphRuns.push(new TextRun({ break: 1 }));
           }
         }
 
-        // Add line text
+        // Proportional font size: PDF pt → DOCX half-points (×2)
         const docxSize = Math.round(maxItemHeight * 2);
-        currentParagraphRuns.push(
-          new TextRun({
-            text: lineText,
-            size: docxSize > 0 ? docxSize : 22,
-          })
-        );
+        const safeFontSize = docxSize > 0 ? docxSize : 22;
+
+        if (isHeading) {
+          // Flush any accumulated runs before inserting a heading paragraph
+          if (currentParagraphRuns.length > 0) {
+            children.push(new Paragraph({ children: currentParagraphRuns }));
+            currentParagraphRuns = [];
+          }
+          children.push(
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: lineText,
+                  bold: true,
+                  size: safeFontSize + 4, // slightly larger for headings
+                }),
+              ],
+            })
+          );
+        } else {
+          currentParagraphRuns.push(
+            new TextRun({
+              text: lineText,
+              bold: isBold,
+              size: safeFontSize,
+            })
+          );
+        }
 
         lastY = line.y;
         lastLineHeight = maxItemHeight;
@@ -157,11 +153,13 @@ export default function PDFToWord() {
         children.push(new Paragraph({ children: currentParagraphRuns }));
       }
 
-      // Add a page break at the end of each page, except the last one
+      // Page break between pages (not after the last page)
       if (i < numPages) {
         children.push(new Paragraph({ children: [new PageBreak()] }));
       }
     }
+
+    setProgress('Packaging Word document…');
 
     const doc = new Document({
       sections: [
@@ -175,10 +173,12 @@ export default function PDFToWord() {
     const docBlob = await Packer.toBlob(doc);
     const downloadUrl = URL.createObjectURL(docBlob);
 
+    setProgress('');
+
     return {
       downloadUrl,
       fileName: `${file.name.replace(/\.pdf$/i, '')}.docx`,
-      resultData: `Successfully converted "${file.name}" to Microsoft Word docx format containing ${numPages} page(s).`
+      resultData: `Successfully converted "${file.name}" to Microsoft Word format — ${numPages} page(s).`,
     };
   };
 
@@ -191,6 +191,12 @@ export default function PDFToWord() {
         Scrape text layouts and compile them into fully editable Microsoft Word documents 100% locally.
       </p>
 
+      {progress && (
+        <p style={{ color: 'var(--accent)', fontSize: '0.85rem', marginBottom: '12px', fontStyle: 'italic' }}>
+          {progress}
+        </p>
+      )}
+
       <ToolWorkspace
         toolId="pdf-to-word"
         accept="application/pdf"
@@ -200,7 +206,7 @@ export default function PDFToWord() {
         instructions={[
           'Upload the PDF document you want to edit in Microsoft Word.',
           'Wait for client-side character scanning and structure mapping to compile.',
-          'Download your finished fully editable Word (.docx) document.'
+          'Download your finished fully editable Word (.docx) document.',
         ]}
       />
     </div>

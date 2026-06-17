@@ -2,46 +2,27 @@
 
 import React from 'react';
 import ToolWorkspace from '../ui/ToolWorkspace';
+import { getPdfJs, getTextItems, groupItemsIntoLines, linesToPlainText } from '../../lib/pdfjs';
 
 export default function AISummarizePDF() {
-  const loadPdfJs = () => {
-    return new Promise<any>((resolve, reject) => {
-      if (typeof window === 'undefined') return reject(new Error('Browser environment required.'));
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF.js engine.'));
-      document.head.appendChild(script);
-    });
-  };
-
   const handleSummarize = async (files: File[]) => {
-    if (files.length === 0) {
-      throw new Error('Please upload a PDF file to summarize.');
-    }
+    if (files.length === 0) throw new Error('Please upload a PDF file to summarize.');
 
     const file = files[0];
     let pdfText = '';
 
     try {
-      const pdfjsLib = await loadPdfJs();
+      const pdfjsLib = await getPdfJs();
       const arrayBuffer = await file.arrayBuffer();
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       const numPages = pdf.numPages;
 
       for (let i = 1; i <= Math.min(numPages, 30); i++) {
         const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+        const textContent = await page.getTextContent({ includeMarkedContent: false });
+        const items = getTextItems(textContent);
+        const lines = groupItemsIntoLines(items);
+        const pageText = linesToPlainText(lines);
         pdfText += `[Page ${i}]\n${pageText}\n\n`;
       }
     } catch (err) {

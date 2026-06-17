@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Globe, Upload, RefreshCw, Download, Copy, Check } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs, getTextItems, groupItemsIntoLines, linesToPlainText } from '../../lib/pdfjs';
 
 export default function TranslatePDF() {
   const [file, setFile] = useState<File | null>(null);
@@ -17,25 +18,6 @@ export default function TranslatePDF() {
   const [copied, setCopied] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Load PDF.js script dynamically
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF engine.'));
-      document.body.appendChild(script);
-    });
-  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -53,7 +35,7 @@ export default function TranslatePDF() {
     setDownloadUrl(null);
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await uploaded.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       setNumPages(pdfDoc.numPages);
@@ -71,85 +53,24 @@ export default function TranslatePDF() {
     setTranslatedText('');
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
       
       let documentText = '';
       
-      // Limit translation scanning to first 5 pages to keep LLM context/quota bounds safe
-      const pagesToScan = Math.min(numPages, 5);
+      // Limit translation scanning to first 15 pages to keep LLM context/quota bounds safe
+      const pagesToScan = Math.min(numPages, 15);
 
       for (let i = 1; i <= pagesToScan; i++) {
         setProgressText(`Extracting text from page ${i}...`);
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
-        const items = textContent.items as any[];
-
-        // Group into lines based on Y coordinate with tolerance
-        const mappedItems = items.map((item: any) => ({
-          str: item.str,
-          x: item.transform[4],
-          y: item.transform[5],
-          width: item.width,
-          height: item.height
-        }));
-
-        const lines: { y: number; height: number; items: typeof mappedItems }[] = [];
-        for (const item of mappedItems) {
-          let foundLine = lines.find(line => Math.abs(line.y - item.y) < Math.max(item.height * 0.7, 4));
-          if (foundLine) {
-            foundLine.items.push(item);
-          } else {
-            lines.push({
-              y: item.y,
-              height: item.height,
-              items: [item]
-            });
-          }
-        }
-
-        // Sort lines from top to bottom (Y descending)
-        lines.sort((a, b) => b.y - a.y);
-
-        // Sort items within each line by X ascending (left to right)
-        for (const line of lines) {
-          line.items.sort((a, b) => a.x - b.x);
-        }
-
-        let pageText = '';
-        let lastY = -1;
-        let lastLineHeight = 12;
-
-        for (const line of lines) {
-          let lineText = '';
-          let lastX = -1;
-          for (const item of line.items) {
-            if (lastX !== -1) {
-              const gap = item.x - lastX;
-              const spaceCharWidth = Math.max(item.height * 0.25, 3);
-              if (gap > spaceCharWidth) {
-                const numSpaces = Math.min(Math.round(gap / spaceCharWidth), 20);
-                lineText += ' '.repeat(numSpaces);
-              }
-            }
-            lineText += item.str;
-            lastX = item.x + item.width;
-          }
-
-          if (lastY !== -1) {
-            const verticalGap = lastY - line.y;
-            if (verticalGap > lastLineHeight * 1.8) {
-              pageText += '\n\n';
-            } else {
-              pageText += '\n';
-            }
-          }
-          
-          pageText += lineText;
-          lastY = line.y;
-          lastLineHeight = line.height;
-        }
+        
+        // Use shared helpers for clean extraction
+        const items = getTextItems(textContent);
+        const lines = groupItemsIntoLines(items);
+        const pageText = linesToPlainText(lines);
 
         documentText += `[Page ${i}]\n${pageText}\n\n`;
       }
@@ -185,22 +106,101 @@ export default function TranslatePDF() {
 
       setTranslatedText(translated);
 
-      // Now compile translated text into a fresh PDF file using jsPDF
+      // Now compile translated text into a fresh PDF file using jsPDF + html2canvas for Unicode safety
       setProgressText('Compiling translated PDF document...');
       const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF();
+      const html2canvas = (await import('html2canvas')).default;
+
+      // Create a hidden container for pagination rendering
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '-9999px';
+      container.style.width = '700px';
+      container.style.background = '#ffffff';
+      container.style.color = '#000000';
+      container.style.fontSize = '14px';
+      container.style.lineHeight = '1.6';
+      container.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
       
-      // Basic margins and multi-line wrapping
-      const pageLines = doc.splitTextToSize(translated, 170);
-      let y = 20;
-      pageLines.forEach((line: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 20;
+      const isRtl = targetLang === 'Arabic';
+      container.style.direction = isRtl ? 'rtl' : 'ltr';
+      container.style.textAlign = isRtl ? 'right' : 'left';
+      
+      document.body.appendChild(container);
+
+      // Split translated text into paragraphs
+      const paragraphs = translated.split('\n');
+      
+      let currentPageEl = document.createElement('div');
+      currentPageEl.style.width = '700px';
+      currentPageEl.style.height = '990px'; // A4 ratio
+      currentPageEl.style.padding = '60px 50px';
+      currentPageEl.style.boxSizing = 'border-box';
+      currentPageEl.style.display = 'flex';
+      currentPageEl.style.flexDirection = 'column';
+      currentPageEl.style.background = '#ffffff';
+      container.appendChild(currentPageEl);
+
+      const pageElements: HTMLDivElement[] = [currentPageEl];
+
+      for (const pText of paragraphs) {
+        if (!pText.trim()) {
+          const spacer = document.createElement('div');
+          spacer.style.height = '14px';
+          currentPageEl.appendChild(spacer);
+          continue;
         }
-        doc.text(line, 15, y);
-        y += 7;
-      });
+
+        const pEl = document.createElement('p');
+        pEl.style.margin = '0 0 12px 0';
+        pEl.style.whiteSpace = 'pre-wrap';
+        pEl.textContent = pText;
+        currentPageEl.appendChild(pEl);
+
+        // Check for page height overflow (990px)
+        if (currentPageEl.scrollHeight > 990) {
+          currentPageEl.removeChild(pEl);
+
+          // Create new page container
+          currentPageEl = document.createElement('div');
+          currentPageEl.style.width = '700px';
+          currentPageEl.style.height = '990px';
+          currentPageEl.style.padding = '60px 50px';
+          currentPageEl.style.boxSizing = 'border-box';
+          currentPageEl.style.display = 'flex';
+          currentPageEl.style.flexDirection = 'column';
+          currentPageEl.style.background = '#ffffff';
+          container.appendChild(currentPageEl);
+          pageElements.push(currentPageEl);
+
+          currentPageEl.appendChild(pEl);
+        }
+      }
+
+      // Create PDF
+      const doc = new jsPDF('p', 'mm', 'a4');
+      
+      for (let index = 0; index < pageElements.length; index++) {
+        const pageEl = pageElements[index];
+        const canvas = await html2canvas(pageEl, {
+          scale: 2, // High resolution
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        if (index > 0) {
+          doc.addPage();
+        }
+        
+        // A4 size in mm is 210 x 297
+        doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+      }
+
+      // Clean up DOM
+      document.body.removeChild(container);
 
       const pdfBlob = doc.output('blob');
       const url = URL.createObjectURL(pdfBlob);

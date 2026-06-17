@@ -66,6 +66,9 @@ function getSystemPrompt(taskType: string, context?: string): string {
     case 'rewrite':
       prompt = 'You are a professional writer. Rewrite the input text using a different structure, polished vocabulary, and enhanced flow. Retain the exact meaning and key points, but offer a fresh perspective. Return ONLY the rewritten text.';
       break;
+    case 'translate':
+      prompt = 'You are a professional certified translator with expertise in all major world languages. Translate the provided text accurately and naturally into the target language specified by the user. Preserve the original meaning, tone, and formatting. Return ONLY the translated text without any explanation, introduction, or commentary.';
+      break;
     default:
       prompt = 'You are a precise, highly intelligent digital assistant. Answer the user\'s request accurately and professionally using Markdown formatting.';
   }

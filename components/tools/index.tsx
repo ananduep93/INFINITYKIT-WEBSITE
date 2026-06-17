@@ -146,9 +146,7 @@ const CropPDFPages          = dynamic(() => import('./CropPDFPages'),          {
 const AddPDFHeaderFooter    = dynamic(() => import('./AddPDFHeaderFooter'),    { ssr: false, loading: LoadingSkeleton });
 const AddPDFPageNumbers     = dynamic(() => import('./AddPDFPageNumbers'),     { ssr: false, loading: LoadingSkeleton });
 const AddPDFText            = dynamic(() => import('./AddPDFText'),            { ssr: false, loading: LoadingSkeleton });
-const RemovePDFRestrictions = dynamic(() => import('./RemovePDFRestrictions'), { ssr: false, loading: LoadingSkeleton });
 const OCRPDF                = dynamic(() => import('./OCRPDF'),                { ssr: false, loading: LoadingSkeleton });
-const ExtractPDFText        = dynamic(() => import('./ExtractPDFText'),        { ssr: false, loading: LoadingSkeleton });
 const ExtractPDFImages      = dynamic(() => import('./ExtractPDFImages'),      { ssr: false, loading: LoadingSkeleton });
 const TranslatePDF          = dynamic(() => import('./TranslatePDF'),          { ssr: false, loading: LoadingSkeleton });
 const PDFToWord             = dynamic(() => import('./PDFToWord'),             { ssr: false, loading: LoadingSkeleton });
@@ -361,9 +359,7 @@ export {
   AddPDFHeaderFooter,
   AddPDFPageNumbers,
   AddPDFText,
-  RemovePDFRestrictions,
   OCRPDF,
-  ExtractPDFText,
   ExtractPDFImages,
   TranslatePDF,
   PDFToWord,
@@ -519,9 +515,7 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   AddPDFHeaderFooter,
   AddPDFPageNumbers,
   AddPDFText,
-  RemovePDFRestrictions,
   OCRPDF,
-  ExtractPDFText,
   ExtractPDFImages,
   TranslatePDF,
   PDFToWord,
@@ -660,9 +654,7 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'add-pdf-header-footer': AddPDFHeaderFooter,
   'add-pdf-page-numbers': AddPDFPageNumbers,
   'add-pdf-text': AddPDFText,
-  'remove-pdf-restrictions': RemovePDFRestrictions,
   'ocr-pdf': OCRPDF,
-  'extract-pdf-text': ExtractPDFText,
   'extract-pdf-images': ExtractPDFImages,
   'translate-pdf': TranslatePDF,
   'pdf-to-word': PDFToWord,

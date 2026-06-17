@@ -32,21 +32,16 @@ const nextConfig = {
       '@ffprobe-installer/ffprobe',
       '@ffprobe-installer/linux-x64',
     ],
-  },
-
-  // ─── Force-include Native Binaries for Vercel Serverless Deployment ─────
-  // Next.js output file tracing misses dynamically-required native binaries.
-  // This explicitly tells Vercel to bundle ffmpeg-static & ffprobe binaries
-  // into the /api/video/* serverless function deployment packages.
-  outputFileTracingIncludes: {
-    '/api/video/ai/route': [
-      './node_modules/ffmpeg-static/**',
-      './node_modules/@ffprobe-installer/**',
-    ],
-    '/api/video/process/route': [
-      './node_modules/ffmpeg-static/**',
-      './node_modules/@ffprobe-installer/**',
-    ],
+    outputFileTracingIncludes: {
+      '/api/video/ai/route': [
+        './node_modules/ffmpeg-static/**',
+        './node_modules/@ffprobe-installer/**',
+      ],
+      '/api/video/process/route': [
+        './node_modules/ffmpeg-static/**',
+        './node_modules/@ffprobe-installer/**',
+      ],
+    },
   },
   // ─── Legacy SEO Redirects (301 Permanent Redirects for Google Index) ─────
   async redirects() {

@@ -6,6 +6,7 @@ import {
   ArrowLeft, ArrowRight, Download, Plus, Check, Scissors, Layers 
 } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs } from '../../lib/pdfjs';
 
 interface PDFPageItem {
   id: string;
@@ -44,24 +45,6 @@ export default function PDFPageEditor({ initialMode = 'edit' }: PDFPageEditorPro
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load PDF.js script dynamically
-  const loadPdfJs = (): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF engine. Check internet connection.'));
-      document.body.appendChild(script);
-    });
-  };
 
   const handleUpload = async (incomingFiles: File[]) => {
     setError(null);
@@ -69,7 +52,7 @@ export default function PDFPageEditor({ initialMode = 'edit' }: PDFPageEditorPro
     setIsParsing(true);
 
     try {
-      const pdfjs = await loadPdfJs();
+      const pdfjs = await getPdfJs();
       const newPagesList: PDFPageItem[] = [...pages];
 
       for (const file of incomingFiles) {

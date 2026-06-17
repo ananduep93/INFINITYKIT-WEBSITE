@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Sparkles, Upload, RefreshCw } from 'lucide-react';
 import ReusableLoading from '../ui/ReusableLoading';
+import { getPdfJs, getTextItems, groupItemsIntoLines, linesToPlainText } from '../../lib/pdfjs';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -26,25 +27,6 @@ export default function AIChatPDF() {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const loadPdfJs = () => {
-    return new Promise<any>((resolve, reject) => {
-      if (typeof window === 'undefined') return reject(new Error('Browser environment required.'));
-      if ((window as any).pdfjsLib) {
-        resolve((window as any).pdfjsLib);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = () => {
-        const pdfjsLib = (window as any).pdfjsLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        resolve(pdfjsLib);
-      };
-      script.onerror = () => reject(new Error('Failed to load PDF.js engine.'));
-      document.head.appendChild(script);
-    });
-  };
-
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploaded = e.target.files?.[0];
     if (!uploaded) return;
@@ -53,7 +35,7 @@ export default function AIChatPDF() {
     setFile(uploaded);
 
     try {
-      const pdfjsLib = await loadPdfJs();
+      const pdfjsLib = await getPdfJs();
       const arrayBuffer = await uploaded.arrayBuffer();
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdf = await loadingTask.promise;
@@ -63,7 +45,12 @@ export default function AIChatPDF() {
       for (let i = 1; i <= Math.min(numPages, 30); i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str).join(' ');
+        
+        // Use shared helpers for clean extraction
+        const items = getTextItems(textContent);
+        const lines = groupItemsIntoLines(items);
+        const pageText = linesToPlainText(lines);
+
         text += `[Page ${i}]\n${pageText}\n\n`;
       }
 
