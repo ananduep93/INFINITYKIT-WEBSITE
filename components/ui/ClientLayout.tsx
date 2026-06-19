@@ -187,6 +187,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   // PWA Service Worker
   useEffect(() => {
+    /*
     if (typeof window !== 'undefined') {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
@@ -197,6 +198,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
         setNotificationStatus(Notification.permission);
       }
     }
+    */
   }, []);
 
   // Keyboard Shortcuts Ctrl+K

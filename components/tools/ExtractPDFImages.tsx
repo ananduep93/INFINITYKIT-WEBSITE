@@ -280,6 +280,8 @@ export default function ExtractPDFImages() {
     setSuccess(null);
   };
 
+
+
   return (
     <div style={{ padding: '10px 0' }}>
       <div className="glass-panel" style={{ maxWidth: '850px', margin: '0 auto', padding: '32px' }}>
