@@ -95,6 +95,7 @@ export default function ExtractPDFImages() {
           const isImageOp = 
             fn === pdfjs.OPS.paintImageXObject || 
             fn === pdfjs.OPS.paintImageMaskXObject ||
+            fn === pdfjs.OPS.paintXObject ||
             (pdfjs.OPS.paintJpegXObject && fn === pdfjs.OPS.paintJpegXObject);
 
           if (isImageOp || isInline) {
