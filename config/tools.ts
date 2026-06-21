@@ -60,13 +60,6 @@ export const categories: CategoryDefinition[] = [
     "description": "Merge, split, lock, unlock, and sign PDF pages."
   },
   {
-    "id": "video-tools",
-    "name": "Video Tools",
-    "icon": "🎥",
-    "emoji": "🎥",
-    "description": "Convert videos and generate subtitles."
-  },
-  {
     "id": "audio-tools",
     "name": "Audio Tools",
     "icon": "🎵",
@@ -252,7 +245,6 @@ export const categories: CategoryDefinition[] = [
 
 
 export const tools: ToolDefinition[] = [
-  // Health Utility Hub
   {
     id: 'bmicalculator',
     name: 'Body Weight & Health Analyzer (BMI)',
@@ -453,8 +445,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Daily Essentials
   {
     id: 'todolist',
     name: 'Daily Tasks List & Progress Tracker',
@@ -587,8 +577,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Expense Tracker Suite (Custom Component maps)
   {
     id: 'expenseadd',
     name: 'Record Daily Expense',
@@ -941,8 +929,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // AI Tools
   {
     id: 'chatbot',
     name: 'Infinity AI Chat & Assistant',
@@ -1294,8 +1280,6 @@ export const tools: ToolDefinition[] = [
       { question: 'What is the maximum text length?', answer: 'Up to 30,000 characters — about 5,000 words. For longer documents, split into sections for the most thorough grammar check.' },
     ]
   },
-
-  // Utilities
   {
     id: 'passwordgen',
     name: 'Random Strong Password Generator',
@@ -1449,8 +1433,6 @@ export const tools: ToolDefinition[] = [
       { question: 'Are there any conversion limits?', answer: 'No, you can perform unlimited conversions for free. All math is done client-side so it is extremely fast.' }
     ]
   },
-
-  // Math Tools
   {
     id: 'discountcalc',
     name: 'Sales Discount & Final Price Calculator',
@@ -1594,8 +1576,6 @@ export const tools: ToolDefinition[] = [
       { question: 'How is LCM used in real life?', answer: 'LCM is commonly used to find common denominators when adding or subtracting fractions, and to coordinate events that repeat at different intervals.' }
     ]
   },
-
-  // Web Tools
   {
     id: 'urlencoder',
     name: 'Web URL Link Safeguard Encoder & Decoder',
@@ -1649,8 +1629,6 @@ export const tools: ToolDefinition[] = [
       { question: 'Is URL decoding safe for all encoded strings?', answer: 'Standard percent-encoded strings decode safely. However, malformed or double-encoded strings may produce unexpected results. The tool shows an error message if decoding fails due to invalid encoding.' },
     ]
   },
-
-  // Case Converter
   {
     id: 'caseconverter',
     name: 'Convert Text to UPPERCASE, lowercase, or Title Case',
@@ -1722,8 +1700,6 @@ export const tools: ToolDefinition[] = [
       { question: 'Is this tool useful for programming?', answer: 'Absolutely. Developers use the Case Converter to quickly generate properly formatted variable names, function names, and class names in their preferred programming convention.' },
     ]
   },
-
-  // Word Counter
   {
     id: 'wordcounter',
     name: 'Word, Character, & Paragraph Counter',
@@ -1775,8 +1751,6 @@ export const tools: ToolDefinition[] = [
       { question: 'Is there a maximum text length?', answer: 'There is no hard limit. The tool handles documents of any length — from a single sentence to full research papers or books — and updates counts in real time.' },
     ]
   },
-
-  // Fibonacci Generator
   {
     id: 'fibonacci',
     name: 'Generate Fibonacci Sequence Range',
@@ -1843,8 +1817,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Factorial Calculator
   {
     id: 'factorial',
     name: 'Factorial Calculations Checker (e.g. 5!)',
@@ -1911,8 +1883,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Prime Checker
   {
     id: 'primenumber',
     name: 'Prime Number Checker',
@@ -1990,8 +1960,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Days Between Dates
   {
     id: 'daysbetween',
     name: 'Count Days and Time Between Dates',
@@ -2060,8 +2028,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Palindrome Checker
   {
     id: 'palindrome',
     name: 'Check for Words That Read Flipped (Palindromes)',
@@ -2119,8 +2085,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Text Reverser
   {
     id: 'textreverse',
     name: 'Flip Text and Letters Backward',
@@ -2177,8 +2141,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Average Calculator
   {
     id: 'averagecalculator',
     name: 'Calculate Average, Mean, and Median',
@@ -2251,8 +2213,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Number Sorter
   {
     id: 'numbersorter',
     name: 'Sort Numbers in Order (Lowest to Highest)',
@@ -2322,8 +2282,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Yes/No Generator
   {
     id: 'yesnogerator',
     name: 'Instant Yes or No Decision Oracle',
@@ -2388,8 +2346,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Triangle Checker
   {
     id: 'trianglechecker',
     name: 'Triangle Validity Inspector',
@@ -2460,8 +2416,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Data Tools
   {
     id: 'graphmaker',
     name: 'Interactive Graph Maker',
@@ -2507,8 +2461,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Remove duplicates
   {
     id: 'removeduplicates',
     name: 'Remove Duplicate Words & Clean Text',
@@ -2566,8 +2518,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Username generator
   {
     id: 'usernamegen',
     name: 'Creative Username Generator',
@@ -2647,7 +2597,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // e-Signature Studio
   {
     id: 'e-signature',
     name: 'Draw & Save E-Signatures (Online Signature Pad)',
@@ -2692,7 +2641,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // EXIF & Metadata Stripper
   {
     id: 'metadata-stripper',
     name: 'Remove Secret Data from Photos (EXIF & Metadata Stripper)',
@@ -2742,7 +2690,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // Bulk File Renamer
   {
     id: 'bulk-renamer',
     name: 'Bulk File Batch Renamer',
@@ -2787,7 +2734,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // JSON to TypeScript Interface
   {
     id: 'json-to-ts',
     name: 'JSON to TypeScript Code Converter',
@@ -2833,7 +2779,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // Dead Drop Encrypted Notes
   {
     id: 'encrypted-note',
     name: 'Password Protected Secured Vault Note',
@@ -2878,7 +2823,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // Dynamic Bridged Legacy Tools
   {
     id: 'dailyplanner',
     name: 'Daily Schedule & Routine Planner',
@@ -6160,795 +6104,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  // --- Video Editing Ecosystem ---
-  {
-    id: 'compress-video',
-    name: 'Compress Video File',
-    description: 'Reduce video file size by adjusting compression level and presets.',
-    category: 'video-tools',
-    icon: '🗜️',
-    type: 'custom',
-    componentName: 'CompressVideo'
-  ,
-    seoTitle: "Free Compress Video File — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Reduce video file size by adjusting compression level and presets. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Compress Video File free to use?",
-                "answer": "Yes, the Compress Video File is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'trim-video',
-    name: 'Trim Video Clip',
-    description: 'Cut out segments from a video clip by specifying start and end times.',
-    category: 'video-tools',
-    icon: '✂️',
-    type: 'custom',
-    componentName: 'TrimVideo'
-  ,
-    seoTitle: "Free Trim Video Clip — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Cut out segments from a video clip by specifying start and end times. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Trim Video Clip free to use?",
-                "answer": "Yes, the Trim Video Clip is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'crop-video',
-    name: 'Crop Video Layout',
-    description: 'Crop video dimensions using standard ratios (1:1, 16:9, 9:16) or custom bounds.',
-    category: 'video-tools',
-    icon: '📐',
-    type: 'custom',
-    componentName: 'CropVideo'
-  ,
-    seoTitle: "Free Crop Video Layout — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Crop video dimensions using standard ratios (1:1, 16:9, 9:16) or custom bounds. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Crop Video Layout free to use?",
-                "answer": "Yes, the Crop Video Layout is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'resize-video',
-    name: 'Resize Video Pixels',
-    description: 'Scale video resolution width and height while maintaining aspect ratios.',
-    category: 'video-tools',
-    icon: '📐',
-    type: 'custom',
-    componentName: 'ResizeVideo'
-  ,
-    seoTitle: "Free Resize Video Pixels — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Scale video resolution width and height while maintaining aspect ratios. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Resize Video Pixels free to use?",
-                "answer": "Yes, the Resize Video Pixels is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'rotate-video',
-    name: 'Rotate Video Orientation',
-    description: 'Rotate video files by 90, 180, or 270 degrees clockwise or counter-clockwise.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'RotateVideo'
-  ,
-    seoTitle: "Free Rotate Video Orientation — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Rotate video files by 90, 180, or 270 degrees clockwise or counter-clockwise. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Rotate Video Orientation free to use?",
-                "answer": "Yes, the Rotate Video Orientation is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'reverse-video',
-    name: 'Reverse Video Playback',
-    description: 'Generate backward-playing video and audio tracks.',
-    category: 'video-tools',
-    icon: '⏪',
-    type: 'custom',
-    componentName: 'ReverseVideo'
-  ,
-    seoTitle: "Free Reverse Video Playback — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Generate backward-playing video and audio tracks. Use this free, secure, and client-side web utility to process your data locally in your browser with zero tracking.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Reverse Video Playback free to use?",
-                "answer": "Yes, the Reverse Video Playback is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'merge-video',
-    name: 'Merge Multiple Videos',
-    description: 'Concatenate multiple video clips together sequentially.',
-    category: 'video-tools',
-    icon: '🎞️',
-    type: 'custom',
-    componentName: 'MergeVideo'
-  ,
-    seoTitle: "Free Merge Multiple Videos — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Concatenate multiple video clips together sequentially. Use this free, secure, and client-side web utility to process your data locally in your browser with zero tracking.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Merge Multiple Videos free to use?",
-                "answer": "Yes, the Merge Multiple Videos is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'split-video',
-    name: 'Split Video Clip',
-    description: 'Cut a video into two separate sequential parts at a specific timestamp.',
-    category: 'video-tools',
-    icon: '🥞',
-    type: 'custom',
-    componentName: 'SplitVideo'
-  ,
-    seoTitle: "Free Split Video Clip — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Cut a video into two separate sequential parts at a specific timestamp. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Split Video Clip free to use?",
-                "answer": "Yes, the Split Video Clip is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-
-  // --- Video Conversion Ecosystem ---
-  {
-    id: 'convert-mp4-mov',
-    name: 'MP4 to MOV Converter',
-    description: 'Convert MP4 video files into Apple QuickTime MOV format.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertMp4Mov'
-  ,
-    seoTitle: "Free MP4 to MOV Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert MP4 video files into Apple QuickTime MOV format. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the MP4 to MOV Converter free to use?",
-                "answer": "Yes, the MP4 to MOV Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-mov-mp4',
-    name: 'MOV to MP4 Converter',
-    description: 'Convert Apple QuickTime MOV videos into standard MP4 format.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertMovMp4'
-  ,
-    seoTitle: "Free MOV to MP4 Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert Apple QuickTime MOV videos into standard MP4 format. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the MOV to MP4 Converter free to use?",
-                "answer": "Yes, the MOV to MP4 Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-mp4-webm',
-    name: 'MP4 to WEBM Converter',
-    description: 'Convert MP4 videos into open WebM format optimized for web streaming.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertMp4Webm'
-  ,
-    seoTitle: "Free MP4 to WEBM Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert MP4 videos into open WebM format optimized for web streaming. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the MP4 to WEBM Converter free to use?",
-                "answer": "Yes, the MP4 to WEBM Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-webm-mp4',
-    name: 'WEBM to MP4 Converter',
-    description: 'Convert WebM videos into standard high-compatibility MP4 format.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertWebmMp4'
-  ,
-    seoTitle: "Free WEBM to MP4 Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert WebM videos into standard high-compatibility MP4 format. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the WEBM to MP4 Converter free to use?",
-                "answer": "Yes, the WEBM to MP4 Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-mkv-mp4',
-    name: 'MKV to MP4 Converter',
-    description: 'Convert Matroska MKV files into standard H264 MP4 videos.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertMkvMp4'
-  ,
-    seoTitle: "Free MKV to MP4 Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert Matroska MKV files into standard H264 MP4 videos. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the MKV to MP4 Converter free to use?",
-                "answer": "Yes, the MKV to MP4 Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-mp4-mkv',
-    name: 'MP4 to MKV Converter',
-    description: 'Convert MP4 videos into highly flexible Matroska MKV container format.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertMp4Mkv'
-  ,
-    seoTitle: "Free MP4 to MKV Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert MP4 videos into highly flexible Matroska MKV container format. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the MP4 to MKV Converter free to use?",
-                "answer": "Yes, the MP4 to MKV Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-avi-mp4',
-    name: 'AVI to MP4 Converter',
-    description: 'Convert Microsoft AVI legacy videos into modern high-efficiency MP4 format.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertAviMp4'
-  ,
-    seoTitle: "Free AVI to MP4 Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert Microsoft AVI legacy videos into modern high-efficiency MP4 format. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the AVI to MP4 Converter free to use?",
-                "answer": "Yes, the AVI to MP4 Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'convert-mp4-avi',
-    name: 'MP4 to AVI Converter',
-    description: 'Convert MP4 videos into high-compatibility AVI container format.',
-    category: 'video-tools',
-    icon: '🔄',
-    type: 'custom',
-    componentName: 'ConvertMp4Avi'
-  ,
-    seoTitle: "Free MP4 to AVI Converter — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert MP4 videos into high-compatibility AVI container format. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the MP4 to AVI Converter free to use?",
-                "answer": "Yes, the MP4 to AVI Converter is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-
-  // --- Video AI Ecosystem ---
   {
     id: 'ai-subtitle-gen',
     name: 'AI Video Subtitle Generator',
@@ -7081,203 +6236,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-// --- Video Utilities Ecosystem ---
-  {
-    id: 'extract-audio',
-    name: 'Extract Audio Track',
-    description: 'Extract MP3 or WAV audio files directly from video containers.',
-    category: 'video-tools',
-    icon: '🎵',
-    type: 'custom',
-    componentName: 'ExtractAudio'
-  ,
-    seoTitle: "Free Extract Audio Track — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Extract MP3 or WAV audio files directly from video containers. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Extract Audio Track free to use?",
-                "answer": "Yes, the Extract Audio Track is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'mute-video',
-    name: 'Mute Video (Silent Track)',
-    description: 'Generate video files with all audio tracks completely stripped.',
-    category: 'video-tools',
-    icon: '🔇',
-    type: 'custom',
-    componentName: 'MuteVideo'
-  ,
-    seoTitle: "Free Mute Video — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Generate video files with all audio tracks completely stripped. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Mute Video free to use?",
-                "answer": "Yes, the Mute Video is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'video-to-gif',
-    name: 'Convert Video to GIF',
-    description: 'Convert MP4/WebM videos into high-quality animated GIFs with custom sizes and framerates.',
-    category: 'video-tools',
-    icon: '🎬',
-    type: 'custom',
-    componentName: 'VideoToGIF'
-  ,
-    seoTitle: "Free Convert Video to GIF — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Convert MP4/WebM videos into high-quality animated GIFs with custom sizes and framerates. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Convert Video to GIF free to use?",
-                "answer": "Yes, the Convert Video to GIF is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
-  {
-    id: 'thumbnail-extractor',
-    name: 'Extract Video Thumbnail',
-    description: 'Seek to a custom timestamp and capture a high-res PNG frame screenshot.',
-    category: 'video-tools',
-    icon: '📷',
-    type: 'custom',
-    componentName: 'ThumbnailExtractor'
-  ,
-    seoTitle: "Free Extract Video Thumbnail — Convert & Edit Videos Online | InfinityKit",
-    seoDescription: "Seek to a custom timestamp and capture a high-res PNG frame screenshot. Access our free, high-performance web tool for instant results.",
-    howToSteps: [
-          "Select and upload your video file by clicking the upload panel.",
-          "Adjust parameters, formats, or compression ratios on the settings panel.",
-          "Click the process button to start the secure local conversion.",
-          "Download the processed video file directly to your local storage."
-    ],
-    keyFeatures: [
-          "Efficient in-browser video container encoding and transcoding",
-          "Supports modern formats including MP4, WebM, MOV, and AVI",
-          "Secure offline processing sandbox keeping files completely local",
-          "No watermark exports or brand overlays on output videos"
-    ],
-    useCases: [
-          "Designers",
-          "Content Creators",
-          "Bloggers",
-          "Social Media Managers",
-          "Editors"
-    ],
-    faq: [
-          {
-                "question": "Is the Extract Video Thumbnail free to use?",
-                "answer": "Yes, the Extract Video Thumbnail is completely free with unlimited access and no hidden charges."
-          },
-          {
-                "question": "Are my data or files secure on this platform?",
-                "answer": "Absolutely. All conversions and calculations occur locally within your browser sandbox. No data or files are sent to our servers, guaranteeing complete privacy."
-          },
-          {
-                "question": "Do I need to install any software?",
-                "answer": "No installations are required. The tool runs directly in any modern web browser on desktop, tablet, or mobile devices."
-          },
-          {
-                "question": "Will the output video have a watermark?",
-                "answer": "No, all processed video files are exported in high quality without any watermarks."
-          }
-    ]
-  },
   {
     id: 'schema-generator',
     name: 'SEO JSON-LD Structured Data Schema Maker',
@@ -7367,7 +6325,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  
   {
     id: 'ambient-noise-player',
     name: 'Focus Ambient Noise Mixer (Rain, Forest)',
@@ -7412,8 +6369,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-  
-  // Image Editing
   {
     id: 'resize-image',
     name: 'Resize Image Pixels',
@@ -7806,8 +6761,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Image AI Editing
   {
     id: 'remove-background',
     name: 'AI Remove Background',
@@ -8102,8 +7055,6 @@ export const tools: ToolDefinition[] = [
           }
     ]
   },
-
-  // Converters
   {
     id: 'png-to-jpg',
     name: 'PNG to JPG Converter',

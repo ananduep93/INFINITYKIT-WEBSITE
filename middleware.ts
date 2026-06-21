@@ -95,6 +95,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
+  // 8. Redirect deleted video tools safely to tools homepage
+  if (pathname.startsWith('/video-tools/') || pathname === '/video-tools') {
+    url.pathname = '/tools';
+    return NextResponse.redirect(url, 301);
+  }
+
   return NextResponse.next();
 }
 
@@ -110,7 +116,9 @@ export const config = {
     '/image/:path*',
     '/image',
     '/signin',
-    '/signin.html'
+    '/signin.html',
+    '/video-tools/:path*',
+    '/video-tools'
   ]
 };
 

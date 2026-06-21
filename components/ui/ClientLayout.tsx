@@ -73,7 +73,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     'ai-tools': false,
     'image-tools': false,
     'pdf-tools': true,
-    'video-tools': false,
     'audio-tools': false,
     'text-tools': false,
     'developer-tools': false,
@@ -323,28 +322,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "PDF to EPUB", path: "/pdf-tools/pdf-to-epub" },
       { name: "EPUB to PDF", path: "/pdf-tools/epub-to-pdf" }
     ]},
-    { id: 'video-tools', name: 'Video Tools', icon: <Video size={16} />, folderKey: 'video-tools', children: [
-      { name: "Compress Video File", path: "/video-tools/compress-video" },
-      { name: "Trim Video Clip", path: "/video-tools/trim-video" },
-      { name: "Crop Video Layout", path: "/video-tools/crop-video" },
-      { name: "Resize Video Pixels", path: "/video-tools/resize-video" },
-      { name: "Rotate Video Orientation", path: "/video-tools/rotate-video" },
-      { name: "Reverse Video Playback", path: "/video-tools/reverse-video" },
-      { name: "Merge Multiple Videos", path: "/video-tools/merge-video" },
-      { name: "Split Video Clip", path: "/video-tools/split-video" },
-      { name: "MP4 to MOV Converter", path: "/video-tools/convert-mp4-mov" },
-      { name: "MOV to MP4 Converter", path: "/video-tools/convert-mov-mp4" },
-      { name: "MP4 to WEBM Converter", path: "/video-tools/convert-mp4-webm" },
-      { name: "WEBM to MP4 Converter", path: "/video-tools/convert-webm-mp4" },
-      { name: "MKV to MP4 Converter", path: "/video-tools/convert-mkv-mp4" },
-      { name: "MP4 to MKV Converter", path: "/video-tools/convert-mp4-mkv" },
-      { name: "AVI to MP4 Converter", path: "/video-tools/convert-avi-mp4" },
-      { name: "MP4 to AVI Converter", path: "/video-tools/convert-mp4-avi" },
-      { name: "Extract Audio Track", path: "/video-tools/extract-audio" },
-      { name: "Mute Video (Silent Track)", path: "/video-tools/mute-video" },
-      { name: "Convert Video to GIF", path: "/video-tools/video-to-gif" },
-      { name: "Extract Video Thumbnail", path: "/video-tools/thumbnail-extractor" }
-    ]},
+
     { id: 'audio-tools', name: 'Audio Tools', icon: <Music size={16} />, folderKey: 'audio-tools', children: [
       { name: "Convert Text to Voice", path: "/audio-tools/texttospeech" },
       { name: "Focus Ambient Noise Mixer", path: "/audio-tools/ambient-noise-player" }

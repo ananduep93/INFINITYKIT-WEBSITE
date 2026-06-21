@@ -1132,7 +1132,6 @@ export default function ToolTesterPage() {
                       >
                         <option value="image">JPEG/PNG Image Compression</option>
                         <option value="pdf">PDF Merging & Watermarking</option>
-                        <option value="video">MP4/WebM Video to GIF Conversion</option>
                       </select>
                     </div>
 

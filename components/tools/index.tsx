@@ -76,8 +76,6 @@ const AISummarizePDF     = dynamic(() => import('./AISummarizePDF'),    { ssr: f
 const AIChatPDF          = dynamic(() => import('./AIChatPDF'),         { ssr: false, loading: LoadingSkeleton });
 const BackgroundRemover  = dynamic(() => import('./BackgroundRemover'), { ssr: false, loading: LoadingSkeleton });
 
-const ExtractAudio       = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ExtractAudioWrapper), { ssr: false, loading: LoadingSkeleton });
-const VideoToGIF         = dynamic(() => import('./VideoSuiteWrappers').then(m => m.VideoToGIFWrapper), { ssr: false, loading: LoadingSkeleton });
 const EssayWriter        = dynamic(() => import('./EssayWriter'),       { ssr: false, loading: LoadingSkeleton });
 const ArticleWriter      = dynamic(() => import('./ArticleWriter'),     { ssr: false, loading: LoadingSkeleton });
 const BlogGenerator      = dynamic(() => import('./BlogGenerator'),     { ssr: false, loading: LoadingSkeleton });
@@ -85,35 +83,12 @@ const FAQGenerator       = dynamic(() => import('./FAQGenerator'),      { ssr: f
 const AIRewriter         = dynamic(() => import('./AIRewriter'),        { ssr: false, loading: LoadingSkeleton });
 const AIHumanizer        = dynamic(() => import('./AIHumanizer'),       { ssr: false, loading: LoadingSkeleton });
 const GrammarFixer       = dynamic(() => import('./GrammarFixer'),      { ssr: false, loading: LoadingSkeleton });
-const SubtitlesGenerator = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AISubtitleGen), { ssr: false, loading: LoadingSkeleton });
-const VideoTranscription = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AITranscript), { ssr: false, loading: LoadingSkeleton });
 
 // Dynamic imports for the new 21 video ecosystem tools
-const CompressVideo      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.CompressVideo), { ssr: false, loading: LoadingSkeleton });
-const TrimVideo          = dynamic(() => import('./VideoSuiteWrappers').then(m => m.TrimVideo), { ssr: false, loading: LoadingSkeleton });
-const CropVideo          = dynamic(() => import('./VideoSuiteWrappers').then(m => m.CropVideo), { ssr: false, loading: LoadingSkeleton });
-const ResizeVideo        = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ResizeVideo), { ssr: false, loading: LoadingSkeleton });
-const RotateVideo        = dynamic(() => import('./VideoSuiteWrappers').then(m => m.RotateVideo), { ssr: false, loading: LoadingSkeleton });
-const ReverseVideo       = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ReverseVideo), { ssr: false, loading: LoadingSkeleton });
-const MergeVideo         = dynamic(() => import('./VideoSuiteWrappers').then(m => m.MergeVideo), { ssr: false, loading: LoadingSkeleton });
-const SplitVideo         = dynamic(() => import('./VideoSuiteWrappers').then(m => m.SplitVideo), { ssr: false, loading: LoadingSkeleton });
-const ConvertMp4Mov      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertMp4Mov), { ssr: false, loading: LoadingSkeleton });
-const ConvertMovMp4      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertMovMp4), { ssr: false, loading: LoadingSkeleton });
-const ConvertMp4Webm     = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertMp4Webm), { ssr: false, loading: LoadingSkeleton });
-const ConvertWebmMp4     = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertWebmMp4), { ssr: false, loading: LoadingSkeleton });
-const ConvertMkvMp4      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertMkvMp4), { ssr: false, loading: LoadingSkeleton });
-const ConvertMp4Mkv      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertMp4Mkv), { ssr: false, loading: LoadingSkeleton });
-const ConvertAviMp4      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertAviMp4), { ssr: false, loading: LoadingSkeleton });
-const ConvertMp4Avi      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ConvertMp4Avi), { ssr: false, loading: LoadingSkeleton });
 const AISubtitleGen      = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AISubtitleGen), { ssr: false, loading: LoadingSkeleton });
 const AIVideoSummary     = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AIVideoSummary), { ssr: false, loading: LoadingSkeleton });
 const AITranscript       = dynamic(() => import('./VideoSuiteWrappers').then(m => m.AITranscript), { ssr: false, loading: LoadingSkeleton });
-const MuteVideo          = dynamic(() => import('./VideoSuiteWrappers').then(m => m.MuteVideo), { ssr: false, loading: LoadingSkeleton });
-const ThumbnailExtractor = dynamic(() => import('./VideoSuiteWrappers').then(m => m.ThumbnailExtractor), { ssr: false, loading: LoadingSkeleton });
-const VideoEditorSuite   = dynamic(() => import('./VideoEditorSuite'),   { ssr: false, loading: LoadingSkeleton });
-const VideoConverterSuite= dynamic(() => import('./VideoConverterSuite'),{ ssr: false, loading: LoadingSkeleton });
 const VideoAISuite       = dynamic(() => import('./VideoAISuite'),       { ssr: false, loading: LoadingSkeleton });
-const VideoUtilitiesSuite= dynamic(() => import('./VideoUtilitiesSuite'),{ ssr: false, loading: LoadingSkeleton });
 const JSONFormatter      = dynamic(() => import('./JSONFormatter'),      { ssr: false, loading: LoadingSkeleton });
 const SchemaGenerator    = dynamic(() => import('./SchemaGenerator'),   { ssr: false, loading: LoadingSkeleton });
 const PublicSurvey       = dynamic(() => import('./PublicSurvey'),      { ssr: false, loading: LoadingSkeleton });
@@ -273,8 +248,6 @@ export {
   AIChatPDF,
   BackgroundRemover,
 
-  ExtractAudio,
-  VideoToGIF,
   EssayWriter,
   ArticleWriter,
   BlogGenerator,
@@ -282,33 +255,10 @@ export {
   AIRewriter,
   AIHumanizer,
   GrammarFixer,
-  SubtitlesGenerator,
-  VideoTranscription,
-  CompressVideo,
-  TrimVideo,
-  CropVideo,
-  ResizeVideo,
-  RotateVideo,
-  ReverseVideo,
-  MergeVideo,
-  SplitVideo,
-  ConvertMp4Mov,
-  ConvertMovMp4,
-  ConvertMp4Webm,
-  ConvertWebmMp4,
-  ConvertMkvMp4,
-  ConvertMp4Mkv,
-  ConvertAviMp4,
-  ConvertMp4Avi,
   AISubtitleGen,
   AIVideoSummary,
   AITranscript,
-  MuteVideo,
-  ThumbnailExtractor,
-  VideoEditorSuite,
-  VideoConverterSuite,
   VideoAISuite,
-  VideoUtilitiesSuite,
   JSONFormatter,
   SchemaGenerator,
   PublicSurvey,
@@ -429,8 +379,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   AIChatPDF,
   BackgroundRemover,
 
-  ExtractAudio,
-  VideoToGIF,
   EssayWriter,
   ArticleWriter,
   BlogGenerator,
@@ -438,33 +386,10 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   AIRewriter,
   AIHumanizer,
   GrammarFixer,
-  SubtitlesGenerator,
-  VideoTranscription,
-  CompressVideo,
-  TrimVideo,
-  CropVideo,
-  ResizeVideo,
-  RotateVideo,
-  ReverseVideo,
-  MergeVideo,
-  SplitVideo,
-  ConvertMp4Mov,
-  ConvertMovMp4,
-  ConvertMp4Webm,
-  ConvertWebmMp4,
-  ConvertMkvMp4,
-  ConvertMp4Mkv,
-  ConvertAviMp4,
-  ConvertMp4Avi,
   AISubtitleGen,
   AIVideoSummary,
   AITranscript,
-  MuteVideo,
-  ThumbnailExtractor,
-  VideoEditorSuite,
-  VideoConverterSuite,
   VideoAISuite,
-  VideoUtilitiesSuite,
   JSONFormatter,
   SchemaGenerator,
   PublicSurvey,
@@ -568,8 +493,6 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'ai-chat-pdf': AIChatPDF,
   'bg-remover': BackgroundRemover,
 
-  'extract-audio': ExtractAudio,
-  'video-to-gif': VideoToGIF,
   'essay-writer': EssayWriter,
   'article-writer': ArticleWriter,
   'blog-generator': BlogGenerator,
@@ -577,33 +500,10 @@ export const toolsRegistry: Record<string, React.ComponentType<any>> = {
   'ai-rewriter': AIRewriter,
   'ai-humanizer': AIHumanizer,
   'grammar-fixer': GrammarFixer,
-  'subtitles-generator': SubtitlesGenerator,
-  'video-transcription': VideoTranscription,
-  'compress-video': CompressVideo,
-  'trim-video': TrimVideo,
-  'crop-video': CropVideo,
-  'resize-video': ResizeVideo,
-  'rotate-video': RotateVideo,
-  'reverse-video': ReverseVideo,
-  'merge-video': MergeVideo,
-  'split-video': SplitVideo,
-  'convert-mp4-mov': ConvertMp4Mov,
-  'convert-mov-mp4': ConvertMovMp4,
-  'convert-mp4-webm': ConvertMp4Webm,
-  'convert-webm-mp4': ConvertWebmMp4,
-  'convert-mkv-mp4': ConvertMkvMp4,
-  'convert-mp4-mkv': ConvertMp4Mkv,
-  'convert-avi-mp4': ConvertAviMp4,
-  'convert-mp4-avi': ConvertMp4Avi,
   'ai-subtitle-gen': AISubtitleGen,
   'ai-video-summary': AIVideoSummary,
   'ai-transcript': AITranscript,
-  'mute-video': MuteVideo,
-  'thumbnail-extractor': ThumbnailExtractor,
-  'video-editor-suite': VideoEditorSuite,
-  'video-converter-suite': VideoConverterSuite,
   'video-ai-suite': VideoAISuite,
-  'video-utilities-suite': VideoUtilitiesSuite,
   'json-code': JSONFormatter,
   'schema-generator': SchemaGenerator,
   publicsurvey: PublicSurvey,

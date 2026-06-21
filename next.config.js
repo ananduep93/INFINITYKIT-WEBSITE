@@ -25,23 +25,6 @@ const nextConfig = {
       'lucide-react',
       'framer-motion',
     ],
-    serverComponentsExternalPackages: [
-      'ffmpeg-static',
-      '@ffmpeg-installer/ffmpeg',
-      '@ffmpeg-installer/linux-x64',
-      '@ffprobe-installer/ffprobe',
-      '@ffprobe-installer/linux-x64',
-    ],
-    outputFileTracingIncludes: {
-      '/api/video/ai/route': [
-        './node_modules/ffmpeg-static/**',
-        './node_modules/@ffprobe-installer/**',
-      ],
-      '/api/video/process/route': [
-        './node_modules/ffmpeg-static/**',
-        './node_modules/@ffprobe-installer/**',
-      ],
-    },
   },
   // ─── Legacy SEO Redirects (301 Permanent Redirects for Google Index) ─────
   async redirects() {
