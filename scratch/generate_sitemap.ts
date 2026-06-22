@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { tools, categories, mapCategoryToPath } from '../config/tools';
-import { fullBlogPosts } from '../config/blogContent';
+import { tools, categories, mapCategoryToPath } from '../src/config/tools';
+import { fullBlogPosts } from '../src/config/blogContent';
 
 function generateSitemap() {
   const baseUrl = 'https://infinitykit.online';

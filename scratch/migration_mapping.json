@@ -1,0 +1,1958 @@
+[
+  {
+    "file": "AddPDFHeaderFooter.tsx",
+    "baseName": "AddPDFHeaderFooter",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "add-pdf-header-footer",
+        "name": "Add Custom PDF Headers & Footers",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AddPDFPageNumbers.tsx",
+    "baseName": "AddPDFPageNumbers",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "add-pdf-page-numbers",
+        "name": "Stamp Page Numbers on PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AddPDFText.tsx",
+    "baseName": "AddPDFText",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "add-pdf-text",
+        "name": "Add Custom Text to PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AIChatbot.tsx",
+    "baseName": "AIChatbot",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "chatbot",
+        "name": "Infinity AI Chat & Assistant",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AIChatPDF.tsx",
+    "baseName": "AIChatPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "ai-chat-pdf",
+        "name": "AI Chat & Discuss with PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AIHumanizer.tsx",
+    "baseName": "AIHumanizer",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "ai-humanizer",
+        "name": "AI Text Humanizer",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AIRewriter.tsx",
+    "baseName": "AIRewriter",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "ai-rewriter",
+        "name": "AI Content Rewriter",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AISummarizePDF.tsx",
+    "baseName": "AISummarizePDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "ai-summarize-pdf",
+        "name": "AI PDF Key Highlights Summarizer",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AISummarizer.tsx",
+    "baseName": "AISummarizer",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "summarizer",
+        "name": "AI Smart Text Summarizer",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AITextImprover.tsx",
+    "baseName": "AITextImprover",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "text-improver",
+        "name": "AI Smart Text Improver",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AmbientNoisePlayer.tsx",
+    "baseName": "AmbientNoisePlayer",
+    "categories": [
+      "audio-tools"
+    ],
+    "tools": [
+      {
+        "id": "ambient-noise-player",
+        "name": "Focus Ambient Noise Mixer (Rain, Forest)",
+        "category": "audio-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ArticleWriter.tsx",
+    "baseName": "ArticleWriter",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "article-writer",
+        "name": "AI Article Writer",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AudioSuite.tsx",
+    "baseName": "AudioSuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "AudioSuiteWrappers.tsx",
+    "baseName": "AudioSuiteWrappers",
+    "categories": [
+      "audio-tools"
+    ],
+    "tools": [
+      {
+        "id": "trim-audio",
+        "name": "Trim & Cut Audio Clips",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "merge-audio",
+        "name": "Merge & Join Audio Tracks",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "split-audio",
+        "name": "Split Audio Tracks",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "compress-audio",
+        "name": "Compress Audio Size",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "mp4-to-mp3",
+        "name": "Convert MP4 to MP3 Audio",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "wav-to-mp3",
+        "name": "Convert WAV to MP3 Audio",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "aac-to-mp3",
+        "name": "Convert AAC to MP3 Audio",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "flac-to-mp3",
+        "name": "Convert FLAC to MP3 Audio",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "ogg-to-mp3",
+        "name": "Convert OGG to MP3 Audio",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "voice-cleaner",
+        "name": "AI Voice Cleaner & Vocal Booster",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "noise-removal",
+        "name": "AI Audio Background Noise Removal",
+        "category": "audio-tools",
+        "type": "custom"
+      },
+      {
+        "id": "podcast-summary",
+        "name": "AI Podcast Summarizer & Chapters",
+        "category": "audio-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "AVIFToPNG.tsx",
+    "baseName": "AVIFToPNG",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "avif-to-png",
+        "name": "AVIF to PNG Converter",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "BackgroundRemover.tsx",
+    "baseName": "BackgroundRemover",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "bg-remover",
+        "name": "AI Background Stripper",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "BlogGenerator.tsx",
+    "baseName": "BlogGenerator",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "blog-generator",
+        "name": "AI Blog Post Generator",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "BlurImage.tsx",
+    "baseName": "BlurImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "blur-image",
+        "name": "Gaussian Image Blur",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "BulkRenamer.tsx",
+    "baseName": "BulkRenamer",
+    "categories": [
+      "automation-tools"
+    ],
+    "tools": [
+      {
+        "id": "bulk-renamer",
+        "name": "Bulk File Batch Renamer",
+        "category": "automation-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "CategorySummary.tsx",
+    "baseName": "CategorySummary",
+    "categories": [
+      "research-tools"
+    ],
+    "tools": [
+      {
+        "id": "categorysummary",
+        "name": "Spreadsheet Columns Data Summarizer",
+        "category": "research-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ChoiceComparator.tsx",
+    "baseName": "ChoiceComparator",
+    "categories": [
+      "utility-tools"
+    ],
+    "tools": [
+      {
+        "id": "choicecomparator",
+        "name": "Compare Choices Side-by-Side Matrix",
+        "category": "utility-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ColorizeImage.tsx",
+    "baseName": "ColorizeImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "colorize-image",
+        "name": "AI Colorize Image",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ColorPaletteGenerator.tsx",
+    "baseName": "ColorPaletteGenerator",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "color-palette",
+        "name": "Image Color Palette & Code Extractor",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "CompressImage.tsx",
+    "baseName": "CompressImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "compress-image",
+        "name": "Compress Image File Size",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "CompressPDF.tsx",
+    "baseName": "CompressPDF",
+    "categories": [
+      "compression-tools"
+    ],
+    "tools": [
+      {
+        "id": "compresspdf",
+        "name": "Reduce PDF Document File Size",
+        "category": "compression-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "CropImage.tsx",
+    "baseName": "CropImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "crop-image",
+        "name": "Crop Image Layout",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "CropPDFPages.tsx",
+    "baseName": "CropPDFPages",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "crop-pdf",
+        "name": "Crop PDF Margins & Bounding Boxes",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "CSVViewer.tsx",
+    "baseName": "CSVViewer",
+    "categories": [
+      "document-tools"
+    ],
+    "tools": [
+      {
+        "id": "csvviewer",
+        "name": "CSV Spreadsheet Table Viewer",
+        "category": "document-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "DailyMonthlyReport.tsx",
+    "baseName": "DailyMonthlyReport",
+    "categories": [
+      "expense-tracker"
+    ],
+    "tools": [
+      {
+        "id": "dailymonthlyreport",
+        "name": "Printable Expense & Income Statements Builder",
+        "category": "expense-tracker",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "DailyPlanner.tsx",
+    "baseName": "DailyPlanner",
+    "categories": [
+      "productivity-tools"
+    ],
+    "tools": [
+      {
+        "id": "dailyplanner",
+        "name": "Daily Schedule & Routine Planner",
+        "category": "productivity-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "DeletePDFPages.tsx",
+    "baseName": "DeletePDFPages",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "delete-pdf-pages",
+        "name": "Delete Pages from PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "DistanceCalculator.tsx",
+    "baseName": "DistanceCalculator",
+    "categories": [
+      "utility-tools"
+    ],
+    "tools": [
+      {
+        "id": "distancecalc",
+        "name": "Calculate Distance Between Coordinates",
+        "category": "utility-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "DuplicatePDFPages.tsx",
+    "baseName": "DuplicatePDFPages",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "duplicate-pdf-pages",
+        "name": "Duplicate PDF Pages",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "EncryptedNote.tsx",
+    "baseName": "EncryptedNote",
+    "categories": [
+      "security-tools"
+    ],
+    "tools": [
+      {
+        "id": "encrypted-note",
+        "name": "Password Protected Secured Vault Note",
+        "category": "security-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "EPUBToPDF.tsx",
+    "baseName": "EPUBToPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "epub-to-pdf",
+        "name": "Convert EPUB Ebook to PDF Document",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ESignature.tsx",
+    "baseName": "ESignature",
+    "categories": [
+      "creator-tools"
+    ],
+    "tools": [
+      {
+        "id": "e-signature",
+        "name": "Draw & Save E-Signatures (Online Signature Pad)",
+        "category": "creator-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "EssayWriter.tsx",
+    "baseName": "EssayWriter",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "essay-writer",
+        "name": "AI Essay Writer",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ExamGradeCalc.tsx",
+    "baseName": "ExamGradeCalc",
+    "categories": [
+      "utility-tools"
+    ],
+    "tools": [
+      {
+        "id": "examcalc",
+        "name": "Class Grade Marks & Percentage Estimator",
+        "category": "utility-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ExpenseTrackerSuite.tsx",
+    "baseName": "ExpenseTrackerSuite",
+    "categories": [
+      "expense-tracker"
+    ],
+    "tools": [
+      {
+        "id": "expenseadd",
+        "name": "Record Daily Expense",
+        "category": "expense-tracker",
+        "type": "custom"
+      },
+      {
+        "id": "expenselist",
+        "name": "View Expense Records History",
+        "category": "expense-tracker",
+        "type": "custom"
+      },
+      {
+        "id": "budgettracker",
+        "name": "Savings & Monthly Budget Planner",
+        "category": "expense-tracker",
+        "type": "custom"
+      },
+      {
+        "id": "expenseanalytics",
+        "name": "Spending Visual Graphs & Charts",
+        "category": "expense-tracker",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ExtractPDFImages.tsx",
+    "baseName": "ExtractPDFImages",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "extract-pdf-images",
+        "name": "Extract Raw Embedded Images from PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "FAQGenerator.tsx",
+    "baseName": "FAQGenerator",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "faq-generator",
+        "name": "AI FAQ Generator",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "FlipImage.tsx",
+    "baseName": "FlipImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "flip-image",
+        "name": "Flip Image Axis",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "FocusTimer.tsx",
+    "baseName": "FocusTimer",
+    "categories": [
+      "productivity-tools"
+    ],
+    "tools": [
+      {
+        "id": "timer",
+        "name": "Pomodoro Study Focus Timer",
+        "category": "productivity-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "GlassmorphicGenerator.tsx",
+    "baseName": "GlassmorphicGenerator",
+    "categories": [
+      "coding-tools"
+    ],
+    "tools": [
+      {
+        "id": "glass-gen",
+        "name": "Frosty Glass CSS Card Designer",
+        "category": "coding-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "GrammarFixer.tsx",
+    "baseName": "GrammarFixer",
+    "categories": [
+      "writing-tools"
+    ],
+    "tools": [
+      {
+        "id": "grammar-fixer",
+        "name": "AI Grammar Fixer",
+        "category": "writing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "GraphMaker.tsx",
+    "baseName": "GraphMaker",
+    "categories": [
+      "coding-tools"
+    ],
+    "tools": [
+      {
+        "id": "graphmaker",
+        "name": "Interactive Graph Maker",
+        "category": "coding-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "HEICToJPG.tsx",
+    "baseName": "HEICToJPG",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "heic-to-jpg",
+        "name": "HEIC to JPG Converter",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "HTMLToPDF.tsx",
+    "baseName": "HTMLToPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "html-to-pdf",
+        "name": "Convert HTML Web Files to PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ImageAISuite.tsx",
+    "baseName": "ImageAISuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "ImageCompressor.tsx",
+    "baseName": "ImageCompressor",
+    "categories": [
+      "compression-tools"
+    ],
+    "tools": [
+      {
+        "id": "compressimage",
+        "name": "Reduce Image File Size (Compressor)",
+        "category": "compression-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ImageConverterSuite.tsx",
+    "baseName": "ImageConverterSuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "ImageEditorSuite.tsx",
+    "baseName": "ImageEditorSuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "ImageInfo.tsx",
+    "baseName": "ImageInfo",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "imageinfo",
+        "name": "Image Dimension & Detail Checker",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ImageResizer.tsx",
+    "baseName": "ImageResizer",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "resizeimage",
+        "name": "Resize Image Boundaries (Height & Width)",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ImageToPDF.tsx",
+    "baseName": "ImageToPDF",
+    "categories": [
+      "file-tools"
+    ],
+    "tools": [
+      {
+        "id": "imagetopdf",
+        "name": "Convert Images & Photos into PDF",
+        "category": "file-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "InteractiveCalendar.tsx",
+    "baseName": "InteractiveCalendar",
+    "categories": [
+      "productivity-tools"
+    ],
+    "tools": [
+      {
+        "id": "calendarviewer",
+        "name": "Simple Calendar Event Scheduler",
+        "category": "productivity-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "InternetSpeedTest.tsx",
+    "baseName": "InternetSpeedTest",
+    "categories": [
+      "utility-tools"
+    ],
+    "tools": [
+      {
+        "id": "speed-test",
+        "name": "Internet Speed Latency Tester",
+        "category": "utility-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "JSONFormatter.tsx",
+    "baseName": "JSONFormatter",
+    "categories": [
+      "developer-tools"
+    ],
+    "tools": [
+      {
+        "id": "json-code",
+        "name": "JSON Code Formatter & Beautifier",
+        "category": "developer-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "JSONToTS.tsx",
+    "baseName": "JSONToTS",
+    "categories": [
+      "developer-tools"
+    ],
+    "tools": [
+      {
+        "id": "json-to-ts",
+        "name": "JSON to TypeScript Code Converter",
+        "category": "developer-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "LegacyToolBridge.tsx",
+    "baseName": "LegacyToolBridge",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "LinkInBio.tsx",
+    "baseName": "LinkInBio",
+    "categories": [
+      "social-tools"
+    ],
+    "tools": [
+      {
+        "id": "link-bio",
+        "name": "Social Media Links Profile Page Builder",
+        "category": "social-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "MedicationReminder.tsx",
+    "baseName": "MedicationReminder",
+    "categories": [
+      "calculator-tools"
+    ],
+    "tools": [
+      {
+        "id": "medicinereminder",
+        "name": "Daily Medicine Schedule Alarm & Organizer",
+        "category": "calculator-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "MergePDF.tsx",
+    "baseName": "MergePDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "mergepdf",
+        "name": "Combine Multiple PDFs into One",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "MetadataStripper.tsx",
+    "baseName": "MetadataStripper",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "metadata-stripper",
+        "name": "Remove Secret Data from Photos (EXIF & Metadata Stripper)",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "MetaTagViewer.tsx",
+    "baseName": "MetaTagViewer",
+    "categories": [
+      "marketing-tools"
+    ],
+    "tools": [
+      {
+        "id": "metatagviewer",
+        "name": "Website Search Engine Meta Tag Inspector",
+        "category": "marketing-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "MorseCodeTranslator.tsx",
+    "baseName": "MorseCodeTranslator",
+    "categories": [
+      "converter-tools"
+    ],
+    "tools": [
+      {
+        "id": "morse-flash",
+        "name": "Morse Code Converter & Flash Signal",
+        "category": "converter-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "MySurveys.tsx",
+    "baseName": "MySurveys",
+    "categories": [
+      "survey-tools"
+    ],
+    "tools": [
+      {
+        "id": "mysurveys",
+        "name": "My Surveys & Questionnaires Dashboard",
+        "category": "survey-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "NoteShredder.tsx",
+    "baseName": "NoteShredder",
+    "categories": [
+      "security-tools"
+    ],
+    "tools": [
+      {
+        "id": "note-shredder",
+        "name": "Self-Destructing Secret Notes",
+        "category": "security-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "NotificationScheduler.tsx",
+    "baseName": "NotificationScheduler",
+    "categories": [
+      "productivity-tools"
+    ],
+    "tools": [
+      {
+        "id": "reminderalert",
+        "name": "Custom Alarm & Reminder System",
+        "category": "productivity-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "OCRImage.tsx",
+    "baseName": "OCRImage",
+    "categories": [
+      "text-tools"
+    ],
+    "tools": [
+      {
+        "id": "ocrimage",
+        "name": "Extract Text from Images (OCR)",
+        "category": "text-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "OCRPDF.tsx",
+    "baseName": "OCRPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "ocr-pdf",
+        "name": "Extract PDF Text",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "P2PFileShare.tsx",
+    "baseName": "P2PFileShare",
+    "categories": [
+      "cloud-tools"
+    ],
+    "tools": [
+      {
+        "id": "p2p-share",
+        "name": "Direct Secure File Transfer (P2P Share)",
+        "category": "cloud-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PasswordLeakScanner.tsx",
+    "baseName": "PasswordLeakScanner",
+    "categories": [
+      "security-tools"
+    ],
+    "tools": [
+      {
+        "id": "password-leak",
+        "name": "Password Data Breach Database Checker",
+        "category": "security-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PasswordStrength.tsx",
+    "baseName": "PasswordStrength",
+    "categories": [
+      "security-tools"
+    ],
+    "tools": [
+      {
+        "id": "passwordstrength",
+        "name": "Password Strength & Hack Time Calculator",
+        "category": "security-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PasswordVault.tsx",
+    "baseName": "PasswordVault",
+    "categories": [
+      "security-tools"
+    ],
+    "tools": [
+      {
+        "id": "passwordsaver",
+        "name": "Encrypted Password Keeper (Offline Vault)",
+        "category": "security-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFMarkupSuite.tsx",
+    "baseName": "PDFMarkupSuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "PDFPageEditor.tsx",
+    "baseName": "PDFPageEditor",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "PDFSecuritySuite.tsx",
+    "baseName": "PDFSecuritySuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "PDFToCSV.tsx",
+    "baseName": "PDFToCSV",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-csv",
+        "name": "Convert PDF to Comma-Separated Values (.csv)",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToEPUB.tsx",
+    "baseName": "PDFToEPUB",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-epub",
+        "name": "Convert PDF to Reflowable EPUB Ebook",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToExcel.tsx",
+    "baseName": "PDFToExcel",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-excel",
+        "name": "Convert PDF to Excel Spreadsheet (.xls)",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToHTML.tsx",
+    "baseName": "PDFToHTML",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-html",
+        "name": "Convert PDF to Webpage HTML Index",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToImage.tsx",
+    "baseName": "PDFToImage",
+    "categories": [
+      "file-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdftoimage",
+        "name": "Convert PDF Pages to Images",
+        "category": "file-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToJPG.tsx",
+    "baseName": "PDFToJPG",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-jpg",
+        "name": "Convert PDF to JPEG Images Pack",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToPNG.tsx",
+    "baseName": "PDFToPNG",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-png",
+        "name": "Convert PDF to PNG Images Pack",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToTXT.tsx",
+    "baseName": "PDFToTXT",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-txt",
+        "name": "Convert PDF to Plain Text (.txt)",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PDFToWord.tsx",
+    "baseName": "PDFToWord",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "pdf-to-word",
+        "name": "Convert PDF to Editable Word (.docx)",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PersonaPromptsMen.tsx",
+    "baseName": "PersonaPromptsMen",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "men-prompts",
+        "name": "Persona Prompts (Men)",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PersonaPromptsWomen.tsx",
+    "baseName": "PersonaPromptsWomen",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "women-prompts",
+        "name": "Persona Prompts (Women)",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PixelateImage.tsx",
+    "baseName": "PixelateImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "pixelate-image",
+        "name": "Retro Pixelate Image",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PNGToJPG.tsx",
+    "baseName": "PNGToJPG",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "png-to-jpg",
+        "name": "PNG to JPG Converter",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PNGToWEBP.tsx",
+    "baseName": "PNGToWEBP",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "png-to-webp",
+        "name": "PNG to WEBP Converter",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ProtectPDF.tsx",
+    "baseName": "ProtectPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "protect-pdf",
+        "name": "Lock PDF Files with Secure Password",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "PublicSurvey.tsx",
+    "baseName": "PublicSurvey",
+    "categories": [
+      "survey-tools"
+    ],
+    "tools": [
+      {
+        "id": "publicsurvey",
+        "name": "Interactive Survey Submission Form",
+        "category": "survey-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "QRCodeGenerator.tsx",
+    "baseName": "QRCodeGenerator",
+    "categories": [
+      "generator-tools"
+    ],
+    "tools": [
+      {
+        "id": "qrcode-gen",
+        "name": "Scan-to-Open QR Code Generator",
+        "category": "generator-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "QuadraticSolver.tsx",
+    "baseName": "QuadraticSolver",
+    "categories": [
+      "student-tools"
+    ],
+    "tools": [
+      {
+        "id": "equationsolver",
+        "name": "Solve Math Equations (Step-by-Step)",
+        "category": "student-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "QuickNotes.tsx",
+    "baseName": "QuickNotes",
+    "categories": [
+      "productivity-tools"
+    ],
+    "tools": [
+      {
+        "id": "notes",
+        "name": "Quick Secure Notebook Vault",
+        "category": "productivity-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RandomNamePicker.tsx",
+    "baseName": "RandomNamePicker",
+    "categories": [
+      "utility-tools"
+    ],
+    "tools": [
+      {
+        "id": "randomnamepicker",
+        "name": "Pick Random Winner from Names List",
+        "category": "utility-tools",
+        "type": "custom"
+      },
+      {
+        "id": "random-name-picker",
+        "name": "Pick Random Winner from Names List",
+        "category": "utility-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RearrangePDF.tsx",
+    "baseName": "RearrangePDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "rearrange-pdf",
+        "name": "Rearrange PDF Pages",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RemoveBackground.tsx",
+    "baseName": "RemoveBackground",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "remove-background",
+        "name": "AI Remove Background",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RemoveObjects.tsx",
+    "baseName": "RemoveObjects",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "remove-objects",
+        "name": "AI Remove Objects",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RemoveText.tsx",
+    "baseName": "RemoveText",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "remove-text",
+        "name": "AI Remove Text",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RemoveWatermark.tsx",
+    "baseName": "RemoveWatermark",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "remove-watermark",
+        "name": "AI Remove Watermark",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ResetExpenses.tsx",
+    "baseName": "ResetExpenses",
+    "categories": [
+      "expense-tracker"
+    ],
+    "tools": [
+      {
+        "id": "resetexpenses",
+        "name": "Reset & Delete Expense Records",
+        "category": "expense-tracker",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ResizeImage.tsx",
+    "baseName": "ResizeImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "resize-image",
+        "name": "Resize Image Pixels",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "ResponseViewer.tsx",
+    "baseName": "ResponseViewer",
+    "categories": [
+      "survey-tools"
+    ],
+    "tools": [
+      {
+        "id": "responseviewer",
+        "name": "Survey Results & Submissions Analyst",
+        "category": "survey-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RestorePhotos.tsx",
+    "baseName": "RestorePhotos",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "restore-photos",
+        "name": "AI Restore Photos",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RotateImage.tsx",
+    "baseName": "RotateImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "rotate-image",
+        "name": "Rotate Image Angle",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "RotatePDF.tsx",
+    "baseName": "RotatePDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "rotatepdf",
+        "name": "Spin & Rotate PDF Pages",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SchemaGenerator.tsx",
+    "baseName": "SchemaGenerator",
+    "categories": [
+      "seo-tools"
+    ],
+    "tools": [
+      {
+        "id": "schema-generator",
+        "name": "SEO JSON-LD Structured Data Schema Maker",
+        "category": "seo-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SearchExpenses.tsx",
+    "baseName": "SearchExpenses",
+    "categories": [
+      "expense-tracker"
+    ],
+    "tools": [
+      {
+        "id": "searchexpenses",
+        "name": "Search & Filter Expenses",
+        "category": "expense-tracker",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SharpenImage.tsx",
+    "baseName": "SharpenImage",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "sharpen-image",
+        "name": "Sharpen Image Details",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SmartPromptEditor.tsx",
+    "baseName": "SmartPromptEditor",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "smartsuggestions",
+        "name": "Refine Prompts for AI Chatbots",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SpinWheel.tsx",
+    "baseName": "SpinWheel",
+    "categories": [
+      "utility-tools"
+    ],
+    "tools": [
+      {
+        "id": "spinwheel",
+        "name": "Decision Maker Spin-the-Wheel Picker",
+        "category": "utility-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SplitPDF.tsx",
+    "baseName": "SplitPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "splitpdf",
+        "name": "Split PDF Pages & Extract Ranges",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SurveyBuilder.tsx",
+    "baseName": "SurveyBuilder",
+    "categories": [
+      "survey-tools"
+    ],
+    "tools": [
+      {
+        "id": "surveybuilder",
+        "name": "Custom Interactive Survey Builder",
+        "category": "survey-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SVGOptimizer.tsx",
+    "baseName": "SVGOptimizer",
+    "categories": [
+      "compression-tools"
+    ],
+    "tools": [
+      {
+        "id": "svg-optimizer",
+        "name": "SVG Vector Image Compressor",
+        "category": "compression-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "SVGToPNG.tsx",
+    "baseName": "SVGToPNG",
+    "categories": [
+      "image-tools"
+    ],
+    "tools": [
+      {
+        "id": "svg-to-png",
+        "name": "SVG to PNG Converter",
+        "category": "image-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "TextToSpeech.tsx",
+    "baseName": "TextToSpeech",
+    "categories": [
+      "audio-tools"
+    ],
+    "tools": [
+      {
+        "id": "texttospeech",
+        "name": "Listen to Text Aloud (Voice Speaker)",
+        "category": "audio-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "TodoList.tsx",
+    "baseName": "TodoList",
+    "categories": [
+      "productivity-tools"
+    ],
+    "tools": [
+      {
+        "id": "todolist",
+        "name": "Daily Tasks List & Progress Tracker",
+        "category": "productivity-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "TopSpendingInsights.tsx",
+    "baseName": "TopSpendingInsights",
+    "categories": [
+      "expense-tracker"
+    ],
+    "tools": [
+      {
+        "id": "topspendinginsights",
+        "name": "Where Do I Spend Most? (Spending Chart)",
+        "category": "expense-tracker",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "TranslatePDF.tsx",
+    "baseName": "TranslatePDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "translate-pdf",
+        "name": "Translate PDF Text Content",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "TXTToPDF.tsx",
+    "baseName": "TXTToPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "txt-to-pdf",
+        "name": "Convert Notepad Text to PDF",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "UnlockPDF.tsx",
+    "baseName": "UnlockPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "unlock-pdf",
+        "name": "Unlock & Decrypt Protected PDFs",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "URLExtractor.tsx",
+    "baseName": "URLExtractor",
+    "categories": [
+      "converter-tools"
+    ],
+    "tools": [
+      {
+        "id": "urlextractor",
+        "name": "Extract Query Fields from URL Links",
+        "category": "converter-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "VideoAISuite.tsx",
+    "baseName": "VideoAISuite",
+    "categories": [],
+    "tools": []
+  },
+  {
+    "file": "VideoSuiteWrappers.tsx",
+    "baseName": "VideoSuiteWrappers",
+    "categories": [
+      "ai-tools"
+    ],
+    "tools": [
+      {
+        "id": "ai-subtitle-gen",
+        "name": "AI Video Subtitle Generator",
+        "category": "ai-tools",
+        "type": "custom"
+      },
+      {
+        "id": "ai-video-summary",
+        "name": "AI Video Content Summarizer",
+        "category": "ai-tools",
+        "type": "custom"
+      },
+      {
+        "id": "ai-transcript",
+        "name": "AI Video Audio Transcript",
+        "category": "ai-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "WatermarkPDF.tsx",
+    "baseName": "WatermarkPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "watermarkpdf",
+        "name": "Add Custom Text Watermarks to PDFs",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  },
+  {
+    "file": "WordToPDF.tsx",
+    "baseName": "WordToPDF",
+    "categories": [
+      "pdf-tools"
+    ],
+    "tools": [
+      {
+        "id": "word-to-pdf",
+        "name": "Convert Word to PDF (.docx)",
+        "category": "pdf-tools",
+        "type": "custom"
+      }
+    ]
+  }
+]
