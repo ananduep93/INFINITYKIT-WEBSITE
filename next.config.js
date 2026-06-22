@@ -6,7 +6,6 @@ const nextConfig = {
   poweredByHeader: false,          // Remove X-Powered-By header (minor security + header savings)
   
   // ─── SWC Minification & Bundling ─────────────────────────────────────────
-  swcMinify: true,                 // Use SWC (Rust-based) minifier — 4x faster than Terser
   
   // ─── Optimized Image Delivery ─────────────────────────────────────────────
   images: {
