@@ -114,10 +114,10 @@ export default function HomePage() {
         if (!error && data) {
           docId = String(data.id);
         } else if (error) {
-          console.warn('[Supabase Sync Warning] Failed to post review to Supabase:', error.message);
+          console.warn('[Supabase backup Warning] Failed to post review to Supabase:', error.message);
         }
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to post review to Supabase:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to post review to Supabase:', sbErr.message || sbErr);
       }
 
       // 2. Save to Firebase (coexistence)

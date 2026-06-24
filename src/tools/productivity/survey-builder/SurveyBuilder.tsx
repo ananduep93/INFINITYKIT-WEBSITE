@@ -272,11 +272,11 @@ export default function SurveyBuilder() {
             });
 
           if (sbError) {
-            console.warn('[Supabase Sync Warning] Failed to publish survey to Supabase:', sbError.message);
+            console.warn('[Supabase backup Warning] Failed to publish survey to Supabase:', sbError.message);
           }
         }
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to publish survey to Supabase:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to publish survey to Supabase:', sbErr.message || sbErr);
       }
 
       // 2. Write the survey definition to Firestore in tools/surveyHub/{userId}/{surveyId}

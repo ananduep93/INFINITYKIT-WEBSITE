@@ -521,9 +521,9 @@ export default function AdminPage() {
             message: updateMsg.trim(),
             created_at: new Date().toISOString()
           });
-        if (error) console.warn('[Supabase Sync Warning] Failed to post update:', error.message);
+        if (error) console.warn('[Supabase backup Warning] Failed to post update:', error.message);
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to post update:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to post update:', sbErr.message || sbErr);
       }
 
       // 2. Post to Firestore (coexistence)
@@ -558,9 +558,9 @@ export default function AdminPage() {
             media_link: mediaLink.trim(),
             created_at: new Date().toISOString()
           });
-        if (error) console.warn('[Supabase Sync Warning] Failed to add ad:', error.message);
+        if (error) console.warn('[Supabase backup Warning] Failed to add ad:', error.message);
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to add ad:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to add ad:', sbErr.message || sbErr);
       }
 
       // 2. Post to Firestore (coexistence)
@@ -603,9 +603,9 @@ export default function AdminPage() {
             prompt: promptText.trim(),
             created_at: new Date().toISOString()
           });
-        if (error) console.warn('[Supabase Sync Warning] Failed to upload prompt:', error.message);
+        if (error) console.warn('[Supabase backup Warning] Failed to upload prompt:', error.message);
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to upload prompt:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to upload prompt:', sbErr.message || sbErr);
       }
 
       // 2. Post to Firestore (coexistence)
@@ -645,11 +645,11 @@ export default function AdminPage() {
               .from(table)
               .delete()
               .eq('id', parsedId);
-            if (error) console.warn('[Supabase Sync Warning] Failed to delete from table ' + table + ':', error.message);
+            if (error) console.warn('[Supabase backup Warning] Failed to delete from table ' + table + ':', error.message);
           }
         }
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to delete item from Supabase:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to delete item from Supabase:', sbErr.message || sbErr);
       }
 
       // 2. Delete from Firestore (coexistence)

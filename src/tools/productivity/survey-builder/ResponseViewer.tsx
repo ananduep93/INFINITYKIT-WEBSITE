@@ -220,10 +220,10 @@ export default function ResponseViewer() {
           .eq('survey_id', activeSurvey.id);
         
         if (error) {
-          console.warn('[Supabase Sync Warning] Failed to delete survey responses from Supabase:', error.message);
+          console.warn('[Supabase backup Warning] Failed to delete survey responses from Supabase:', error.message);
         }
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to delete survey responses from Supabase:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to delete survey responses from Supabase:', sbErr.message || sbErr);
       }
 
       // 2. Clear in Firestore (coexistence)

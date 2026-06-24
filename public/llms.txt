@@ -5,7 +5,7 @@ InfinityKit is a modern, premium, and 100% client-side digital utility workspace
 ## Core Platform Attributes
 - **Privacy-First**: Zero server-side file storage. PDF splitting, resizing, merging, and image compressions execute locally inside the browser memory.
 - **AI Integrations**: Server-side AI text processing backed by Google Gemini, OpenAI, and free live Pollinations fallback.
-- **Synced cloud backups**: Firestore secured bidirectional synchronisation of notes, checklists, and outflow balance ledgers.
+- **Cloud backups**: Firestore secured bidirectional backup of notes, checklists, and outflow balance ledgers.
 
 ---
 
@@ -85,7 +85,7 @@ Daily productivity calculators, security scanners, and study planners:
 - **Breaches Leak Scanner**: `/utility/password-leak` (Secure SHA-1 HaveIBeenPwned scanner)
 - **Key Strength Entropy**: `/utility/passwordstrength` (Calculate cracking entropy bits)
 - **Parabola Math Solver**: `/utility/equationsolver` (Solve quadratic vertex roots)
-- **Daily To-Do Checklist**: `/utility/todolist` (Task list synced to cloud)
+- **Daily To-Do Checklist**: `/utility/todolist` (Task list saved to cloud)
 - **Quick Notebook Vault**: `/utility/notes` (Personal notes synchronized to cloud)
 - **Outflow Purchases Recorder**: `/utility/expenseadd` (Budget tracker outflow recorder)
 - **Savings Limits Planner**: `/utility/budgettracker` (Savings limit planner)

@@ -294,14 +294,14 @@ export const tools: ToolDefinition[] = [
   {
     id: 'todolist',
     name: 'Daily Tasks List & Progress Tracker',
-    description: 'Interactive checklist synced to Firebase Cloud backup.',
+    description: 'Interactive checklist saved to Firebase Cloud backup.',
     category: 'utility-tools',
     icon: '📝',
     type: 'custom',
     componentName: 'TodoList'
   ,
     seoTitle: "Free Daily Tasks List & Progress Tracker — Online Web Utility | InfinityKit",
-    seoDescription: "Interactive checklist synced to Firebase Cloud backup. Use this free, secure, and client-side web utility to process your data locally in your browser with zero tracking.",
+    seoDescription: "Interactive checklist saved to Firebase Cloud backup. Use this free, secure, and client-side web utility to process your data locally in your browser with zero tracking.",
     howToSteps: [
           "Open the Daily Tasks List & Progress Tracker interface on your device.",
           "Input the source content or configure the initial options.",
@@ -338,14 +338,14 @@ export const tools: ToolDefinition[] = [
   {
     id: 'notes',
     name: 'Quick Secure Notebook Vault',
-    description: 'Write quick notes. Synced to Firestore automatically.',
+    description: 'Write quick notes. saved to Firestore automatically.',
     category: 'utility-tools',
     icon: '📓',
     type: 'custom',
     componentName: 'QuickNotes'
   ,
     seoTitle: "Free Quick Secure Notebook Vault — Online Web Utility | InfinityKit",
-    seoDescription: "Write quick notes. Synced to Firestore automatically. Use this free, secure, and client-side web utility to process your data locally in your browser with zero tracking.",
+    seoDescription: "Write quick notes. saved to Firestore automatically. Use this free, secure, and client-side web utility to process your data locally in your browser with zero tracking.",
     howToSteps: [
           "Open the Quick Secure Notebook Vault interface on your device.",
           "Input the source content or configure the initial options.",
@@ -7165,7 +7165,7 @@ export const tools: ToolDefinition[] = [
     keyFeatures: [
       "Visual waveform visualization on any desktop or mobile device",
       "Pure client-side processing guarantees private and fast operations",
-      "High quality WAV output rendering with automatic Supabase sync",
+      "High quality WAV output rendering with automatic Supabase backup",
       "Completely free to use with no size or duration limitations"
     ],
     useCases: ["Content Creators", "Podcasters", "Musicians", "General Users"],
@@ -7193,7 +7193,7 @@ export const tools: ToolDefinition[] = [
     keyFeatures: [
       "Sequence reordering with mobile-friendly control keys",
       "Decodes and joins channels accurately in the browser",
-      "Saves history and syncs with Supabase storage catalog",
+      "Saves history and backups to Supabase storage catalog",
       "No file limits or usage caps"
     ],
     useCases: ["Podcasters", "Music Editors", "DJ Mixers", "General Users"],
@@ -7220,7 +7220,7 @@ export const tools: ToolDefinition[] = [
     keyFeatures: [
       "Interactive marker creation via visual canvas waveform clicks",
       "Chops audio files cleanly in a single click",
-      "Downloads zip/multiple tracks locally and syncs with cloud storage",
+      "Downloads zip/multiple tracks locally and saves to cloud storage",
       "Runs locally with zero server overhead"
     ],
     useCases: ["Audio Editors", "Song Splitters", "Lecture Cutters"],
@@ -7358,7 +7358,7 @@ export const tools: ToolDefinition[] = [
       "Responsive layout for mobile, tablet, and desktop conversion",
       "100% free with zero caps"
     ],
-    useCases: ["Audiophiles", "Device Syncers", "General Users"],
+    useCases: ["Audiophiles", "Multi-Device Users", "General Users"],
     faq: [
       { "question": "Does converting FLAC to MP3 degrade quality?", "answer": "MP3 is a lossy format, so there is minor compression. However, at 128kbps+ it is virtually identical to the human ear on standard headphones." }
     ]
@@ -7382,7 +7382,7 @@ export const tools: ToolDefinition[] = [
     keyFeatures: [
       "FFmpeg conversion engine resolves OGG streams instantly",
       "Outputs compliant MP3 frames readable by legacy car stereos",
-      "Syncs library items to Supabase cloud storage",
+      "Saves library items to Supabase cloud storage",
       "Zero registration required"
     ],
     useCases: ["Gamer Audio Extracts", "Media Enthusiasts", "Linux Users"],
@@ -7410,7 +7410,7 @@ export const tools: ToolDefinition[] = [
       "Real-time client-side DSP audio filters for instant processing",
       "Vocal presence peaking EQ to boost speech audibility",
       "Eliminates wind hum, microphone rumble, and vocal muddiness",
-      "Saves to Supabase cloud storage"
+      "Saves to Supabase cloud backup"
     ],
     useCases: ["Voiceover Artists", "Podcasters", "Lecturers", "Online Teachers"],
     faq: [
@@ -7464,7 +7464,7 @@ export const tools: ToolDefinition[] = [
       "Automated audio transcription via Whisper or Gemini multimodal API",
       "Generates clear, readable outlines with markdown headings",
       "Identifies key takeaways, action items, and structural chapters",
-      "Integrates with your synced library data"
+      "Integrates with Your Saved Library data"
     ],
     useCases: ["Students", "Busy Professionals", "Content Creators", "Researchers"],
     faq: [

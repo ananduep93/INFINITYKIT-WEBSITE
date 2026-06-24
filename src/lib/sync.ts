@@ -198,7 +198,7 @@ export const syncService = {
               });
 
             if (sbError) {
-              console.error(`[Supabase Sync Error] Failed to save "${toolName}":`, sbError.message);
+              console.error(`[Supabase backup Error] Failed to save "${toolName}":`, sbError.message);
             } else {
               console.log(`Synced ${toolName} to Supabase.`);
             }

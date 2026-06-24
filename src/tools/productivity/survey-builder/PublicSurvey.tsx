@@ -297,10 +297,10 @@ export default function PublicSurvey() {
           });
 
         if (sbError) {
-          console.warn('[Supabase Sync Warning] Failed to save survey response to Supabase:', sbError.message);
+          console.warn('[Supabase backup Warning] Failed to save survey response to Supabase:', sbError.message);
         }
       } catch (sbErr: any) {
-        console.warn('[Supabase Sync Error] Failed to save survey response to Supabase:', sbErr.message || sbErr);
+        console.warn('[Supabase backup Error] Failed to save survey response to Supabase:', sbErr.message || sbErr);
       }
 
       // 2. Write response to Firestore (coexistence)

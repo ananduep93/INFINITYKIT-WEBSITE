@@ -125,8 +125,8 @@ export default function DashboardPage() {
   const mockNotifications = [
     {
       id: 'notif-1',
-      title: 'Real-time database sync active',
-      desc: 'All bookmarked tools and configuration inputs are now securely synced to Firestore database.',
+      title: 'Real-time database storage active',
+      desc: 'All bookmarked tools and configuration inputs are now securely saved to Firestore database.',
       time: 'Just now',
       type: 'success'
     },
@@ -146,7 +146,7 @@ export default function DashboardPage() {
     }
   ];
 
-  // Cloud Synced Activity History
+  // Cloud Activity History
   const { data: activityHistory, saveData: saveActivityHistory } = useSync('infinitykit_activity_history');
   const logs = useMemo(() => {
     if (activityHistory && Array.isArray(activityHistory) && activityHistory.length > 0) {
@@ -255,7 +255,7 @@ export default function DashboardPage() {
             Access Dashboard
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.96rem', marginBottom: '30px', lineHeight: 1.6, maxWidth: '480px', margin: '0 auto 30px' }}>
-            Sign in to sync your local bookmarks, medication planners, private dead drop notes, and budget schedules to high-reliability cloud databases.
+            Sign in to save your local bookmarks, medication planners, private dead drop notes, and budget schedules to high-reliability cloud databases.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '320px', margin: '0 auto' }}>
@@ -413,7 +413,7 @@ export default function DashboardPage() {
             <Cloud size={16} color="var(--primary-color)" />
             <div style={{ textAlign: 'left' }}>
               <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase' }}>Database Backup</span>
-              <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--success-color)', fontWeight: 700 }}>Firestore Live Sync</span>
+              <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--success-color)', fontWeight: 700 }}>Firestore Live Backup</span>
             </div>
           </div>
         </div>
@@ -435,7 +435,7 @@ export default function DashboardPage() {
             onClick={() => handleTabChange('bookmarks')}
             className={`dashboard-tab-btn ${activeTab === 'bookmarks' ? 'active' : ''}`}
           >
-            <Star size={16} /> Sync Bookmarks & History
+            <Star size={16} /> Saved Bookmarks & History
           </button>
 
           <button 
@@ -658,10 +658,10 @@ export default function DashboardPage() {
                 transition={{ duration: 0.2 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}
               >
-                {/* Synced Bookmarks card */}
+                {/* Saved Bookmarks card */}
                 <div className="glass-panel" style={{ margin: 0, padding: '25px' }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: "'Outfit', sans-serif", marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Star size={18} fill="var(--primary-color)" color="var(--primary-color)" /> Synced Bookmarks ({favoriteToolsList.length})
+                    <Star size={18} fill="var(--primary-color)" color="var(--primary-color)" /> Saved Bookmarks ({favoriteToolsList.length})
                   </h3>
                   
                   {favoriteToolsList.length > 0 ? (
@@ -684,7 +684,7 @@ export default function DashboardPage() {
                     <div style={{ textAlign: 'center', padding: '30px 10px' }}>
                       <Star size={36} color="var(--text-secondary)" style={{ opacity: 0.3, marginBottom: '12px' }} />
                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>
-                        Your synced favorites list is empty. Tap star badges on any tool to back them up dynamically.
+                        Your saved favorites list is empty. Tap star badges on any tool to back them up dynamically.
                       </p>
                     </div>
                   )}
@@ -693,7 +693,7 @@ export default function DashboardPage() {
                 {/* Synced Local History */}
                 <div className="glass-panel" style={{ margin: 0, padding: '25px' }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: "'Outfit', sans-serif", marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <History size={18} color="var(--primary-color)" /> Workspace Synced Activity Logs
+                    <History size={18} color="var(--primary-color)" /> Workspace Activity Logs
                   </h3>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -782,7 +782,7 @@ export default function DashboardPage() {
                       </div>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {['80+ Client-Side local tools', 'Secure offline browser processing', 'Firestore database cloud sync', 'Standard AI writing assistant'].map((feat, i) => (
+                        {['80+ Client-Side local tools', 'Secure offline browser processing', 'Firestore database cloud backup', 'Standard AI writing assistant'].map((feat, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                             <Check size={14} color="var(--primary-color)" /> {feat}
                           </div>
@@ -979,7 +979,7 @@ export default function DashboardPage() {
 
                     {updateSuccess && (
                       <div style={{ fontSize: '0.85rem', color: 'var(--success-color)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <CheckCircle size={14} /> Profile details synchronized successfully!
+                        <CheckCircle size={14} /> Profile details saved successfully!
                       </div>
                     )}
 
@@ -989,7 +989,7 @@ export default function DashboardPage() {
                       disabled={isUpdating}
                       style={{ width: 'fit-content', padding: '10px 24px', fontSize: '0.9rem' }}
                     >
-                      {isUpdating ? 'Synchronizing...' : 'Save Settings'}
+                      {isUpdating ? 'Saving...' : 'Save Settings'}
                     </button>
                   </form>
                 </div>

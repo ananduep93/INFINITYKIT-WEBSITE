@@ -919,7 +919,7 @@ export default function AudioSuite({
       <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Settings size={18} color="var(--primary-color)" />
-          <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Ecosystem Sync Panel</span>
+          <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Ecosystem Cloud Panel</span>
           <span style={{
             fontSize: '0.75rem', 
             padding: '3px 8px', 
@@ -928,7 +928,7 @@ export default function AudioSuite({
             color: syncStatus === 'syncing' ? '#FFC107' : 'var(--primary-color)',
             fontWeight: 600
           }}>
-            {syncStatus === 'syncing' ? '🔄 Syncing Cloud...' : '⚡ Supabase Synced'}
+            {syncStatus === 'syncing' ? '🔄 Saving Cloud...' : '⚡ Supabase Connected'}
           </span>
         </div>
         
@@ -973,7 +973,7 @@ export default function AudioSuite({
               borderRadius: '12px',
               border: activeTab === tab.id ? '1px solid var(--primary-color)' : '1px solid var(--glass-border)',
               background: activeTab === tab.id ? 'var(--primary-color)' : 'var(--glass-bg)',
-              color: '#fff',
+              color: activeTab === tab.id ? '#fff' : 'var(--text-color)',
               fontSize: '0.82rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -1639,7 +1639,7 @@ export default function AudioSuite({
         {activeTab === 'library' && (
           <div className="glass-panel" style={{ padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>Your Synced Library</h3>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>Your Saved Library</h3>
               <button
                 onClick={loadLibraryData}
                 className="btn"
@@ -1717,7 +1717,7 @@ export default function AudioSuite({
               {library.length === 0 && (
                 <div style={{ padding: '40px 20px', textAlign: 'center' }}>
                   <Music size={28} style={{ color: 'var(--text-secondary)', opacity: 0.5, marginBottom: '10px' }} />
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>Your audio ecosystem library is empty. Processed files will appear here synced automatically.</p>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>Your audio ecosystem library is empty. Processed files will appear here saved automatically.</p>
                 </div>
               )}
             </div>

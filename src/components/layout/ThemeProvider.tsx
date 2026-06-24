@@ -57,7 +57,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       savedSettings.theme = nextTheme;
       localStorage.setItem('infinityKitSettings', JSON.stringify(savedSettings));
 
-      // Asynchronously sync theme settings to Supabase / Firebase
+      // Asynchronously save theme settings to Supabase / Firebase
       import('../../lib/sync').then(({ default: syncService }) => {
         syncService.saveData('infinityKitSettings', savedSettings);
       }).catch(err => console.error('[Theme Sync Warning]', err));
