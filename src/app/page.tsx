@@ -722,7 +722,7 @@ export default function HomePage() {
                   Synthesize rain, oceans, or forest audio signals directly in your browser using the native HTML5 Web Audio API. 100% offline.
                 </p>
               </div>
-              <Link href="/audio/ambient-noise-player" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontSize: '0.88rem', fontWeight: 800, marginTop: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Link href="/audio-tools/ambient-noise-player" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontSize: '0.88rem', fontWeight: 800, marginTop: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 Open Player <ArrowUpRight size={14} />
               </Link>
             </motion.div>

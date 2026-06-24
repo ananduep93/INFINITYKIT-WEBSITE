@@ -2,6 +2,8 @@
    CSS variables --font-inter and --font-outfit are injected on the <html> element */
 
 :root {
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-outfit: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --primary-color: #00A19B;
   --primary-glow: #00F0FF;
   --accent-purple: #7C3AED;

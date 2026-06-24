@@ -165,20 +165,20 @@ const AVIFToPNG             = dynamic(() => import('../../tools/image/image-conv
 
 
 
-const TextToSpeech         = dynamic(() => import('../../tools/utilities/text-to-speech/TextToSpeech'), { ssr: false, loading: LoadingSkeleton });
-const AudioSuite           = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuite'),         { ssr: false, loading: LoadingSkeleton });
-const TrimAudio            = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.TrimAudio), { ssr: false, loading: LoadingSkeleton });
-const MergeAudio           = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.MergeAudio), { ssr: false, loading: LoadingSkeleton });
-const SplitAudio           = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.SplitAudio), { ssr: false, loading: LoadingSkeleton });
-const CompressAudio        = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.CompressAudio), { ssr: false, loading: LoadingSkeleton });
-const MP4ToMP3             = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.MP4ToMP3), { ssr: false, loading: LoadingSkeleton });
-const WAVToMP3             = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.WAVToMP3), { ssr: false, loading: LoadingSkeleton });
-const AACToMP3             = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.AACToMP3), { ssr: false, loading: LoadingSkeleton });
-const FLACToMP3            = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.FLACToMP3), { ssr: false, loading: LoadingSkeleton });
-const OGGToMP3             = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.OGGToMP3), { ssr: false, loading: LoadingSkeleton });
-const VoiceCleaner         = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.VoiceCleaner), { ssr: false, loading: LoadingSkeleton });
-const NoiseRemoval         = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.NoiseRemoval), { ssr: false, loading: LoadingSkeleton });
-const PodcastSummary       = dynamic(() => import('../../tools/utilities/audio-suite/AudioSuiteWrappers').then(m => m.PodcastSummary), { ssr: false, loading: LoadingSkeleton });
+const TextToSpeech         = dynamic(() => import('../../tools/audio-tools/text-to-speech/TextToSpeech'), { ssr: false, loading: LoadingSkeleton });
+const AudioSuite           = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuite'),         { ssr: false, loading: LoadingSkeleton });
+const TrimAudio            = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.TrimAudio), { ssr: false, loading: LoadingSkeleton });
+const MergeAudio           = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.MergeAudio), { ssr: false, loading: LoadingSkeleton });
+const SplitAudio           = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.SplitAudio), { ssr: false, loading: LoadingSkeleton });
+const CompressAudio        = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.CompressAudio), { ssr: false, loading: LoadingSkeleton });
+const MP4ToMP3             = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.MP4ToMP3), { ssr: false, loading: LoadingSkeleton });
+const WAVToMP3             = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.WAVToMP3), { ssr: false, loading: LoadingSkeleton });
+const AACToMP3             = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.AACToMP3), { ssr: false, loading: LoadingSkeleton });
+const FLACToMP3            = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.FLACToMP3), { ssr: false, loading: LoadingSkeleton });
+const OGGToMP3             = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.OGGToMP3), { ssr: false, loading: LoadingSkeleton });
+const VoiceCleaner         = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.VoiceCleaner), { ssr: false, loading: LoadingSkeleton });
+const NoiseRemoval         = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.NoiseRemoval), { ssr: false, loading: LoadingSkeleton });
+const PodcastSummary       = dynamic(() => import('../../tools/audio-tools/audio-suite/AudioSuiteWrappers').then(m => m.PodcastSummary), { ssr: false, loading: LoadingSkeleton });
 
 const SVGOptimizer         = dynamic(() => import('../../tools/developer/svg-optimizer/SVGOptimizer'), { ssr: false, loading: LoadingSkeleton });
 
@@ -223,7 +223,7 @@ const CSVViewer            = dynamic(() => import('../../tools/developer/csv-vie
 const ChoiceComparator     = dynamic(() => import('../../tools/utilities/choice-comparator/ChoiceComparator'), { ssr: false, loading: LoadingSkeleton });
 const RandomNamePicker     = dynamic(() => import('../../tools/utilities/random-picker/RandomNamePicker'),     { ssr: false, loading: LoadingSkeleton });
 const NoteShredder         = dynamic(() => import('../../tools/productivity/note-shredder/NoteShredder'),         { ssr: false, loading: LoadingSkeleton });
-const AmbientNoisePlayer   = dynamic(() => import('../../tools/utilities/ambient-noise/AmbientNoisePlayer'),   { ssr: false, loading: LoadingSkeleton });
+const AmbientNoisePlayer   = dynamic(() => import('../../tools/audio-tools/ambient-noise/AmbientNoisePlayer'),   { ssr: false, loading: LoadingSkeleton });
 const CategorySummary      = dynamic(() => import('../../tools/developer/category-summary/CategorySummary'),      { ssr: false, loading: LoadingSkeleton });
 const QuadraticSolver      = dynamic(() => import('../../tools/utilities/quadratic-solver/QuadraticSolver'),      { ssr: false, loading: LoadingSkeleton });
 const PasswordStrength     = dynamic(() => import('../../tools/productivity/passwordstrength/PasswordStrength'),     { ssr: false, loading: LoadingSkeleton });

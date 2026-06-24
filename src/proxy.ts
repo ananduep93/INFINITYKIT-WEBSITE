@@ -59,7 +59,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
-  // 5. Redirect old /audio/[toolId] or /audio / /audio-tools to standard utility/ai paths
+  // 5. Redirect old /audio/[toolId] or /audio to standard paths
   if (pathname.startsWith('/audio/')) {
     const toolId = pathname.substring(7);
     const tool = tools.find(t => t.id.toLowerCase() === toolId.toLowerCase());
@@ -69,8 +69,8 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(url, 301);
     }
   }
-  if (pathname === '/audio' || pathname === '/audio-tools') {
-    url.pathname = '/utility-tools';
+  if (pathname === '/audio') {
+    url.pathname = '/audio-tools';
     return NextResponse.redirect(url, 301);
   }
 

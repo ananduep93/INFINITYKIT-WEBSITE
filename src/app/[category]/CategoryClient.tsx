@@ -67,53 +67,39 @@ export default function CategoryClient({ categoryPath }: CategoryClientProps) {
         <span style={{ color: 'var(--text-color)', fontWeight: 600 }}>{category.name}</span>
       </div>
 
-      {/* Futuristic Glassmorphic Category Hero Banner */}
+      {/* Redesigned Simple & Mobile-Friendly Category Header */}
       <header className="glass-panel" style={{ 
-        margin: '0 0 40px 0', 
-        padding: '40px', 
-        borderRadius: '24px', 
-        borderLeft: '6px solid var(--primary-color)',
+        margin: '0 0 30px 0', 
+        padding: '24px', 
+        borderRadius: '16px', 
+        background: 'var(--glass-bg)',
+        border: '1px solid var(--glass-border)',
+        boxShadow: 'var(--neon-shadow)',
         position: 'relative',
-        overflow: 'hidden',
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)'
+        overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '24px', zIndex: 2, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <span style={{ 
-            fontSize: '3.5rem', 
-            background: 'rgba(0, 161, 155, 0.08)', 
-            padding: '16px', 
-            borderRadius: '20px', 
+            fontSize: '2.2rem', 
+            background: 'rgba(0, 161, 155, 0.06)', 
+            padding: '12px', 
+            borderRadius: '14px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
-            border: '1px solid rgba(255,255,255,0.05)'
+            border: '1px solid rgba(0, 161, 155, 0.08)'
           }}>{category.emoji || category.icon}</span>
-          <div style={{ flex: 1, minWidth: '280px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-              <span style={{ 
-                background: 'rgba(0, 161, 155, 0.1)', 
-                color: 'var(--primary-color)', 
-                fontSize: '0.75rem', 
-                fontWeight: 700, 
-                padding: '4px 10px', 
-                borderRadius: '50px',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase'
-              }}>Category Hub</span>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>⚡ Browser-Sandbox Secured</span>
-            </div>
+          <div style={{ flex: 1, minWidth: '240px' }}>
             <h1 style={{
-              fontSize: '2.5rem',
-              fontWeight: 850,
+              fontSize: '1.75rem',
+              fontWeight: 800,
               color: 'var(--text-color)',
-              letterSpacing: '-1px',
-              margin: '0 0 10px 0',
-              lineHeight: 1.1
+              margin: '0 0 4px 0',
+              lineHeight: 1.2
             }}>
               {category.name}
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', margin: 0, lineHeight: 1.5, maxWidth: '650px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', margin: 0, lineHeight: 1.45, maxWidth: '650px' }}>
               {category.description}
             </p>
           </div>
