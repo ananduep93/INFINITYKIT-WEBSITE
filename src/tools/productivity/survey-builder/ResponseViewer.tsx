@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BarChart3, 
   Download, 
@@ -77,52 +77,54 @@ export default function ResponseViewer() {
     }
   }, []);
 
-  // ─── Load responses when active survey changes ─────────────────────────────
-  useEffect(() => {
-    if (selectedSurveyId) {
-      const fetchResponses = async () => {
-        try {
-          // Fetch from Supabase
-          const { data, error } = await supabase
-            .from('survey_responses')
-            .select('answers, created_at')
-            .eq('survey_id', selectedSurveyId)
-            .order('created_at', { ascending: true });
+  const fetchResponses = useCallback(async (surveyId: string) => {
+    if (!surveyId) return;
+    try {
+      // Fetch from Supabase
+      const { data, error } = await supabase
+        .from('survey_responses')
+        .select('answers, created_at')
+        .eq('survey_id', surveyId)
+        .order('created_at', { ascending: true });
 
-          if (!error && data && data.length > 0) {
-            const list: SurveyResponse[] = data.map(item => ({
-              submittedAt: item.created_at,
-              answers: item.answers as Record<string, any>
-            }));
-            setResponses(list);
-            return;
-          }
-          
-          if (error) {
-            console.warn('Supabase fetch returned error:', error.message);
-          }
-        } catch (err) {
-          console.error('Failed to fetch responses from Supabase:', err);
-        }
+      if (!error && data && data.length > 0) {
+        const list: SurveyResponse[] = data.map(item => ({
+          submittedAt: item.created_at,
+          answers: item.answers as Record<string, any>
+        }));
+        setResponses(list);
+        return;
+      }
+      
+      if (error) {
+        console.warn('Supabase fetch returned error:', error.message);
+      }
+    } catch (err) {
+      console.error('Failed to fetch responses from Supabase:', err);
+    }
 
-        // Fallback to local storage
-        const key = `infinitykit_responses_${selectedSurveyId}`;
-        const stored = localStorage.getItem(key);
-        if (stored) {
-          try {
-            setResponses(JSON.parse(stored));
-          } catch (e) {
-            setResponses([]);
-          }
-        } else {
-          setResponses([]);
-        }
-      };
-      fetchResponses();
+    // Fallback to local storage
+    const key = `infinitykit_responses_${surveyId}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        setResponses(JSON.parse(stored));
+      } catch (e) {
+        setResponses([]);
+      }
     } else {
       setResponses([]);
     }
-  }, [selectedSurveyId]);
+  }, []);
+
+  // ─── Load responses when active survey changes ─────────────────────────────
+  useEffect(() => {
+    if (selectedSurveyId) {
+      fetchResponses(selectedSurveyId);
+    } else {
+      setResponses([]);
+    }
+  }, [selectedSurveyId, fetchResponses]);
 
   const activeSurvey = surveys.find(s => s.id === selectedSurveyId);
 
@@ -393,12 +395,7 @@ export default function ResponseViewer() {
             </button>
 
             <button
-              onClick={() => {
-                // Trigger state refresh
-                const key = `infinitykit_responses_${selectedSurveyId}`;
-                const stored = localStorage.getItem(key);
-                if (stored) setResponses(JSON.parse(stored));
-              }}
+              onClick={() => fetchResponses(selectedSurveyId)}
               title="Refresh Responses"
               style={{
                 padding: '8px',
