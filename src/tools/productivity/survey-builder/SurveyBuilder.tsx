@@ -280,9 +280,10 @@ export default function SurveyBuilder() {
       }
 
       // 2. Write the survey definition to Firestore in tools/surveyHub/{userId}/{surveyId}
+      const sanitizedConfig = JSON.parse(JSON.stringify(config));
       const surveyRef = doc(db, 'tools', 'surveyHub', userId, config.id);
       await setDoc(surveyRef, {
-        ...config,
+        ...sanitizedConfig,
         createdAt: new Date().toLocaleDateString()
       });
 

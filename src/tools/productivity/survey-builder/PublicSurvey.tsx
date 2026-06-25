@@ -307,10 +307,12 @@ export default function PublicSurvey() {
       const responseRef = doc(db, 'tools', 'surveyResponses', survey.id, responseId);
       
       // Note: We need a root 'timestamp' field to satisfy the security rule
-      await setDoc(responseRef, {
+      const sanitizedPayload = JSON.parse(JSON.stringify({
         timestamp: response.submittedAt,
         answers: response.answers
-      });
+      }));
+      
+      await setDoc(responseRef, sanitizedPayload);
 
       // Also back up locally under infinitykit_responses_{surveyId}
       const key = `infinitykit_responses_${survey.id}`;
