@@ -67,6 +67,13 @@ export const categories: CategoryDefinition[] = [
     "description": "Convert, cut, mix, record, and edit audio files."
   },
   {
+    "id": "expense-tracker",
+    "name": "Expense Tracker",
+    "icon": "💰",
+    "emoji": "💰",
+    "description": "Track outflow transactions, view spending graphs, and audit ledgers."
+  },
+  {
     "id": "student-tools",
     "name": "Student Tools",
     "icon": "🎓",
@@ -427,7 +434,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenseadd',
     name: 'Record Daily Expense',
     description: 'Record new outflow transactions with direct cloud save.',
-    category: 'utility-tools',
+    category: 'expense-tracker',
     icon: '➕',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -471,7 +478,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenselist',
     name: 'View Expense Records History',
     description: 'Sort and filter historical purchases.',
-    category: 'utility-tools',
+    category: 'expense-tracker',
     icon: '📋',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -559,7 +566,7 @@ export const tools: ToolDefinition[] = [
     id: 'expenseanalytics',
     name: 'Spending Visual Graphs & Charts',
     description: 'Beautiful interactive spending distribution and trends.',
-    category: 'utility-tools',
+    category: 'expense-tracker',
     icon: '📈',
     type: 'custom',
     componentName: 'ExpenseTrackerSuite'
@@ -647,7 +654,7 @@ export const tools: ToolDefinition[] = [
     id: 'searchexpenses',
     name: 'Search & Filter Expenses',
     description: 'Query transactions using custom key tags, dates, and amount thresholds.',
-    category: 'utility-tools',
+    category: 'expense-tracker',
     icon: '🔍',
     type: 'custom',
     componentName: 'SearchExpenses'
@@ -735,7 +742,7 @@ export const tools: ToolDefinition[] = [
     id: 'resetexpenses',
     name: 'Reset & Delete Expense Records',
     description: 'Permanently erase all your logged transaction history and reset spending ledgers.',
-    category: 'utility-tools',
+    category: 'expense-tracker',
     icon: '🗑️',
     type: 'custom',
     componentName: 'ResetExpenses'

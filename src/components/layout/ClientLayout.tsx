@@ -43,7 +43,8 @@ import {
   BarChart3,
   Calculator,
   BookOpen,
-  CreditCard
+  CreditCard,
+  Wallet
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import { useAuth } from '../../hooks/useAuth';
@@ -350,6 +351,13 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "Split Audio Tracks", path: "/audio-tools/split-audio" },
       { name: "Trim & Cut Audio Clips", path: "/audio-tools/trim-audio" }
     ]},
+    { id: 'expense-tracker', name: 'Expense Tracker', icon: <Wallet size={16} />, folderKey: 'expense-tracker', children: [
+      { name: "Outflow Purchases Recorder", path: "/expense-tracker/expenseadd" },
+      { name: "View Expense Records", path: "/expense-tracker/expenselist" },
+      { name: "Spending Visual Graphs", path: "/expense-tracker/expenseanalytics" },
+      { name: "Search & Filter Expenses", path: "/expense-tracker/searchexpenses" },
+      { name: "Erase Ledger History", path: "/expense-tracker/resetexpenses" }
+    ]},
     { id: 'student-tools', name: 'Student Tools', icon: <GraduationCap size={16} />, folderKey: 'student-tools', children: [
       { name: "Average & Mean Calculator", path: "/student-tools/averagecalculator" },
       { name: "Class Grade Estimator", path: "/student-tools/examcalc" },
@@ -387,7 +395,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "Distance Calc Coordinates", path: "/utility-tools/distancecalc" },
       { name: "E-Signatures Pad", path: "/utility-tools/e-signature" },
       { name: "Encrypted Password Keeper", path: "/utility-tools/passwordsaver" },
-      { name: "Erase Ledger History", path: "/utility-tools/resetexpenses" },
       { name: "Extract Links from Text", path: "/utility-tools/urlextractor" },
       { name: "Flip Text Backward", path: "/utility-tools/textreverse" },
       { name: "Format JSON code", path: "/utility-tools/json-code" },
@@ -399,7 +406,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "Link-In-Bio Page Builder", path: "/utility-tools/link-bio" },
       { name: "Morse Code Converter", path: "/utility-tools/morse-flash" },
       { name: "Optimize SVG vector", path: "/utility-tools/svg-optimizer" },
-      { name: "Outflow Purchases Recorder", path: "/utility-tools/expenseadd" },
       { name: "Palindrome Checker", path: "/utility-tools/palindrome" },
       { name: "Pediatric & Adult Medicine Dose Calculator", path: "/utility-tools/drugdosage" },
       { name: "Pick Random Winner from Names List", path: "/utility-tools/random-name-picker" },
@@ -413,16 +419,13 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       { name: "Saline & IV Fluid Drip Rate Calculator", path: "/utility-tools/ivdripcalc" },
       { name: "Savings Limits Planner", path: "/utility-tools/budgettracker" },
       { name: "Scan-to-Open QR Code Generator", path: "/utility-tools/qrcode-gen" },
-      { name: "Search & Filter Expenses", path: "/utility-tools/searchexpenses" },
       { name: "Secured Vault Note", path: "/utility-tools/encrypted-note" },
       { name: "Self-Destruct Notes", path: "/utility-tools/note-shredder" },
       { name: "Simple Calendar Event Scheduler", path: "/utility-tools/calendarviewer" },
       { name: "Simple Percentage Calculator", path: "/utility-tools/percentagecalc" },
       { name: "Sitemap Schema Builder", path: "/utility-tools/schema-generator" },
-      { name: "Spending Visual Graphs", path: "/utility-tools/expenseanalytics" },
       { name: "Spin-the-Wheel Picker", path: "/utility-tools/spinwheel" },
       { name: "URL Link Encoder", path: "/utility-tools/urlencoder" },
-      { name: "View Expense Records", path: "/utility-tools/expenselist" },
       { name: "Where Do I Spend Most?", path: "/utility-tools/topspendinginsights" },
       { name: "Word & Character Counter", path: "/utility-tools/wordcounter" },
       { name: "Yes or No Decision Oracle", path: "/utility-tools/yesnogerator" }
