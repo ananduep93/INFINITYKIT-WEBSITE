@@ -6,8 +6,22 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 
 // Set path to static FFmpeg binary
-if (ffmpegStatic) {
-  ffmpeg.setFfmpegPath(ffmpegStatic);
+// In Next.js dev mode on Windows, ffmpeg-static may return a sandboxed \ROOT\ path.
+// We detect this and resolve from process.cwd() (the real project root) instead.
+function resolveFfmpegPath(): string | null {
+  if (!ffmpegStatic) return null;
+  // If the path starts with \ROOT\ or /ROOT/, resolve it relative to cwd
+  if (ffmpegStatic.startsWith('\\ROOT\\') || ffmpegStatic.startsWith('/ROOT/')) {
+    const relativePart = ffmpegStatic.replace(/^[\\/]ROOT[\\/]/, '');
+    return path.resolve(process.cwd(), relativePart);
+  }
+  return ffmpegStatic;
+}
+
+const resolvedFfmpegPath = resolveFfmpegPath();
+if (resolvedFfmpegPath) {
+  console.log('[Audio Convert API] Using FFmpeg binary at:', resolvedFfmpegPath);
+  ffmpeg.setFfmpegPath(resolvedFfmpegPath);
 } else {
   console.warn('[Audio Convert API] ffmpeg-static binary path not found. Falling back to system path.');
 }
