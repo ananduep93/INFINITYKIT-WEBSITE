@@ -1,9 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Star, CheckCircle2, ChevronRight, ClipboardList, AlertCircle, Send } from 'lucide-react';
-import { db } from '../../../lib/firebase';
 import { supabase } from '../../../lib/supabase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
@@ -176,7 +174,7 @@ export default function PublicSurvey() {
 
       if (surveyId && creatorId) {
         try {
-          // 1. Try to fetch from Supabase (primary)
+          // Fetch from Supabase
           const { data, error } = await supabase
             .from('surveys')
             .select('id, title, description, questions')
@@ -190,14 +188,6 @@ export default function PublicSurvey() {
               description: data.description || '',
               questions: data.questions as any[]
             });
-            return;
-          }
-
-          // 2. Fallback to Firestore (coexistence)
-          const docRef = doc(db, 'tools', 'surveyHub', creatorId, surveyId);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setSurvey(docSnap.data() as SurveyConfig);
             return;
           } else {
             setLoadError('Survey not found in cloud. Showing demo survey instead.');
@@ -280,39 +270,23 @@ export default function PublicSurvey() {
     };
 
     try {
-      // Save to Firestore tools/surveyResponses/{surveyId}/{responseId}
       const responseId = 'resp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      const browserVal = typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown';
       
-      // 1. Write response to Supabase (primary)
-      try {
-        const browserVal = typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown';
-        const { error: sbError } = await supabase
-          .from('survey_responses')
-          .insert({
-            id: responseId,
-            survey_id: survey.id,
-            answers: response.answers,
-            browser: browserVal,
-            created_at: response.submittedAt
-          });
+      // Write response to Supabase
+      const { error: sbError } = await supabase
+        .from('survey_responses')
+        .insert({
+          id: responseId,
+          survey_id: survey.id,
+          answers: response.answers,
+          browser: browserVal,
+          created_at: response.submittedAt
+        });
 
-        if (sbError) {
-          console.warn('[Supabase backup Warning] Failed to save survey response to Supabase:', sbError.message);
-        }
-      } catch (sbErr: any) {
-        console.warn('[Supabase backup Error] Failed to save survey response to Supabase:', sbErr.message || sbErr);
+      if (sbError) {
+        throw new Error(sbError.message);
       }
-
-      // 2. Write response to Firestore (coexistence)
-      const responseRef = doc(db, 'tools', 'surveyResponses', survey.id, responseId);
-      
-      // Note: We need a root 'timestamp' field to satisfy the security rule
-      const sanitizedPayload = JSON.parse(JSON.stringify({
-        timestamp: response.submittedAt,
-        answers: response.answers
-      }));
-      
-      await setDoc(responseRef, sanitizedPayload);
 
       // Also back up locally under infinitykit_responses_{surveyId}
       const key = `infinitykit_responses_${survey.id}`;

@@ -19,9 +19,7 @@ import {
 } from 'lucide-react';
 
 import { syncService } from '../../../lib/sync';
-import { db } from '../../../lib/firebase';
 import { supabase } from '../../../lib/supabase';
-import { collection, getDocs, doc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
@@ -84,7 +82,7 @@ export default function ResponseViewer() {
     if (selectedSurveyId) {
       const fetchResponses = async () => {
         try {
-          // 1. Try to fetch from Supabase (primary)
+          // Fetch from Supabase
           const { data, error } = await supabase
             .from('survey_responses')
             .select('answers, created_at')
@@ -99,33 +97,25 @@ export default function ResponseViewer() {
             setResponses(list);
             return;
           }
-
-          // 2. Fallback to Firestore (coexistence)
-          const colRef = collection(db, 'tools', 'surveyResponses', selectedSurveyId);
-          const snapshot = await getDocs(colRef);
-          const cloudResponses = snapshot.docs.map(doc => {
-            const docData = doc.data();
-            return {
-              submittedAt: docData.timestamp || new Date().toISOString(),
-              answers: docData.answers || {}
-            } as SurveyResponse;
-          });
-          cloudResponses.sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
-          setResponses(cloudResponses);
+          
+          if (error) {
+            console.warn('Supabase fetch returned error:', error.message);
+          }
         } catch (err) {
-          console.error('Failed to fetch responses:', err);
-          // Fallback to local storage
-          const key = `infinitykit_responses_${selectedSurveyId}`;
-          const stored = localStorage.getItem(key);
-          if (stored) {
-            try {
-              setResponses(JSON.parse(stored));
-            } catch (e) {
-              setResponses([]);
-            }
-          } else {
+          console.error('Failed to fetch responses from Supabase:', err);
+        }
+
+        // Fallback to local storage
+        const key = `infinitykit_responses_${selectedSurveyId}`;
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            setResponses(JSON.parse(stored));
+          } catch (e) {
             setResponses([]);
           }
+        } else {
+          setResponses([]);
         }
       };
       fetchResponses();
@@ -212,29 +202,15 @@ export default function ResponseViewer() {
     }
     
     try {
-      // 1. Clear in Supabase (primary)
-      try {
-        const { error } = await supabase
-          .from('survey_responses')
-          .delete()
-          .eq('survey_id', activeSurvey.id);
-        
-        if (error) {
-          console.warn('[Supabase backup Warning] Failed to delete survey responses from Supabase:', error.message);
-        }
-      } catch (sbErr: any) {
-        console.warn('[Supabase backup Error] Failed to delete survey responses from Supabase:', sbErr.message || sbErr);
-      }
-
-      // 2. Clear in Firestore (coexistence)
-      const colRef = collection(db, 'tools', 'surveyResponses', activeSurvey.id);
-      const snapshot = await getDocs(colRef);
+      // Clear in Supabase
+      const { error } = await supabase
+        .from('survey_responses')
+        .delete()
+        .eq('survey_id', activeSurvey.id);
       
-      const batch = writeBatch(db);
-      snapshot.docs.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-      await batch.commit();
+      if (error) {
+        throw new Error(error.message);
+      }
 
       localStorage.removeItem(`infinitykit_responses_${activeSurvey.id}`);
       setResponses([]);

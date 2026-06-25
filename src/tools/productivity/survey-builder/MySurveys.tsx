@@ -19,9 +19,7 @@ import {
 } from 'lucide-react';
 
 import { syncService } from '../../../lib/sync';
-import { db } from '../../../lib/firebase';
 import { supabase } from '../../../lib/supabase';
-import { collection, getDocs } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
@@ -56,7 +54,7 @@ export default function MySurveys() {
             const parsedSurveys: SavedSurvey[] = typeof data === 'string' ? JSON.parse(data) : data;
             setSurveys(parsedSurveys);
             
-            // Query counts from Supabase first
+            // Query counts from Supabase
             parsedSurveys.forEach(async (survey) => {
               try {
                 const { count, error } = await supabase
@@ -70,22 +68,15 @@ export default function MySurveys() {
                   throw new Error(error?.message || 'Empty count');
                 }
               } catch (e) {
-                // Fallback to Firestore
+                console.warn(`Could not fetch cloud count for survey ${survey.id}:`, e);
+                // Local fallback count
+                const responsesKey = `infinitykit_responses_${survey.id}`;
+                const local = localStorage.getItem(responsesKey);
                 try {
-                  const colRef = collection(db, 'tools', 'surveyResponses', survey.id);
-                  const snapshot = await getDocs(colRef);
-                  setCounts(prev => ({ ...prev, [survey.id]: snapshot.size }));
-                } catch (fbErr) {
-                  console.warn(`Could not fetch cloud count for survey ${survey.id}:`, fbErr);
-                  // Local fallback count
-                  const responsesKey = `infinitykit_responses_${survey.id}`;
-                  const local = localStorage.getItem(responsesKey);
-                  try {
-                    const localCount = local ? JSON.parse(local).length : 0;
-                    setCounts(prev => ({ ...prev, [survey.id]: localCount }));
-                  } catch {
-                    setCounts(prev => ({ ...prev, [survey.id]: 0 }));
-                  }
+                  const localCount = local ? JSON.parse(local).length : 0;
+                  setCounts(prev => ({ ...prev, [survey.id]: localCount }));
+                } catch {
+                  setCounts(prev => ({ ...prev, [survey.id]: 0 }));
                 }
               }
             });

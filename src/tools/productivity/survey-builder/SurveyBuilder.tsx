@@ -24,9 +24,7 @@ import {
 } from 'lucide-react';
 
 import { syncService } from '../../../lib/sync';
-import { db } from '../../../lib/firebase';
 import { supabase } from '../../../lib/supabase';
-import { doc, setDoc } from 'firebase/firestore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type QuestionType = 'text' | 'multiple_choice' | 'rating' | 'yes_no';
@@ -227,10 +225,9 @@ export default function SurveyBuilder() {
       return;
     }
 
-    const userId = localStorage.getItem('userId');
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-    if (!isLoggedIn || !userId) {
+    if (!isLoggedIn) {
       setSaveStatus({ 
         type: 'error', 
         message: 'You must be signed in to generate a public shareable link. Please sign in first.' 
@@ -246,49 +243,40 @@ export default function SurveyBuilder() {
     };
 
     try {
-      // 1. Write the survey definition to Supabase (primary)
-      try {
-        const sessionStr = localStorage.getItem('supabaseSession');
-        let sbUserId = null;
-        if (sessionStr) {
-          const session = JSON.parse(sessionStr);
-          sbUserId = session?.user?.id;
-        }
-        if (!sbUserId) {
-          const { data: { session } } = await supabase.auth.getSession();
-          sbUserId = session?.user?.id;
-        }
-
-        if (sbUserId) {
-          const { error: sbError } = await supabase
-            .from('surveys')
-            .upsert({
-              id: config.id,
-              user_id: sbUserId,
-              title: config.title,
-              description: config.description || null,
-              questions: config.questions,
-              created_at: new Date().toISOString()
-            });
-
-          if (sbError) {
-            console.warn('[Supabase backup Warning] Failed to publish survey to Supabase:', sbError.message);
-          }
-        }
-      } catch (sbErr: any) {
-        console.warn('[Supabase backup Error] Failed to publish survey to Supabase:', sbErr.message || sbErr);
+      // 1. Get Supabase User Session
+      const sessionStr = localStorage.getItem('supabaseSession');
+      let sbUserId = null;
+      if (sessionStr) {
+        const session = JSON.parse(sessionStr);
+        sbUserId = session?.user?.id;
+      }
+      if (!sbUserId) {
+        const { data: { session } } = await supabase.auth.getSession();
+        sbUserId = session?.user?.id;
       }
 
-      // 2. Write the survey definition to Firestore in tools/surveyHub/{userId}/{surveyId}
-      const sanitizedConfig = JSON.parse(JSON.stringify(config));
-      const surveyRef = doc(db, 'tools', 'surveyHub', userId, config.id);
-      await setDoc(surveyRef, {
-        ...sanitizedConfig,
-        createdAt: new Date().toLocaleDateString()
-      });
+      if (!sbUserId) {
+        throw new Error('User session not found. Please sign in again.');
+      }
+
+      // 2. Write the survey definition to Supabase
+      const { error: sbError } = await supabase
+        .from('surveys')
+        .upsert({
+          id: config.id,
+          user_id: sbUserId,
+          title: config.title,
+          description: config.description || null,
+          questions: config.questions,
+          created_at: new Date().toISOString()
+        });
+
+      if (sbError) {
+        throw new Error(sbError.message);
+      }
 
       // 3. Generate the shortened URL
-      const url = `${window.location.origin}/survey-tools/publicsurvey?id=${config.id}&uid=${userId}`;
+      const url = `${window.location.origin}/survey-tools/publicsurvey?id=${config.id}&uid=${sbUserId}`;
       setShareUrl(url);
       setSaveStatus({ type: 'success', message: 'Shareable link generated and survey published to cloud!' });
     } catch (e: any) {
