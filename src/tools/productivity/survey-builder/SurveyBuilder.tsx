@@ -213,6 +213,36 @@ export default function SurveyBuilder() {
       }
 
       await syncService.saveData('infinitykit_surveys', surveys);
+
+      // Write the survey definition to Supabase surveys table (so it's available in the cloud database)
+      try {
+        const sessionStr = localStorage.getItem('supabaseSession');
+        let sbUserId = null;
+        if (sessionStr) {
+          const session = JSON.parse(sessionStr);
+          sbUserId = session?.user?.id;
+        }
+        if (!sbUserId) {
+          const { data: { session } } = await supabase.auth.getSession();
+          sbUserId = session?.user?.id;
+        }
+
+        if (sbUserId) {
+          await supabase
+            .from('surveys')
+            .upsert({
+              id: surveyId,
+              user_id: sbUserId,
+              title: title.trim(),
+              description: description.trim() || null,
+              questions,
+              created_at: new Date().toISOString()
+            });
+        }
+      } catch (sbErr) {
+        console.warn('[Supabase Warning] Failed to publish survey definition to surveys table:', sbErr);
+      }
+
       setSaveStatus({ type: 'success', message: 'Survey saved successfully! Manage it on your Dashboard.' });
     } catch (e) {
       setSaveStatus({ type: 'error', message: 'Error saving survey to storage.' });

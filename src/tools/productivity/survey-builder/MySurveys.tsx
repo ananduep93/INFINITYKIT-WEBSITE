@@ -44,47 +44,90 @@ export default function MySurveys() {
   const [surveys, setSurveys] = useState<SavedSurvey[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // ─── Load Surveys and Response Tallies ──────────────────────────────────────
+  // ─── Load User, Surveys and Response Tallies ──────────────────────────────────────
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      syncService.getData('infinitykit_surveys').then((data) => {
-        if (data) {
-          try {
-            const parsedSurveys: SavedSurvey[] = typeof data === 'string' ? JSON.parse(data) : data;
-            setSurveys(parsedSurveys);
-            
-            // Query counts from Supabase
-            parsedSurveys.forEach(async (survey) => {
-              try {
-                const { count, error } = await supabase
-                  .from('survey_responses')
-                  .select('id', { count: 'exact', head: true })
-                  .eq('survey_id', survey.id);
+    const loadSurveysAndUser = async () => {
+      // 1. Get logged-in user details
+      let sbUser = null;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        sbUser = user;
+        setCurrentUser(user);
+      } catch (err) {
+        console.warn('Failed to fetch current user:', err);
+      }
 
-                if (!error && count !== null) {
-                  setCounts(prev => ({ ...prev, [survey.id]: count }));
-                } else {
-                  throw new Error(error?.message || 'Empty count');
-                }
-              } catch (e) {
-                console.warn(`Could not fetch cloud count for survey ${survey.id}:`, e);
-                // Local fallback count
-                const responsesKey = `infinitykit_responses_${survey.id}`;
-                const local = localStorage.getItem(responsesKey);
-                try {
-                  const localCount = local ? JSON.parse(local).length : 0;
-                  setCounts(prev => ({ ...prev, [survey.id]: localCount }));
-                } catch {
-                  setCounts(prev => ({ ...prev, [survey.id]: 0 }));
-                }
-              }
-            });
-          } catch (e) {
-            console.error('Failed to parse surveys:', e);
+      // 2. Load survey templates
+      let loadedSurveys: SavedSurvey[] = [];
+
+      // Try loading directly from Supabase surveys table
+      if (sbUser) {
+        try {
+          const { data: sbSurveys, error: sbError } = await supabase
+            .from('surveys')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (!sbError && sbSurveys && sbSurveys.length > 0) {
+            loadedSurveys = sbSurveys.map((s: any) => ({
+              id: s.id,
+              title: s.title,
+              description: s.description || '',
+              questions: s.questions || [],
+              createdAt: new Date(s.created_at).toLocaleDateString()
+            }));
+          }
+        } catch (err) {
+          console.warn('Failed to load surveys from Supabase table:', err);
+        }
+      }
+
+      // If we couldn't load from Supabase or it's empty, fall back to syncService (local storage / user_data)
+      if (loadedSurveys.length === 0) {
+        try {
+          const data = await syncService.getData('infinitykit_surveys');
+          if (data) {
+            loadedSurveys = typeof data === 'string' ? JSON.parse(data) : data;
+          }
+        } catch (err) {
+          console.error('Failed to load surveys from local syncService:', err);
+        }
+      }
+
+      setSurveys(loadedSurveys);
+
+      // 3. Query counts from Supabase
+      loadedSurveys.forEach(async (survey) => {
+        try {
+          const { count, error } = await supabase
+            .from('survey_responses')
+            .select('id', { count: 'exact', head: true })
+            .eq('survey_id', survey.id);
+
+          if (!error && count !== null) {
+            setCounts(prev => ({ ...prev, [survey.id]: count }));
+          } else {
+            throw new Error(error?.message || 'Empty count');
+          }
+        } catch (e) {
+          console.warn(`Could not fetch cloud count for survey ${survey.id}:`, e);
+          // Local fallback count
+          const responsesKey = `infinitykit_responses_${survey.id}`;
+          const local = localStorage.getItem(responsesKey);
+          try {
+            const localCount = local ? JSON.parse(local).length : 0;
+            setCounts(prev => ({ ...prev, [survey.id]: localCount }));
+          } catch {
+            setCounts(prev => ({ ...prev, [survey.id]: 0 }));
           }
         }
       });
+    };
+
+    if (typeof window !== 'undefined') {
+      loadSurveysAndUser();
     }
   }, []);
 
@@ -339,6 +382,12 @@ export default function MySurveys() {
                   >
                     {survey.description || 'No description provided.'}
                   </p>
+
+                  {currentUser && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '-4px', marginBottom: '10px' }}>
+                      Created by: <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>{currentUser.email}</span>
+                    </div>
+                  )}
 
                   {/* Metrics Badge Panel */}
                   <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
